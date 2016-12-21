@@ -1,4 +1,13 @@
-function plotstate(statement, results, state, filename)
+function plotstate(statement, results, state, constants, plotdirection)
+	if ~constants.plot
+		return
+	end
+	
+	
+	global imageNum;
+	filename = strcat('output/image_', statement.name,  '_', sprintf('%04d', imageNum));
+	imageNum = imageNum + 1;
+	
 	a = 5;
 	b = 5;
         
@@ -17,10 +26,11 @@ function plotstate(statement, results, state, filename)
 	end
 	
 	hf = figure();
-	grid on
-	contourf(X, Y, Z)
-	hold on
-	contour(X, Y, Z, [state.f state.f_new])
+%	hf = figure('visible', 'off');
+	grid on;
+	contour(X, Y, Z);
+	hold on;
+	contour(X, Y, Z, [state.f state.f_new]);
 	
 	
 	
@@ -69,14 +79,16 @@ function plotstate(statement, results, state, filename)
 	
 	
 	
-	plot([state.x(1)], [state.x(2)], '*')
+	plot([state.x(1)], [state.x(2)], '*');
 	%plot([state.x(1) + state.g(1)], [state.x(2)+state.g(2)], '.')
-	q = quiver(state.x(1), state.x(2), -state.g(1), -state.g(2))
-	q = quiver(state.x(1), state.x(2), state.xnew(1) - state.x(1), state.xnew(2) - state.x(2))
+	q = quiver(state.x(1), state.x(2), -state.g(1), -state.g(2));
+	if plotdirection
+		q = quiver(state.x(1), state.x(2), state.xnew(1) - state.x(1), state.xnew(2) - state.x(2));
+	end
 	
 	saveas(hf, strcat(filename, '.png'), 'png');
 	
-	hold off
+	hold off;
 	
 	close(hf);
 	

@@ -1,44 +1,58 @@
 function [results] = algorithm(statement, constants)
 
-results = struct();
-results.iters = 0;
-results.feasibility_iters = 0;
-results.x_optimal = 0;
-results.f_min = 0;
-results.filter = nondom_create();
+results = create_results();
 
 state = struct();
 
-imageNum = 0;
-
 state.x = statement.x0;
+
+iteration_number = 0;
+
 while true
-%	fflush(stdout)
-	drawnow('update')
+	fflush(stdout);
+%	drawnow('update');
 	
+	
+	
+	% Calculate all information at this iterate...
 %	encapsulating in state to make it easier to plot
 	state.f = statement.f(state.x, 0);
 	state.g = statement.f(state.x, 1);
 	state.H = statement.f(state.x, 2);
 	
-	state.cEq = statement.h(state.x, 0);
-	state.AEq = statement.h(state.x, 1);
+	if isfield(statement, 'h')
+		state.cEq = statement.h(state.x, 0);
+		state.AEq = statement.h(state.x, 1);
+	else
+		% Should set the dimensions of these
+		state.cEq = [];
+		state.AEq = [];
+	end
 	
-	state.cIneq = statement.g(state.x, 0);
-	state.AIneq = statement.g(state.x, 1);
+	state.c = state.cEq;
+	state.A = state.AEq;
 	
-	state.active = state.cIneq > -statement.tol;
+	if isfield(statement, 'g')
+		state.cIneq = statement.g(state.x, 0);
+		state.AIneq = statement.g(state.x, 1);
+		
+		state.active = state.cIneq > -statement.tol;
 	
-	state.c = [state.cEq ; state.cIneq(state.active)];
-	state.A = [state.AEq ; state.AIneq(state.active, :)];
+		state.c = [state.c ; state.cIneq(state.active)];
+		state.A = [state.A ; state.AIneq(state.active, :)];
+	else
+		state.cIneq = [];
+		state.AIneq = [];
+	end
 	
 	
 	n = length(state.x);
 	m = length(state.c);
-	state.theta = statement.theta(state.x);
+	state.theta = theta(state.x);
 	
 	
 	if check_stopping_criteria(statement, state)
+		plotstate(statement, results, state, constants, false);
 		break;
 	end
 	
@@ -51,14 +65,15 @@ while true
 	kktmat = [state.H state.A' ; state.A zeros(m, m)];
 	state.condition = cond(kktmat);
 	
-	if cond(kktmat) > 10000 && false
+	if cond(kktmat) > constants.max_condition_number
 		disp('This is too ill-conditioned:');
 		disp(cond(kktmat));
 		
 		state.x = restore_feasibility(statement, state.x);
-		results.feasibility_iters = results.feasibility_iters+1;
+		results.restorations = results.restorations + 1;
 		continue;
 	end
+	% I guess I don't actually have to solve this whole thing...
 	vec = -kktmat \ [state.g ; state.c];
 	state.d = vec(1:n);
 	
@@ -79,18 +94,16 @@ while true
 	while ~state.accept
 		if state.alpha < state.alpha_min
 			state.x = restore_feasibility(statement, state.x);
-			results.feasibility_iters = results.feasibility_iters + 1;
+			results.restorations = results.restorations + 1;
 			break;
 		end
 		
 		% check filter
 		state.xnew = state.x + state.alpha * state.d;
-		state.theta_new = statement.theta(state.xnew);
+		state.theta_new = theta(state.xnew);
 		state.f_new = statement.f(state.xnew, 0);
 		
-		plotstate(statement, results, state, ...
-			strcat('output/image', num2str(imageNum)));
-		imageNum = imageNum + 1;
+		plotstate(statement, results, state, constants, true);
 		
 		if nondom_isdom(results.filter, [state.theta_new; state.f_new])
 			state.alpha = state.alpha * (constants.tau_one + constants.tau_two)/2;
@@ -120,16 +133,23 @@ while true
 	
 	
 	if state.accept
+		filename = strcat('output/accept_iter_', statement.name,  '_', num2str(iteration_number), '.state');
+		iteration_number = iteration_number + 1;
+		save(filename, 'state');
+	
+	
+		results.ftype_iterations = results.ftype_iterations + 1;
 		if state.ftype && (1-constants.gamma_theta)*state.theta_new > statement.tol
 			results.filter = nondom_add(results.filter, [(1-constants.gamma_theta)*state.theta_new; state.f-constants.gamma_f*state.theta_new]);
+			results.filter_modified_count = results.filter_modified_count + 1;
 		end
 		
 		state.x = state.xnew;
-		results.f_min = state.f;
-		results.x_optimal = state.x;
+		results.f_min = state.f_new;
+		results.x_optimal = state.xnew;
 	end
 	
-	state
+	%state
 	restults.iters = results.iters + 1;
 end
 
