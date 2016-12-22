@@ -9,13 +9,14 @@ state.x = statement.x0;
 iteration_number = 0;
 
 while true
-	fflush(stdout);
+	% octave:
+%	fflush(stdout);
+	% matlab:
 %	drawnow('update');
 	
 	
 	
-	% Calculate all information at this iterate...
-%	encapsulating in state to make it easier to plot
+	% Calculate all constraint/objective derivativative/value information at this iterate...
 	state.f = statement.f(state.x, 0);
 	state.g = statement.f(state.x, 1);
 	state.H = statement.f(state.x, 2);
@@ -46,11 +47,23 @@ while true
 	end
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	n = length(state.x);
 	m = length(state.c);
 	state.theta = theta(state.x);
 	
 	
+	% Check if we are done
 	if check_stopping_criteria(statement, state)
 		plotstate(statement, results, state, constants, false);
 		break;
@@ -60,7 +73,14 @@ while true
 	
 	
 	
-	% compute search direction
+	
+	
+	
+	
+	
+	
+	
+	% Compute search direction
 	% If this is too ill-conditioned, we need to perform feasibility restoration
 	kktmat = [state.H state.A' ; state.A zeros(m, m)];
 	state.condition = cond(kktmat);
@@ -73,12 +93,14 @@ while true
 		results.restorations = results.restorations + 1;
 		continue;
 	end
-	% I guess I don't actually have to solve this whole thing...
+	% I guess I don't actually have to solve this whole thing (Only solve for d, not lambda)...
 	vec = -kktmat \ [state.g ; state.c];
 	state.d = vec(1:n);
 	
 	
-	% backtracking line search
+	% Backtracking line search
+	
+	% Start by finding the minimum step length alpha
 	if state.g'*state.d < -statement.tol
 		state.alpha_min = constants.gamma_alpha * min([constants.gamma_theta, ...
 			-constants.gamma_f*state.theta/(state.g'*state.d), ...
@@ -88,7 +110,7 @@ while true
 	end
 	
 	
-	
+	% Backtrack on alpha
 	state.alpha = 1;
 	state.accept = false;
 	while ~state.accept
@@ -98,13 +120,14 @@ while true
 			break;
 		end
 		
-		% check filter
+		% Calculate new objective/constraint violations
 		state.xnew = state.x + state.alpha * state.d;
 		state.theta_new = theta(state.xnew);
 		state.f_new = statement.f(state.xnew, 0);
 		
 		plotstate(statement, results, state, constants, true);
 		
+		% check filter
 		if nondom_isdom(results.filter, [state.theta_new; state.f_new])
 			state.alpha = state.alpha * (constants.tau_one + constants.tau_two)/2;
 			continue;
@@ -114,6 +137,8 @@ while true
 		m = @(a) (a*state.g'*state.d);
 		state.ftype = m(state.alpha) < 0 && ...
 			((-m(state.alpha))^constants.s_f * state.alpha^(1-constants.s_f) > constants.delta*state.theta^(constants.s_theta));
+			
+		% Two different accepting criteria
 		if state.ftype
 			if state.f_new <= state.f + constants.eta_f * m(state.alpha)
 				state.accept = true;
@@ -133,7 +158,7 @@ while true
 	
 	
 	if state.accept
-		filename = strcat('output/accept_iter_', statement.name,  '_', num2str(iteration_number), '.state');
+		filename = strcat('output/accept_iter_', statement.name,  '_', sprintf('%04d', iteration_number), '.state');
 		iteration_number = iteration_number + 1;
 		save(filename, 'state');
 	

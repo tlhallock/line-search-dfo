@@ -15,6 +15,7 @@ statement.tol = 1e-6;
 
 % Set the objective to be a quadratic
 statement.f = @(x, k) (positive_definite_quadratic(x, k));
+%statement.f = @(x, k) (rosenbrock(x, k));
 
 
 if false
@@ -88,7 +89,7 @@ end
 
 
 % One equality and one active inequality and one inactive inequality
-if true
+if false
 	statement.h = @(x, k)(a_line(x, k, [1 ; 0], 2));
 	statement.g = @(x, k)([...
 		circle(x, k, [2 ; 1], 1) ; ...
@@ -115,6 +116,22 @@ if false
 %	statement.h = ...
 %	statement.g = ...
 	statement.name = 'equality_active_inequality';
+	results = algorithm(statement, create_constants(statement));
+end
+
+
+
+% One weird equality constraint
+% This one has problems right now...
+if false
+	statement.f = @(x, k) (positive_definite_quadratic(x, k, [3;0]));
+	
+	
+	if isfield(statement, 'g')
+		statement = rmfield(statement, 'g');
+	end
+	statement.h = @(x, k)(sin_constraint(x, k));
+	statement.name = 'one_wiggly_equality';
 	results = algorithm(statement, create_constants(statement));
 end
 

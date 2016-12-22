@@ -1,16 +1,23 @@
-function [y] = positive_definite_quadratic(x, k, Q, b)
+function [y] = positive_definite_quadratic(x, k, center, Q, b)
+
 
 if nargin < 3
+	center = [0; 0];
+end
+
+if nargin < 4
 	%Q = magic(length(x));
 	Q = [3 0; 0 .5];
 	Q = Q + Q';
 	Q = Q / norm(Q);
 end
 
-if nargin < 4
+if nargin < 5
 	b = (1:length(x))';
 	b = zeros(2,1);
 end
+
+x = x - center;
 
 switch k
 	case 0
