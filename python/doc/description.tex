@@ -1,0 +1,60 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+
+
+\section{Problem}
+\begin{align*} 
+\min_x & f(x) \\
+ & g(x) \le 0 \\
+ & h(x) = 0
+\end{align*}
+
+
+\section{Algorithm}
+
+\begin{algorithm}
+\caption{Filter Line Search}\label{linesearch1}
+\begin{algorithmic}[1]
+\Procedure{filter line search}{}
+\State $\textit{stringlen} \gets \text{length of }\textit{string}$
+\State $i \gets \textit{patlen}$
+\BState \emph{top}:
+\If {$i > \textit{stringlen}$} \Return false
+\EndIf
+\State $j \gets \textit{patlen}$
+
+\BState \emph{loop}:
+\State $ineq \gets g(x^k)$
+\State $active \gets [i] : g_i(x^k) \ge - \tau$
+\State $c \gets [h(x^k) ; g(x^k)_{active}]$ 
+\State $A \gets [\nabla h(x^k) ; \nabla g(x^k)_{active}]$
+\State construct model functions $m_f$, $m_h$, $m_g$
+\If {check stopping criteria with model functions at $x^k$}
+\If { $r > \tau$}
+\State $r \gets \gamma_{dec} r$
+\State improve model
+\State \textbf{goto} \emph{loop}.
+\EndIf
+\State return success
+\State \textbf{close};
+\EndIf
+\State $i \gets i+\max(\textit{delta}_1(\textit{string}(i)),\textit{delta}_2(j))$.
+\State \textbf{goto} \emph{top}.
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+\end{document}
