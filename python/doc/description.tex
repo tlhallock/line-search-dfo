@@ -64,7 +64,7 @@
 	\EndIf
 	\State $x_{new} = x + \alpha * d$
 	\State $\theta_{new} = \theta(x_{new})$
-	\State $f_{new} = m_f(x_new)$
+	\State $f_{new} = m_f(x_{new})$
 	\If {new inequality constraint becomes active}
 		\State $\alpha = \tau \alpha$
 		\State \textbf{continue}
@@ -97,7 +97,7 @@
 	\State 
 	\State {$rho \gets $ compute rho}
 	\If {$rho$ is small}
-		\If {$\|x_new - center\| < \frac 1 2$}
+		\If {$\|x_new - center\| < \frac 1 2r$}
 			\State $r \gets \gamma_{dec} r$
 		\Else
 			\State $r \gets \gamma_{inc} r$
