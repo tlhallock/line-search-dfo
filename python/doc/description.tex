@@ -19,34 +19,129 @@
 \end{align*}
 
 
+\newpage
 \section{Algorithm}
-
 \begin{algorithm}
 \caption{Filter Line Search}\label{linesearch1}
 \begin{algorithmic}[1]
+\tiny
 \Procedure{filter line search}{}
-\State $\textit{stringlen} \gets \text{length of }\textit{string}$
-\State $i \gets \textit{patlen}$
-\BState \emph{top}:
-\If {$i > \textit{stringlen}$} \Return false
-\EndIf
-\State $j \gets \textit{patlen}$
-
 \BState \emph{loop}:
-\State $ineq \gets g(x^k)$
-\State $active \gets [i] : g_i(x^k) \ge - \tau$
-\State $c \gets [h(x^k) ; g(x^k)_{active}]$ 
-\State $A \gets [\nabla h(x^k) ; \nabla g(x^k)_{active}]$
-\State construct model functions $m_f$, $m_h$, $m_g$
+\While {True}
+\State $ineq \gets m_g(x^k)$
+\State $active \gets [i] : m_g(x^k)_i \ge - \tau$
+\State $c \gets [m_h(x^k) ; m_g(x^k)_{active}]$ 
+\State $A \gets [\nabla m_h(x^k) ; \nabla m_g(x^k)_{active}]$
+\State $G \gets \nabla m_f(x^k)$
+\State $H \gets \nabla^2 f(x^k)$
+\State $\theta \gets \theta(x^k)$
 \If {check stopping criteria with model functions at $x^k$}
-\If { $r > \tau$}
-\State $r \gets \gamma_{dec} r$
-\State improve model
-\State \textbf{goto} \emph{loop}.
+	\If { $r > \tau$}
+		\State $r \gets \gamma_{dec} r$
+		\State improve model
+		\State \textbf{continue}.
+	\EndIf
+	\State return success
 \EndIf
-\State return success
-\State \textbf{close};
+\State $KKT \gets [H ,A^T ; A ,0]$
+\State $rhs \gets [ G ; c]$
+
+\If { $cond(KKT) > max conidition$}
+	\State restore feasibility
+	\State \textbf{continue}
 \EndIf
+
+\State $[d;\_] = -KKT ^{-1} rhs$
+\State $\alpha_{min} = $ compute minimum alpha
+\State $\alpha = 1$
+\State $accept = False$
+\While {$not accept$}
+	\State $m \gets \alpha G^T d$
+	\State Variant: clip to trust region
+	\If { $\alpha < \alpha_{min}$}
+		\State restore feasibility
+		\State \textbf{goto} \emph{loop}
+	\EndIf
+	\State $x_{new} = x + \alpha * d$
+	\State $\theta_{new} = \theta(x_{new})$
+	\State $f_{new} = m_f(x_new)$
+	\If {new inequality constraint becomes active}
+		\State $\alpha = \tau \alpha$
+		\State \textbf{continue}
+	\EndIf
+	\State plot model
+	\If { $[f_new, \theta_{new}]$ is dominated }
+		\State $\alpha = \tau \alpha$
+		\State \textbf{continue}
+	\EndIf
+	\State $ftype \gets m < 0 \wedge (-m)^{s_f} \alpha^{1-s_f} > \delta \theta^{s_{\theta}}$
+	\If {$ftype$}
+		\If {$f_{new} \le f + \eta_fm$}
+			\State $accept \gets True$
+		\Else
+			\State $\alpha = \tau \alpha$
+			\State \textbf{continue}
+		\EndIf
+	\Else
+		\State check equation 8
+% 				eight_a = state.theta_new <= (1-constants.gamma_theta) * state.theta
+% 				eight_b = state.f_new <= state.f - constants.gamma_f * state.theta_new
+% 				if eight_a or eight_b:
+% 					state.accept = True
+% 					break
+	\EndIf
+	\State $\alpha = \tau \alpha$
+\EndWhile
+
+\If {$accept$}
+	\State 
+	\State {$rho \gets $ compute rho}
+	\If {$rho$ is small}
+		\If {$\|x_new - center\| < \frac 1 2$}
+			\State $r \gets \gamma_{dec} r$
+		\Else
+			\State $r \gets \gamma_{inc} r$
+		\EndIf
+		\State improve the model
+	\ElsIf {$rho$ is medium}
+		\If {lambda poised}
+			\State $r \gets \gamma_{dec} r$
+		\EndIf
+		\State improve the model
+	\Else
+		\textbf{continue}
+	\EndIf
+	
+	
+	
+	\If {$(1-\gamma_{\theta}) * \theta_{new} > tol$}
+		add to filter: $[f_{new} - \gamma_f \theta_{new}, (1 - constants.gamma_theta)  \theta_{new}]$
+	\EndIf
+
+	\State $x^{k+1} \gets x_{new}$
+	\State construct model functions $m_f$, $m_h$, $m_g$
+\EndIf
+\EndWhile
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+
+% 
+% 			if state.ftype:
+% 				results.ftype_iterations += 1
+% 				if (1-constants.gamma_theta) * state.theta_new > program.tol:
+% 					results.pareto.add(((1 - constants.gamma_theta) * state.theta_new, state.f - constants.gamma_f * state.theta_new))
+% 					results.filter_modified_count += 1
+% 			state.x = state.x_new
+% 
+% 
+
+
 \State $i \gets i+\max(\textit{delta}_1(\textit{string}(i)),\textit{delta}_2(j))$.
 \State \textbf{goto} \emph{top}.
 \EndProcedure
