@@ -159,6 +159,11 @@ class DfoProgram(Program):
 
 		self._updateModel()
 
+	def _improve(self):
+		self.model.improve(self.createImprovementFile())
+		self._updateModel()
+
+
 	def acceptable(self, newCenter):
 		pva = self.model.testNewModelCenter(newCenter)
 
@@ -174,15 +179,13 @@ class DfoProgram(Program):
 
 		if deviation < self.goodEnough:
 			self.model.setNewModelCenter(newCenter)
-			self.model.improve(self.createImprovementFile())
-			self._updateModel()
+			self._improve()
 			return True
 
 		if self.model.isLambdaPoised():
 			self.model.multiplyRadius(self.radius_decrease)
 
-		self.model.improve(self.createImprovementFile())
-		self._updateModel()
+		self._improve()
 		self.rejects += 1
 		return False
 
@@ -190,8 +193,7 @@ class DfoProgram(Program):
 		if self.model.modelRadius < self.tol:
 			return True
 		self.model.multiplyRadius(self.radius_decrease)
-		self.model.improve(self.createImprovementFile())
-		self._updateModel()
+		self._improve()
 		return False
 
 	def createImprovementFile(self):

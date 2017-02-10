@@ -210,14 +210,14 @@ def compute_alpha_min(statement, constants, state):
 
 
 def restore_feasibility(statement, x0):
-	res = minimize(lambda x: theta(statement, x)[0], x0, method='Nelder-Mead', options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000})
+	res = minimize(lambda x: theta(statement, x), x0, method='Nelder-Mead', options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000})
 	return res.x
 
 
 def filter_line_search(program, constants):
 	results = Result()
 	state = AlgorithmState(program)
-	
+
 	while True:
 		results.number_of_iterations += 1
 		print(results.number_of_iterations)
@@ -266,11 +266,15 @@ def filter_line_search(program, constants):
 			state.theta_new, newIneq = getThetaAndIneq(program, state.x_new)
 			state.f_new = program.objective(state.x_new)
 
+
+			if norm(state.d) * state.alpha < program.model.modelRadius / 4:
+				program.model.multiplyRadius(program.radius_decrease)
+				program._improve()
+
 			# If we are about to add a constraint that was not active, then don't
 			if addedActiveConstraint(newIneq, state.cIneq, program.tol):
 				state.alpha = state.alpha * constants.tau
 				continue
-
 
 			if constants.plot:
 				state.show(program)
@@ -284,13 +288,12 @@ def filter_line_search(program, constants):
 			if state.ftype:
 				if state.f_new <= state.f + constants.eta_f * m:
 					state.accept = True
-					break
 			else:
 				eight_a = state.theta_new <= (1-constants.gamma_theta) * state.theta
 				eight_b = state.f_new <= state.f - constants.gamma_f * state.theta_new
 				if eight_a or eight_b:
 					state.accept = True
-					break
+
 			state.alpha = state.alpha * constants.tau
 
 		if state.accept:
@@ -300,7 +303,7 @@ def filter_line_search(program, constants):
 			if state.ftype:
 				results.ftype_iterations += 1
 				if (1-constants.gamma_theta) * state.theta_new > program.tol:
-					results.pareto.add(((1 - constants.gamma_theta) * state.theta_new, state.f - constants.gamma_f * state.theta_new))
+					results.pareto.add(((1 - constants.gamma_theta) * state.theta_new, state.f_new - constants.gamma_f * state.theta_new))
 					results.filter_modified_count += 1
 			state.x = state.x_new
 
