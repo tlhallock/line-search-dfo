@@ -1,0 +1,80 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\begin{document}
+
+
+\section{Problem}
+\begin{align*} 
+\min_x & f(x) \\
+ & g(x) \le 0 \\
+ & h(x) = 0
+\end{align*}
+
+
+\newpage
+\section{Algorithm}
+\begin{algorithm}
+\caption{Filter Line Search}\label{linesearch1}
+\begin{algorithmic}[1]
+% \tiny
+\Procedure{trust region filter}{}
+\State{initialize}
+\State{$\kappa_{\Delta} \in (0, 1]$}
+\State{$\kappa_{\mu} > 0$}
+\State{$\mu \in (0,1)$}
+
+\While {True}
+	\State{$n \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^-1c_{\mathcal{A}}$}
+	
+	
+	\State{Solve:}
+	\State \begin{varwidth}[t]{\linewidth}
+		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
+		$c_{eq} + A_{eq}s = 0$ \par
+		$c_{ineq} + A_{ineq}s \ge 0$ \par
+		$\| s \| \le \Delta$
+	\end{varwidth}
+      
+	\State{Compatible $\gets$ Feasible region $\ne \empty \wedge \|n\|\le \kappa_{\Delta} \Delta \min \{1, \kappa_{\mu}\Delta^{\mu}\}$}
+      
+	\If {Compatible}
+		\State{compute $t$}
+		\If {$x + s$ is acceptable}
+			\If {$m(x) - m(x+s) \ge \kappa \theta$}
+				\If {$\rho < \eta$}
+					\State{leave $x$ alone}
+					\State{reduce $\Delta$}
+					\State{update $H$}
+					\State{\textbf{continue}}
+				\EndIf
+			\Else
+				\State{add $x$ to filter}
+			\EndIf
+			\State{$x \gets x + s$}
+			\State{increase $\Delta$}
+		\Else
+			\State{leave x alone}
+			\State{reduce $\Delta$}
+		\EndIf
+	\Else
+		\State{add $x$ to filter}
+		\State{compute new $r$ and $\Delta$}
+		\State{$x \gets x + r$}
+	\EndIf
+	
+	\State{update $H$}
+\EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}
