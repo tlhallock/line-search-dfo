@@ -4,12 +4,15 @@
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \usepackage{varwidth}% http://ctan.org/pkg/varwidth
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmin}{arg\,min}
 
 \makeatletter
 \def\BState{\State\hskip-\ALG@thistlm}
 \makeatother
 
 \begin{document}
+
 
 
 \section{Problem}
@@ -21,60 +24,188 @@
 
 
 \newpage
-\section{Algorithm}
+\section{Original Algorithm}
 \begin{algorithm}
-\caption{Filter Line Search}\label{linesearch1}
+\caption{Filter Trust Region Search}\label{linesearch1}
 \begin{algorithmic}[1]
-% \tiny
+\tiny
 \Procedure{trust region filter}{}
 \State{initialize}
-\State{$\kappa_{\Delta} \in (0, 1]$}
-\State{$\kappa_{\mu} > 0$}
-\State{$\mu \in (0,1)$}
+\State{$\Delta \gets 1$}
+\State{$0 < \gamma_0 (=.1)< \gamma_1 (=.5)\le 1 \le \gamma_2(=2)$}
+\State{$0 < \eta_1 (=.9)\le \eta_2(.9)$}
+\State{$\gamma_{\theta} (=10^{-4})\in (0, 1)$}
+\State{$\kappa_{\Delta} (=.7) \in (0, 1]$}
+\State{$\kappa_{\theta}(=10^{-4}) \in (0,1)$}
+\State{$\kappa_{\mu} (=100) > 0$}
+\State{$\mu (=.01)\in (0,1)$}
+\State{$\psi (=2)> \frac 1 {1+\mu}$}
+\State{$\kappa_{tmd}=.01$}
+\State{$k=0$}
+\State{choose an $x_0$}
 
-\While {True}
-	\State{$n \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^-1c_{\mathcal{A}}$}
-	
-	
+\While {$k < maxit$}
+	\State{Compute $m_k, g_k=\nabla m_k(x_k), c_k, A_k, f_k=f(x_k), \mathcal {A}, \theta_k$}
 	\State{Solve:}
 	\State \begin{varwidth}[t]{\linewidth}
-		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
-		$c_{eq} + A_{eq}s = 0$ \par
-		$c_{ineq} + A_{ineq}s \ge 0$ \par
-		$\| s \| \le \Delta$
+		\hspace{3cm}$\nabla^2m_k(x_k) + A_k^T\lambda = g_k$ \par
+		\hspace{3cm}$A_kx\hspace{1cm}              = c_k$
 	\end{varwidth}
-      
-	\State{Compatible $\gets$ Feasible region $\ne \empty \wedge \|n\|\le \kappa_{\Delta} \Delta \min \{1, \kappa_{\mu}\Delta^{\mu}\}$}
-      
-	\If {Compatible}
-		\State{compute $t$}
-		\If {$x + s$ is acceptable}
-			\If {$m(x) - m(x+s) \ge \kappa \theta$}
-				\If {$\rho < \eta$}
-					\State{leave $x$ alone}
-					\State{reduce $\Delta$}
-					\State{update $H$}
-					\State{\textbf{continue}}
-				\EndIf
-			\Else
-				\State{add $x$ to filter}
-			\EndIf
-			\State{$x \gets x + s$}
-			\State{increase $\Delta$}
-		\Else
-			\State{leave x alone}
-			\State{reduce $\Delta$}
-		\EndIf
-	\Else
-		\State{add $x$ to filter}
-		\State{compute new $r$ and $\Delta$}
-		\State{$x \gets x + r$}
+	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum \lambda_i \nabla^2 c_{k}^i$}
+	
+	
+	\State{$\chi_k \gets |\argmin_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \| t \| \le 1\}|$}
+	
+ 	\If {constraint violation $=0 \wedge \chi=0$}
+		\textbf{success}
 	\EndIf
 	
-	\State{update $H$}
+	
+%	\State{Solve:}
+%	\State \begin{varwidth}[t]{\linewidth}
+%		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
+%		$c_{eq} + A_{eq}s = 0$ \par
+%		$c_{ineq} + A_{ineq}s \ge 0$ \par
+%		$\| s \| \le \Delta$
+%	\end{varwidth}
+
+	\State{$n_k \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
+            
+	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta \min \{1, \kappa_{\mu}\Delta^{\mu}\}$}
+		\State{$t_k \gets \argmin_t \{ (g+H_n)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \| s \| \le \Delta\}$}
+		\State{$s_k \gets t_k + n_k$}
+		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
+		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
+			\State {//$m_k(x_k)-m_k(x_k+t_k) \ge \kappa_{tmd} \chi \min[\frac{\chi}{\beta}, \Delta]$}
+			\If {$m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}$}
+%				\State{// $\rho$ only depends on correctness of objective, not constraints}
+				\State{$\rho = \frac{f(x_k)-f(x_k+s_k)}{m_k(x_k)-m_k(x_k+s_k)}$}
+				\If {$\rho < \eta_1$}
+					\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+					\State{Ensure poisedness}
+					\State{$k \gets k+1$}
+					\State{\textbf{continue}}
+				\ElsIf {$\rho > \eta_2$}
+					\State{increase $\Delta$: $\Delta_{k+1} \gets$ some $ \in [\Delta_k, \gamma_2 \Delta_k]$}
+				\EndIf
+				\State{//Why don't we add $x$ to the filter here?}
+			\Else
+				\State{add $x_k$ to filter}
+			\EndIf
+			\State{$x_{k+1} \gets x_k + s$}
+		\Else
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+			\State{Ensure poisedness}
+			\State{$k \gets k+1$}
+			\State{\textbf{continue}}
+		\EndIf
+	\Else
+		\State{add $x_k$ to filter}
+		\State{compute new $r$ (restoration step) and $\Delta$}
+		\If{impossible to restore}
+			\textbf{fail}
+		\EndIf
+		\State{$x_{k+1} \gets x_k + r$}
+	\EndIf
+	\State{$k \gets k+1$}
 \EndWhile
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+% 
+% 
+% \newpage
+% \section{DFO Algorithm}
+% \begin{algorithm}
+% \caption{Filter DFO Search}\label{linesearch1}
+% \begin{algorithmic}[1]
+% \scriptsize
+% \Procedure{trust region filter}{}
+% \State{initialize}
+% \State{$\Delta \gets 1$}
+% \State{$0 < \gamma_0 (=.1)< \gamma_1 (=.5)\le 1 \le \gamma_2(=2)$}
+% \State{$0 < \eta_1 (=.9)\le \eta_2(.9)$}
+% \State{$\gamma_{\theta} (=10^{-4})\in (0, 1)$}
+% \State{$\kappa_{\Delta} (=.7) \in (0, 1]$}
+% \State{$\kappa_{\theta}(=10^{-4}) \in (0,1)$}
+% \State{$\kappa_{\mu} (=100) > 0$}
+% \State{$\mu (=.01)\in (0,1)$}
+% \State{$\psi (=2)> \frac 1 {1+\mu}$}
+% \State{$\kappa_{tmd}=.01$}
+% 
+% \While {True}
+% 	\State{Solve:}
+% 	\State \begin{varwidth}[t]{\linewidth}
+% 		$\min_t \langle g + Hn, t\rangle$\par
+% 		$A_{eq}t = 0$ \par
+% 		$c_{ineq} + A_{ineq}t \ge 0$ \par
+% 		$\| t \| \le 1$
+% 	\end{varwidth}
+% 	\State{$\chi \gets |t^*|$}
+% 	
+%  	\If {constraint violation is $0$ and $\chi=0$}
+% 		\textbf{success}
+% 	\EndIf
+% 	
+% 	
+% %	\State{Solve:}
+% %	\State \begin{varwidth}[t]{\linewidth}
+% %		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
+% %		$c_{eq} + A_{eq}s = 0$ \par
+% %		$c_{ineq} + A_{ineq}s \ge 0$ \par
+% %		$\| s \| \le \Delta$
+% %	\end{varwidth}
+% 
+% 	\State{$n \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
+%             
+% 	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta \min \{1, \kappa_{\mu}\Delta^{\mu}\}$}
+% 		\State{Solve:}
+% 		\State \begin{varwidth}[t]{\linewidth}
+% 			$\min_t (g+H_n)^Tt + \frac 1 2 t^T H t$\par
+% 			$c_{eq} + A_{eq}t = 0$ \par
+% 			$c_{ineq} + A_{ineq}t \ge 0$ \par
+% 			$\| s \| \le \Delta$
+% 		\end{varwidth}
+% 		\State{$s \gets t^* + n$}
+% 		\State{Evaluate new $c$ and $f$}
+% 		\If {$x + s$ is acceptable: $\theta\le(1-\gamma_{\theta})\theta' \vee f \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
+% 			\If {$m(x)-m(x+t) \ge \kappa_{tmd} \chi \min[\frac{\chi}{\beta}, \Delta]$}
+% 			\EndIf
+% 			\If {$m(x) - m(x+s) \ge \kappa_{\theta} \theta^{\psi}$}
+% 				\State{$\rho = \frac{f(x)-f(x+s)}{m(x)-m(x+s)}$}
+% 				\If {$\rho < \eta_1$}
+% 					\State{reduce $\Delta$: $\Delta \gets \in [\gamma_0 \Delta, \gamma_1 \Delta]$}
+% 					\State{\textbf{continue}}
+% 				\ElsIf {$\rho > \eta_2$}
+% 					\State{increase $\Delta$: $\Delta \gets \in [\Delta, \gamma_2 \Delta]$}
+% 				\EndIf
+% 				\State{Do we add $x$ to filter here}
+% 			\Else
+% 				\State{add $x$ to filter}
+% 			\EndIf
+% 			\State{$x \gets x + s$}
+% 		\Else
+% 			\State{reduce $\Delta$: $\Delta \gets \in [\gamma_0 \Delta, \gamma_1 \Delta]$}
+% 			\textbf{continue}
+% 		\EndIf
+% 	\Else
+% 		\State{add $x$ to filter}
+% 		\State{compute new $r$ (restoration step) and $\Delta$}
+% 		\If{impossible to restore}
+% 			\textbf{fail}
+% 		\EndIf
+% 		\State{$x \gets x + r$}
+% 	\EndIf
+% 	\State{Solve:}
+% 	\State \begin{varwidth}[t]{\linewidth}
+% 		$Hx + A^T\lambda = g$ \par
+% 		$Ax              = c$
+% 	\end{varwidth}
+% 	\State{$H \gets \nabla^2 m + \sum \lambda_i \nabla^2 c_i$}
+% \EndWhile
+% \EndProcedure
+% \end{algorithmic}
+% \end{algorithm}
 
 \end{document}

@@ -151,6 +151,7 @@ class AlgorithmState:
 
 	def show(self, statement):
 		fileName = statement.createBasePlotAt(self.x)
+		self.model.addPointsToPlot()
 
 		#amin(shifted, 0)
 		totalDist = norm(self.x_new - self.x)

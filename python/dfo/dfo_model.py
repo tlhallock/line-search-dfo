@@ -1,5 +1,5 @@
 from dfo import polynomial_basis
-import dfo
+from dfo import dfo_model
 
 from numpy.linalg import norm as norm
 from numpy import empty
@@ -24,7 +24,7 @@ class MultiFunctionModel:
 		self.xsi = xsi
 		self.functionEvaluations = 0
 		self.basis = basis
-		self.linearBasis = dfo.polynomial_basis.PolynomialBasis(len(x0), 1)
+		self.linearBasis = polynomial_basis.PolynomialBasis(len(x0), 1)
 		self.delegates = funs
 		self.modelRadius = radius
 		self.history = EvaluationHistory(len(x0))
@@ -100,10 +100,20 @@ class MultiFunctionModel:
 		""" Create a quadratic function modelling the function at index var """
 		return self.basis.getQuadraticModel(ravel(self.phi[:, var])).shift(-self.modelCenter(), self.modelRadius)
 
-	def getQuadraticModels(self, indices):
+	def getQuadraticModels2(self, indices):
 		fun = functions.VectorFunction(self.basis.n)
 		for i in indices:
 			fun.add(self.getQuadraticModel(i))
+		return fun
+
+	def getQuadraticModels(self, indices):
+		if len(indices) == 0:
+			return functions.EmptyFunction()
+		fun = functions.VectorValuedQuadratic(self.basis.n, len(indices))
+		idx=0
+		for i in indices:
+			fun.set(idx, self.getQuadraticModel(i))
+			idx += 1
 		return fun
 
 	def getLinearModel(self, var):
@@ -173,6 +183,13 @@ class MultiFunctionModel:
 		return ravel(dot(ravel(self.basis.evaluateRowToRow(
 			(x - self.modelCenter()) / self.modelRadius)), self.phi))
 
+	def addPointsToPlot(self, center, rad):
+		ax1 = plt.gca()
+		# Only plot the points that lie within the plot!
+		lie_within_plot = norm(self.unshifted - center, axis=1) < rad
+		ax1.scatter(self.unshifted[lie_within_plot, 0], self.unshifted[lie_within_plot, 1], s=10, c='r', marker="x")
+		ax1.add_artist(plt.Circle(self.modelCenter(), self.modelRadius, color='g', fill=False))
+
 #	def createLinearModelDepricated(self, var):
 #		""" Old code """
 #		yvals = self.createYByIndex(var)
@@ -199,3 +216,6 @@ class MultiFunctionModel:
 #			y = self.history[tuple(self.unshifted[i])]
 #			retVal[i] = y[var]
 #		return retVal
+
+
+

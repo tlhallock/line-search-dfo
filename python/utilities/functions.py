@@ -28,6 +28,16 @@ from numpy import sqrt
 
 # vector function
 
+class EmptyFunction:
+	def __init__(self):
+		pass
+	def evaluate(self, x):
+		return None
+	def gradient(self, x):
+		return empty(0)
+	def hessian(self, x):
+		return empty([0, 0])
+
 class VectorFunction:
 	def __init__(self, n):
 		self.funs = []
@@ -42,6 +52,9 @@ class VectorFunction:
 			retVal[i] = self.funs[i].evaluate(x)
 		return retVal
 
+	def getFunction(self, i):
+		return self.funs[i]
+
 	def jacobian(self, x):
 		retVal = empty((self.getOutDim(), self.n))
 		for i in range(0, len(retVal)):
@@ -50,6 +63,32 @@ class VectorFunction:
 
 	def getOutDim(self):
 		return len(self.funs)
+
+class VectorValuedQuadratic:
+	def __init__(self, n, m):
+		self.Q = empty([m, n, n])
+		self.b = empty([m, n])
+		self.c = empty(m)
+
+	def set(self, idx, fun):
+		self.Q[idx, :, :] = fun.Q[:, :]
+		self.b[idx, :] = fun.b[:]
+		self.c[idx] = fun.c
+
+	def evaluate(self, x):
+		return dot(dot(self.Q, x), .5 * x) + dot(self.b, x) + self.c
+
+	def jacobian(self, x):
+		return dot(self.Q, x) + self.b
+
+	def hessian(self, x):
+		return self.Q
+
+	def getOutDim(self):
+		return self.Q.shape[0]
+
+	def getInDim(self):
+		return self.Q.shape[1]
 
 
 # Objective functions:
@@ -73,7 +112,7 @@ class Quadratic:
 		return 1
 
 
-	# ought to be cleaned up... (and used.)
+	# ought to be cleaned up... (and deleted.)
 	def hitsZero(self, direction, tol):
 		a = .5 * dot(direction, dot(self.Q, direction))
 		b = dot(self.b, direction)
@@ -159,6 +198,23 @@ class DistanceToCircle:
 		raise Exception('not implemented')
 	def getInDim(self):
 		return self.center.shape[0]
+	def getOutDim(self):
+		return 1
+
+class TrustRegionConstraint:
+	def __init__(self, center, r):
+		self.center = center
+		self.r = r
+
+	def evaluate(self, x):
+		return max(norm(x - self.center) - self.r, 0)
+
+	def gradient(self, x):
+			return (2*(d-self.r)/d)*(x-self.center)
+	def hessian(self, x):
+		raise Exception('not implemented')
+	def getInDim(self):
+		return len(self.center)
 	def getOutDim(self):
 		return 1
 

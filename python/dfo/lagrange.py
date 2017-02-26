@@ -65,7 +65,7 @@ class LagrangeParams:
 		self.radius = radius
 		self.center = center
 		self.maxL = 2
-		self.onlyInTrustRegion = False
+		self.onlyInTrustRegion = True
 
 
 
