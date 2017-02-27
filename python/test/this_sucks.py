@@ -12,7 +12,7 @@ AIneq = array([[ 1., -1.]])
 cEq = array([ 0.09070257])
 AEq = array([[ 1.00427046,  0.35586232]])
 
-radius = 50
+radius = 1
 
 cons = [
 	{'type': 'ineq',
@@ -28,8 +28,8 @@ cons = [
 res = minimize(lambda n: dot(n, n), jac=lambda n: reshape(2 * n, (1,2)), x0=zeros(2),
 					constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=1e-8)
 
-print((radius**2 - dot(res.x, res.x))**(.5)) # -11.5640205848
-print(res.success) # True
+print(radius**2 - norm(res.x)) # -11.5640205848
+print(str(res.success)) # True
 
 def dbl_check_sol(cons, res):
 	if not res.success:

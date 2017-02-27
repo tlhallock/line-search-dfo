@@ -7,7 +7,9 @@ from numpy import zeros
 from numpy.linalg import norm as norm
 from numpy import empty
 from numpy import sqrt
+from numpy import asarray
 
+from numpy import matrix
 
 # objective functions have:
 #	evaluate
@@ -94,14 +96,16 @@ class VectorValuedQuadratic:
 # Objective functions:
 class Quadratic:
 	def __init__(self, Q, b, c):
-		self.Q = Q
-		self.b = b
-		self.c = c
-		self.count = 0
+		self.Q = asarray(Q)
+		self.b = asarray(b)
+		if isinstance(c, matrix):
+			self.c = c[0,0]
+		else:
+			self.c = c
 
 	def evaluate(self, x):
-		self.count += 1
 		return .5 * dot(x, dot(self.Q, x)) + dot(self.b, x) + self.c
+
 	def gradient(self, x):
 		return dot(self.Q, x) + self.b
 	def hessian(self, x):

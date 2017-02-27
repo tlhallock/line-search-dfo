@@ -9,12 +9,14 @@ from numpy import arange
 from numpy import empty
 from numpy import eye
 from numpy import dot
+from numpy import reshape
+from numpy import random
 import matplotlib.pyplot as plt
 from numpy.linalg import lstsq
-
+from numpy import asmatrix
+from numpy import asarray
 from scipy.optimize import minimize
-
-
+from utilities import trust
 
 class Certification:
 	def __init__(self, poisedSet, params):
@@ -65,7 +67,7 @@ class LagrangeParams:
 		self.radius = radius
 		self.center = center
 		self.maxL = 2
-		self.onlyInTrustRegion = True
+		self.onlyInTrustRegion = False
 
 
 
@@ -120,24 +122,21 @@ def _getBestExistingPoint(basis, row, history):
 
 	return (found, maxX)
 
-def _maximize_lagrange(basis, row):
-	""" Need to evaluate jacobian and hessians of basis... (won't be that hard)
-	 This should allow a better method than nelder mead"""
+def _maximize_lagrange_arbitrary(basis, row, tol):
+	""" This method would work for any basis... """
 
 	def thePoly(x):
 		return dot(basis.evaluateRowToRow(x), row)
-	#		def constraint(x):
-	#			return radius - norm(x - center)
 
 	minimumResult = minimize(lambda x: thePoly(x) if norm(x) < 1 else infinity,
 							 zeros(basis.n), method='Nelder-Mead',
 							 #				constraints = {'type':'ineq', 'fun': constraint},
-							 options={'xtol': 1e-8, 'disp': False})
+							 options={'xtol': tol, 'disp': False})
 
 	maximumResult = minimize(lambda x: -thePoly(x) if norm(x) < 1 else infinity,
 							 zeros(basis.n), method='Nelder-Mead',
 							 #				constraints = {'type':'ineq', 'fun': constraint},
-							 options={'xtol': 1e-8, 'disp': False})
+							 options={'xtol': tol, 'disp': False})
 	if abs(maximumResult.fun) > 1e300 or abs(minimumResult.fun) > 1e300:
 		raise Exception('Too big!!!')
 
@@ -146,16 +145,86 @@ def _maximize_lagrange(basis, row):
 	else:
 		return maximumResult.x, abs(maximumResult.fun)
 
+def _maximize_lagrange_quad(basis, row, tol):
+	""" This method uses the fact that we are modelling with quadratics..."""
+	quadmodel = basis.getQuadraticModel(row)
+
+	cons = [{'type': 'ineq',
+			 'fun': lambda x: 1 - dot(x, x),
+			 'jac': lambda x: reshape(-2 * x, (1, basis.n))}]
+	minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n),
+						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
+		raise Exception('Uh oh')
+	maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=random.random(basis.n),
+						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+	if not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4:
+		raise Exception('Uh oh')
+	if abs(minimumResult.fun) > abs(maximumResult.fun):
+		return minimumResult.x, abs(minimumResult.fun)
+	else:
+		return maximumResult.x, abs(maximumResult.fun)
+
+def _minimize_lagrange_trust(basis, row, tol):
+	quadmodel = basis.getQuadraticModel(row)
+
+	if False:
+		print(asmatrix(quadmodel.b).T)
+		print(asmatrix(quadmodel.Q))
+		print("--------------")
+
+	x1, f1, _, _, _ = trust.trust( asmatrix(quadmodel.b).T,  asmatrix(quadmodel.Q), 1)
+	x2, f2, _, _, _ = trust.trust(-asmatrix(quadmodel.b).T, -asmatrix(quadmodel.Q), 1)
+	f1 = quadmodel.c + f1
+	f2 = quadmodel.c - f2
+	if abs(f1) > abs(f2):
+		return asarray(x1).flatten(), abs(f1)
+	else:
+		return asarray(x2).flatten(), abs(f2)
+
+
+
+def _maximize_lagrange(basis, row, tol):
+	# v = True
+	# try:
+	# 	newVal1, funVal1 = _maximize_lagrange_quad(basis, row, tol)
+	# except:
+	# 	v = False
+	# newVal2, funVal2 = _maximize_lagrange_arbitrary(basis, row, tol)
+	newVal3, funVal3 = _minimize_lagrange_trust(basis, row, tol)
+
+	# if False:
+	# 	print('-------------------')
+	# 	if v: print(funVal1)
+	# 	print(funVal2)
+	# 	print(funVal3)
+	# 	print('-')
+	# 	if v: print(newVal1)
+	# 	print(newVal2)
+	# 	print(newVal3)
+	# 	print('-')
+	# 	if v: print(norm(newVal1))
+	# 	print(norm(newVal2))
+	# 	print(norm(newVal3))
+	# 	print('-------------------')
+
+	# _maximize_lagrange_quad(basis, row, tol)
+	# _maximize_lagrange_arbitrary(basis, row, tol)
+	# _minimize_lagrange_trust(basis, row, tol)
+
+	return newVal3, funVal3
+
+
 
 def _replace(cert, i, newValue, npoints, h, V, b):
 	cert.shifted[i] = newValue
-	V[i] = b.evaluateRowToRow(newValue) * V[npoints:h, :]
+	V[i] = dot(b.evaluateRowToRow(newValue), V[npoints:h, :])
 	cert.indices[i] = -1
 	_testV(V, b, cert.shifted)
 	return _getMaxIdx(abs(V[i:npoints, i]))
 
 
-def computeLagrangePolynomials(bss, poisedSet, params, history=None):
+def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 	p = bss.basis_dimension
 	npoints = poisedSet.shape[0]
 	h = npoints + p
@@ -182,7 +251,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None):
 
 		if (maxVal < params.xsi or maxVal > params.maxL) and params.improveWithNew:
 			# If still not poised, Then check for new points
-			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i])
+			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol)
 			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
 
 		if maxVal < params.xsi:
@@ -212,7 +281,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None):
 
 	cert.Lambda = empty(npoints)
 	for i in range(npoints):
-		_, cert.Lambda[i] = _maximize_lagrange(bss, V[npoints:h, i])
+		_, cert.Lambda[i] = _maximize_lagrange(bss, V[npoints:h, i], tol)
 
 	return cert
 
