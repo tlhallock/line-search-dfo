@@ -7,9 +7,15 @@ from utilities import sys_utils
 import program
 
 
+# TODO:
+# test with no constraints, only equality constraints, and only inequality constraints
+# figure out why the algorithm in the paper doesn't work
+# test on the dfovec methods
+# test how to use quadratic constraints
+# figure out how to decrease the trust region
+# get another dfo method to work, and compare mine to theirs
+
 sys_utils.clean_images_directory()
-
-
 
 Q = arr([[1, 0],[0, 5]])
 b = arr([0, 0])
@@ -36,29 +42,3 @@ print(results)
 print(results.x_min)
 print(results.f_min)
 
-
-
-
-#cons=({'type':'eq','fun': statement.equalityConstraints, 'jac': statement.equalityConstraintsJacobian},
-#	  {'type': 'ineq', 'fun': statement.inequalityConstraints, 'jac': statement.inequalityConstraintsJacobian})
-#
-#hess=statement.hessian,
-#res = minimize(statement.objective, x0, method='SLSQP', jac=statement.gradient, constraints=cons, options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000})
-#
-#options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000}
-#
-#print(res)
-
-
-#
-#
-# class TestModel(unittest.TestCase):
-# 	def __init__(self, *args, **kwargs):
-# 		super(TestModel, self).__init__(*args, **kwargs)
-# all([not newActive[i] for i, x in enumerate(state.active) if not x])
-#
-# 	def test_simpleValuesMatch(self):
-# 		x = arr([3, 4])
-#
-#
-#

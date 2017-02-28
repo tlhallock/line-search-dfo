@@ -22,6 +22,17 @@
  & h(x) = 0
 \end{align*}
 
+Also, we are given:
+\[ \Delta_0 \gets 1,						\]
+\[ 0 < \gamma_0 (=.1)< \gamma_1 (=.5)\le 1 \le \gamma_2(=2),	\]
+\[ 0 < \eta_1 (=.9)\le \eta_2(.9),				\]
+\[ \gamma_{\theta} (=10^{-4})\in (0, 1),			\]
+\[ \kappa_{\Delta} (=.7) \in (0, 1],				\]
+\[ \kappa_{\theta}(=10^{-4}) \in (0,1),				\]
+\[ \kappa_{\mu} (=100) > 0,					\]
+\[ \mu (=.01)\in (0,1),						\]
+\[ \psi (=2)> \frac 1 {1+\mu},					\]
+\[ \kappa_{tmd}=.01 						\]
 
 \newpage
 \section{Original Algorithm}
@@ -31,19 +42,8 @@
 \tiny
 \Procedure{trust region filter}{}
 \State{initialize}
-\State{$\Delta \gets 1$}
-\State{$0 < \gamma_0 (=.1)< \gamma_1 (=.5)\le 1 \le \gamma_2(=2)$}
-\State{$0 < \eta_1 (=.9)\le \eta_2(.9)$}
-\State{$\gamma_{\theta} (=10^{-4})\in (0, 1)$}
-\State{$\kappa_{\Delta} (=.7) \in (0, 1]$}
-\State{$\kappa_{\theta}(=10^{-4}) \in (0,1)$}
-\State{$\kappa_{\mu} (=100) > 0$}
-\State{$\mu (=.01)\in (0,1)$}
-\State{$\psi (=2)> \frac 1 {1+\mu}$}
-\State{$\kappa_{tmd}=.01$}
 \State{$k=0$}
 \State{choose an $x_0$}
-
 \While {$k < maxit$}
 	\State{Compute $m_k, g_k=\nabla m_k(x_k), c_k, A_k, f_k=f(x_k), \mathcal {A}, \theta_k$}
 	\State{Solve:}
@@ -51,7 +51,7 @@
 		\hspace{3cm}$\nabla^2m_k(x_k) + A_k^T\lambda = g_k$ \par
 		\hspace{3cm}$A_kx\hspace{1cm}              = c_k$
 	\end{varwidth}
-	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum \lambda_i \nabla^2 c_{k}^i$}
+	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum \lambda_i \nabla^2 {c_{i}}_k$}
 	
 	
 	\State{$\chi_k \gets |\argmin_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \| t \| \le 1\}|$}
@@ -66,36 +66,126 @@
 %		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
 %		$c_{eq} + A_{eq}s = 0$ \par
 %		$c_{ineq} + A_{ineq}s \ge 0$ \par
-%		$\| s \| \le \Delta$
+%		$\| s \| \le \Delta_k$
 %	\end{varwidth}
 
 	\State{$n_k \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
             
-	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta \min \{1, \kappa_{\mu}\Delta^{\mu}\}$}
-		\State{$t_k \gets \argmin_t \{ (g+H_n)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \| s \| \le \Delta\}$}
+	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
+		\State{$t_k \gets \argmin_t \{ (g_n+H_n)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \|n_k + t\| < \Delta_k \}$}
+		\State{they find this by backtracking on a curvilinear search of the projected gradient}
 		\State{$s_k \gets t_k + n_k$}
-		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
 		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
-			\State {//$m_k(x_k)-m_k(x_k+t_k) \ge \kappa_{tmd} \chi \min[\frac{\chi}{\beta}, \Delta]$}
+%			\State {//$m_k(x_k)-m_k(x_k+t_k) \ge \kappa_{tmd} \chi \min[\frac{\chi}{\beta}, \Delta]$}
 			\If {$m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}$}
 %				\State{// $\rho$ only depends on correctness of objective, not constraints}
 				\State{$\rho = \frac{f(x_k)-f(x_k+s_k)}{m_k(x_k)-m_k(x_k+s_k)}$}
 				\If {$\rho < \eta_1$}
 					\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
-					\State{Ensure poisedness}
 					\State{$k \gets k+1$}
 					\State{\textbf{continue}}
 				\ElsIf {$\rho > \eta_2$}
 					\State{increase $\Delta$: $\Delta_{k+1} \gets$ some $ \in [\Delta_k, \gamma_2 \Delta_k]$}
 				\EndIf
-				\State{//Why don't we add $x$ to the filter here?}
 			\Else
 				\State{add $x_k$ to filter}
 			\EndIf
 			\State{$x_{k+1} \gets x_k + s$}
 		\Else
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
-			\State{Ensure poisedness}
+			\State{$k \gets k+1$}
+			\State{\textbf{continue}}
+		\EndIf
+	\Else
+		\State{add $x_k$ to filter}
+		\State{compute new $r$ (restoration step) and $\Delta_{k+1}$}
+		\If{impossible to restore}
+			\textbf{fail}
+		\EndIf
+		\State{$x_{k+1} \gets x_k + r$}
+	\EndIf
+	\State{$k \gets k+1$}
+\EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+\newpage
+\section{My Algorithm}
+\begin{algorithm}
+\caption{Filter Trust Region Search}\label{linesearch1}
+\begin{algorithmic}[1]
+\tiny
+\Procedure{trust region filter}{}
+\State{initialize}
+\State{$k=0$}
+\State{choose an $x_0$}
+
+\While {$k < maxit$}
+	\State{ensure poisedness, possibly adding points to the model}
+	\State{Compute $m_k, g_k=\nabla m_k(x_k), c_k, A_k, f_k=f(x_k), \mathcal {A}, \theta_k$}
+	\State{Solve:}
+	\State \begin{varwidth}[t]{\linewidth}
+		\hspace{3cm}$\nabla^2m_k(x_k) + A_k^T\lambda = g_k$ \par
+		\hspace{3cm}$A_kx\hspace{1cm}              = c_k$
+	\end{varwidth}
+	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum \lambda_i \nabla^2 {c_{i}}_k$}
+	
+	
+	\State{$\chi_k \gets |\argmin_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| t \| \le 1\}|$}
+	
+ 	\If {constraint violation $=0 \wedge \chi=0$}
+		\If {$\Delta_k < tol$}
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+			continue
+		\EndIf
+		\textbf{success}
+	\EndIf
+	
+	
+	\State{$n_k \gets \argmin_n \{\|t\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
+	
+%	\State{Solve:}
+%	\State \begin{varwidth}[t]{\linewidth}
+%		$min_s m(x+s) = f_x + g_x^Ts + \frac 1 2 s^T H_x s$\par
+%		$c_{eq} + A_{eq}s = 0$ \par
+%		$c_{ineq} + A_{ineq}s \le 0$ \par
+%		$\| s \| \le \Delta_k$
+%	\end{varwidth}
+
+	%\State{$n_k \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
+            
+	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
+		\State{$t_k \gets \argmin_t \{ (g_n+H_n)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
+		\State{$s_k \gets t_k + n_k$}
+		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
+		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
+			\If {$m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}$}
+%				\State{// $\rho$ only depends on correctness of objective, not constraints}
+				\State{$\rho = \frac{f(x_k)-f(x_k+s_k)}{m_k(x_k)-m_k(x_k+s_k)}$}
+				\If {$\rho < \eta_1$}
+					\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+					\State{$k \gets k+1$}
+					\State{\textbf{continue}}
+				\ElsIf {$\rho > \eta_2$}
+					\If {$\|s\| < \frac{\Delta_k}{2}$}
+						\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+					\Else
+						\State{increase $\Delta$: $\Delta_{k+1} \gets$ some $ \in [\Delta_k, \gamma_2 \Delta_k]$}
+					\EndIf
+					
+				\EndIf
+			\Else
+				\State{add $x_k$ to filter}
+			\EndIf
+			\State{$x_{k+1} \gets x_k + s$}
+		\Else
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
 			\State{$k \gets k+1$}
 			\State{\textbf{continue}}
 		\EndIf

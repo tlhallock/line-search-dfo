@@ -150,10 +150,6 @@ class AlgorithmState:
 		self.H = None
 
 		# The current step
-		self.t = empty(len(self.x))
-		self.n = empty(len(self.x))
-
-		# The current step
 		self.n = None
 		self.t = None
 		self.s = None
@@ -202,14 +198,14 @@ class AlgorithmState:
 		#vec = linsolve(FULL_KKT, FULL_RHS.T)
 		vec = lstsq(FULL_KKT, FULL_RHS.T)[0]
 		# newton_direction   = -vec[:n]
-		lagrange_polynomials = -vec[n:]
+		dual_variables = -vec[n:]
 
 		qs = self.model.getQuadraticModels(arange(1,m+1)).hessian(self.x)
 		self.H = self.hess
 
 		# I am sure I could use einstien summation notation or something
-		for i in range(len(lagrange_polynomials)):
-			self.H += lagrange_polynomials[i] * qs[i]
+		for i in range(len(dual_variables)):
+			self.H += dual_variables[i] * qs[i]
 
 
 	def computeActiveConstraints(self):
@@ -236,19 +232,6 @@ class AlgorithmState:
 		self.A = empty([0, 0])
 		self.active = empty(0)
 
-
-	#
-	# def _createKKT(self):
-	# 	if self.A is None:
-	# 		return self.hess
-	# 	m = self.getM()
-	# 	return blockmat([[self.hess, self.A.T], [self.A, zeros((m, m))]])
-	#
-	# def _createRhs(self):
-	# 	if self.A is None:
-	# 		return self.grad
-	# 	return concatenate([self.grad, self.c])
-
 	def computeChi(self):
 		if self.n is None:
 			return None, False
@@ -261,7 +244,8 @@ class AlgorithmState:
 			return None, False
 
 	def computeNormalComponent(self):
-		if True:
+		method = 1
+		if method == 1:
 			tr_jac_dim=(1, self.getN())
 			initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
 			cons = [{'type': 'ineq',
@@ -280,9 +264,28 @@ class AlgorithmState:
 				pass
 			else:
 				self.n = None
-		elif False:
+		elif method == 2:
+			tr_jac_dim=(1, self.getN())
+			initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
+			cons = [{'type': 'ineq',
+					 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
+					 'jac': lambda n: -self.AIneq},
+					{'type': 'ineq',
+					 'fun': lambda n: self.model.modelRadius**2 - dot(n, n),
+					 'jac': lambda n: reshape(-2*n, tr_jac_dim)},
+					{'type': 'eq',
+					 'fun': lambda n: self.cEq + dot(self.AEq, n),
+					 'jac': lambda n: self.AEq}]
+			res_cons = minimize(lambda n: dot(n, n), jac=lambda n: 2 * n, x0=initialN,
+								constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
+			if res_cons.success and dbl_check_sol(cons, res_cons):
+				self.n = initialN
+				pass
+			else:
+				self.n = None
+		elif method == 3:
 			self.n = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
-		else:
+		elif method == 4:
 			self.n = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
 
 			# Performing line search to satisfy others.
@@ -308,6 +311,9 @@ class AlgorithmState:
 					min_step = alpha
 
 			self.n = min_step * self.n
+		else:
+			print('normal computation not performed.')
+			self.n = None
 
 
 	def computeTangentialStep(self):
@@ -488,7 +494,7 @@ def trust_filter(program, constants):
 						# ensure poisedness
 						continue
 					if rho > constants.eta_2:
-						if norm(state.s) < state.delta():
+						if norm(state.s) < state.delta() / 2:
 							state.decreaseRadius(constants)
 						else:
 							state.increaseRadius(constants)

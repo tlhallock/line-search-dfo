@@ -4,7 +4,6 @@ from numpy import inf as infinity
 from numpy.linalg import norm as norm
 from numpy import zeros
 from numpy import bmat as blockmat
-from numpy import array as arr
 from numpy import arange
 from numpy import empty
 from numpy import eye

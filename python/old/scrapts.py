@@ -119,3 +119,30 @@ class DfoProgram(Program):
 			return self.model.modelRadius * x / norm(x)
 		else:
 			return x
+
+
+
+
+#cons=({'type':'eq','fun': statement.equalityConstraints, 'jac': statement.equalityConstraintsJacobian},
+#	  {'type': 'ineq', 'fun': statement.inequalityConstraints, 'jac': statement.inequalityConstraintsJacobian})
+#
+#hess=statement.hessian,
+#res = minimize(statement.objective, x0, method='SLSQP', jac=statement.gradient, constraints=cons, options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000})
+#
+#options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000}
+#
+#print(res)
+
+
+#
+#
+# class TestModel(unittest.TestCase):
+# 	def __init__(self, *args, **kwargs):
+# 		super(TestModel, self).__init__(*args, **kwargs)
+# all([not newActive[i] for i, x in enumerate(state.active) if not x])
+#
+# 	def test_simpleValuesMatch(self):
+# 		x = arr([3, 4])
+#
+#
+#
