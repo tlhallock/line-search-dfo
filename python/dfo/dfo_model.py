@@ -29,29 +29,13 @@ class MultiFunctionModel:
 		self.modelRadius = radius
 		self.history = EvaluationHistory(len(x0))
 		self.phi = None
+		self.lmbda = None
 
 		self.unshifted = repmat(x0, basis.basis_dimension, 1)
 		self.improve(None)
 
 	def __len__(self):
 		return self.size()
-
-	def testNewModelCenter(self, x):
-		""" Returns a matrix of predicted versus actual function values
-
-		There are as many rows as functions
-		There are two columns:
-			one column for the predicted values
-			one column for the actual values
-		"""
-		predictedVersusActual = empty((len(self.delegates), 2))
-		predictedVersusActual[:, 0] = self.interpolate(x)
-
-		actual, evaluated = self.computeValueFromDelegate(x)
-
-		predictedVersusActual[:, 1] = actual
-
-		return predictedVersusActual
 
 	def setNewModelCenter(self, newCenter):
 		self.unshifted[0, :] = newCenter
@@ -145,6 +129,7 @@ class MultiFunctionModel:
 
 		if cert.poised:
 			self._setUnshiftedFromCert(cert)
+			self.lmbda = cert.lmbda
 			self.phi = cert.lmbda * self.createY()
 
 		return cert.poised
@@ -165,6 +150,7 @@ class MultiFunctionModel:
 			self.computeValueFromDelegate(self.unshifted[i, :])
 
 		# update the model
+		self.lmbda = cert.lmbda
 		self.phi = cert.lmbda * self.createY()
 
 		if plotFile is not None:
@@ -172,8 +158,14 @@ class MultiFunctionModel:
 
 		return cert.poised
 
-	def isNearCenter(self, newValue):
-		return norm(newValue - self.unshifted[0,:]) < self.modelRadius / 2
+	def createNewQuadraticModel(self, other_fun):
+		y = empty(self.unshifted.shape[0])
+		for i in range(0, self.unshifted.shape[0]):
+			y[i] = other_fun(self.unshifted[i])
+		phi = self.lmbda * y
+		return self.basis.getQuadraticModel(phi).shift(-self.modelCenter(), self.modelRadius)
+
+
 
 	def multiplyRadius(self, factor):
 		self.modelRadius *= factor
@@ -189,6 +181,9 @@ class MultiFunctionModel:
 		lie_within_plot = norm(self.unshifted - center, axis=1) < rad
 		ax1.scatter(self.unshifted[lie_within_plot, 0], self.unshifted[lie_within_plot, 1], s=10, c='r', marker="x")
 		ax1.add_artist(plt.Circle(self.modelCenter(), self.modelRadius, color='g', fill=False))
+
+		# def isNearCenter(self, newValue):
+		# 	return norm(newValue - self.unshifted[0, :]) < self.modelRadius / 2
 
 #	def createLinearModelDepricated(self, var):
 #		""" Old code """
@@ -217,5 +212,22 @@ class MultiFunctionModel:
 #			retVal[i] = y[var]
 #		return retVal
 
+
+	# def testNewModelCenter(self, x):
+	# 	""" Returns a matrix of predicted versus actual function values
+	#
+	# 	There are as many rows as functions
+	# 	There are two columns:
+	# 		one column for the predicted values
+	# 		one column for the actual values
+	# 	"""
+	# 	predictedVersusActual = empty((len(self.delegates), 2))
+	# 	predictedVersusActual[:, 0] = self.interpolate(x)
+	#
+	# 	actual, evaluated = self.computeValueFromDelegate(x)
+	#
+	# 	predictedVersusActual[:, 1] = actual
+	#
+	# 	return predictedVersusActual
 
 

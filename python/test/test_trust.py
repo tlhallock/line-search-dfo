@@ -16,7 +16,7 @@ def testIt(g, H, delta):
 	s1, val1, posdef1, count1, lmbda1 = trust.trust(g, H, delta)
 	s2, val2, posdef2, count2, lmbda2 = octave.trust(g, H, delta)
 
-	if True:
+	if False:
 		print(s1)
 		print(s2)
 		print(val1)

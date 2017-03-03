@@ -8,14 +8,18 @@ from numpy import sign
 from numpy import divide
 from numpy import multiply
 from numpy import ones
+from numpy import empty
 from numpy import sqrt
 from numpy import inf
+from numpy import nan
 from numpy import asarray
 from numpy import asmatrix
 from numpy import logical_and
+from numpy import logical_not
 from numpy import max
 from numpy import maximum
 from numpy import finfo
+from numpy import empty
 
 eps = finfo(float).eps
 
@@ -34,11 +38,21 @@ def seceqn(lmbda,eigval,alpha,delta):
 	idx = asarray(MC == 0).flatten()
 	M[idx] = inf
 	M = multiply(M, M)
-	# this sometimes produces division by zero
-	value = sqrt(divide(unm, M.T * unn))
-	value[value != value] = 0
-	value = (1/delta)*unm - value
-	return value[0,0]
+
+	denom = (M.T * unn)[0,0]
+	numer = unm[0,0]
+	if abs(denom) < 1e-12:
+		value = inf
+	else:
+		value = sqrt(numer/denom)
+	if not value == value:
+		value = 0
+
+	# valueOld = sqrt(divide(unm, M.T * unn))
+	# valueOld[valueOld != valueOld] = 0
+
+	value = ((1/delta)*unm)[0,0] - value
+	return value
 
 def rfzero(x, itbnd, eigval, alpha, delta, tol=eps):
 	itfun = 0

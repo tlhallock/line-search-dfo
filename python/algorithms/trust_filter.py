@@ -8,6 +8,7 @@ from numpy import reshape
 from numpy import bmat      as blockmat
 from numpy import asarray
 from numpy import concatenate
+from numpy import asmatrix
 from numpy import dot
 from numpy import empty
 from numpy import zeros
@@ -20,6 +21,7 @@ from numpy.linalg import pinv
 from scipy.optimize import minimize
 from scipy.optimize import linprog
 import matplotlib.pyplot as plt
+from utilities import trust
 
 
 from numpy import setdiff1d
@@ -158,6 +160,7 @@ class AlgorithmState:
 		self.n = None
 		self.t = None
 		self.s = None
+		self.x_new = None
 
 		self.model.computeValueFromDelegate(self.x)
 		self.model.setNewModelCenter(self.x)
@@ -323,11 +326,9 @@ class AlgorithmState:
 		cons = [{'type': 'ineq',
 					'fun': lambda t: -rhs1 - dot(self.AIneq, t),
 					'jac': lambda t: -self.AIneq},
-				# Adding a trust region boundary to it
-				# This is the wrong trust region boundary
 				{'type': 'ineq',
-					 'fun': lambda t: self.model.modelRadius**2 - dot(t, t),
-					 'jac': lambda t: reshape(-2*t, (1, 2))},
+				 'fun': lambda t: self.model.modelRadius ** 2 - dot(self.n + t, self.n + t),
+				 'jac': lambda t: reshape(-2 * (self.n + t), (1, 2))},
 				{'type': 'eq',
 				 	'fun': lambda t: dot(self.AEq, t),
 				 	'jac': lambda t: self.AEq}]
@@ -342,6 +343,18 @@ class AlgorithmState:
 		else:
 			self.t = None
 			return None, False
+
+	def evaluateAtTrialPoint(self, x_new):
+		# compute function value at new point
+		actualY, _ = self.model.computeValueFromDelegate(x_new)
+
+		# compute theta
+		violation_eq   = actualY[self.equalityIndices]
+		violation_ineq = actualY[self.inequalityIndices]
+		active = violation_ineq > -self.tol
+		theta_new = theta(violation_eq, violation_ineq, active)
+
+		return actualY[0], theta_new
 
 	def getN(self):
 		return len(self.x)
@@ -377,22 +390,26 @@ class AlgorithmState:
 		if self.s is not None:
 			plt.arrow(x=self.x[0], y=self.x[1],
 					  dx=(self.s[0]), dy=(self.s[1]),
-					  head_width=hw, head_length=hl, fc='g', ec='g')
+					  # head_width=hw, head_length=hl,
+					  fc='b', ec='b')
 
 		if self.n is not None:
 			plt.arrow(x=self.x[0], y=self.x[1],
 					  dx=self.n[0], dy=self.n[1],
-					  head_width=hw, head_length=hl, fc='r', ec='r')
+					  # head_width=hw, head_length=hl,
+					  fc='r', ec='r')
 
 		if self.t is not None:
-			plt.arrow(x=self.x[0], y=self.x[1],
+			plt.arrow(x=self.x[0] + self.n[0], y=self.x[1] + self.n[1],
 					  dx=self.t[0], dy=self.t[1],
-					  head_width=hw, head_length=hl, fc='b', ec='b')
+					  # head_width=hw, head_length=hl,
+					  fc='g', ec='g')
 
 		plt.arrow(x=self.x[0], y=self.x[1],
-				  dx=-totalDist * self.grad[0] / norm(self.grad),
-				  dy=-totalDist * self.grad[1] / norm(self.grad),
-				  head_width=hw, head_length=hl, fc='y', ec='y')
+				  dx=-totalDist * self.grad[0] / norm(self.grad) / 2,
+				  dy=-totalDist * self.grad[1] / norm(self.grad) / 2,
+				  # head_width=hw, head_length=hl,
+				  fc='y', ec='y')
 
 		plt.savefig(statement.getNextPlotFile(action))
 		plt.close()
@@ -407,19 +424,38 @@ class AlgorithmState:
 		self.model.multiplyRadius((1 + constants.gamma_2) / 2)
 
 
-def restore_feasibility(state):
-	def obj(x):
-		ineq = state.mg.evaluate(x)
-		eq   = state.mh.evaluate(x)
-		active = ineq > -state.tol
-		return theta(eq, ineq, active)
+def restore_feasibility(program, constants, state, results):
+	results.restorations += 1
+	while True:
+		def m_theta(x):
+			ineq = state.mg.evaluate(x)
+			eq   = state.mh.evaluate(x)
+			active = ineq > -state.tol
+			return theta(eq, ineq, active)
 
-	res = minimize(obj, state.x, method='Nelder-Mead', options={'xtol': 1e-8, 'disp': False, 'maxfev': 1000})
+		quad_model = state.model.createNewQuadraticModel(m_theta)
+		newx, _, _, _, _ = trust.trust(asmatrix(quad_model.b).T, asmatrix(quad_model.Q), state.delta())
 
-	if res.success:
-		return res.x, True
-	else:
-		return None, False
+		_, actual_theta = state.evaluateAtTrialPoint(newx)
+
+		if abs(state.theta - m_theta(state.x)) / state.theta > 1e-12:
+			raise Exception('did not expect this')
+
+		rho = (state.theta - actual_theta)/(m_theta(state.x) - m_theta(newx))
+		if rho < constants.eta_1:
+			state.decreaseRadius(constants)
+			state.computeCurrentValues(program)
+			continue
+		elif rho < constants.eta_2 or norm(state.x - newx) >= state.delta() / 2:
+			state.x = newx
+			return True
+		elif state.delta() < state.tol:
+			# we have converged to a local minimum of the constraints that is not feasible?
+			return False
+		else:
+			state.x = newx
+			state.decreaseRadius(constants)
+			return True
 
 
 
@@ -435,8 +471,7 @@ def trust_filter(program, constants):
 	state = AlgorithmState(program, constants)
 
 	while True:
-		results.number_of_iterations += 1
-
+		# ensure poised and compute model functions
 		state.computeCurrentValues(program)
 
 		state.computeNormalComponent()
@@ -450,66 +485,136 @@ def trust_filter(program, constants):
 			print("current radius = " + str(state.delta()))
 			print("---------------------------------------")
 
+		# check optimality
 		if state.theta < program.tol and chi < program.tol:
-			if state.delta() < program.tol:
-				results.newF(state.x, state.f)
-				results.success = True
-				return results
-			state.decreaseRadius(constants)
-			continue
-
-		if state.n is not None and norm(state.n) < constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
-			state.computeTangentialStep()
-
-			# This check was not in the paper...
-			if state.t is None:
-				results.restorations += 1
-				newx, possible = restore_feasibility(state)
-				if not possible:
-					results.success = False
-					break
-				state.x = newx
-				continue
-
-			state.s = state.t + state.n
-			state.x_new = state.x + state.s
-			state.show(program, 'tangential_step')
-
-			expectedY  = state.model.interpolate(state.x_new)
-			actualY, _ = state.model.computeValueFromDelegate(state.x_new)
-
-			violation_eq   = actualY[state.equalityIndices]
-			violation_ineq = actualY[state.inequalityIndices]
-			active = violation_ineq > -program.tol
-			theta_new = theta(violation_eq, violation_ineq, active)
-
-			fnew = actualY[0]
-			fold = expectedY[0]
-			if not state.pareto.is_dominated((theta_new, fnew)):
-				if state.f - fold >= constants.kappa_theta * state.theta ** constants.psi or True:
-					#rho = (state.f - fnew) / (state.f - state.model.interpolate(state.x_new))
-					rho = (state.f - fnew) / (state.model.interpolate(state.x)[0] - state.model.interpolate(state.x_new)[0])
-					if rho < constants.eta_1:
-						state.decreaseRadius(constants)
-						# ensure poisedness
-						continue
-					if rho > constants.eta_2:
-						if norm(state.s) < state.delta() / 2:
-							state.decreaseRadius(constants)
-						else:
-							state.increaseRadius(constants)
-				else:
-					state.pareto.add(
-		 				((1 - constants.gamma_theta) * theta_new, state.f - constants.gamma_theta * theta_new))
-			else:
+			if state.delta() > program.tol:
 				state.decreaseRadius(constants)
+				results.number_of_iterations += 1
 				continue
-		else:
-			results.restorations += 1
-			newx, possible = restore_feasibility(state)
-			if not possible:
+			results.newF(state.x, state.f)
+			results.success = True
+			return results
+
+		# check compatibility
+		if state.n is None or norm(state.n) >= constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
+			if not restore_feasibility(state, results):
 				results.success = False
 				break
-			state.x = newx
+			results.number_of_iterations += 1
+			continue
 
+		state.computeTangentialStep()
+
+		# This check was not in the paper...
+		if state.t is None:
+			print('Unable to compute t!!!!!!!!!')
+			if not restore_feasibility(state, results):
+				results.success = False
+				break
+			results.number_of_iterations += 1
+			continue
+
+		state.s = state.t + state.n
+		state.x_new = state.x + state.s
+
+		state.show(program, 'tangential_step')
+
+
+		f_exp = state.model.interpolate(state.x_new)[0]
+		f_new, theta_new = state.evaluateAtTrialPoint(state.x_new)
+
+		# check acceptability to the filter
+		if state.pareto.is_dominated((theta_new, f_new)):
+			state.decreaseRadius(constants)
+			results.number_of_iterations += 1
+			results.filterRejectedCount += 1
+			continue
+
+		# test if model accuracy is poor
+		rho = (state.f - f_new) / (state.f - f_exp)
+		if rho < constants.eta_1:
+			state.decreaseRadius(constants)
+			results.number_of_iterations += 1
+			continue
+
+		# accept trail point
+		state.x = state.x_new
+
+		# check ratio of improvement in model to improvement in constraints
+		if state.f - f_exp < constants.kappa_theta * state.theta ** constants.psi:
+			state.pareto.add(((1 - constants.gamma_theta) * theta_new, state.f - constants.gamma_theta * theta_new))
+			results.filter_modified_count += 1
+			results.number_of_iterations += 1
+			continue
+
+		# nothing to do in this case
+		if rho < constants.eta_2:
+			results.number_of_iterations += 1
+			continue
+
+		# check the accuracy of the model functions
+		if norm(state.s) < state.delta() / 2:
+			state.decreaseRadius(constants)
+		else:
+			state.increaseRadius(constants)
 	return results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# if (abs((state.model.interpolate(state.x)[0] - state.f) / state.f) > 1e-12).any():
+# 	print(state.model.interpolate(state.x)[0])
+# 	print(state.f)
+# 	raise Exception("These aren't the same?")
+# if (abs((state.model.interpolate(state.x_new)[0] - f_exp) / f_exp) > 1e-12).any():
+# 	print(state.model.interpolate(state.x_new)[0])
+# 	print(f_exp)
+# 	raise Exception("These aren't the same?")
