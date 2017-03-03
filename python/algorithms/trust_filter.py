@@ -497,7 +497,7 @@ def trust_filter(program, constants):
 
 		# check compatibility
 		if state.n is None or norm(state.n) >= constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
-			if not restore_feasibility(state, results):
+			if not restore_feasibility(program, constants, state, results):
 				results.success = False
 				break
 			results.number_of_iterations += 1
@@ -508,7 +508,7 @@ def trust_filter(program, constants):
 		# This check was not in the paper...
 		if state.t is None:
 			print('Unable to compute t!!!!!!!!!')
-			if not restore_feasibility(state, results):
+			if not restore_feasibility(program, constants, state, results):
 				results.success = False
 				break
 			results.number_of_iterations += 1
@@ -518,7 +518,6 @@ def trust_filter(program, constants):
 		state.x_new = state.x + state.s
 
 		state.show(program, 'tangential_step')
-
 
 		f_exp = state.model.interpolate(state.x_new)[0]
 		f_new, theta_new = state.evaluateAtTrialPoint(state.x_new)
