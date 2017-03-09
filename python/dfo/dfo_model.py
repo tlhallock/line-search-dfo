@@ -5,11 +5,13 @@ from numpy.linalg import norm as norm
 from numpy import empty
 from numpy.matlib import repmat
 from numpy import dot
+from numpy import asmatrix
 from numpy import ravel
 from utilities.boxable_query_set import EvaluationHistory
 import matplotlib.pyplot as plt
 
 from utilities import functions
+
 
 from scipy.optimize import minimize
 
@@ -31,6 +33,7 @@ class MultiFunctionModel:
 		self.phi = None
 		self.lmbda = None
 
+		self.shifted = None
 		self.unshifted = repmat(x0, basis.basis_dimension, 1)
 		self.improve(None)
 
@@ -108,6 +111,7 @@ class MultiFunctionModel:
 		return self._improveWithoutNewPoints()
 
 	def _setUnshiftedFromCert(self, cert):
+		self.shifted = cert.shifted
 		self.unshifted = cert.unshifted
 
 		# the following would attempt to keep the old points...
@@ -158,14 +162,9 @@ class MultiFunctionModel:
 
 		return cert.poised
 
-	def createNewQuadraticModel(self, other_fun):
-		y = empty(self.unshifted.shape[0])
-		for i in range(0, self.unshifted.shape[0]):
-			y[i] = other_fun(self.unshifted[i])
-		phi = self.lmbda * y
-		return self.basis.getQuadraticModel(phi).shift(-self.modelCenter(), self.modelRadius)
-
-
+	def createUnshiftedQuadraticModel(self, other_fun):
+		y = asmatrix([other_fun(self.unshifted[i]) for i in range(self.unshifted.shape[0])]).T
+		return self.basis.getQuadraticModel(self.lmbda * y)
 
 	def multiplyRadius(self, factor):
 		self.modelRadius *= factor

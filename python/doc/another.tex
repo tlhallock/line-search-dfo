@@ -76,7 +76,7 @@ Also, we are given:
 	\State{$n_k \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
             
 	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
-		\State{$t_k \gets \argmin_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \|n_k + t\| < \Delta_k \}$}
+		\State{$t_k \gets \min_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \ge 0 \wedge \|n_k + t\| < \Delta_k \}$}
 		\State{they find this by backtracking on a curvilinear search of the projected gradient}
 		\State{$s_k \gets t_k + n_k$}
 		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
@@ -94,7 +94,7 @@ Also, we are given:
 			\Else
 				\State{add $x_k$ to filter}
 			\EndIf
-			\State{$x_{k+1} \gets x_k + s$}
+			\State{$x_{k+1} \gets x_k + s_k$}
 		\Else
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
 			\State{$k \gets k+1$}
@@ -154,7 +154,7 @@ Also, we are given:
 	\EndIf
 	
 	
-	\State{$n_k \gets \argmin_n \{\|t\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
+	\State{$n_k \gets \argmin_n \{\|n\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
 	
 %	\State{Solve:}
 %	\State \begin{varwidth}[t]{\linewidth}
@@ -167,7 +167,7 @@ Also, we are given:
 	%\State{$n_k \gets -A_{\mathcal{A}}^T[A_{\mathcal{A}}A_{\mathcal{A}}^T]^{-1}c_{\mathcal{A}}$}
             
 	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
-		\State{$t_k \gets \argmin_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
+		\State{$t_k \gets \min_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
 		\State{$s_k \gets t_k + n_k$}
 		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
 		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
@@ -189,7 +189,7 @@ Also, we are given:
 			\Else
 				\State{add $x_k$ to filter}
 			\EndIf
-			\State{$x_{k+1} \gets x_k + s$}
+			\State{$x_{k+1} \gets x_k + s_k$}
 		\Else
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
 			\State{$k \gets k+1$}
@@ -255,7 +255,7 @@ Also, we are given:
 	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum_i \lambda_i \nabla^2 {c_{i}}_k$}
 	
 	
-	\State{$\chi_k \gets |\argmin_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| t \| \le 1\}|$}
+	\State{$\chi_k \gets |\min_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| t \| \le 1\}|$}
 	
  	\If {constraint violation $=0 \wedge \chi=0$}
 		\If {$tol < \Delta_k$}
@@ -267,7 +267,7 @@ Also, we are given:
 	\EndIf
 	
 	
-	\State{$n_k \gets \argmin_n \{\|t\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
+	\State{$n_k \gets \argmin_n \{\|n\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
 	    
 	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
 		\State{$t_k \gets \argmin_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
@@ -294,7 +294,7 @@ Also, we are given:
 				\EndIf
 				
 			\EndIf
-			\State{$x_{k+1} \gets x_k + s$}
+			\State{$x_{k+1} \gets x_k + s_k$}
 		\Else
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
 			\State{$k \gets k+1$}

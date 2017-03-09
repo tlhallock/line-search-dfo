@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from numpy import linspace
 from numpy import meshgrid
+from utilities import sys_utils
 
 import dfo
 import matplotlib
@@ -65,7 +66,11 @@ class Program:
 	def hessian(self, x):
 		return self.f.hessian(x)
 
-	def createBasePlotAt(self, centerX, r):
+	def createBasePlotAt(self, centerX, r, title='Current Step'):
+		fig = plt.figure()
+		fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
+		ax1 = fig.add_subplot(111)
+
 		matplotlib.rcParams['xtick.direction'] = 'out'
 		matplotlib.rcParams['ytick.direction'] = 'out'
 
@@ -75,8 +80,7 @@ class Program:
 
 		Z = empty((len(y), len(x)))
 
-		plt.figure()
-		plt.title('Current step')
+		plt.title(title)
 
 		for i in range(0, len(x)):
 			for j in range(0, len(y)):
@@ -97,3 +101,4 @@ class Program:
 					Z[j, i] = self.inequalityConstraints(arr([x[i], y[j]]))[idx]
 			CS = plt.contour(X, Y, Z, 6, colors='b')
 			plt.clabel(CS, fontsize=9, inline=1)
+		return ax1

@@ -22,6 +22,7 @@ from scipy.optimize import minimize
 from scipy.optimize import linprog
 import matplotlib.pyplot as plt
 from utilities import trust
+import matplotlib.patches as patches
 
 
 from numpy import setdiff1d
@@ -63,16 +64,11 @@ class Results:
 		self.f_min = otherF
 		self.x_min = otherX
 
-
 def theta(cEq, cIneq, active=None):
 	if active is None:
 		raise Exception('Not implemented.')
-	s = 0
-	s += norm(cEq)
-	s += norm(cIneq[active])
-	return s
-
-
+	active_c = cIneq[active]
+	return norm(cEq) + norm(active_c), dot(cEq, cEq) + dot(active_c, active_c)
 
 def _createModelFunction(program, radius, xsi):
 	b = polynomial_basis.PolynomialBasis(len(program.x0), 2)
@@ -139,6 +135,7 @@ class AlgorithmState:
 
 		# Information of constraints
 		self.theta = None
+		self.theta2 = None
 		self.A = None
 		self.c = None
 
@@ -155,8 +152,11 @@ class AlgorithmState:
 		self.n = None
 		self.t = None
 		self.s = None
+		self.r = None
+		self.x_new = None
 
 	def computeCurrentValues(self, program):
+		self.r = None
 		self.n = None
 		self.t = None
 		self.s = None
@@ -183,7 +183,7 @@ class AlgorithmState:
 		self.computeActiveConstraints()
 		self.computeHessianOfLagrangian()
 
-		self.theta = theta(self.cEq, self.cIneq, self.active)
+		self.theta, self.theta2 = theta(self.cEq, self.cIneq, self.active)
 
 	def computeHessianOfLagrangian(self):
 		n = len(self.x)
@@ -344,17 +344,17 @@ class AlgorithmState:
 			self.t = None
 			return None, False
 
-	def evaluateAtTrialPoint(self, x_new):
+	def evaluateAtTrialPoint(self):
 		# compute function value at new point
-		actualY, _ = self.model.computeValueFromDelegate(x_new)
+		actualY, _ = self.model.computeValueFromDelegate(self.x_new)
 
 		# compute theta
 		violation_eq   = actualY[self.equalityIndices]
 		violation_ineq = actualY[self.inequalityIndices]
 		active = violation_ineq > -self.tol
-		theta_new = theta(violation_eq, violation_ineq, active)
+		theta_new, theta2_new = theta(violation_eq, violation_ineq, active)
 
-		return actualY[0], theta_new
+		return actualY[0], theta_new, theta2_new
 
 	def getN(self):
 		return len(self.x)
@@ -378,38 +378,58 @@ class AlgorithmState:
 	def show(self, statement, action):
 		center = self.x
 		radius = self.getPlotRadius()
-		statement.createBasePlotAt(center, radius)
+		ax1 = statement.createBasePlotAt(center, radius, title=action)
 
 		self.model.addPointsToPlot(center, radius)
 
 		# amin(shifted, 0)
 		totalDist = radius
-		hw = .1 * totalDist
+		hw = .05 * totalDist
 		hl = .1 * totalDist
 
 		if self.s is not None:
-			plt.arrow(x=self.x[0], y=self.x[1],
-					  dx=(self.s[0]), dy=(self.s[1]),
-					  # head_width=hw, head_length=hl,
-					  fc='b', ec='b')
+			ax1.add_patch(patches.Arrow(
+				x=self.x[0], y=self.x[1],
+				dx=(self.s[0]), dy=(self.s[1]),
+				width=hw,
+				facecolor="blue", edgecolor="blue"
+			))
 
 		if self.n is not None:
-			plt.arrow(x=self.x[0], y=self.x[1],
-					  dx=self.n[0], dy=self.n[1],
-					  # head_width=hw, head_length=hl,
-					  fc='r', ec='r')
+			ax1.add_patch(patches.Arrow(
+				x=self.x[0], y=self.x[1],
+				dx=self.n[0], dy=self.n[1],
+				width=hw,
+				facecolor="yellow", edgecolor="yellow"
+			))
 
 		if self.t is not None:
-			plt.arrow(x=self.x[0] + self.n[0], y=self.x[1] + self.n[1],
-					  dx=self.t[0], dy=self.t[1],
-					  # head_width=hw, head_length=hl,
-					  fc='g', ec='g')
+			ax1.add_patch(patches.Arrow(
+				x=self.x[0] + self.n[0], y=self.x[1] + self.n[1],
+				dx=self.t[0], dy=self.t[1],
+				width=hw,
+				facecolor="green", edgecolor="green"
+			))
 
-		plt.arrow(x=self.x[0], y=self.x[1],
-				  dx=-totalDist * self.grad[0] / norm(self.grad) / 2,
-				  dy=-totalDist * self.grad[1] / norm(self.grad) / 2,
-				  # head_width=hw, head_length=hl,
-				  fc='y', ec='y')
+		if self.r is not None:
+			ax1.add_patch(patches.Arrow(
+				x=self.x[0], y=self.x[1],
+				dx=self.r[0], dy=self.r[1],
+				width=hw,
+				facecolor="red", edgecolor="red"
+			))
+			# plt.arrow(x=self.x[0], y=self.x[1],
+			# 		  dx=self.r[0], dy=self.r[1],
+			# 		  # head_width=hw, head_length=hl,
+			# 		  fc='r', ec='r')
+
+		ax1.add_patch(patches.Arrow(
+			x=self.x[0], y=self.x[1],
+			dx=(-self.model.modelRadius * self.grad[0] / norm(self.grad)),
+			dy=(-self.model.modelRadius * self.grad[1] / norm(self.grad)),
+			width=hw,
+			facecolor="black", edgecolor="black"
+		))
 
 		plt.savefig(statement.getNextPlotFile(action))
 		plt.close()
@@ -426,6 +446,12 @@ class AlgorithmState:
 
 def restore_feasibility(program, constants, state, results):
 	results.restorations += 1
+
+	state.s = None
+	state.n = None
+	state.t = None
+	state.x_new = None
+
 	while True:
 		def m_theta(x):
 			ineq = state.mg.evaluate(x)
@@ -433,27 +459,34 @@ def restore_feasibility(program, constants, state, results):
 			active = ineq > -state.tol
 			return theta(eq, ineq, active)
 
-		quad_model = state.model.createNewQuadraticModel(m_theta)
-		newx, _, _, _, _ = trust.trust(asmatrix(quad_model.b).T, asmatrix(quad_model.Q), state.delta())
+		quad_model = state.model.createUnshiftedQuadraticModel(lambda x: m_theta(x)[1])
+		newx, _, _, _, _ = trust.trust(asmatrix(quad_model.b).T, asmatrix(quad_model.Q), 1)
+		newx = asarray(newx).flatten()
+		state.x_new = newx * state.model.modelRadius + state.model.modelCenter()
 
-		_, actual_theta = state.evaluateAtTrialPoint(newx)
+		_, actual_theta, actual_theta2 = state.evaluateAtTrialPoint()
 
-		if abs(state.theta - m_theta(state.x)) / state.theta > 1e-12:
-			raise Exception('did not expect this')
+		rho = (state.theta2 - actual_theta2)/(state.theta2 - actual_theta2)
 
-		rho = (state.theta - actual_theta)/(m_theta(state.x) - m_theta(newx))
+		state.r = state.x_new - state.x
+		state.show(program, 'restoration_step theta=' + str(state.theta) + ', new theta=' + str(actual_theta) + ', rho=' + str(rho) + ', radius=' + str(state.model.modelRadius))
+
 		if rho < constants.eta_1:
 			state.decreaseRadius(constants)
 			state.computeCurrentValues(program)
 			continue
-		elif rho < constants.eta_2 or norm(state.x - newx) >= state.delta() / 2:
-			state.x = newx
+		elif rho < constants.eta_2:
+			state.x = state.x_new
+			return True
+		elif norm(state.r) >= state.delta() / 2:
+			state.increaseRadius(constants)
+			state.x = state.x_new
 			return True
 		elif state.delta() < state.tol:
 			# we have converged to a local minimum of the constraints that is not feasible?
 			return False
 		else:
-			state.x = newx
+			state.x = state.x_new
 			state.decreaseRadius(constants)
 			return True
 
@@ -475,11 +508,12 @@ def trust_filter(program, constants):
 		state.computeCurrentValues(program)
 
 		state.computeNormalComponent()
-		state.show(program, 'normal_step')
+		state.show(program, 'normal_step: theta=' + str(state.theta) + ',radius=' + str(state.delta()))
 
 		# This is not the correct feasible region to check non-emptyness!
 		chi, nonempty = state.computeChi()
 		if nonempty:
+			print("current x      = " + str(state.x))
 			print("current theta  = " + str(state.theta))
 			print("current chi    = " + str(chi))
 			print("current radius = " + str(state.delta()))
@@ -520,7 +554,7 @@ def trust_filter(program, constants):
 		state.show(program, 'tangential_step')
 
 		f_exp = state.model.interpolate(state.x_new)[0]
-		f_new, theta_new = state.evaluateAtTrialPoint(state.x_new)
+		f_new, theta_new, _ = state.evaluateAtTrialPoint()
 
 		# check acceptability to the filter
 		if state.pareto.is_dominated((theta_new, f_new)):

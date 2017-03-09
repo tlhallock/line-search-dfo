@@ -16,6 +16,7 @@ from numpy import asmatrix
 from numpy import asarray
 from scipy.optimize import minimize
 from utilities import trust
+from utilities import sys_utils
 
 class Certification:
 	def __init__(self, poisedSet, params):
@@ -27,9 +28,9 @@ class Certification:
 		self.unshifted = None
 		self.Lambda = None
 
-		if params.onlyInTrustRegion and params.improveWithNew:
+		if params.improveWithNew:
 			for i in range(1, self.shifted.shape[0]):
-				if norm(self.shifted[i, :]) > params.radius:
+				if norm(self.shifted[i, :]) > params.max_radius:
 					self.shifted[i, :] = zeros(self.shifted.shape[1])
 
 
@@ -42,6 +43,7 @@ class Certification:
 
 	def plot(self, filename, center, radius):
 		fig = plt.figure()
+		fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
 		ax1 = fig.add_subplot(111)
 
 
@@ -66,7 +68,7 @@ class LagrangeParams:
 		self.radius = radius
 		self.center = center
 		self.maxL = 2
-		self.onlyInTrustRegion = False
+		self.max_radius = 1.5
 
 
 
