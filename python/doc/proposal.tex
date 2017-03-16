@@ -1,0 +1,513 @@
+\documentclass{article} % "Beamer" is a word used in Germany to mean video projector. 
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+\usepackage{xspace}
+\usepackage[margin=0.5in]{geometry}
+
+%\theoremstyle{definition}
+%\newtheorem*{dfn}{A Reasonable Definition}               
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+\title{Possible Future Research}
+\author{Trever Hallock} 
+%\institute{CU Denver}
+%\date{January 6, 2012} 
+% Remove the % from the previous line and change the date if you want a particular date to be displayed; otherwise, today's date is displayed by default.
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+
+\begin{document}
+\algnewcommand{\algorithmicgoto}{\textbf{go to}}%
+\algnewcommand{\Goto}{\algorithmicgoto\xspace}%
+\algnewcommand{\Label}{\State\unskip}
+
+\maketitle
+
+we can cite
+\cite{DUMMY:1}
+\cite{DUMMY:Biegler}
+\cite{DUMMY:Fletcher}
+\cite{DUMMY:Brekelman}
+\cite{DUMMY:CombineTrustAndLine}
+\cite{DUMMY:linesearch_global}
+\cite{DUMMY:linesearch_local}
+\cite{DUMMY:intro_book}
+\cite{DUMMY:trust_funnel_dfo}
+\cite{DUMMY:original_filter}
+\cite{DUMMY:sqp_filter}
+
+
+
+
+
+
+
+
+% In order to give this talk as is, I need to be prepared to talk about
+% and preferrably have optional slides for
+% Coordinate descent, Nelder mead (not implicit filtering http://www4.ncsu.edu/~ctk/imfil.pdf)
+% Wolf, Armijo, or Goldstein
+% trust region subproblem
+% know values of \eta_1, \eta_2
+% interpolation may involve frebenius norm/enforcing sparsity
+% http://www.sciencedirect.com/science/article/pii/S0167819103000139
+% Should use the word black box early on
+
+
+\section{Review of Model Based DFO methods}
+
+
+\section{Optimization with no derivatives}
+\begin{itemize}
+\item Evaluating $f(x)$ may involve running a simulation
+\item The runtime of $f(x)$ may mean that typical finite difference methods are too expensive
+\item The derivative free philosophy is to avoid function evaluations
+\end{itemize}
+
+
+\section{Derivatives are convenient}
+
+\begin{itemize}
+\item Quadratic convergence in line search methods require second order derivatives
+\item They appear in conditions for convergence results (Wolf, Armijo, or Goldstein for line search)
+\item Stopping criteria are based on optimality conditions, which frequently involve derivatives
+\end{itemize}
+
+\subsection{}
+Consider the following optimization problem
+
+\begin{equation*}
+\begin{aligned}
+& \underset{x}{\text{minimize}} & & f(x, S(x)) \\
+& \text{subject to} & & g_i(x, S(x)) \leq 0, \; i = 1, \ldots, m \\
+& & & h_i(x, S(x)) = 0, \; i = 1, \ldots, n 
+\end{aligned}
+\end{equation*}
+
+This gives rise to different classes of derivative free optimization based on $f$, $g_i$, and $h_i$:
+\begin{itemize}
+\item They may be noisy
+\item Derivatives of $g_i$ and $h_i$ may be known
+\item $g_i$ and $h_i$ can sometimes be ``Hidden" constraints
+\item Sometimes the functions $g_i$ and $h_i$ are only found by evaluating $S(x)$
+\item Many DFO methods simply let $f(x,S(x)) = S(x)$
+\end{itemize}
+
+A slightly more general form is:
+\begin{equation*}
+\begin{aligned}
+& \underset{x}{\text{minimize}} & & f(x, y, z) \\
+& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
+& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
+& & & y = d(z) \;  \\
+\end{aligned}
+\end{equation*}
+
+
+
+\section{Approaches}
+
+\begin{itemize}
+\item Finite difference methods
+	\begin{itemize}
+	\item $\nabla f(x) \approx (\frac{f(x+he_i) - f(x-he_i)}{2h})_i$ for some $h$
+	\item The number of function evaluations can grow large quickly
+	\end{itemize}
+\item Direct search methods
+	\begin{itemize}
+	\item Coordinate descent and Pattern based
+	\item Nelder Mead
+	\item Do not use derivatives: robust but ignore useful information
+	\end{itemize}
+\item Model-based methods
+	\begin{itemize}
+	\item This is what we will discuss
+	\end{itemize}
+\end{itemize}
+
+
+\section{The Derivative Trust Region Method}
+
+\begin{itemize}
+	\item Interpolate or regress model functions onto a sample
+	\item Minimize the model function over a trust region
+	\item Adjust trust region, possibly by testing the model's accuracy
+\end{itemize}
+
+
+
+
+\section{More details}
+
+\begin{enumerate}
+	\item Define $m_k(x) = f(x^{(k)}) + \nabla f(x^{(k)})^T (x-x^{(k)}) + \frac 1 2 (x-x^{(k)})^T\nabla^2f(x^{(k)})(x-x^{(k)})$
+	\begin{itemize}
+		\item $\nabla f(x^{(k)})$ and $\nabla^2 f(x^{(k)})$ must be approximated
+		\item There are geometric properties of the sample set that must be satisfied
+	\end{itemize}
+	\item if $\nabla m_k(x) < t$ stop
+	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B_(x^{(k)}, \Delta_k)} m_k(x^{(k)} + s)$
+	\item Test for improvement
+	\begin{itemize}
+		\item $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$
+		\item If $\rho$ is small, $x^{(k+1)}=x^{(k)}$ (reject) and decrease radius
+		\item If $\rho$ is intermediate, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and decrease radius
+		\item If $\rho$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and increase radius
+	\end{itemize}
+\end{enumerate}
+
+
+
+
+
+
+
+%\section{My Work}
+
+
+%\begin{frame}
+
+%\begin{equation*}
+%\begin{aligned}
+%& \underset{x}{\text{minimize}} & & f(x, S(x)) \\
+%& \text{subject to} & & g_i(x) \leq 0, \; i = 1, \ldots, m \\
+%& & & h_i(x) = 0, \; i = 1, \ldots, n 
+%\end{aligned}
+%\end{equation*}
+%\end{frame}
+
+
+
+
+\section{Possible future work}
+
+\section{Future Directions}
+
+\begin{itemize}
+\item Convert classical NLP Algorithms to DFO
+\item Different Goals
+\item Parallelization
+\item Explore different model functions
+\item Providing structure to the optimization program
+\end{itemize}
+
+
+\section{NLP Methods}
+
+We can convert classical algorithms to DFO
+
+\begin{itemize}
+\item Take an existing constrained Nonlinear programming method
+	\begin{itemize}
+		\item Filter method
+		\item Active Set
+		\item Augmented Lagrangian
+		\item Interior Point
+		\item Line search
+	\end{itemize}
+\item Replace derivatives of $f$, $g_i$, $h_i$ with derivatives of a model function
+\end{itemize}
+
+
+
+
+
+
+\section{Goals}
+We could consider an objective function with a runtime that varies based on the position.
+
+% We could consider the following bicriteria optimization problem:
+% 
+% \begin{equation*}
+% \begin{aligned}
+% & \underset{x}{\text{minimize}} & & (f(x, S(x)), \sum_i r(x_i)) \\
+% & \text{subject to} & & g_i(x) \leq 0, \; i = 1, \ldots, m \\
+% & & & h_i(x) = 0, \; i = 1, \ldots, n 
+% \end{aligned}
+% \end{equation*}
+% 
+% \begin{itemize}
+% \item $x_i$ is the generated points where $f(x)$ are evaluated
+% \item $r(x)$ is the runtime of evaluating $f(x)$, or possibly worst case runtime
+% \item This may require applications with smooth variability in runtime, so that a models can be constructed or derivatives can be taken.
+% \item In order to provide appreciable improvement, we also desire significant variation in $r(x)$.
+% \end{itemize}
+
+
+
+\section{Parallelization}
+
+
+\begin{enumerate}
+\item parallelization of the function and/or the derivative evaluations in the algorithm
+\item parallelization of linear algebra kernels
+\item modifications of the basic algorithms which increase the degree of intrinsic parallelism, for instance, by performing multiple function and/or derivative evaluations
+\end{enumerate}
+
+The third item is particularily interesting.
+
+%Schnabel [99]
+%http://www.sciencedirect.com/science/article/pii/S0167819103000139
+
+
+
+
+
+\section{Miscellaneous}
+
+\begin{itemize}
+\item Model Functions
+	Radial basis functions
+\item Problem Structure
+	Specify the structure of $f$, $g_i$, or $h_i$
+\item Machine Learning
+	Applying DFO techniques to algorthms that currently use random sampling to tune parameters
+\end{itemize}
+
+
+
+
+
+
+% \frametitle{Appendix}
+% 
+% \[
+% f(x_k + \alpha_k p_k) \le f(x_k) + c_1 \alpha p_k^T \nabla f(x_k)
+% \]
+% 
+% \[
+% p_k^T \nabla f(x_k + \alpha p_k) \ge c_2 p_k^T \nabla f(x_k)
+% \]
+% \[
+% 0 < c_1 < c_2 < 1
+% \]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\begin{frame}
+%\frametitle{Finding $f'(0)$}
+%
+%By the definition of derivative,
+%\begin{eqnarray*} % As usual, the asterisk suppresses the numbering of each line in the array.
+%f'(0)&=&\pause\displaystyle\lim_{h\to 0}\frac{f(0+h)-f(0)}{h}\\
+%\pause&=&\displaystyle\lim_{h\to 0}\frac{h^2\sin(1/h)-0}{h}\\
+%\pause&=&\displaystyle\lim_{h\to 0}h\sin(1/h)\\
+%\end{eqnarray*}
+%
+%Since $-h\leq h\sin(1/h)\leq h$ \pause and $\displaystyle\lim_{h\to 0}(-h)=\displaystyle\lim_{h\to 0}(h)=0$, \pause the \uncover<7->{Squeeze }Theorem says \pause $f'(0)=0.$
+% The command \uncover<m->{STUFF} means that STUFF will appear starting in the mth slide of the frame.
+% The command \uncover<m-n>{STUFF} means that STUFF will appear from the mth slide to the nth slide of the frame.
+%\end{frame}
+
+%\begin{frame}
+%\frametitle{What Really Happens at $x=0$?}
+%\begin{columns} % This creates a frame with multiple columns.
+%\begin{column}{0.5\textwidth} % The first column will be 50% as wide as the width of text on the page.
+%But $f(x)$ oscillates wildly as $x\to 0$, so even though $f'(0)=0$, $f$ has neither max, min, nor %inflection point at $x=0$.
+%\end{column}
+%
+%\pause
+%
+%\begin{column}{0.5\textwidth} % Now begins our second column.
+%\includegraphics[width=5cm, height=5cm]{graph1.png} % Beamer doesn't like to display .eps files. This .png was converted from .eps using Adobe Acrobat. The file graph1.png should be in the same folder as the .tex file.
+%\begin{center}
+%\textcolor{orange}{$y=f(x)$}, \textcolor{red}{$y=x^2$}, \textcolor{green}{$y=-x^2$} % This changes the %text color.
+%\end{center}
+%\end{column}
+%\end{columns}
+%\end{frame}
+
+
+
+
+%\begin{frame}
+%\begin{center}
+%\includegraphics[width=5cm, height=5cm]{graph2.png}
+
+%\textcolor{orange}{$y=g(x)$}, \textcolor{red}{$y=x^2+0.5x$}, \textcolor{green}{$y=x^2-0.5x$} 
+%\end{center}
+
+%\end{frame}
+
+
+
+
+\section{My Algorithm}
+
+\section{Problem}
+
+
+We began with a line search filter method, however we found that this had several drawbacks:
+
+\begin{itemize}
+\item Trust regions arise naturally within derivative free algorithms
+\item Line search algorithms exploit how much easier finding a descent direction is than solving the trust region subproblem, but this saved computation is not as useful in DFO
+\item As the algorithm backtracks on the step length, the trust region must be reduced, as the models are accurate over a region rather than at a single point
+\end{itemize}
+
+\section{Algorithm in other paper}
+
+
+\section{problem statement}
+We consider problems of the form
+
+\begin{align*} 
+\min_x & f(x) \\
+ & g(x) \le 0 \\
+ & h(x) = 0
+\end{align*}
+
+where $f : R^n \to R$, $g : R^{n} \to R^{m_1}$ and $h : R^{n} \to R^{m_2}$.
+
+
+We assume that all functions are derivative free: all functions $f,g,h$ are evaluated by a single call to a black box function $d(x) = (f(x), g(x)^T, h(x)^T)^T$.
+
+
+We work within a trust region, sequential quadratic programming framework that uses a filter method introduced by Fletcher.
+
+We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
+Although we have function values for enough points to construct model functions of the same order as used for the objective, we model the feasible with only the linear constraints.
+
+The core of the algorithm revolves around 
+
+
+
+\section{Step decomposition}
+\section{Compatibility}
+\section{The filter}
+\section{f-type versus $\theta$-type}
+\section{restoration step}
+\section{}
+
+
+
+
+
+
+\newpage
+\section{What I think the algorithm should be}
+\begin{algorithm}
+\caption{Filter Trust Region Search}\label{linesearch1}
+\begin{algorithmic}[1]
+\Procedure{trust region filter}{}
+\State{initialize}
+\State{$k=0$}
+\State{choose an $x_0$}
+
+\While {$k < maxit$}
+	\Label \texttt{main loop:}
+	
+	\State{ensure poisedness, possibly adding points to the model}
+	\State{Compute $m_k, g_k=\nabla m_k(x_k), c_k, A_k, f_k=f(x_k), \mathcal {A}, \theta_k$}
+	\State{Solve:}
+	\State \begin{varwidth}[t]{\linewidth}
+		\hspace{3cm}$\nabla^2m_k(x_k)d + A_k^T\lambda = g_k$ \par
+		\hspace{3cm}$A_kd\hspace{1cm}              = c_k$
+	\end{varwidth}
+	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum_i \lambda_i \nabla^2 {c_{i}}_k$}
+	
+	
+	\State{$\chi_k \gets |\min_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| t \| \le 1\}|$}
+	
+ 	\If {constraint violation $=0 \wedge \chi=0$}
+		\If {$tol < \Delta_k$}
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+			\State{$k \gets k+1$}
+			\State \Goto \texttt{main loop}
+		\EndIf
+		\textbf{success}
+	\EndIf
+	
+	
+	\State{$n_k \gets \argmin_n \{\|n\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
+	    
+	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
+		\State{$t_k \gets \argmin_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
+		\State{$s_k \gets t_k + n_k$}
+		
+		\If {$m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}$}
+			\State{add $x_k$ to filter}
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+			\State \Goto \texttt{main loop}
+		\EndIf
+		
+		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
+		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
+			\State{$\rho = \frac{f(x_k)-f(x_k+s_k)}{m_k(x_k)-m_k(x_k+s_k)}$}
+			\If {$\rho < \eta_1$}
+				\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+				\State{$k \gets k+1$}
+				\State \Goto \texttt{main loop}
+			\ElsIf {$\rho > \eta_2$}
+				\If {$\|s\| < \frac{\Delta_k}{2}$}
+					\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+				\Else
+					\State{increase $\Delta$: $\Delta_{k+1} \gets$ some $ \in [\Delta_k, \gamma_2 \Delta_k]$}
+				\EndIf
+				
+			\EndIf
+			\State{$x_{k+1} \gets x_k + s_k$}
+		\Else
+			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
+			\State{$k \gets k+1$}
+			\State \Goto \texttt{main loop}
+		\EndIf
+	\Else
+		\State{add $x_k$ to filter}
+		\State{compute new $r$ (restoration step) and $\Delta$}
+		\If{impossible to restore}
+			\textbf{fail}
+		\EndIf
+		\State{$x_{k+1} \gets x_k + r$}
+	\EndIf
+	\State{$k \gets k+1$}
+\EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+\section{Pictures of convergence...}
+
+
+
+
+
+\newpage
+
+\bibliography{proposal} 
+\bibliographystyle{ieeetr}
+
+
+\end{document}
+
