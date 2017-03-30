@@ -7,6 +7,7 @@
 \usepackage[noend]{algpseudocode}
 \usepackage{varwidth}% http://ctan.org/pkg/varwidth
 \usepackage{xspace}
+\usepackage{placeins}
 \usepackage[margin=0.5in]{geometry}
 
 %\theoremstyle{definition}
@@ -34,28 +35,60 @@
 
 \maketitle
 
-we can cite
-\cite{DUMMY:1}
-\cite{DUMMY:Biegler}
-\cite{DUMMY:Fletcher}
-\cite{DUMMY:Brekelman}
-\cite{DUMMY:CombineTrustAndLine}
-\cite{DUMMY:linesearch_global}
-\cite{DUMMY:linesearch_local}
-\cite{DUMMY:intro_book}
-\cite{DUMMY:trust_funnel_dfo}
-\cite{DUMMY:original_filter}
-\cite{DUMMY:sqp_filter}
+\section{Literature Review}
+
+The original filter method was proposed by Gould in \cite{DUMMY:original_filter}. The motivation for the filter method was that the algorithm does not need to tune any parameters as in penalty or merit methods.
+
+A recent paper from September 2016 \cite{DUMMY:Biegler} implements a derivative-free trust region filter method for solving the general program 
+
+\begin{equation*}
+\begin{aligned}
+& \underset{x}{\text{minimize}} & & f(x, y, z) \\
+& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
+& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
+& & & y = d(z) \;  \\
+\end{aligned}
+\end{equation*}
+where $d$ is a black box function while $f$, $g$ and $h$ are glass box functions.
+This is more general than the algorithm we consider as it allows for the objective to depend on other glass box functions of the input and multiple outputs of the black box function. The authors compare their algorithm to finite difference methods as well as kriging on three different applications from Chemistry. Within the algorithm, the current iterate is always feasible with respect all inequalities except for the constraint $y=d(z)$. 
 
 
 
 
 
+In the 2006 paper \cite{DUMMY:Fletcher} Fletcher reviews how filter methods have developed. The only references to derivative-free versions of the filter method are those applied to pattern based (direct) methods. However, the authors outline trust region filter methods along with several other variants.
+
+In Brekelman's paper \cite{DUMMY:Brekelman}, a trust region filter method is developed to minimize function evaluations by constructing linear model functions. This paper also uses experimental designs to choose following iterates.
+
+
+Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework. We experimented with this before deciding combining line search with the derivative-free trust region approach was not a natural approach. (There have been attempts to employ both of these frameworks in \cite{DUMMY:CombineTrustAndLine}.)
+
+
+
+Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail. This contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+
+
+Within \cite{DUMMY:trust_funnel_dfo} Toint generalizes the filter method with the notion of a trust funnel. This is for glass box functions as it does not include any derivative-free methods.
+
+
+Within \cite{DUMMY:sqp_filter} a sequential quadratic programming method is applied to the filter method?
+
+
+Colson has also applied filter techniques to derivative-free optimization in his 2004 Ph.D. thesis \cite{Colson2004}. This focuses on bilevel programming.
+
+
+I based my algorithm of the trust region filter method described in:
+
+GLOBAL CONVERGENCE OF A TRUST-REGION SQP-FILTER
+ALGORITHM FOR GENERAL NONLINEAR PROGRAMMING∗
+ROGER FLETCHER†, NICHOLAS I. M. GOULD‡, SVEN LEYFFER†,
+PHILIPPE L. TOINT§, AND ANDREAS WACHTER ¨ ¶
+I need to find a bibtex reference of this paper to put in the bibliography.
 
 
 
 % In order to give this talk as is, I need to be prepared to talk about
-% and preferrably have optional slides for
+% and preferably have optional slides for
 % Coordinate descent, Nelder mead (not implicit filtering http://www4.ncsu.edu/~ctk/imfil.pdf)
 % Wolf, Armijo, or Goldstein
 % trust region subproblem
@@ -68,15 +101,15 @@ we can cite
 \section{Review of Model Based DFO methods}
 
 
-\section{Optimization with no derivatives}
+\subsection{Optimization with no derivatives}
 \begin{itemize}
 \item Evaluating $f(x)$ may involve running a simulation
 \item The runtime of $f(x)$ may mean that typical finite difference methods are too expensive
-\item The derivative free philosophy is to avoid function evaluations
+\item The derivative-free philosophy is to avoid function evaluations
 \end{itemize}
 
 
-\section{Derivatives are convenient}
+\subsection{Derivatives are convenient}
 
 \begin{itemize}
 \item Quadratic convergence in line search methods require second order derivatives
@@ -84,7 +117,7 @@ we can cite
 \item Stopping criteria are based on optimality conditions, which frequently involve derivatives
 \end{itemize}
 
-\subsection{}
+\subsubsection{}
 Consider the following optimization problem
 
 \begin{equation*}
@@ -95,7 +128,7 @@ Consider the following optimization problem
 \end{aligned}
 \end{equation*}
 
-This gives rise to different classes of derivative free optimization based on $f$, $g_i$, and $h_i$:
+This gives rise to different classes of derivative-free optimization based on $f$, $g_i$, and $h_i$:
 \begin{itemize}
 \item They may be noisy
 \item Derivatives of $g_i$ and $h_i$ may be known
@@ -116,7 +149,7 @@ A slightly more general form is:
 
 
 
-\section{Approaches}
+\subsection{Approaches}
 
 \begin{itemize}
 \item Finite difference methods
@@ -137,7 +170,7 @@ A slightly more general form is:
 \end{itemize}
 
 
-\section{The Derivative Trust Region Method}
+\subsection{The Derivative Trust Region Method}
 
 \begin{itemize}
 	\item Interpolate or regress model functions onto a sample
@@ -148,7 +181,7 @@ A slightly more general form is:
 
 
 
-\section{More details}
+\subsection{More details}
 
 \begin{enumerate}
 	\item Define $m_k(x) = f(x^{(k)}) + \nabla f(x^{(k)})^T (x-x^{(k)}) + \frac 1 2 (x-x^{(k)})^T\nabla^2f(x^{(k)})(x-x^{(k)})$
@@ -192,7 +225,7 @@ A slightly more general form is:
 
 \section{Possible future work}
 
-\section{Future Directions}
+\subsection{Future Directions}
 
 \begin{itemize}
 \item Convert classical NLP Algorithms to DFO
@@ -203,7 +236,7 @@ A slightly more general form is:
 \end{itemize}
 
 
-\section{NLP Methods}
+\subsection{NLP Methods}
 
 We can convert classical algorithms to DFO
 
@@ -224,8 +257,10 @@ We can convert classical algorithms to DFO
 
 
 
-\section{Goals}
-We could consider an objective function with a runtime that varies based on the position.
+\subsection{Goals}
+We could consider an objective function with a evaluation runtime that varies with $x$.
+
+%We could minimize the number of future function evaluations given a stochastic model of what the new function values could be.
 
 % We could consider the following bicriteria optimization problem:
 % 
@@ -246,7 +281,7 @@ We could consider an objective function with a runtime that varies based on the 
 
 
 
-\section{Parallelization}
+\subsection{Parallelization}
 
 
 \begin{enumerate}
@@ -264,7 +299,7 @@ The third item is particularily interesting.
 
 
 
-\section{Miscellaneous}
+\subsection{Miscellaneous}
 
 \begin{itemize}
 \item Model Functions
@@ -360,21 +395,8 @@ The third item is particularily interesting.
 
 \section{My Algorithm}
 
-\section{Problem}
+\subsection{Problem}
 
-
-We began with a line search filter method, however we found that this had several drawbacks:
-
-\begin{itemize}
-\item Trust regions arise naturally within derivative free algorithms
-\item Line search algorithms exploit how much easier finding a descent direction is than solving the trust region subproblem, but this saved computation is not as useful in DFO
-\item As the algorithm backtracks on the step length, the trust region must be reduced, as the models are accurate over a region rather than at a single point
-\end{itemize}
-
-\section{Algorithm in other paper}
-
-
-\section{problem statement}
 We consider problems of the form
 
 \begin{align*} 
@@ -384,9 +406,20 @@ We consider problems of the form
 \end{align*}
 
 where $f : R^n \to R$, $g : R^{n} \to R^{m_1}$ and $h : R^{n} \to R^{m_2}$.
+We assume that all functions are derivative-free: all functions $f,g,h$ are evaluated by a single call to a black box function $d(x) = (f(x), g(x)^T, h(x)^T)^T$.
 
 
-We assume that all functions are derivative free: all functions $f,g,h$ are evaluated by a single call to a black box function $d(x) = (f(x), g(x)^T, h(x)^T)^T$.
+
+\subsection{First approach}
+We began with a line search filter method, however we found that this had several drawbacks:
+
+\begin{itemize}
+\item Trust regions arise naturally within derivative-free algorithms
+\item Line search algorithms exploit how much easier finding a descent direction is than solving the trust region subproblem, but this saved computation is not as useful in DFO
+\item As the algorithm backtracks on the step length, the trust region must be reduced, as the models are accurate over a region rather than at a single point
+\end{itemize}
+
+\subsection{Algorithm in other paper}
 
 
 We work within a trust region, sequential quadratic programming framework that uses a filter method introduced by Fletcher.
@@ -397,21 +430,110 @@ Although we have function values for enough points to construct model functions 
 The core of the algorithm revolves around 
 
 
+\subsubsection{Criticality Measure}
+In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
 
-\section{Step decomposition}
-\section{Compatibility}
-\section{The filter}
-\section{f-type versus $\theta$-type}
-\section{restoration step}
-\section{}
+This is defined as 
+\begin{align*}
+\chi & = & |\min_t \langle g_k + H_kn_k, t\rangle| \\
+& A_{eq}t &=& \; 0 \\
+& c_{ineq} + A_{ineq}t &\le& \; 0 \\
+& \| t \| &\le& \; 1
+\end{align*}
 
 
 
+\subsubsection{Step decomposition}
+At iteration $k$, we can decompose the step $s_k$ into a normal step $n_k$ intended to decrease constraint violation and a tangential step $t_k$ intended to reduce the objective.
+The step $n_k$ projects the current iterate onto the feasible region.
+Currently, we project $x_k$ onto only the linear model of the feasible region.
+We require that the the computation of the normal step, which solves:
+
+\begin{align*}
+n_k &=& \argmin_n           & \|n\|^2 \\
+s.t. \quad & c_{eq} + A_{eq}n     &=&\; 0 \\
+     & c_{ineq} + A_{ineq}n &\le& \; 0  \\
+     & \| n \|^2            &\le& \; \Delta_k^2
+\end{align*}
+
+In addition to this program having a feasible point, we need to know that there is enough space for us to provide sufficient decrease within the tangential step. This means that we require the stronger condition that
+
+$$\|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$$
+
+If this condition is satisfied, then we say that the program is \emph{compatible}. We are then able to compute a tangential step $t_k$:
+
+\begin{align*}
+t_k &=& \argmin_t           & (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t \\
+s.t. \quad & c_{eq} + A_{eq}t	&=& \; 0 \\
+     & c_{ineq} + A_{ineq}t	&\le& \; 0  \\
+     & \| n_k + t_k \|^2 		&\le& \; \Delta_k ^2
+\end{align*}
+
+\begin{itemize}
+\item quadratic information contained in $H_k$
+\item $H_k$ is the hessian of the lagrangian, as computed by using KKT the matrix
+\item This program is a shifted version of another
+\end{itemize}
+
+\subsubsection{Compatibility}
 
 
+\subsubsection{The filter}
 
-\newpage
-\section{What I think the algorithm should be}
+The filter is a method used to ensure convergence to a feasible point.
+It works by ensuring that all new iterates are nondominated with respect to all previous iterates when the problem is viewed as a multi-criteria optimization problem $\min (\theta, f)$. However, simply ensuring that new points are nondominated does not provide sufficient progress, we must ensure that the objective decreases by a greater amount when the current iterate is far from the feasible region:
+
+\[
+\theta(x_k) \le (1-\gamma_{\theta})\theta_i
+\]
+or
+\[
+f(x_k) \le f_i -\gamma_{\theta}\theta_i
+\]
+
+for all $(\theta_i, f_i)$ that are currently in the filter.
+When this condition is satisfied, we say that the new iterate $x_k$ is admissible to the filter.
+
+\subsubsection{f-type versus $\theta$-type}
+
+
+\subsubsection{Restoration Step}
+
+The goal of the feasibility restoration step is to find a new iterate and trust region radius that allows the current iterate to be compatible.
+
+While performing the restoration step, we place constraints in the objective by minimizing the squared norm of $\theta$.
+We take one step to minimize the quadratic model unconstrained optimization problem, and update the trust region based on the new function value.
+
+It is possible that the restoration step is unsuccessful if the iterates approach an infeasible local minimum of the constraints.
+In this case, the algorithm will fail to find a feasible local minimum, and will need to be restarted.
+
+
+\subsection{When we use derivative-free methods}
+
+\subsubsection{The change in the criticality measure}
+One issue with applying the original algorithm within a DFO context was that the trust region radius is not required to go to zero. However, within DFO we must also require that the trust region goes to zero as we approach a stationary point. One way of ensuring this is to decrease the trust region radius when the current step lies well within the trust region radius. However, a better approach may be to introduce a tolerance on the criticality measure and decrease the trust region whenever the criticality falls below the threshold.
+
+
+\subsection{Algorithm Description}
+
+\subsubsection{Simplified version draft}
+
+\begin{itemize}
+\item compute model functions and hessian of the lagrangian
+\item compute criticality measure
+\item if feasible and critical, then decrease trust region radius or return
+\item compute normal step
+\item check compatibility, restoring feasibility if necessary and return to step 1
+\item compute tangential step
+\item check for sufficient reduction in the model function, adding the current iterate to the filter and returning to step 1 if necessary
+\item evaluate the function and constraints at the trial point
+\item check compatibility to the filter, decreasing the trust region radius and returning to step 1 if necessary
+\item compute $\rho$, and accept the trial point or reject and decrease the radius
+\end{itemize}
+
+\subsubsection{Psuedo code}
+
+\FloatBarrier
 \begin{algorithm}
 \caption{Filter Trust Region Search}\label{linesearch1}
 \begin{algorithmic}[1]
@@ -492,13 +614,12 @@ The core of the algorithm revolves around
 \end{algorithmic}
 \end{algorithm}
 
+\FloatBarrier
 
 
 
-
-
-\section{Pictures of convergence...}
-
+\section{Pictures of convergence}
+\section{Comparison to other libraries (If I get enough time)}
 
 
 
