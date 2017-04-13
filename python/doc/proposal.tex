@@ -1,4 +1,4 @@
-\documentclass{article} % "Beamer" is a word used in Germany to mean video projector. 
+\documentclass{article}
 
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -9,18 +9,19 @@
 \usepackage{xspace}
 \usepackage{placeins}
 \usepackage[margin=0.5in]{geometry}
+\usepackage{amsfonts}
 
 %\theoremstyle{definition}
-%\newtheorem*{dfn}{A Reasonable Definition}               
+%\newtheorem*{dfn}{A Reasonable Definition}
 
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 
 
 \title{Possible Future Research}
-\author{Trever Hallock} 
+\author{Trever Hallock}
 %\institute{CU Denver}
-%\date{January 6, 2012} 
+%\date{January 6, 2012}
 % Remove the % from the previous line and change the date if you want a particular date to be displayed; otherwise, today's date is displayed by default.
 
 \makeatletter
@@ -29,115 +30,71 @@
 
 
 \begin{document}
+
+
 \algnewcommand{\algorithmicgoto}{\textbf{go to}}%
 \algnewcommand{\Goto}{\algorithmicgoto\xspace}%
 \algnewcommand{\Label}{\State\unskip}
 
+
 \maketitle
 
-\section{Literature Review}
 
-The original filter method was proposed by Gould in \cite{DUMMY:original_filter}. The motivation for the filter method was that the algorithm does not need to tune any parameters as in penalty or merit methods.
+\tableofcontents
 
-A recent paper from September 2016 \cite{DUMMY:Biegler} implements a derivative-free trust region filter method for solving the general program 
+\section{Introduction}
 
-\begin{equation*}
-\begin{aligned}
-& \underset{x}{\text{minimize}} & & f(x, y, z) \\
-& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
-& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
-& & & y = d(z) \;  \\
-\end{aligned}
-\end{equation*}
-where $d$ is a black box function while $f$, $g$ and $h$ are glass box functions.
-This is more general than the algorithm we consider as it allows for the objective to depend on other glass box functions of the input and multiple outputs of the black box function. The authors compare their algorithm to finite difference methods as well as kriging on three different applications from Chemistry. Within the algorithm, the current iterate is always feasible with respect all inequalities except for the constraint $y=d(z)$. 
+This paper will discuss research topics for derivative free optimization.
+It begins with an introduction to the context and goals of derivative free optimization (DFO) supplemented by some of the recent advancement made in the field.
+It then details several future research directions and one in particular (filter methods) that has been studied.
+The focus is on local search algorithms for constrained derivative free optimization.
 
 
+\section{Derivative-free Mentality}
 
+Derivative free optimization is motivated by programs in which derivative information is unknown, deceptive or otherwise impractical to compute.
+For example, this can arise when the objective is the result of a simulation that does not admit automatic differentiation due to copyrights or is too expensive for repeated calls within a finite difference framework.
+The general strategy is to converge to a first or second order critical point while evaluating the function as few times as possible.
 
+Another branch of DFO is concerned with noisy function evaluation.
+Noisy functions can be categorized as either deterministic or random.
+Deterministic means that the genuine objective is not always evaluated accurately, but the measurement error (?) will not change across multiple function calls at the same point.
+Random means that each point in the domain is associated with a distribution of possible values the objective may return.
 
-In the 2006 paper \cite{DUMMY:Fletcher} Fletcher reviews how filter methods have developed. The only references to derivative-free versions of the filter method are those applied to pattern based (direct) methods. However, the authors outline trust region filter methods along with several other variants.
+\subsubsection{Derivatives are convenient}
 
-In Brekelman's paper \cite{DUMMY:Brekelman}, a trust region filter method is developed to minimize function evaluations by constructing linear model functions. This paper also uses experimental designs to choose following iterates.
+The lack of derivative information means that DFO methods are at a disadvantage when compared to their counterparts in nonlinear optimization.
+First and second derivative information is explicit in algorithms with quadratic convergence such as Newton's method.
+They are also present in conditions for convergence results such as Wolf's, Armijo or Goldstien for line search methods.
+Additionally, stopping criteria usually involve a criticality test involving derivatives.
 
+\subsubsection{Problem statement}
 
-Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework. We experimented with this before deciding combining line search with the derivative-free trust region approach was not a natural approach. (There have been attempts to employ both of these frameworks in \cite{DUMMY:CombineTrustAndLine}.)
-
-
-
-Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail. This contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
-
-
-Within \cite{DUMMY:trust_funnel_dfo} Toint generalizes the filter method with the notion of a trust funnel. This is for glass box functions as it does not include any derivative-free methods.
-
-
-Within \cite{DUMMY:sqp_filter} a sequential quadratic programming method is applied to the filter method?
-
-
-Colson has also applied filter techniques to derivative-free optimization in his 2004 Ph.D. thesis \cite{Colson2004}. This focuses on bilevel programming.
-
-
-I based my algorithm of the trust region filter method described in:
-
-GLOBAL CONVERGENCE OF A TRUST-REGION SQP-FILTER
-ALGORITHM FOR GENERAL NONLINEAR PROGRAMMING∗
-ROGER FLETCHER†, NICHOLAS I. M. GOULD‡, SVEN LEYFFER†,
-PHILIPPE L. TOINT§, AND ANDREAS WACHTER ¨ ¶
-I need to find a bibtex reference of this paper to put in the bibliography.
-
-
-
-% In order to give this talk as is, I need to be prepared to talk about
-% and preferably have optional slides for
-% Coordinate descent, Nelder mead (not implicit filtering http://www4.ncsu.edu/~ctk/imfil.pdf)
-% Wolf, Armijo, or Goldstein
-% trust region subproblem
-% know values of \eta_1, \eta_2
-% interpolation may involve frebenius norm/enforcing sparsity
-% http://www.sciencedirect.com/science/article/pii/S0167819103000139
-% Should use the word black box early on
-
-
-\section{Review of Model Based DFO methods}
-
-
-\subsection{Optimization with no derivatives}
-\begin{itemize}
-\item Evaluating $f(x)$ may involve running a simulation
-\item The runtime of $f(x)$ may mean that typical finite difference methods are too expensive
-\item The derivative-free philosophy is to avoid function evaluations
-\end{itemize}
-
-
-\subsection{Derivatives are convenient}
-
-\begin{itemize}
-\item Quadratic convergence in line search methods require second order derivatives
-\item They appear in conditions for convergence results (Wolf, Armijo, or Goldstein for line search)
-\item Stopping criteria are based on optimality conditions, which frequently involve derivatives
-\end{itemize}
-
-\subsubsection{}
-Consider the following optimization problem
+In more detail, DFO methods consider nonlinear, constrained optimization problems of the form
 
 \begin{equation*}
 \begin{aligned}
 & \underset{x}{\text{minimize}} & & f(x, S(x)) \\
-& \text{subject to} & & g_i(x, S(x)) \leq 0, \; i = 1, \ldots, m \\
-& & & h_i(x, S(x)) = 0, \; i = 1, \ldots, n 
+& \text{subject to} & & g_i(x, S(x)) \leq 0, \; i = 1, \ldots, m_{\mathcal{I}} \\
+& & & h_i(x, S(x)) = 0, \; i = 1, \ldots, m_{\mathcal{E}}
 \end{aligned}
 \end{equation*}
 
-This gives rise to different classes of derivative-free optimization based on $f$, $g_i$, and $h_i$:
-\begin{itemize}
-\item They may be noisy
-\item Derivatives of $g_i$ and $h_i$ may be known
-\item $g_i$ and $h_i$ can sometimes be ``Hidden" constraints
-\item Sometimes the functions $g_i$ and $h_i$ are only found by evaluating $S(x)$
-\item Many DFO methods simply let $f(x,S(x)) = S(x)$
-\end{itemize}
+which give rise to different classes of derivative-free optimization based on properties of $f : \mathbb{R}^n \to \mathbb{R}$, $g_i \mathbb{R} \to \mathbb{R}$, and $h_i \mathbb{R} \to \mathbb{R}$.
+As discussed, these functions may be noisy, either deterministically or randomly, although this paper does not deal with this case.
+Derivatives of $g_i$ and $h_i$ may be known, in which case the objective is the only derivative free function.
+One common such case is to include bound constraints of the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$, which gives rise to Box Constrained DFO (BCDFO).
+If the constraints can be evaluated at points outside the feasible region, the constraints are called relaxable constraints.
+We consider the case where no derivative information of $g_i$ and $h_i$ are known, for example if they are also output from a simulation used to evaluate the objective.
+This means that each call to the objective gives values of the constraints as well, and vica versa.
+However, although derivatives are not known, we do assume that $f$, $g_i$, and $h_i$ are all continuously twice differentiable.
+Some problems additionally contain ``hidden" constraints which are not explicit in the model but merely result in a notification that the objective could not be evaluated at the requested point.
+This may mean that it is not possible to tell how close to a ``hidden" constraint the current iterate lies.
+Again, we only consider only local search algorithms for this problem that seek a first or second order stationary point.
 
-A slightly more general form is:
+Many DFO methods simply let $f(x,S(x)) = S(x)$.
+
+A slightly more general form is presented by \cite{DUMMY:Biegler} and given here:
 \begin{equation*}
 \begin{aligned}
 & \underset{x}{\text{minimize}} & & f(x, y, z) \\
@@ -147,27 +104,40 @@ A slightly more general form is:
 \end{aligned}
 \end{equation*}
 
-
+Biegler assumes that the dimension of $u$ is small compared to the dimension of $x$ and $z$.
 
 \subsection{Approaches}
 
-\begin{itemize}
-\item Finite difference methods
-	\begin{itemize}
-	\item $\nabla f(x) \approx (\frac{f(x+he_i) - f(x-he_i)}{2h})_i$ for some $h$
-	\item The number of function evaluations can grow large quickly
-	\end{itemize}
-\item Direct search methods
-	\begin{itemize}
-	\item Coordinate descent and Pattern based
-	\item Nelder Mead
-	\item Do not use derivatives: robust but ignore useful information
-	\end{itemize}
-\item Model-based methods
-	\begin{itemize}
-	\item This is what we will discuss
-	\end{itemize}
-\end{itemize}
+In this section we discuss several of the approaches taken when derivative information is not known.
+
+\subsubsection{Finite difference methods}
+Finite difference methods can be used to approximate the derivative of a function $f$.
+A common approximation is given by $\nabla f(x) \approx (\frac{f(x+he_i) - f(x-he_i)}{2h})_i$ for some small $h$.
+This may work well but can have issues with unlucky iterates.
+The number of function evaluations tends to grow large with the dimension and number of iterations the algorithm performs as information is only gathered near the current iterate when $h$ is small (which is required for accurate derivatives).
+Because of the large number of function evaluations required for finite difference schemes, these can be unusable.
+
+CITE
+
+
+\subsubsection{Direct search methods}
+
+Another approach is to use direct search methods that do not explicitly estimate the derivative but evaluate the objective on a pattern or other structure to find a descent direction.
+Examples of this include Coordinate descent and other pattern based search methods.
+One of the most popular direct search method is Nelder Mead (it is implemented in fminsearch in matlab) although it is proven to not converge in (synonym: bad) cases.
+These methods can be robust but ignore information because they do not use derivatives.
+
+
+(0th derivative)
+
+\subsubsection{Model based methods}
+In this paper, we are concerned with model based methods that minimize a model used to approximation of the unknown objective (by regression or kriging or ...).
+The algorithm can then use derivative information from the model to find a descent direction.
+These methods require an adequate geometry of sampled points to ensure convergence.
+
+
+
+
 
 
 \subsection{The Derivative Trust Region Method}
@@ -215,11 +185,74 @@ A slightly more general form is:
 %\begin{aligned}
 %& \underset{x}{\text{minimize}} & & f(x, S(x)) \\
 %& \text{subject to} & & g_i(x) \leq 0, \; i = 1, \ldots, m \\
-%& & & h_i(x) = 0, \; i = 1, \ldots, n 
+%& & & h_i(x) = 0, \; i = 1, \ldots, n
 %\end{aligned}
 %\end{equation*}
 %\end{frame}
 
+
+\section{Literature Review}
+
+The original filter method was proposed by Gould in \cite{DUMMY:original_filter}. The motivation for the filter method was that the algorithm does not need to tune any parameters as in penalty or merit methods.
+
+A recent paper from September 2016 \cite{DUMMY:Biegler} implements a derivative-free trust region filter method for solving the general program
+
+\begin{equation*}
+\begin{aligned}
+& \underset{x}{\text{minimize}} & & f(x, y, z) \\
+& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
+& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
+& & & y = d(z) \;  \\
+\end{aligned}
+\end{equation*}
+where $d$ is a black box function while $f$, $g$ and $h$ are glass box functions.
+This is more general than the algorithm we consider as it allows for the objective to depend on other glass box functions of the input and multiple outputs of the black box function. The authors compare their algorithm to finite difference methods as well as kriging on three different applications from Chemistry. Within the algorithm, the current iterate is always feasible with respect all inequalities except for the constraint $y=d(z)$.
+
+
+
+
+
+In the 2006 paper \cite{DUMMY:Fletcher} Fletcher reviews how filter methods have developed. The only references to derivative-free versions of the filter method are those applied to pattern based (direct) methods. However, the authors outline trust region filter methods along with several other variants.
+
+In Brekelman's paper \cite{DUMMY:Brekelman}, a trust region filter method is developed to minimize function evaluations by constructing linear model functions. This paper also uses experimental designs to choose following iterates.
+
+
+Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework. We experimented with this before deciding combining line search with the derivative-free trust region approach was not a natural approach. (There have been attempts to employ both of these frameworks in \cite{DUMMY:CombineTrustAndLine}.)
+
+
+Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail. This contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+
+
+Within \cite{DUMMY:trust_funnel_dfo} Toint generalizes the filter method with the notion of a trust funnel. This is for glass box functions as it does not include any derivative-free methods.
+
+
+Within \cite{DUMMY:sqp_filter} a sequential quadratic programming method is applied to the filter method?
+
+
+Colson has also applied filter techniques to derivative-free optimization in his 2004 Ph.D. thesis \cite{Colson2004}. This focuses on bilevel programming.
+
+
+I based my algorithm of the trust region filter method described in:
+
+GLOBAL CONVERGENCE OF A TRUST-REGION SQP-FILTER
+ALGORITHM FOR GENERAL NONLINEAR PROGRAMMING∗
+ROGER FLETCHER†, NICHOLAS I. M. GOULD‡, SVEN LEYFFER†,
+PHILIPPE L. TOINT§, AND ANDREAS WACHTER ¨ ¶
+I need to find a bibtex reference of this paper to put in the bibliography.
+
+
+
+% In order to give this talk as is, I need to be prepared to talk about
+% and preferably have optional slides for
+% Coordinate descent, Nelder mead (not implicit filtering http://www4.ncsu.edu/~ctk/imfil.pdf)
+% Wolf, Armijo, or Goldstein
+% trust region subproblem
+% know values of \eta_1, \eta_2
+% interpolation may involve frebenius norm/enforcing sparsity
+% http://www.sciencedirect.com/science/article/pii/S0167819103000139
+% Should use the word black box early on
+
+the two additional review papers.
 
 
 
@@ -239,22 +272,33 @@ A slightly more general form is:
 \subsection{NLP Methods}
 
 We can convert classical algorithms to DFO
+Possible future work includes converting nonlinear algorithms to  aderivative free context.
+Several algorithms have already been converted.
 
 \begin{itemize}
-\item Take an existing constrained Nonlinear programming method
+	\item Line search (CITE)
+	\item Filter method (introduced in 2004 CITE for pattern searches)
+	\item Active Set (CITE)
+	\item Augmented Lagrangian (CITE)
+	\item Penalty
 	\begin{itemize}
-		\item Filter method
-		\item Active Set
-		\item Augmented Lagrangian
-		\item Interior Point
-		\item Line search
+		\item Abramson \& Audet, 2006
+		\item Abramson et al. 2009c
+		\item audet et al. 2008b
+		\item Audet \& Dennis, 2006
+		\item sequential penalty merit functions Liuzzi et al., 2010
+		\item smoothed exact $l-\infty$ penalty function Liuzzi \& Lucidi, 2009
+		\item exact penalty merit function Fasano, Liuzzi, Lucidi, \& Rinalsdi, 2014; Gratton \& Vicente, 2014
 	\end{itemize}
-\item Replace derivatives of $f$, $g_i$, $h_i$ with derivatives of a model function
+	\item Progressive Barrier
+	\begin{itemize}
+		\item Audet \& Dennis, 2009
+	\end{itemize}
+	\item Interior Point (CITE)
 \end{itemize}
 
-
-
-
+The approach is to replace derivatives of $f$, $g_i$, $h_i$ with derivatives of a model function.
+I have considered line search methods as well as Filter methods which are discussed below.
 
 
 \subsection{Goals}
@@ -263,15 +307,15 @@ We could consider an objective function with a evaluation runtime that varies wi
 %We could minimize the number of future function evaluations given a stochastic model of what the new function values could be.
 
 % We could consider the following bicriteria optimization problem:
-% 
+%
 % \begin{equation*}
 % \begin{aligned}
 % & \underset{x}{\text{minimize}} & & (f(x, S(x)), \sum_i r(x_i)) \\
 % & \text{subject to} & & g_i(x) \leq 0, \; i = 1, \ldots, m \\
-% & & & h_i(x) = 0, \; i = 1, \ldots, n 
+% & & & h_i(x) = 0, \; i = 1, \ldots, n
 % \end{aligned}
 % \end{equation*}
-% 
+%
 % \begin{itemize}
 % \item $x_i$ is the generated points where $f(x)$ are evaluated
 % \item $r(x)$ is the runtime of evaluating $f(x)$, or possibly worst case runtime
@@ -282,6 +326,7 @@ We could consider an objective function with a evaluation runtime that varies wi
 
 
 \subsection{Parallelization}
+
 
 
 \begin{enumerate}
@@ -307,88 +352,12 @@ The third item is particularily interesting.
 \item Problem Structure
 	Specify the structure of $f$, $g_i$, or $h_i$
 \item Machine Learning
-	Applying DFO techniques to algorthms that currently use random sampling to tune parameters
+	Applying DFO techniques to algorithms that currently use random sampling to tune parameters
 \end{itemize}
 
 
 
 
-
-
-% \frametitle{Appendix}
-% 
-% \[
-% f(x_k + \alpha_k p_k) \le f(x_k) + c_1 \alpha p_k^T \nabla f(x_k)
-% \]
-% 
-% \[
-% p_k^T \nabla f(x_k + \alpha p_k) \ge c_2 p_k^T \nabla f(x_k)
-% \]
-% \[
-% 0 < c_1 < c_2 < 1
-% \]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%\begin{frame}
-%\frametitle{Finding $f'(0)$}
-%
-%By the definition of derivative,
-%\begin{eqnarray*} % As usual, the asterisk suppresses the numbering of each line in the array.
-%f'(0)&=&\pause\displaystyle\lim_{h\to 0}\frac{f(0+h)-f(0)}{h}\\
-%\pause&=&\displaystyle\lim_{h\to 0}\frac{h^2\sin(1/h)-0}{h}\\
-%\pause&=&\displaystyle\lim_{h\to 0}h\sin(1/h)\\
-%\end{eqnarray*}
-%
-%Since $-h\leq h\sin(1/h)\leq h$ \pause and $\displaystyle\lim_{h\to 0}(-h)=\displaystyle\lim_{h\to 0}(h)=0$, \pause the \uncover<7->{Squeeze }Theorem says \pause $f'(0)=0.$
-% The command \uncover<m->{STUFF} means that STUFF will appear starting in the mth slide of the frame.
-% The command \uncover<m-n>{STUFF} means that STUFF will appear from the mth slide to the nth slide of the frame.
-%\end{frame}
-
-%\begin{frame}
-%\frametitle{What Really Happens at $x=0$?}
-%\begin{columns} % This creates a frame with multiple columns.
-%\begin{column}{0.5\textwidth} % The first column will be 50% as wide as the width of text on the page.
-%But $f(x)$ oscillates wildly as $x\to 0$, so even though $f'(0)=0$, $f$ has neither max, min, nor %inflection point at $x=0$.
-%\end{column}
-%
-%\pause
-%
-%\begin{column}{0.5\textwidth} % Now begins our second column.
-%\includegraphics[width=5cm, height=5cm]{graph1.png} % Beamer doesn't like to display .eps files. This .png was converted from .eps using Adobe Acrobat. The file graph1.png should be in the same folder as the .tex file.
-%\begin{center}
-%\textcolor{orange}{$y=f(x)$}, \textcolor{red}{$y=x^2$}, \textcolor{green}{$y=-x^2$} % This changes the %text color.
-%\end{center}
-%\end{column}
-%\end{columns}
-%\end{frame}
-
-
-
-
-%\begin{frame}
-%\begin{center}
-%\includegraphics[width=5cm, height=5cm]{graph2.png}
-
-%\textcolor{orange}{$y=g(x)$}, \textcolor{red}{$y=x^2+0.5x$}, \textcolor{green}{$y=x^2-0.5x$} 
-%\end{center}
-
-%\end{frame}
 
 
 
@@ -399,7 +368,7 @@ The third item is particularily interesting.
 
 We consider problems of the form
 
-\begin{align*} 
+\begin{align*}
 \min_x & f(x) \\
  & g(x) \le 0 \\
  & h(x) = 0
@@ -427,13 +396,13 @@ We work within a trust region, sequential quadratic programming framework that u
 We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
 Although we have function values for enough points to construct model functions of the same order as used for the objective, we model the feasible with only the linear constraints.
 
-The core of the algorithm revolves around 
+The core of the algorithm revolves around
 
 
 \subsubsection{Criticality Measure}
 In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
 
-This is defined as 
+This is defined as
 \begin{align*}
 \chi & = & |\min_t \langle g_k + H_kn_k, t\rangle| \\
 & A_{eq}t &=& \; 0 \\
@@ -475,7 +444,7 @@ s.t. \quad & c_{eq} + A_{eq}t	&=& \; 0 \\
 \item This program is a shifted version of another
 \end{itemize}
 
-\subsubsection{Compatibility}
+%\subsubsection{Compatibility}
 
 
 \subsubsection{The filter}
@@ -494,8 +463,11 @@ f(x_k) \le f_i -\gamma_{\theta}\theta_i
 for all $(\theta_i, f_i)$ that are currently in the filter.
 When this condition is satisfied, we say that the new iterate $x_k$ is admissible to the filter.
 
-\subsubsection{f-type versus $\theta$-type}
+\subsubsection{$f$-type versus $\theta$-type}
 
+When steps decrease $f$ significantly more than $theta$ the steps are considered $f$ type.
+$theta$-type steps are steps that significantly reduce the constraint violation.
+I thought that the paper I read about the convergence rate said they introduced a new criteria to this that made it more efficient.
 
 \subsubsection{Restoration Step}
 
@@ -544,7 +516,7 @@ One issue with applying the original algorithm within a DFO context was that the
 
 \While {$k < maxit$}
 	\Label \texttt{main loop:}
-	
+
 	\State{ensure poisedness, possibly adding points to the model}
 	\State{Compute $m_k, g_k=\nabla m_k(x_k), c_k, A_k, f_k=f(x_k), \mathcal {A}, \theta_k$}
 	\State{Solve:}
@@ -553,10 +525,10 @@ One issue with applying the original algorithm within a DFO context was that the
 		\hspace{3cm}$A_kd\hspace{1cm}              = c_k$
 	\end{varwidth}
 	\State{$H_k \gets \nabla^2 m_k(x_k) + \sum_i \lambda_i \nabla^2 {c_{i}}_k$}
-	
-	
+
+
 	\State{$\chi_k \gets |\min_t \{\langle g_k + H_kn_k, t\rangle | A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| t \| \le 1\}|$}
-	
+
  	\If {constraint violation $=0 \wedge \chi=0$}
 		\If {$tol < \Delta_k$}
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
@@ -565,20 +537,20 @@ One issue with applying the original algorithm within a DFO context was that the
 		\EndIf
 		\textbf{success}
 	\EndIf
-	
-	
+
+
 	\State{$n_k \gets \argmin_n \{\|n\|^2 | c_{eq} + A_{eq}n = 0 \wedge c_{ineq} + A_{ineq}n \le 0 \wedge \| n \|^2 \le \Delta_k\}^2$}
-	    
+
 	\If {Feasible region $\ne \emptyset \wedge \|n\|\le \kappa_{\Delta} \Delta_k \min \{1, \kappa_{\mu}\Delta_k^{\mu}\}$}
 		\State{$t_k \gets \argmin_t \{ (g_n+H_kn_k)^Tt + \frac 1 2 t^T H_k t | c_{eq} + A_{eq}t = 0 \wedge c_{ineq} + A_{ineq}t \le 0 \wedge \| s \| \le \Delta_k\}$}
 		\State{$s_k \gets t_k + n_k$}
-		
+
 		\If {$m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}$}
 			\State{add $x_k$ to filter}
 			\State{reduce $\Delta$: $\Delta_{k+1} \gets $ some $\in [\gamma_0 \Delta_k, \gamma_1 \Delta_k]$}
 			\State \Goto \texttt{main loop}
 		\EndIf
-		
+
 		\State{// Here we evaluate new $c$ and $f$ at $x_k + s_k$}
 		\If {$x_k + s_k$ is acceptable: $\theta(x_k+s_k)\le(1-\gamma_{\theta})\theta' \vee f(x_k+s_k) \le f' - \gamma_{\theta}\theta' \forall (f', \theta') \in $ Filter}
 			\State{$\rho = \frac{f(x_k)-f(x_k+s_k)}{m_k(x_k)-m_k(x_k+s_k)}$}
@@ -592,7 +564,7 @@ One issue with applying the original algorithm within a DFO context was that the
 				\Else
 					\State{increase $\Delta$: $\Delta_{k+1} \gets$ some $ \in [\Delta_k, \gamma_2 \Delta_k]$}
 				\EndIf
-				
+
 			\EndIf
 			\State{$x_{k+1} \gets x_k + s_k$}
 		\Else
@@ -616,7 +588,15 @@ One issue with applying the original algorithm within a DFO context was that the
 
 \FloatBarrier
 
+\subsection{Generalizations}
 
+As this method was also discovered by () we have also considered possible extensions.
+
+\begin{itemize}
+\item The authors only considered linear models, we can use quadratic models
+\item We can generalize (relax) the possible steps by only requiring only that new iterates are admissable with respect to a multi objective filter of the form $(f(x), \|g_1(x)\|^2, \ldots \|g_{m_1}(x)\|^2, \|h_1(x)\|, \ldots, \|h_{m_2}\|)$.
+\item We could relax the condition that all iterates have to remain feasible with respect to all constraints except $y = d(z)$.
+\end{itemize}
 
 \section{Pictures of convergence}
 \section{Comparison to other libraries (If I get enough time)}
@@ -626,9 +606,8 @@ One issue with applying the original algorithm within a DFO context was that the
 
 \newpage
 
-\bibliography{proposal} 
+\bibliography{proposal}
 \bibliographystyle{ieeetr}
 
 
 \end{document}
-
