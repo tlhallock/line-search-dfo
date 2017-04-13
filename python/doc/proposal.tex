@@ -135,23 +135,23 @@ In this paper, we are concerned with model based methods that minimize a model u
 The algorithm can then use derivative information from the model to find a descent direction.
 These methods require an adequate geometry of sampled points to ensure convergence.
 
+More specifically, regression based methods require that set the function is evaluated at must be $\Lambda$ poised for a fixed constant $\Lambda$.
+This ensures that the Vandermode matrix used to find the coefficients used to express the model function in terms of a basis of Lagrange polynomials is well conditioned.
+$\dots$.
 
 
 
 
+\subsection{The Derivative Free Trust Region Method}
 
-\subsection{The Derivative Trust Region Method}
+The overall description of the trust region framework is that a set of poised points are chosen for some radius $\Delta$ about the current iterate.
+The objective/constraint are then evaluated at these point to construct a model function as a linear combination of some set of basis functions.
+Next, the model is minimized over this trust region to and the minimum becomes the trial point.
+The objective is evaluated at the trail point and a measure of reduction $\rho$ is computed.
+If $\rho$ implies that sufficient reduction has been made, the trial point is accepted as the new iterate.
+Otherwise, the trust region is reduced.
 
-\begin{itemize}
-	\item Interpolate or regress model functions onto a sample
-	\item Minimize the model function over a trust region
-	\item Adjust trust region, possibly by testing the model's accuracy
-\end{itemize}
-
-
-
-
-\subsection{More details}
+\subsubsection{More details}
 
 \begin{enumerate}
 	\item Define $m_k(x) = f(x^{(k)}) + \nabla f(x^{(k)})^T (x-x^{(k)}) + \frac 1 2 (x-x^{(k)})^T\nabla^2f(x^{(k)})(x-x^{(k)})$
@@ -171,16 +171,6 @@ These methods require an adequate geometry of sampled points to ensure convergen
 \end{enumerate}
 
 
-
-
-
-
-
-%\section{My Work}
-
-
-%\begin{frame}
-
 %\begin{equation*}
 %\begin{aligned}
 %& \underset{x}{\text{minimize}} & & f(x, S(x)) \\
@@ -188,7 +178,6 @@ These methods require an adequate geometry of sampled points to ensure convergen
 %& & & h_i(x) = 0, \; i = 1, \ldots, n
 %\end{aligned}
 %\end{equation*}
-%\end{frame}
 
 
 \section{Literature Review}
@@ -260,24 +249,29 @@ the two additional review papers.
 
 \subsection{Future Directions}
 
+Possible future research directions fall among the follows topics:
+
 \begin{itemize}
 \item Convert classical NLP Algorithms to DFO
-\item Different Goals
-\item Parallelization
+\item Consider different DFO Goals
+\item Parallelize DFO Algorithms
 \item Explore different model functions
-\item Providing structure to the optimization program
+\item Impose structure
 \end{itemize}
 
 
 \subsection{NLP Methods}
 
-We can convert classical algorithms to DFO
-Possible future work includes converting nonlinear algorithms to  aderivative free context.
-Several algorithms have already been converted.
+Possible future work includes converting nonlinear algorithms to a derivative free context.
+We outline several nonlinear programming algorithms, some of which others have made progress in translating to a DFO context.
 
 \begin{itemize}
 	\item Line search (CITE)
-	\item Filter method (introduced in 2004 CITE for pattern searches)
+	\item Filter method
+	\begin{itemize}
+		\item The first filter methods in DFO were introduced in 2004 CITE within the context of pattern searches
+		\item Since then, progress has also been made in a trust region framework CITE, CITE, CITE
+	\end{itemize}
 	\item Active Set (CITE)
 	\item Augmented Lagrangian (CITE)
 	\item Penalty
@@ -297,12 +291,19 @@ Several algorithms have already been converted.
 	\item Interior Point (CITE)
 \end{itemize}
 
-The approach is to replace derivatives of $f$, $g_i$, $h_i$ with derivatives of a model function.
+The general approach is to replace derivatives of $f$, $g_i$, $h_i$ with derivatives of the model function.
+Then other aspects of the algorithm may have to be changed in order to ensure convergence.
 I have considered line search methods as well as Filter methods which are discussed below.
 
 
-\subsection{Goals}
+
+
+
+\subsection{Other directions}
+\subsubsection{Goals}
 We could consider an objective function with a evaluation runtime that varies with $x$.
+For example, in some problems from PDE's the runtime of a simulation may involve the ``stiffness" of $\ldots$.
+In these situations, it may be advisable to consider the runtime cost of the function when evaluating new points: choosing points that remain poised with respect to the geometry but allow for faster evaluation.
 
 %We could minimize the number of future function evaluations given a stochastic model of what the new function values could be.
 
@@ -325,38 +326,36 @@ We could consider an objective function with a evaluation runtime that varies wi
 
 
 
-\subsection{Parallelization}
+\subsubsection{Parallelization}
+
+Parallelization is another topic receiving allot of attention.
+Modern super computer design can be exploited in several different ways.
+These include parallelization of the function and/or derivative evaluations within the algorithm or of the linear algebra kernels.
+However, the more relevant is from modification the basic algroithms which increase the degree of intrinsic parallelism. This can come from performing multiple function and/or derivative evaluations.
 
 
-
-\begin{enumerate}
-\item parallelization of the function and/or the derivative evaluations in the algorithm
-\item parallelization of linear algebra kernels
-\item modifications of the basic algorithms which increase the degree of intrinsic parallelism, for instance, by performing multiple function and/or derivative evaluations
-\end{enumerate}
-
-The third item is particularily interesting.
-
-%Schnabel [99]
+CITE
+Schnabel [99]
 %http://www.sciencedirect.com/science/article/pii/S0167819103000139
 
 
-
-
-
-\subsection{Miscellaneous}
+\subsubsection{Miscellaneous}
 
 \begin{itemize}
 \item Model Functions
 	Radial basis functions
 \item Problem Structure
-	Specify the structure of $f$, $g_i$, or $h_i$
+	Specify the structure of $f$, $g_i$, or $h_i$. For example, work has been done when these functions take the form of a least squares problem. CITE
 \item Machine Learning
 	Applying DFO techniques to algorithms that currently use random sampling to tune parameters
 \end{itemize}
 
-
-
+Of current interest:
+\begin{itemize}
+\item Any time algorithms maintain feasibility so that the algorithm can be stopped at any time to yield feasible guess. The longer the algorithm is run, the better the returned value is, until optimality is reached.
+\item Machine learning techniques are a hot topic, and some techniques have very complicated objectives for which derivative information is not known.
+\item Constraints that leave a narrow feasible region near the critical point. (Harming lambda poisedness.) One approach may be to redefine the poisedness.
+\end{itemize}
 
 
 
@@ -390,14 +389,12 @@ We began with a line search filter method, however we found that this had severa
 
 \subsection{Algorithm in other paper}
 
-
 We work within a trust region, sequential quadratic programming framework that uses a filter method introduced by Fletcher.
 
 We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
 Although we have function values for enough points to construct model functions of the same order as used for the objective, we model the feasible with only the linear constraints.
 
 The core of the algorithm revolves around
-
 
 \subsubsection{Criticality Measure}
 In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
@@ -599,7 +596,7 @@ As this method was also discovered by () we have also considered possible extens
 \end{itemize}
 
 \section{Pictures of convergence}
-\section{Comparison to other libraries (If I get enough time)}
+\section{Comparison to other libraries}
 
 
 
