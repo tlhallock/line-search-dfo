@@ -18,7 +18,7 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 
 
-\title{Possible Future Research}
+\title{Derivative Free Model-Based Methods for Local Constrained Optimization}
 \author{Trever Hallock}
 %\institute{CU Denver}
 %\date{January 6, 2012}
@@ -52,14 +52,17 @@ The focus is on local search algorithms for constrained derivative free optimiza
 
 \section{Derivative-free Mentality}
 
-Derivative free optimization is motivated by programs in which derivative information is unknown, deceptive or otherwise impractical to compute.
-For example, this can arise when the objective is the result of a simulation that does not admit automatic differentiation due to copyrights or is too expensive for repeated calls within a finite difference framework.
+Derivative free optimization (DFO) is motivated by programs in which derivative information is unknown, deceptive or otherwise impractical to compute.
+For example, this can arise when the objective is the result of a simulation that does not admit automatic differentiation.
 The general strategy is to converge to a first or second order critical point while evaluating the function as few times as possible.
 
-Another branch of DFO is concerned with noisy function evaluation.
-Noisy functions can be categorized as either deterministic or random.
-Deterministic means that the genuine objective is not always evaluated accurately, but the measurement error (?) will not change across multiple function calls at the same point.
-Random means that each point in the domain is associated with a distribution of possible values the objective may return.
+It seems like several papers have mentioned
+\begin{itemize}
+\item copyright issues in code
+\item user laziness
+\item large tolerance (lack of regard to asymptotic convergence)
+\item parameter tuning
+\end{itemize}
 
 \subsubsection{Derivatives are convenient}
 
@@ -75,40 +78,81 @@ In more detail, DFO methods consider nonlinear, constrained optimization problem
 \begin{equation*}
 \begin{aligned}
 & \underset{x}{\text{minimize}} & & f(x, S(x)) \\
-& \text{subject to} & & g_i(x, S(x)) \leq 0, \; i = 1, \ldots, m_{\mathcal{I}} \\
+& \text{subject to} & & g(x, S(x)) \leq 0, \; i = 1, \ldots, m_{\mathcal{I}} \\
 & & & h_i(x, S(x)) = 0, \; i = 1, \ldots, m_{\mathcal{E}}
 \end{aligned}
 \end{equation*}
 
-which give rise to different classes of derivative-free optimization based on properties of $f : \mathbb{R}^n \to \mathbb{R}$, $g_i \mathbb{R} \to \mathbb{R}$, and $h_i \mathbb{R} \to \mathbb{R}$.
-As discussed, these functions may be noisy, either deterministically or randomly, although this paper does not deal with this case.
-Derivatives of $g_i$ and $h_i$ may be known, in which case the objective is the only derivative free function.
-One common such case is to include bound constraints of the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$, which gives rise to Box Constrained DFO (BCDFO).
-If the constraints can be evaluated at points outside the feasible region, the constraints are called relaxable constraints.
-We consider the case where no derivative information of $g_i$ and $h_i$ are known, for example if they are also output from a simulation used to evaluate the objective.
+which give rise to different classes of derivative-free optimization based on properties of
+$S : \mathbb{R}^n \to \mathbb{R}^m$,
+$f : \mathbb{R}^{n+m} \to \mathbb{R}$,
+$g : \mathbb{R}^{n+m} \to \mathbb{R}^{m_{\mathcal{I}}}$, and
+$h : \mathbb{R}^{n+m} \to \mathbb{R}^{m_{\mathcal{E}}}$.
+
+Here, we assume that $S(x)$ is a black-box function, meaning that we have no information about its derivatives.
+We will introduce several different forms this problem can take before narrowing in on our interest.
+
+One branch of DFO is concerned with noisy evaluations of $S$.
+Noisy functions can be categorized as either deterministic or random.
+Deterministic means that the genuine objective is not always evaluated accurately, but measurement error (?) will not change across multiple function calls at the same point.
+Random means that each point in the domain is associated with a distribution of possible values the objective may return.
+In this paper we assume $S$ is not noisy.
+
+If $g(x, S(x)) = g(x)$ and $h(x, S(x)) = h(x)$, then the derivatives of $g$ and $h$ are known, so the objective is the only derivative free function.
+We are primarily interested in the case where no derivative information of $g$ and $h$ are known, for example if they are also output from a simulation used to evaluate the objective.
 This means that each call to the objective gives values of the constraints as well, and vica versa.
-However, although derivatives are not known, we do assume that $f$, $g_i$, and $h_i$ are all continuously twice differentiable.
+(Encouraging higher order models of the constraints?)
+This produces $g(x, S(x))=g(S(x))$ and $h(x,S(x))=h(S(x))$.
+
+One common such case is to include bound constraints of the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$, which gives rise to Box Constrained DFO (BCDFO).
+This is one of the better studied cases, with several software packages available: CITE.
+
+However, although derivatives of $S$ are not known, we do assume that $S$, $f$, $g$, and $h$ are all continuously twice differentiable.
+
+If the constraints can be evaluated at points outside the feasible region, the constraints are called relaxable constraints.
 Some problems additionally contain ``hidden" constraints which are not explicit in the model but merely result in a notification that the objective could not be evaluated at the requested point.
 This may mean that it is not possible to tell how close to a ``hidden" constraint the current iterate lies.
+
 Again, we only consider only local search algorithms for this problem that seek a first or second order stationary point.
+One interesting topic within the research is different shapes of the feasible regions near critical points.
+Although constrained DFO has attracted much interest in terms of papers, there are still few libraries for constrained derivative free optimization.
+An area that may not have seen much progress is that of the NLP responses to constraints that leave narrow feasible regions near a critical point.
+This is of particular interest to DFO because reducing the dimension near a critical point could significantly harm the geometry of the poised set.
+One approach may be to redefine the poisedness as the maximum value of the model function over only the feasible region intersected with the trust region.
 
-Many DFO methods simply let $f(x,S(x)) = S(x)$.
+Another area that received attention recently is that of imposing structure on $f$, $g$, and $h$.
+For example, when $f$ takes the form of a least squares error, some improvements can be made. CITE Stephen Wild
 
-A slightly more general form is presented by \cite{DUMMY:Biegler} and given here:
+%Many DFO methods simply let $f(x,S(x)) = S(x)$.
+
+An intriguing form of the previous program is presented by \cite{DUMMY:Biegler} and given here:
 \begin{equation*}
 \begin{aligned}
 & \underset{x}{\text{minimize}} & & f(x, y, z) \\
-& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
-& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
-& & & y = d(z) \;  \\
+& \text{subject to} & & g(x, y, z) \leq 0 \\
+& & & h(x, y, z) = 0 \\
+& & & y = S(x) \;  \\
 \end{aligned}
 \end{equation*}
+where
+$S : \mathbb{R}^n \to \mathbb{R}^m$,
+$f : \mathbb{R}^{n+m+k} \to \mathbb{R}$,
+$g : \mathbb{R}^{n+m+k} \to \mathbb{R}^{m_{\mathcal{I}}}$, and
+$h : \mathbb{R}^{n+m+k} \to \mathbb{R}^{m_{\mathcal{E}}}$.
 
-Biegler assumes that the dimension of $u$ is small compared to the dimension of $x$ and $z$.
+Biegler assumes that the dimension of $x$ is small compared to the dimension of $y$ and $z$.
+This permits the algorithmic approach of relaxing $y=S(x)$.
 
-\subsection{Approaches}
+\subsection{Approaches for Local Search Algorithms}
 
 In this section we discuss several of the approaches taken when derivative information is not known.
+
+\subsubsection{Automatic Differentiation}
+
+When $S$ is the result of a simulation for which the source code is available, one convenient approach is to perform automatic differentiation.
+Although derivatives of complicated expressions resulting from code structure are difficult to work with on paper, the rules of differentiation can be applied algorithmically to calculate derivatives.
+However, the nature of the code or problem can make this very difficult: for example with combinatorial problems that rely heavily on if statements.
+(?)
 
 \subsubsection{Finite difference methods}
 Finite difference methods can be used to approximate the derivative of a function $f$.
@@ -118,7 +162,6 @@ The number of function evaluations tends to grow large with the dimension and nu
 Because of the large number of function evaluations required for finite difference schemes, these can be unusable.
 
 CITE
-
 
 \subsubsection{Direct search methods}
 
@@ -151,7 +194,9 @@ The objective is evaluated at the trail point and a measure of reduction $\rho$ 
 If $\rho$ implies that sufficient reduction has been made, the trial point is accepted as the new iterate.
 Otherwise, the trust region is reduced.
 
-\subsubsection{More details}
+\subsubsection{Algorithmic Framework}
+
+For unconstrained optimization, the framework can be described with these steps:
 
 \begin{enumerate}
 	\item Define $m_k(x) = f(x^{(k)}) + \nabla f(x^{(k)})^T (x-x^{(k)}) + \frac 1 2 (x-x^{(k)})^T\nabla^2f(x^{(k)})(x-x^{(k)})$
@@ -159,16 +204,23 @@ Otherwise, the trust region is reduced.
 		\item $\nabla f(x^{(k)})$ and $\nabla^2 f(x^{(k)})$ must be approximated
 		\item There are geometric properties of the sample set that must be satisfied
 	\end{itemize}
-	\item if $\nabla m_k(x) < t$ stop
-	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B_(x^{(k)}, \Delta_k)} m_k(x^{(k)} + s)$
+	\item If $\nabla m_k(x) < t$ stop
+	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B_{x^{(k)}}, \Delta_k)} m_k(x^{(k)} + s)$
 	\item Test for improvement
 	\begin{itemize}
-		\item $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$
+		\item $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$ measures the actual improvement over predicted improvement
 		\item If $\rho$ is small, $x^{(k+1)}=x^{(k)}$ (reject) and decrease radius
 		\item If $\rho$ is intermediate, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and decrease radius
 		\item If $\rho$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and increase radius
 	\end{itemize}
 \end{enumerate}
+
+Our goal is generalize this framework to handle constraints, where we must take care to reduce constraint violation and account for constraint's model's accuracy.
+?
+
+The choice of model functions can have some affect on the convergence rate, as Powell showed in CITE.
+Model functions are usually chosen to be fully linear or fully quadratic, terms describing how the model's error grows as a function of the trust region radius.
+Intuitively, radial basis functions may have some ?conveniences? because the algorithm makes claims about the accuracy of the function over a trust region.
 
 
 %\begin{equation*}
@@ -184,44 +236,39 @@ Otherwise, the trust region is reduced.
 
 The original filter method was proposed by Gould in \cite{DUMMY:original_filter}. The motivation for the filter method was that the algorithm does not need to tune any parameters as in penalty or merit methods.
 
-A recent paper from September 2016 \cite{DUMMY:Biegler} implements a derivative-free trust region filter method for solving the general program
-
-\begin{equation*}
-\begin{aligned}
-& \underset{x}{\text{minimize}} & & f(x, y, z) \\
-& \text{subject to} & & g_i(x, y, z) \leq 0 \quad \forall i = 1, \ldots, m_1 \\
-& & & h_i(x, y, z) = 0, \quad \forall i = 1 \ldots, m_2 \\
-& & & y = d(z) \;  \\
-\end{aligned}
-\end{equation*}
-where $d$ is a black box function while $f$, $g$ and $h$ are glass box functions.
-This is more general than the algorithm we consider as it allows for the objective to depend on other glass box functions of the input and multiple outputs of the black box function. The authors compare their algorithm to finite difference methods as well as kriging on three different applications from Chemistry. Within the algorithm, the current iterate is always feasible with respect all inequalities except for the constraint $y=d(z)$.
+A recent paper from September 2016 \cite{DUMMY:Biegler} implements a derivative-free trust region filter method for solving the the program given above (REFERENCE).
+This is more convenient for some problems than the algorithm we consider as it allows for the objective to depend on other glass box functions of the input and multiple outputs of the black box function.
+The authors compare their algorithm to finite difference methods as well as kriging on three different applications from Chemistry. Within the algorithm, the current iterate is always feasible with respect to all inequalities except for the constraint $y=d(z)$.
 
 
+In the 2006 paper \cite{DUMMY:Fletcher} Fletcher reviews how filter methods have developed.
+The only references to derivative-free versions of the filter method are those applied to pattern based (direct) methods.
+However, the authors outline trust region filter methods along with several other variants.
+
+In Brekelman's paper \cite{DUMMY:Brekelman}, a trust region filter method is developed to minimize function evaluations by constructing linear model functions.
+This paper also uses experimental designs to choose following iterates.
 
 
-
-In the 2006 paper \cite{DUMMY:Fletcher} Fletcher reviews how filter methods have developed. The only references to derivative-free versions of the filter method are those applied to pattern based (direct) methods. However, the authors outline trust region filter methods along with several other variants.
-
-In Brekelman's paper \cite{DUMMY:Brekelman}, a trust region filter method is developed to minimize function evaluations by constructing linear model functions. This paper also uses experimental designs to choose following iterates.
+Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework.
+We experimented with this before deciding combining line search with the derivative-free trust region approach was not a natural approach. (There have been attempts to employ both of these frameworks in \cite{DUMMY:CombineTrustAndLine}.)
 
 
-Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework. We experimented with this before deciding combining line search with the derivative-free trust region approach was not a natural approach. (There have been attempts to employ both of these frameworks in \cite{DUMMY:CombineTrustAndLine}.)
+Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
+This contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
 
 
-Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail. This contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
-
-
-Within \cite{DUMMY:trust_funnel_dfo} Toint generalizes the filter method with the notion of a trust funnel. This is for glass box functions as it does not include any derivative-free methods.
+Within \cite{DUMMY:trust_funnel_dfo} Toint generalizes the filter method with the notion of a trust funnel.
+This is for glass box functions as it does not include any derivative-free methods.
 
 
 Within \cite{DUMMY:sqp_filter} a sequential quadratic programming method is applied to the filter method?
 
 
-Colson has also applied filter techniques to derivative-free optimization in his 2004 Ph.D. thesis \cite{Colson2004}. This focuses on bilevel programming.
+Colson has also applied filter techniques to derivative-free optimization in his 2004 Ph.D. thesis \cite{Colson2004}.
+This focuses on bilevel programming.
 
 
-I based my algorithm of the trust region filter method described in:
+I based my algorithm on the trust region filter method described in:
 
 GLOBAL CONVERGENCE OF A TRUST-REGION SQP-FILTER
 ALGORITHM FOR GENERAL NONLINEAR PROGRAMMING∗
@@ -249,21 +296,39 @@ the two additional review papers.
 
 \subsection{Future Directions}
 
-Possible future research directions fall among the follows topics:
+Here we outline the future research directions we will investigate.
 
-\begin{itemize}
-\item Convert classical NLP Algorithms to DFO
-\item Consider different DFO Goals
-\item Parallelize DFO Algorithms
-\item Explore different model functions
-\item Impose structure
-\end{itemize}
+%Possible future research directions fall among the follows topics:
+
+%\begin{itemize}
+%\item Convert classical NLP Algorithms to DFO
+%\item Consider different DFO Goals
+%\item Parallelize DFO Algorithms
+%\item Explore different model functions
+%\item Impose structure
+%\end{itemize}
 
 
 \subsection{NLP Methods}
 
-Possible future work includes converting nonlinear algorithms to a derivative free context.
-We outline several nonlinear programming algorithms, some of which others have made progress in translating to a DFO context.
+Future work includes converting nonlinear algorithms to a derivative free context.
+In more detail, we start by choosing a nonlinear optimization algorithm, such as the ones listed below.
+The algorithm will contain steps that reference derivatives, for example in either computation of a step direction or in a criticality measure.
+To convert the algorithm to a DFO context, the derivative evaluations are replaced with derivatives of a model function over a trust region.
+However, once this has been done, the algorithm may require further modifications to ensure convergence.
+For example, in the example we give later of converting the filter method, we had to change trust region management rules to ensure convergence.
+Not only did the trust region simply not go to zero in the filter method which is required in the DFO context, but we needed to decrease the trust region with a weakened criticality measure.
+
+
+Although we began with the filter method, recent progress has been done by other researchers with this method.
+There are several consideration to make when selecting an NLP method.
+One of the primary concerns is how well it is extended to the trust region framework, for example this conflicts with several goals of line search.
+Another concern is that filter methods only produce feasible iterates once the algorithm has converged.
+This is different than ``any time algorithms" that maintain feasibility so that the algorithm can be stopped at any time to yield feasible guess.
+The longer an any time algorithm is run, the better the returned value is, until optimality is reached.
+
+Here we outline several potential nonlinear programming algorithms of interest.
+For some of these algorithms, others have made progress in translating to a DFO context.
 
 \begin{itemize}
 	\item Line search (CITE)
@@ -301,9 +366,11 @@ I have considered line search methods as well as Filter methods which are discus
 
 \subsection{Other directions}
 \subsubsection{Goals}
-We could consider an objective function with a evaluation runtime that varies with $x$.
+We could consider explicitly modeling the runtime of evaluating the objective function.
+We would assume that the runtime varies continuously with $x$.
 For example, in some problems from PDE's the runtime of a simulation may involve the ``stiffness" of $\ldots$.
-In these situations, it may be advisable to consider the runtime cost of the function when evaluating new points: choosing points that remain poised with respect to the geometry but allow for faster evaluation.
+In these situations, it may be advisable to consider the runtime cost of the function when evaluating new points:
+choosing points that remain poised with respect to the geometry but minimize evaluation time.
 
 %We could minimize the number of future function evaluations given a stochastic model of what the new function values could be.
 
@@ -328,35 +395,19 @@ In these situations, it may be advisable to consider the runtime cost of the fun
 
 \subsubsection{Parallelization}
 
-Parallelization is another topic receiving allot of attention.
-Modern super computer design can be exploited in several different ways.
-These include parallelization of the function and/or derivative evaluations within the algorithm or of the linear algebra kernels.
-However, the more relevant is from modification the basic algroithms which increase the degree of intrinsic parallelism. This can come from performing multiple function and/or derivative evaluations.
+Parallelization is another topic receiving attention.
+Modern super computer design can be exploited in several different ways, including parallelization of linear algebra kernels or of function and/or derivative evaluations within the algorithm.
+More interestingly is from the modification of the basic algorithms which increase the degree of intrinsic parallelism.
+This can come from performing multiple function and/or derivative evaluations.
 
+
+NOMAD?
+SNOBFIT
+hopstack?
 
 CITE
 Schnabel [99]
 %http://www.sciencedirect.com/science/article/pii/S0167819103000139
-
-
-\subsubsection{Miscellaneous}
-
-\begin{itemize}
-\item Model Functions
-	Radial basis functions
-\item Problem Structure
-	Specify the structure of $f$, $g_i$, or $h_i$. For example, work has been done when these functions take the form of a least squares problem. CITE
-\item Machine Learning
-	Applying DFO techniques to algorithms that currently use random sampling to tune parameters
-\end{itemize}
-
-Of current interest:
-\begin{itemize}
-\item Any time algorithms maintain feasibility so that the algorithm can be stopped at any time to yield feasible guess. The longer the algorithm is run, the better the returned value is, until optimality is reached.
-\item Machine learning techniques are a hot topic, and some techniques have very complicated objectives for which derivative information is not known.
-\item Constraints that leave a narrow feasible region near the critical point. (Harming lambda poisedness.) One approach may be to redefine the poisedness.
-\end{itemize}
-
 
 
 
@@ -480,7 +531,8 @@ In this case, the algorithm will fail to find a feasible local minimum, and will
 \subsection{When we use derivative-free methods}
 
 \subsubsection{The change in the criticality measure}
-One issue with applying the original algorithm within a DFO context was that the trust region radius is not required to go to zero. However, within DFO we must also require that the trust region goes to zero as we approach a stationary point. One way of ensuring this is to decrease the trust region radius when the current step lies well within the trust region radius. However, a better approach may be to introduce a tolerance on the criticality measure and decrease the trust region whenever the criticality falls below the threshold.
+One issue with applying the original algorithm within a DFO context was that the trust region radius is not required to go to zero.
+However, within DFO we must also require that the trust region goes to zero as we approach a stationary point. One way of ensuring this is to decrease the trust region radius when the current step lies well within the trust region radius. However, a better approach may be to introduce a tolerance on the criticality measure and decrease the trust region whenever the criticality falls below the threshold.
 
 
 \subsection{Algorithm Description}
@@ -595,9 +647,43 @@ As this method was also discovered by () we have also considered possible extens
 \item We could relax the condition that all iterates have to remain feasible with respect to all constraints except $y = d(z)$.
 \end{itemize}
 
-\section{Pictures of convergence}
-\section{Comparison to other libraries}
+\subsection{Pictures of convergence}
 
+Here we give an example of how this algorithm works on a test problem.
+
+\section{Comparison to other libraries}
+\section{Testing Progress}
+In order to compare the algorithms we develop, we will use the
+
+\begin{itemize}
+\item SDPEN
+A Sequential Penalty Derivative-free Method for Nonlinear
+Constrained Optimization problems
+Copyright (C) 2011  G.Liuzzi, S.Lucidi, M.Sciandrone
+\item DAKOTA/PATTERN
+\item tomlab lgo, ego?
+\item nomad
+\end{itemize}
+
+on test sets
+
+\begin{itemize}
+\item dfovec
+\item cute/st
+\end{itemize}
+
+http://thales.cheme.cmu.edu/dfo/comparison/dfo.pdf
+
+
+unconstrained has several more:
+fmincon
+
+
+This currently has no place in the paper:
+
+Within heuristics behind
+Applying DFO techniques to algorithms that currently use random sampling to tune parameters
+Machine learning techniques are a hot topic, and some techniques have very complicated objectives for which derivative information is not known.
 
 
 
