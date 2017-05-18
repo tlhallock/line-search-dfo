@@ -10,7 +10,6 @@
 \usepackage{placeins}
 \usepackage[margin=0.5in]{geometry}
 \usepackage{amsfonts}
-
 %\theoremstyle{definition}
 %\newtheorem*{dfn}{A Reasonable Definition}
 
@@ -52,18 +51,18 @@ The focus is on model-based trust region algorithms for local search within cons
 \subsection{Introduction to Derivative Free Optimization}
 \subsubsection{What it is}
 
-Derivative free optimization refers to programs in which derivative information is unknown, deceptive or otherwise impractical to compute.
-While trying to approximate derivatives when not given explicitly, care must be taken to not evaluate the function needlessly.
-Thus, one of the primary goals within derivative free optimization is to solve a program while avoiding expensive function evaluations.
+Derivative free optimization refers to programs programs algorithms in which derivative information is unknown, deceptive or otherwise impractical to compute.
+The number of function evaluations can grow when approximating derivatives that are not given explicitly.
+Thus, one of the primary goals within derivative free optimization is to solve programs while avoiding as many expensive function evaluations as possible.
 
 \subsubsection{Where problems come from}
 
-There are a growing number of such applications: for example, this can arise when the objective is the result of a simulation that does not admit automatic differentiation.
+There are a growing number of such applications. For example, derivative free methods can can be useful when the objective is the result of a simulation that does not admit automatic differentiation.
 As the popularity of complicated simulations increase, so does the demand for optimizing over black box software codes which may be copyrighted.
-Derivative free optimization has also been popular within parameter tuning, as simulations may have several parameters with unidentified relationships to their output.
+Derivative free optimization has also been popular within parameter tuning, as simulations may have several parameters having unidentified relationships to their output.
 
 Sometimes user laziness can preclude derivative information.
-Even when it would be possible to compute derivative information, it may be time consuming.
+Even when it would be possible to compute derivative information, it may be prohibatively time consuming.
 
 A trend within derivative free optimization is the permission for larger tolerances within solutions.
 Their functions are frequently expensive to evaluate, so we can only ask for a small number of significant figures.
@@ -71,8 +70,13 @@ This implies slightly less regard for asymptotic convergence rates.
 
 %The general strategy is to converge to a first or second order critical point while evaluating the function as few times as possible.
 
+\color{blue}
+Your outline mentions iterative methods.
+Should I say something about them?
+I think this is good enough, unless you had more specifics...
 
-Say something about iterative methods?
+\color{black}
+
 
 \subsubsection{Problem formulations}
 
@@ -85,7 +89,6 @@ Derivative free methods consider nonlinear, constrained optimization problems of
 & & & h_i(x, S(x)) = 0, \; i \in \mathcal{E}
 \end{aligned}
 \end{equation*}
-
 which give rise to different classes of derivative-free optimization based on properties of
 $S  : \mathbb{R}^n \to \mathbb{R}^m$,
 $f  : \mathbb{R}^{n+m} \to \mathbb{R}$,
@@ -99,6 +102,7 @@ We will introduce several different forms this problem can take before narrowing
 
 \underline{\hspace{8cm}}
 
+\color{red}
 An intriguing form of the previous program is presented by \cite{DUMMY:Biegler} and given here:
 \begin{equation*}
 \begin{aligned}
@@ -117,13 +121,14 @@ $h : \mathbb{R}^{n+m+k} \to \mathbb{R}^{|\mathcal{E}|}$.
 Biegler assumes that the dimension of $x$ is small compared to the dimension of $y$ and $z$.
 This permits the algorithmic approach of relaxing $y=S(x)$.
 
+\color{black}
 \underline{\hspace{8cm}}
 
 \subsubsection{Noise. Deterministic versus stochastic}
 
 One branch of DFO is concerned with noisy evaluations of $S$.
 Noisy functions can be categorized as either deterministic or stochastic.
-Roundoff error, truncation error and finite termination errors can result in deterministic noise: although a function is not evaluated accurately, the error will not change across multiple function calls with the same input.
+Roundoff error, truncation error and finite termination errors can result in what is called deterministic noise. This means that although a function is not evaluated accurately, the error will not change across multiple function calls with the same input.
 On the other hand, stochastic noise means that each point in the domain is associated with a distribution of possible values $S$ may return.
 In this paper we assume $S$ is not noisy.
 
@@ -138,8 +143,11 @@ This is one of the better studied cases, with several software packages availabl
 We are primarily interested in the case where no derivative information of $g$ and $h$ are known, for example if they are also output from a simulation used to evaluate the objective.
 This means that each call to the objective gives values of the constraints as well, and vice versa.
 This produces $g(x, S(x))=g(S(x))$ and $h(x,S(x))=h(S(x))$.
-(Within model based approaches, this means that we have as many sample points for our constraints as our objective.
-This creates an interesting situation in which we must decide how to choose a subset of these points, use a higher order model, or fit an overdetermined model.)
+
+\color{blue}
+(This means that we have as many sample points for our constraints as our objective.
+This creates an interesting situation within model-based approaches in which we must decide how to choose a subset of these points, use a higher order model, or fit an overdetermined model.)
+\color{black}
 
 
 If the constraints can be evaluated at points outside the feasible region, the constraints are called relaxable constraints.
@@ -165,34 +173,22 @@ For this reason, it is desirable for $n$, the dimension of $x$, to be small.
 
 
 \subsection{Proposed Thesis Directioin}
-\subsubsection{Focus on local optimization}
-\subsubsection{Focus on model-based methods}
 
-(The title says all I can think of right now.)
+Within this section, we will discuss the details of what I propose to study.
+I will focus strictly on model-based methods for local optimization.
 
 \subsubsection{Main idea}
 
-(Something is weird about the placement of this: it comes before we discuss model based techniques.)
-
-The general approach is to replace derivatives of $S$ with derivatives of local model functions.
-
-Then other aspects of the algorithm may have to be changed in order to ensure convergence.
-I have considered line search methods as well as Filter methods which are discussed below.
 
 Future work includes converting nonlinear algorithms to a derivative free context.
-In more detail, we start by choosing a nonlinear optimization algorithm, such as the ones listed below.
-The algorithm will contain steps that reference derivatives, for example in either computation of a step direction or in a criticality measure.
+We start by choosing a nonlinear optimization algorithm, such as the ones listed below.
+The algorithm will contain steps that reference derivatives, for example, in either computation of a step direction or in a criticality measure.
 To convert the algorithm to a DFO context, the derivative evaluations are replaced with derivatives of a model function over a trust region.
 These model functions are constructed from function values at selected sample points, and are trusted to be accurate locally.
-
-
-\underline{\hspace{8cm}}
 
 However, once this has been done, the algorithm may require further modifications to ensure convergence.
 For example, in the example we give later of converting the filter method, we had to change trust region management rules to ensure convergence.
 Not only did the trust region simply not go to zero in the filter method which is required in the DFO context, but we needed to decrease the trust region with a weakened criticality measure.
-
-\underline{\hspace{8cm}}
 
 \subsubsection{Potential NLP algorithms to adapt}
 
@@ -232,7 +228,7 @@ For some of these algorithms, others have made progress in translating to a DFO 
 	\item Interior Point (CITE)
 \end{itemize}
 
-\subsubsection{Overiew of the rest of the paper}
+\subsubsection{Overview of the rest of the paper}
 
 In the remaining pages, we will discuss DFO background by discussing high level characterizations of DFO methods and some of the issues these methods face.
 We will finish the background with a brief literature review before discussing one classical NLP algorithm I converted to a derivative free context.
@@ -243,42 +239,59 @@ Finally, we will briefly mention some of the interesting specializations that ca
 \subsubsection{Automatic Differentiation}
 
 When $S$ is the result of a simulation for which the source code is available, one convenient approach is to perform automatic differentiation.
-Although derivatives of complicated expressions resulting from code structure are difficult to work with on paper, the rules of differentiation can be applied algorithmically to (symbolically?) calculate derivatives.
+Although derivatives of complicated expressions resulting from code structure are difficult to work with on paper, the rules of differentiation can be applied algorithmically to \color{red}(symbolically?) \color{black} calculate derivatives.
 However, the nature of the code or problem can make this very difficult: for example with combinatorial problems that rely heavily on if statements.
-(?)
+\color{red} Is this accurate? \color{black}
 
 \subsubsection{Direct search}
 
 
-Another approach is to use direct search methods that do not explicitly estimate the derivative but evaluate the objective on a pattern or other structure to find a descent direction.
+Another approach is to use direct search methods that do not explicitly estimate derivative information but evaluate the objective on a pattern or other structure to find a descent direction.
 Examples of this include Coordinate descent, implicit filtering and other pattern based search methods.
-One of the most popular direct search method is Nelder Mead-it is implemented in fminsearch in matlab-although it is proven to not converge in pathological cases unless modifications are made.
-These methods can be robust but ignore information because they do not use derivative information provided through the function evaluations.
+One of the most popular direct search method is Nelder Mead-it, which is implemented in fminsearch in matlab.
+It remains popular although it is proven to not converge in pathological cases unless modifications are made.
 
+These methods can be robust in that they often converge to a local minimum even when assumptions such as smoothness or continuity are violated.
+However, they ignore information because they do not use derivative information provided through the function evaluations.
+This means that they can also lack fast convergence rates.
+
+\color{red}
 (0th derivative)
+\color{black}
 
 \subsubsection{Model based methods}
 
-In this paper, we are concerned with model based methods that minimize a model used to approximation of the unknown objective (by regression or kriging or ...).
-The algorithm can then use derivative information from the model to find a descent direction.
+In this paper, we are concerned with model based methods.
+These typically minimize a model function that only approximate the objective and constraints.
+The model functions are chosen to accurately represent the original function, but allow for derivative information to be calculated easily.
+
+This allows the algorithm to minimize these easier model functions over a trust region, rather than working with the original function.
+When derivatives are given in the original function, model-based methods can also be used to approximate derivative information.
+
 They work by evaluating functions on a set of sample points to construct local models of the functions.
-Wherever derivatives are needed, they use the derivatives of the model functions.
+We will see several examples in what follows.
+
+
+\color{red}
+Kriging seems to be another popular model function, but I usually see it used within global optimization.
+\color{black}
 
 
 \paragraph{Finite difference methods}
 
 Finite difference methods can be used to approximate the derivative of a function $f$.
-One common approximation called the symmetric difference is given by $\nabla f(x) \approx (\frac{f(x+he_i) - f(x-he_i)}{2h})_i$ for some small $h$ where $e_i = (0,\ldots, 0, 1, 0, \ldots, 0)^T \quad \forall 1 \le i \le n$ is the unit vector with $1$ in its $i$th component.
-This may work well, but can have issues with unlucky iterates.
-The number of function evaluations tends to grow large with the dimension and number of iterations the algorithm performs as information is only gathered near the current iterate when $h$ is small (which is required for accurate derivatives).
+One common approximation called the symmetric difference is given by $\nabla f(x) \approx (\frac{f(x+he_i) - f(x-he_i)}{2h})_i$ for some small $h$ where $e_i = (0,\ldots, 0, 1, 0, \ldots, 0)^T \quad \forall \; 1 \le i \le n$ is the unit vector with $1$ in its $i$th component.
+This may work well, but can have issues with unlucky iterates (CITE).
+However, the number of function evaluations tends to grow large with the dimension and number of iterations the algorithm performs.
+This is because derivative information is only gathered near the current iterate when $h$ is small, which is required for accurate derivative calculations.
 Because of the large number of function evaluations required for finite difference schemes, it may preferable to spread sample points out over the entire region where we may expect to step.
 
-CITE
+
 
 \paragraph{Interpolation/regression methods}
 
 Within Interpolation methods, we construct our model by regressing basis functions onto a set of sampled points.
-For example, given a function $f(x)$ we can use a set of basis functions $\phi_i \quad \forall 1 \le i \le d_1$ to construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting our $\lambda_i$.
+For example, given a function $f(x) : \mathbb R^n \to \mathbb R$ we can use a set of basis functions $\phi_i : \mathbb R^n \to \mathbb R \quad \forall 1 \le i \le d_1$ to construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting appropriate $\lambda_i \in \mathbb R$.
 This is done by choosing a set of sample points
 $Y = \{y^1, y^2, \ldots, y^{d_2}\}$,
 evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$ and forcing model agreement with the original function $f(x)$ by ensuring
@@ -305,48 +318,67 @@ evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$ and fo
 \end{bmatrix}.
 \]
 
-When $d_1 = d_2$ this is called interpolation and equality is desired, when $d_1 < d_2$ this is called underdetermined interpolation a minimum norm solution is frequently requested, and when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
+When $d_1 = d_2$ this is called interpolation and equality is desired. When $d_1 < d_2$ this is called underdetermined interpolation and a minimum norm solution is frequently requested. Finally, when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
 Note that in practice, the set $Y$ is shifted and scaled.
 
 \paragraph{Basis functions}
 
 The choice of model functions $\phi_i$ can have some affect on the convergence rate, as Powell showed in CITE.
-One common choice of basis functions is the Newton polynomials, in which we select polynomials satisfying $\phi_{i}(y^j) = \delta_{ij}$, the kroneker delta function.
+One common choice of basis functions is the Lagrange polynomials, in which we select polynomials satisfying $\phi_{i}(y^j) = \delta_{ij}$, the kroneker delta function.
 This reduces the previous matrix to an identity matrix.
-These can be computed by starting with the monomial basis $\prod_{i=1}^{n} x_i^{n_i}$ for all choices of $n_i$ less than some degree by
-inverting the corresponding Vandermonde matrix.
+Lagrange polynomials of order $p$ can be computed by starting with the monomial basis $\prod_{i=1}^{n} x_i^{n_i}$ for all choices of $0 \le n_i \le p$ with $\sum_{i=1}^n n_i \le p$ and inverting the corresponding Vandermonde matrix.
 
-I have to remind myself of the difference between Newton polynomials and Lagrange polynomials.
-
-
-Model functions are usually chosen to be fully linear or fully quadratic, terms describing how the model's error grows as a function of the trust region radius.
+Newton's Fundamental polynomials are also used, and follow a similar pattern.
+However, they maintain different orders of polynomials within the basis:
+a single constant value, a set of $n+1$ linear polynomials,
+$n + {n \choose 2}$ quadratic functions, and so on.
 Radial basis functions may have some intuitive advantage because the algorithm makes claims about the accuracy of the function over a trust region.
+
+
+Model functions are usually chosen to be fully linear or fully quadratic: terms describing how the model's error grows as a function of the trust region radius.
 
 \paragraph{Sampling issues}
 
-These methods require adequate geometry of sampled points to ensure convergence.
+These methods have issues with poor sampling choices.
+The two most important aspects of the sample points are their geometry and proximity.
 
-More specifically, regression based methods require that set the function is evaluated at must be $\Lambda$ poised for a fixed constant $\Lambda$.
+\subparagraph{Geometry}
+For geometry, regression based methods require that set the function is evaluated at must be $\Lambda$-poised for a fixed constant $\Lambda$.
 This ensures that the Vandermonde matrix used to find the coefficients used to express the model function in terms of a basis of Lagrange polynomials is well conditioned.
+Although we do not go into the details here, problems become apparent when comparing the Lagrange polynomials associated a poised set with those of an ill poised set.
 
-$\dots$.
+Within the first set of pictures we see the set of quadratic Lagrange polynomials on the interval $[-1,1]$.
+The maximum value of these polynomials over the trust region is simply $1$.
+However, if we use sample points $\{-1, .9, 1\}$ instead of the points $\{-1, 0, 1\}$,
+we see that the Lagrange polynomials we find the second set of polynomials.
 
-I have nice pictures for this section.
-asdf;lkjasdf;lkjasdf;lkj
+\includegraphics[width=200px]{poised.png}
+\includegraphics[width=200px]{illpoised.png}
 
-\paragraph{Geometry (Different than Sampling issues?)}
-\paragraph{Proximity}
+We that if we use these to approximate $3 + \tan^{-1}(x)$, the first basis functions do not vary far from the objective value over the trust region, and the maximum difference between the function and the model function is $0.0711$.
+However, the second basis functions jump far away from the actual function, and the maximum difference between the model function and actual function is 
+$0.1817$.
 
-I am not entirely sure what to say about this.
+\includegraphics[width=200px]{poised_approx.png}
+\includegraphics[width=200px]{illpoised_approx.png}
 
-\subsubsection{Model based Trust region methods}
+\subparagraph{Proximity}
+Proximity refers to the trust region radius 
+\color{blue}(, or the volume more generally?).\color{black}
+The trust region must go to zero if we are to be sure that we have reached a critical point.
+In general, the smaller the trust region, the closer to linear or quadratic the original function will look.
+This is because the model's error term given by Taylor's expansion is proportional to the trust region radius.
+
+\color{red} Within noisy optimization, this gives rise to several more problems. If you think there is something else about proximity that I should mention, please let me know. \color{black}
+
+\subsubsection{Model-based, Trust Region Methods}
 
 The overall description of the trust region framework is that a set of poised points are chosen for some radius $\Delta>0$ about the current iterate.
 The objective/constraints are then evaluated at these point to construct a model function as a linear combination of some set of basis functions.
 Next, the model is minimized over this trust region and the minimum becomes the trial point.
 The objective is evaluated at the trail point and a measure of reduction $\rho$ is computed.
 If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
-Otherwise, the trust region is reduced.
+Otherwise, the trust region is reduced to increase model accuracy.
 
 
 For unconstrained optimization, the algorithmic framework can be described with these steps:
@@ -358,36 +390,35 @@ For unconstrained optimization, the algorithmic framework can be described with 
 		\item There are geometric properties of the sample set that must be satisfied
 	\end{itemize}
 	\item If $\nabla m_k(x) < t$ stop
-	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B_{x^{(k)}}, \Delta_k)} m_k(x^{(k)} + s)$
+	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B_{x^{(k)}}( \Delta_k)} m_k(x^{(k)} + s)$
 	\item Test for improvement
 	\begin{itemize}
 		\item $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$ measures the actual improvement over predicted improvement
 		\item If $\rho$ is small, $x^{(k+1)}=x^{(k)}$ (reject) and decrease radius
 		\item If $\rho$ is intermediate, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and decrease radius
-		\item If $\rho$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and increase radius
+		\item If $\rho$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and either increase the radius or decrease if $\nabla m_k(x_k)$ is small
 	\end{itemize}
 \end{enumerate}
 
-Our goal is generalize this framework to handle constraints, where we must take care to reduce constraint violation and account for constraint's model's accuracy.
+Our goal is generalize this framework to handle constraints, where we must reduce constraint violation along with ensure the constraint's model's accuracy.
+
+\subsubsection{Trust region versus Linesearch}
+
+Within derivative free optimization, we can ensure the accuracy of our model function by sampling points over a small enough trust region.
+However, reducing the trust region implies more points must be evaluated.
+Linesearch methods rely on the the ability to calculate a steepest descent direction that will be accurate in a small enough region around the current iterate, small enough that the trust region must be reduced to ensure the model's accuracy.
+
+This means trust region framework fits into derivative free optimization more naturally than line search methods.
+Not only do the trust regions arise naturally, but many line search algorithms exploit how much easier it is to find a descent direction than solve a trust region subproblem.
+However, in derivative free optimization, solving an costly trust region subproblem is acceptable if it allows us to avoid even more expensive function evaluations.
 
 
+% We began with a line search filter method, however we found that this had several drawbacks:
+% \begin{itemize}
+% \item Line search algorithms exploit how much easier finding a descent direction is than solving the trust region subproblem, but this saved computation is not as useful in DFO as here it is function evaluations that we avoid
+% \item As the algorithm backtracks on the step length, the trust region must be reduced, as the models are accurate over a region rather than at a single point
+% \end{itemize}
 
-\underline{\hspace{8cm}}
-
-\underline{\hspace{8cm}}
-
-We began with a line search filter method, however we found that this had several drawbacks:
-
-\begin{itemize}
-\item Trust regions arise naturally within derivative-free algorithms
-\item Line search algorithms exploit how much easier finding a descent direction is than solving the trust region subproblem, but this saved computation is not as useful in DFO
-\item As the algorithm backtracks on the step length, the trust region must be reduced, as the models are accurate over a region rather than at a single point
-\end{itemize}
-
-
-\underline{\hspace{8cm}}
-
-\underline{\hspace{8cm}}
 
 
 \subsubsection{Literature Review}
@@ -455,8 +486,10 @@ the two additional review papers.
 \section{Progress}
 
 In this section we discuss one algorithm that has been converted to a derivative free context.
-This is the filter method, which has been independtly converted by ().
+This is the filter method, which has been independently converted by ().
+\color{red}
 (delete this: We first describe the classical algorithm before introducing the changes required for derivative free optimization.)
+\color{black}
 
 
 \subsection{SQP Filter method}
@@ -471,18 +504,16 @@ We will be considering problems of the form
   h_i(x)  = 0    & \quad \forall i \in \mathcal {E} 
 \end{align*}
 \end{center}
-
 where $f : \mathbb R^n \to \mathbb R$, and each $g_i : \mathbb{R}^{n} \to \mathbb{R}$, $h_i : \mathbb{R}^{n} \to \mathbb{R}$.
 It will be convenient to write
 $g(x) = (g_1(x), g_2(x), \ldots, g_{|\mathcal{I}|})^T$ and 
 $h(x) = (h_1(x), h_2(x), \ldots, h_{|\mathcal{E}|})^T$.
+
 We work within a trust region, sequential quadratic programming framework that uses a filter method introduced by Fletcher.
 For our algorithm, we assume that all functions are derivative-free: all functions $f,g,h$ are evaluated by a single call to a black box function $d(x) = (f(x), g(x)^T, h(x)^T)^T$.
 
 We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
-Although we have function values for enough points to construct model functions of the same order as used for the objective, we model the feasible with only the linear constraints.
-
-The core of the algorithm revolves around
+Although we have enough sample points to construct a quadratic model of the constraints, we only construct linear models.
 
 \subsubsection{Model functions}
 At an iteration $k$, we first construct a model function $m_f^k(x)$ that we use to approximate the first and second derivatives of $f(x)$.
