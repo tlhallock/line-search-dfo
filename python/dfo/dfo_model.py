@@ -95,7 +95,7 @@ class MultiFunctionModel:
 
 	def getQuadraticModels(self, indices):
 		if len(indices) == 0:
-			return functions.EmptyFunction()
+			return functions.VectorFunction(self.basis.n)
 		fun = functions.VectorValuedQuadratic(self.basis.n, len(indices))
 		idx=0
 		for i in indices:

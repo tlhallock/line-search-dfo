@@ -38,3 +38,6 @@ def findPrintStatements():
 # probably not the best place for this method
 def get_plot_size():
 	return 15
+
+def createObject():
+	return type('', (object,), {"foo": 1})()

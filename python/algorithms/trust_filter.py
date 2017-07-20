@@ -375,7 +375,7 @@ class AlgorithmState:
 		maxDist = max(maxDist, self.model.modelRadius)
 		return maxDist * 1.2
 
-	def show(self, statement, action):
+	def show(self, statement, action, suffix):
 		center = self.x
 		radius = self.getPlotRadius()
 		ax1 = statement.createBasePlotAt(center, radius, title=action)
@@ -431,7 +431,7 @@ class AlgorithmState:
 			facecolor="black", edgecolor="black"
 		))
 
-		plt.savefig(statement.getNextPlotFile(action))
+		plt.savefig(statement.getNextPlotFile(suffix))
 		plt.close()
 
 	def delta(self):
@@ -444,7 +444,7 @@ class AlgorithmState:
 		self.model.multiplyRadius((1 + constants.gamma_2) / 2)
 
 
-def restore_feasibility(program, constants, state, results):
+def restore_feasibility(program, constants, state, results, plot):
 	results.restorations += 1
 
 	state.s = None
@@ -469,7 +469,8 @@ def restore_feasibility(program, constants, state, results):
 		rho = (state.theta2 - actual_theta2)/(state.theta2 - actual_theta2)
 
 		state.r = state.x_new - state.x
-		state.show(program, 'restoration_step theta=' + str(state.theta) + ', new theta=' + str(actual_theta) + ', rho=' + str(rho) + ', radius=' + str(state.model.modelRadius))
+		if plot:
+			state.show(program, 'restoration_step theta=' + str(state.theta) + ', new theta=' + str(actual_theta) + ', rho=' + str(rho) + ', radius=' + str(state.model.modelRadius), 'restore')
 
 		if rho < constants.eta_1:
 			state.decreaseRadius(constants)
@@ -499,7 +500,7 @@ def restore_feasibility(program, constants, state, results):
 
 
 
-def trust_filter(program, constants):
+def trust_filter(program, constants, plot=True):
 	results = Results()
 	state = AlgorithmState(program, constants)
 
@@ -508,7 +509,8 @@ def trust_filter(program, constants):
 		state.computeCurrentValues(program)
 
 		state.computeNormalComponent()
-		state.show(program, 'normal_step: theta=' + str(state.theta) + ',radius=' + str(state.delta()))
+		if plot:
+			state.show(program, 'normal_step: theta=' + str(state.theta) + ',radius=' + str(state.delta()), 'normal')
 
 		# This is not the correct feasible region to check non-emptyness!
 		chi, nonempty = state.computeChi()
@@ -531,7 +533,7 @@ def trust_filter(program, constants):
 
 		# check compatibility
 		if state.n is None or norm(state.n) >= constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
-			if not restore_feasibility(program, constants, state, results):
+			if not restore_feasibility(program, constants, state, results, plot):
 				results.success = False
 				break
 			results.number_of_iterations += 1
@@ -542,7 +544,7 @@ def trust_filter(program, constants):
 		# This check was not in the paper...
 		if state.t is None:
 			print('Unable to compute t!!!!!!!!!')
-			if not restore_feasibility(program, constants, state, results):
+			if not restore_feasibility(program, constants, state, results, plot):
 				results.success = False
 				break
 			results.number_of_iterations += 1
@@ -551,7 +553,8 @@ def trust_filter(program, constants):
 		state.s = state.t + state.n
 		state.x_new = state.x + state.s
 
-		state.show(program, 'tangential_step')
+		if plot:
+			state.show(program, 'computed tangential step', 'tangential_step')
 
 		f_exp = state.model.interpolate(state.x_new)[0]
 		f_new, theta_new, _ = state.evaluateAtTrialPoint()

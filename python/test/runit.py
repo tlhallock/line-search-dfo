@@ -48,8 +48,8 @@ inequality.append(c2)
 x0 = arr([1, 2])
 
 warnings.showwarning = warn_with_traceback
-#statement = program.Program(q, equality, inequality, x0)
-statement = program.DfoProgram("wiggles", q, equality, inequality, x0, plotImprovements=True)
+statement = program.Program(q, equality, inequality, x0)
+#statement = program.DfoProgram("wiggles", q, equality, inequality, x0, plotImprovements=True)
 constants = filter_linesearch.Constants(50 * filter_linesearch.theta(statement, x0))
 #constants.plot = False
 

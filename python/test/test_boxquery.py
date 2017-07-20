@@ -8,10 +8,8 @@ from utilities.boxable_query_set import EvaluationHistory
 
 
 class TestNonDomSet(unittest.TestCase):
-
 	def testProperQuery(self):
 		history = EvaluationHistory(2)
-
 		N = 10
 		M = 10
 

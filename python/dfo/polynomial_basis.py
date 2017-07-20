@@ -8,6 +8,7 @@ from numpy        import multiply
 from numpy import empty
 from numpy import power
 from numpy import prod
+from numpy import asarray
 from numpy.matlib import repmat
 from copy import deepcopy
 from sys import stdout
@@ -111,8 +112,11 @@ class PolynomialBasis:
 		return functions.ALine(b, -c)
 
 
-
+	# phi is an array of coefficients times each polynomial
 	def getQuadraticModel(self, phi):
+		# ensure this is an array, I think I was refactoring this to be matrices
+		phi = asarray(phi).flatten();
+
 		c=0
 		b=empty(self.n)
 		Q=empty((self.n, self.n))
