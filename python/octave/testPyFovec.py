@@ -2,7 +2,7 @@
 from numpy import random
 from oct2py import octave
 import os
-from pyfovec import dfovec
+from octave.pyfovec import dfovec
 from numpy import asarray
 
 bounds = {

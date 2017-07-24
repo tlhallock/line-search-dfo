@@ -8,7 +8,10 @@ from numpy import log
 from math import sqrt
 from math import pi
 
-def dfovec(m,n,x,nprob):
+# This is a translation of dfovec to python
+
+
+def dfovec(m, n, x, nprob, context=None):
 	c13 = 1.3e1
 	c14 = 1.4e1
 	c29 = 2.9e1
@@ -198,4 +201,8 @@ def dfovec(m,n,x,nprob):
 		fvec[7] = x[2] * x[4] * (x[4] ** 2 - 3.0 * x[6] ** 2) - x[0] * x[6] * (x[6] ** 2 - 3.0 * x[4] ** 2) + \
 			  x[3] * x[5] * (x[5] ** 2 - 3.0 * x[7] ** 2) - x[1] * x[7] * (x[7] ** 2 - 3.0 * x[5] ** 2) - \
 			  9.48
+	if context is not None:
+		context.fvals.add(fvec)
+		context.nfev += 1
+
 	return fvec
