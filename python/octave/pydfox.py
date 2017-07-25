@@ -33,7 +33,7 @@ def dfoxs(n, nprob, factor):
 		x[1 - 1] = .5
 		x[2 - 1] = -2
 	elif nprob == 8:  #     bard function.
-		x[1:3] = 1
+		x[0:3] = 1
 	elif nprob == 9:  #     kowalik and osborne function.
 		x[1 - 1] = .25
 		x[2 - 1] = .39
@@ -61,7 +61,7 @@ def dfoxs(n, nprob, factor):
 		for k in range(n):
 			x[k] = (k + 1)/(n+1)
 	elif nprob == 16:  #     brown almost-linear function.
-		x = .5*ones(n,1)
+		x = .5 * ones(n)
 	elif nprob == 17:  #     osborne 1 function.
 		x[1 - 1] = .5
 		x[2 - 1] = 1.5

@@ -53,7 +53,7 @@ switch nprob
         x(1) = .5;
         x(2) = -2;
     case 8 %     bard function.
-        x(1:3) = 1;
+        x(1:3) = 1.0;
     case 9 %     kowalik and osborne function.
         x(1) = .25;
         x(2) = .39;
@@ -79,7 +79,7 @@ switch nprob
         x(4) = -1;
     case 15 %     chebyquad function.
         for k = 1:n
-            x(k) = k/(n+1);
+            x(k) = double(k)/double(n+1);
         end
     case 16 %     brown almost-linear function.
         x = .5*ones(n,1);
