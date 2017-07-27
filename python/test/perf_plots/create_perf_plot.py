@@ -5,6 +5,7 @@ from utilities.sys_utils import createObject
 from utilities import functions
 from octave.pyfovec import dfovec
 from octave.pydfox import dfoxs
+from threading import Timer
 
 from test.perf_plots.create_my_perf_data import runMyAlgorithm
 from test.perf_plots.create_pyopt_perf_plot import runPyOpt
@@ -13,6 +14,21 @@ class Context:
 	def __init__(self):
 		self.nfev = 0
 		self.fvals = []  # This is a list now, need to change this for create_perf_plot
+		self.timer = None
+
+	def startDebugPrinter(self):
+		self.stopDebugPrinter()
+
+		def print():
+			print('Currently at ' + str(self.nfev) + ' iterations.')
+		self.timer = Timer(5, print)
+
+	def stopDebugPrinter(self):
+		if self.timer is None:
+			return
+		self.timer.cancel()
+
+
 # Caches a repeated call at the same value
 class FunctionEvaluationCacher:
 	def __init__(self, orig):
@@ -21,7 +37,7 @@ class FunctionEvaluationCacher:
 		self.cacheY = None
 
 	def evaluate(self, x):
-		if array_equal(self.cacheX, x):
+		if array_equal(self.cacheX, x) and False:
 			return self.cacheY
 		else:
 			# Not thread safe...
@@ -32,7 +48,7 @@ class FunctionEvaluationCacher:
 
 def get_data(runner):
 	context = Context()
-	cacher = FunctionEvaluationCacher(lambda x: dfovec(m, n, x, nprob))
+	cacher = FunctionEvaluationCacher(lambda x: dfovec(m, n, x, nprob, context))
 	# an object with an evaluate method
 	objective = createObject()
 	objective.evaluate = lambda x: cacher.evaluate(x)[0]
@@ -58,7 +74,9 @@ def get_data(runner):
 				inequalities,
 				dfoxs(n, nprob, 1))
 
+	context.startDebugPrinter()
 	runner(dfovecProgram)
+	context.stopDebugPrinter()
 
 	return context
 
@@ -70,9 +88,10 @@ nprob = 7
 
 pyOptData = get_data(lambda program: runPyOpt(program))
 print(pyOptData.nfev)
-
-if True:
-	exit(0)
+print(pyOptData.fvals)
 
 myData = get_data(lambda program: runMyAlgorithm(program))
+
+print(myData.nfev)
+print(myData.fvals)
 

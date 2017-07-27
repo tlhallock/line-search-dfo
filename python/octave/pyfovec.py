@@ -202,7 +202,7 @@ def dfovec(m, n, x, nprob, context=None):
 			  x[3] * x[5] * (x[5] ** 2 - 3.0 * x[7] ** 2) - x[1] * x[7] * (x[7] ** 2 - 3.0 * x[5] ** 2) - \
 			  9.48
 	if context is not None:
-		context.fvals.add(fvec)
+		context.fvals.append(fvec)
 		context.nfev += 1
 
 	return fvec
