@@ -14,4 +14,4 @@ from octave.pydfox import dfoxs
 
 def runMyAlgorithm(dfovecProgram):
 	constants = trust_filter.Constants()
-	return trust_filter.trust_filter(dfovecProgram, constants, plot=True)
+	return trust_filter.trust_filter(dfovecProgram, constants, plot=False);

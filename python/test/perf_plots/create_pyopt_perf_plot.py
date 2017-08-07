@@ -14,7 +14,7 @@ def translateProgramToPyOpt(dfovecProgram):
 		fail = 0
 		return f, g, fail
 
-	opt_prob = Optimization('Rosenbrock Unconstraint Problem', objfunc)
+	opt_prob = Optimization('Dfovec problem', objfunc)
 	for i in range(len(dfovecProgram.x0)):
 		opt_prob.addVar('x' + str(i), lower=-1000.0, upper=1000.0, value=dfovecProgram.x0[i])
 	opt_prob.addObj('f')

@@ -5,7 +5,9 @@ from utilities.sys_utils import createObject
 from utilities import functions
 from octave.pyfovec import dfovec
 from octave.pydfox import dfoxs
-from threading import Timer
+# from threading import Timer
+
+import pickle
 
 from test.perf_plots.create_my_perf_data import runMyAlgorithm
 from test.perf_plots.create_pyopt_perf_plot import runPyOpt
@@ -13,20 +15,20 @@ from test.perf_plots.create_pyopt_perf_plot import runPyOpt
 class Context:
 	def __init__(self):
 		self.nfev = 0
-		self.fvals = []  # This is a list now, need to change this for create_perf_plot
-		self.timer = None
-
-	def startDebugPrinter(self):
-		self.stopDebugPrinter()
-
-		def print():
-			print('Currently at ' + str(self.nfev) + ' iterations.')
-		self.timer = Timer(5, print)
-
-	def stopDebugPrinter(self):
-		if self.timer is None:
-			return
-		self.timer.cancel()
+		self.fvals = []
+	# 	self.timer = None
+	#
+	# def startDebugPrinter(self):
+	# 	self.stopDebugPrinter()
+	#
+	# 	def print():
+	# 		print('Currently at ' + str(self.nfev) + ' iterations.')
+	# 	self.timer = Timer(5, print)
+	#
+	# def stopDebugPrinter(self):
+	# 	if self.timer is None:
+	# 		return
+	# 	self.timer.cancel()
 
 
 # Caches a repeated call at the same value
@@ -46,7 +48,7 @@ class FunctionEvaluationCacher:
 			return self.cacheY
 
 
-def get_data(runner):
+def get_data(runner, n, m, nprob):
 	context = Context()
 	cacher = FunctionEvaluationCacher(lambda x: dfovec(m, n, x, nprob, context))
 	# an object with an evaluate method
@@ -63,10 +65,10 @@ def get_data(runner):
 	# This is just so that the linear program becomes bounded...
 	inequalities = functions.VectorFunction(n)
 	inequalities.add(dFovecInequality)
-	inequalities.add(functions.Line(asarray([1, 1]), -1))
-	inequalities.add(functions.Line(asarray([1, -1]), -1))
-	inequalities.add(functions.Line(asarray([-1, 1]), -1))
-	inequalities.add(functions.Line(asarray([-1, -1]), -1))
+	inequalities.add(functions.Line(asarray([1, 1]), -100))
+	inequalities.add(functions.Line(asarray([1, -1]), -100))
+	inequalities.add(functions.Line(asarray([-1, 1]), -100))
+	inequalities.add(functions.Line(asarray([-1, -1]), -100))
 
 	dfovecProgram = Program('dfovec',
 				objective,
@@ -74,24 +76,29 @@ def get_data(runner):
 				inequalities,
 				dfoxs(n, nprob, 1))
 
-	context.startDebugPrinter()
+	# context.startDebugPrinter()
 	runner(dfovecProgram)
-	context.stopDebugPrinter()
+	# context.stopDebugPrinter()
 
 	return context
 
-n = 2
-m = 2
-# Freudenstein and Roth function.
-nprob = 7
+def store_data(n, m, nprob):
+	pyOptData = get_data(lambda program: runPyOpt(program), n, m, nprob)
+	print(pyOptData.nfev)
+	print(pyOptData.fvals)
+	with open('runtimes/pyOpt_' + str(nprob) + ".p", "wb") as out:
+		pickle.dump({'nfev': pyOptData.nfev, 'fvals': pyOptData.fvals}, out)
 
+	myData = get_data(lambda program: runMyAlgorithm(program), n, m, nprob)
+	print(myData.nfev)
+	print(myData.fvals)
+	with open('runtimes/mine_' + str(nprob) + ".p", "wb") as out:
+		pickle.dump({'nfev': myData.nfev, 'fvals': myData.fvals}, out)
 
-pyOptData = get_data(lambda program: runPyOpt(program))
-print(pyOptData.nfev)
-print(pyOptData.fvals)
+for nprob in range(1, 21):
+	try:
+		store_data(2, 2, nprob)
+	except:
+		pass
 
-myData = get_data(lambda program: runMyAlgorithm(program))
-
-print(myData.nfev)
-print(myData.fvals)
 

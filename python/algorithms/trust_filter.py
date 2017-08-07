@@ -13,6 +13,7 @@ from numpy import dot
 from numpy import empty
 from numpy import zeros
 from numpy import arange
+from numpy import random
 from numpy.linalg import cond      as condition_number
 from numpy.linalg import lstsq
 from numpy.linalg import norm      as norm
@@ -238,13 +239,38 @@ class AlgorithmState:
 	def computeChi(self):
 		if self.n is None:
 			return None, False
-		result = linprog(c=self.grad + dot(self.H, self.n),
-						 A_ub= self.AIneq, b_ub= -self.cIneq,
-						 A_eq=self.AEq, b_eq=zeros(self.AEq.shape[0]))
-		if result.success:
-			return abs(result.fun), True
+
+		c = self.grad + dot(self.H, self.n)
+		# A_ub = self.AIneq
+		# b_ub = -self.cIneq
+		# b_ub = -self.cIneq
+		# A_eq = self.AEq
+		# b_eq = zeros(self.AEq.shape[0])
+
+		cons = [{'type': 'ineq',
+			 'fun': lambda t: self.cIneq - dot(self.AIneq, t),
+			 'jac': lambda n: -self.AIneq},
+			{'type': 'ineq',
+			 'fun': lambda t: 1 - dot(t, t),
+			 'jac': lambda t: reshape(-2 * t, (1, self.getN()))},
+			{'type': 'eq',
+			 'fun': lambda t: dot(self.AEq, t),
+			 'jac': lambda t: self.AEq}]
+		res_cons = minimize(lambda t: dot(c, t), jac=lambda t: c, x0=zeros(len(self.x)),
+				    constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000},
+				    tol=self.tol)
+		if dbl_check_sol(cons, res_cons):
+			return abs(res_cons.fun), True
 		else:
 			return None, False
+
+		# result = linprog(c=self.grad + dot(self.H, self.n),
+		# 				 A_ub= self.AIneq, b_ub= -self.cIneq,
+		# 				 A_eq=self.AEq, b_eq=zeros(self.AEq.shape[0]))
+		# if result.success:
+		# 	return abs(result.fun), True
+		# else:
+		# 	return None, False
 
 	def computeNormalComponent(self):
 		method = 1
@@ -324,17 +350,21 @@ class AlgorithmState:
 		rhs1 = self.cIneq + dot(self.AIneq, self.n)
 
 		cons = [{'type': 'ineq',
-					'fun': lambda t: -rhs1 - dot(self.AIneq, t),
-					'jac': lambda t: -self.AIneq},
-				{'type': 'ineq',
+				'fun': lambda t: -rhs1 - dot(self.AIneq, t),
+				'jac': lambda t: -self.AIneq},
+			{'type': 'ineq',
 				 'fun': lambda t: self.model.modelRadius ** 2 - dot(self.n + t, self.n + t),
 				 'jac': lambda t: reshape(-2 * (self.n + t), (1, 2))},
-				{'type': 'eq',
-				 	'fun': lambda t: dot(self.AEq, t),
-				 	'jac': lambda t: self.AEq}]
+			{'type': 'eq',
+				'fun': lambda t: dot(self.AEq, t),
+			 	'jac': lambda t: self.AEq}]
+
+		# TODO: If zeros are not cutting it:
+		# x0 = 2 * random.rand(len(self.x)) - 1
+
 		res_cons = minimize(
 			lambda t: dot(self.grad + dot(self.H, self.n), t) + .5 * dot(t.T, dot(self.H, t)),
-			jac= lambda t: dot(self.H, self.n) + dot(self.H, t),
+			jac=lambda t: self.grad + dot(self.H, self.n) + dot(self.H, t),
 			x0=zeros(len(self.x)), constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
 
 		if res_cons.success and dbl_check_sol(cons, res_cons):
@@ -387,6 +417,14 @@ class AlgorithmState:
 		hw = .05 * totalDist
 		hl = .1 * totalDist
 
+		# ax1.add_patch(patches.Arrow(
+		# 	x=self.x[0], y=self.x[1],
+		# 	dx=(-self.model.modelRadius * self.grad[0] / norm(self.grad)),
+		# 	dy=(-self.model.modelRadius * self.grad[1] / norm(self.grad)),
+		# 	width=hw,
+		# 	facecolor="black", edgecolor="black"
+		# ))
+
 		if self.s is not None:
 			ax1.add_patch(patches.Arrow(
 				x=self.x[0], y=self.x[1],
@@ -423,13 +461,6 @@ class AlgorithmState:
 			# 		  # head_width=hw, head_length=hl,
 			# 		  fc='r', ec='r')
 
-		ax1.add_patch(patches.Arrow(
-			x=self.x[0], y=self.x[1],
-			dx=(-self.model.modelRadius * self.grad[0] / norm(self.grad)),
-			dy=(-self.model.modelRadius * self.grad[1] / norm(self.grad)),
-			width=hw,
-			facecolor="black", edgecolor="black"
-		))
 
 		plt.savefig(statement.getNextPlotFile(suffix))
 		plt.close()
@@ -463,10 +494,11 @@ def restore_feasibility(program, constants, state, results, plot):
 		newx, _, _, _, _ = trust.trust(asmatrix(quad_model.b).T, asmatrix(quad_model.Q), 1)
 		newx = asarray(newx).flatten()
 		state.x_new = newx * state.model.modelRadius + state.model.modelCenter()
+		theta_exp = quad_model.evaluate(newx)
 
 		_, actual_theta, actual_theta2 = state.evaluateAtTrialPoint()
 
-		rho = (state.theta2 - actual_theta2)/(state.theta2 - actual_theta2)
+		rho = (state.theta2 - actual_theta2)/(state.theta2 - theta_exp)
 
 		state.r = state.x_new - state.x
 		if plot:
@@ -514,15 +546,17 @@ def trust_filter(program, constants, plot=True):
 
 		# This is not the correct feasible region to check non-emptyness!
 		chi, nonempty = state.computeChi()
-		if nonempty:
+
+		if plot:
 			print("current x      = " + str(state.x))
 			print("current theta  = " + str(state.theta))
 			print("current chi    = " + str(chi))
 			print("current radius = " + str(state.delta()))
+			print("current function value = " + str(state.f))
 			print("---------------------------------------")
 
 		# check optimality
-		if state.theta < program.tol and chi < program.tol:
+		if nonempty and state.theta < program.tol and chi < program.tol:
 			if state.delta() > program.tol:
 				state.decreaseRadius(constants)
 				results.number_of_iterations += 1
@@ -536,7 +570,6 @@ def trust_filter(program, constants, plot=True):
 			if not restore_feasibility(program, constants, state, results, plot):
 				results.success = False
 				break
-			results.number_of_iterations += 1
 			continue
 
 		state.computeTangentialStep()
@@ -547,7 +580,6 @@ def trust_filter(program, constants, plot=True):
 			if not restore_feasibility(program, constants, state, results, plot):
 				results.success = False
 				break
-			results.number_of_iterations += 1
 			continue
 
 		state.s = state.t + state.n
