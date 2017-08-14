@@ -22,7 +22,7 @@ from dfo import lagrange
 
 
 class MultiFunctionModel:
-	def __init__(self, funs, basis, x0, radius=1, xsi=1e-2):
+	def __init__(self, funs, basis, x0, radius=1, xsi=1e-1):
 		self.xsi = xsi
 		self.functionEvaluations = 0
 		self.basis = basis

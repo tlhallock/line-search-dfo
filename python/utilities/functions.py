@@ -214,7 +214,7 @@ class TrustRegionConstraint:
 		return max(norm(x - self.center) - self.r, 0)
 
 	def gradient(self, x):
-			return (2*(d-self.r)/d)*(x-self.center)
+		return (2*(d-self.r)/d)*(x-self.center)
 	def hessian(self, x):
 		raise Exception('not implemented')
 	def getInDim(self):

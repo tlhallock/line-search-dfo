@@ -11,7 +11,7 @@ filePattern = re.compile('([^_]*)_([0-9]*).p');
 algos = {}
 
 # point this at the output directory
-for root, subFolders, files in os.walk('/work/research/line-search-dfo/python/test/runtimes/'):
+for root, subFolders, files in os.walk('./runtimes/'):
 	for file in files:
 		m = filePattern.match(file)
 		if not m:
@@ -25,25 +25,29 @@ for root, subFolders, files in os.walk('/work/research/line-search-dfo/python/te
 			data = pickle.load(input)
 			algos[nprob][algo] = data
 
+probNdx = [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, -1, 14, 15, 16, 17, -1, 19, 20, 21]
+algoIdx = {
+	'mine': 1,
+	'pyOpt': 2
+}
 
-for nprob in algos.keys():
-	# maxIterations = 0
-	# for algo in algos[nprob].keys():
-	# 	nfev = algos[nprob][algo]
-	# 	if maxIterations < nfev:
-	# 		maxIterations = 0
-	# numAlgorithms = len(algos[nprob][algo])
-	# xs = np.asarray(range(maxIterations))
-	# ys = np.zeros(numAlgorithms, maxIterations)
-	for algo in algos[nprob].keys():
-		nfev = algos[nprob][algo]['nfev']
-		fvals = algos[nprob][algo]['fvals']
-		xs = np.asarray(range(nfev))
-		ys = np.zeros(nfev)
-		for i in range(nfev):
-			ys[i] = fvals[i][0]
-		plt.plot(xs, ys, label=algo)
+with open('../../octave/assign_to_matlab.m', 'w') as log:
+	log.write('h = zeros(0,0,0);')
 
-	plt.legend(loc='upper right')
-	plt.savefig('plots/' + nprob + '_performance.png')
-	plt.close()
+	for nprob in algos.keys():
+		print(nprob)
+		for algo in algos[nprob].keys():
+			nfev = algos[nprob][algo]['nfev']
+			fvals = algos[nprob][algo]['fvals']
+			print('\t' + str(algo) + " " + str(nfev))
+			for i in range(len(fvals)):
+				log.write('h(' + str(i + 1) + ', ' + str(probNdx[int(nprob)]) + ', ' + str(algoIdx[algo]) + ') = ' + str(fvals[i][0]) + ';\n')
+			xs = np.asarray(range(nfev))
+			ys = np.zeros(nfev)
+			for i in range(nfev):
+				ys[i] = fvals[i][0]
+			plt.plot(xs, ys, label=algo)
+
+		plt.legend(loc='upper right')
+		plt.savefig('plots/' + nprob + '_performance.png')
+		plt.close()

@@ -37,7 +37,7 @@ class Constants:
 		self.delta = 1
 		self.gamma_0 = .1
 		self.gamma_1 = .5
-		self.gamma_2 = 2
+		self.gamma_2 = 4
 		self.eta_1 = .9
 		self.eta_2 = .9
 		self.gamma_theta = 1e-4
@@ -119,7 +119,7 @@ class AlgorithmState:
 		self.x = statement.x0
 
 		# the model function:
-		self.model, _, self.equalityIndices, self.inequalityIndices = _createModelFunction(statement, constants.delta, 1e-3)
+		self.model, _, self.equalityIndices, self.inequalityIndices = _createModelFunction(statement, constants.delta, 1e-1)
 
 		# model function
 		self.mf = None
@@ -273,77 +273,28 @@ class AlgorithmState:
 		# 	return None, False
 
 	def computeNormalComponent(self):
-		method = 1
-		if method == 1:
-			tr_jac_dim=(1, self.getN())
-			initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
-			cons = [{'type': 'ineq',
-					 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
-					 'jac': lambda n: -self.AIneq},
-					{'type': 'ineq',
-					 'fun': lambda n: self.model.modelRadius**2 - dot(n, n),
-					 'jac': lambda n: reshape(-2*n, tr_jac_dim)},
-					{'type': 'eq',
-					 'fun': lambda n: self.cEq + dot(self.AEq, n),
-					 'jac': lambda n: self.AEq}]
-			res_cons = minimize(lambda n: dot(n, n), jac=lambda n: 2 * n, x0=initialN,
-								constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
-			if res_cons.success and dbl_check_sol(cons, res_cons):
-				self.n = res_cons.x
-				pass
-			else:
-				self.n = None
-		elif method == 2:
-			tr_jac_dim=(1, self.getN())
-			initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
-			cons = [{'type': 'ineq',
-					 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
-					 'jac': lambda n: -self.AIneq},
-					{'type': 'ineq',
-					 'fun': lambda n: self.model.modelRadius**2 - dot(n, n),
-					 'jac': lambda n: reshape(-2*n, tr_jac_dim)},
-					{'type': 'eq',
-					 'fun': lambda n: self.cEq + dot(self.AEq, n),
-					 'jac': lambda n: self.AEq}]
-			res_cons = minimize(lambda n: dot(n, n), jac=lambda n: 2 * n, x0=initialN,
-								constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
-			if res_cons.success and dbl_check_sol(cons, res_cons):
-				self.n = initialN
-				pass
-			else:
-				self.n = None
-		elif method == 3:
-			self.n = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
-		elif method == 4:
-			self.n = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
+		if not any(self.active):
+			self.n = zeros(len(self.x))
+			return
 
-			# Performing line search to satisfy others.
-			# Not pretty
-			inactive = self.cIneq <= -self.tol
-			if not inactive.any():
-				return
-
-			inactiveC = self.cIneq[inactive]
-			inactiveA = self.AIneq[inactive]
-
-			if inactiveC + dot(inactiveA, self.x + self.n) < self.tol:
-				return
-
-			alpha = 1
-			max_step = 1
-			min_step = 0
-			while max_step - min_step > self.tol:
-				alpha = (max_step + min_step) / 2
-				if max(inactiveC + dot(inactiveA, self.x + alpha * self.n)) > self.tol:
-					max_step = alpha
-				else:
-					min_step = alpha
-
-			self.n = min_step * self.n
+		tr_jac_dim=(1, self.getN())
+		initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
+		cons = [{'type': 'ineq',
+				 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
+				 'jac': lambda n: -self.AIneq},
+				{'type': 'ineq',
+				 'fun': lambda n: self.model.modelRadius**2 - dot(n, n),
+				 'jac': lambda n: reshape(-2*n, tr_jac_dim)},
+				{'type': 'eq',
+				 'fun': lambda n: self.cEq + dot(self.AEq, n),
+				 'jac': lambda n: self.AEq}]
+		res_cons = minimize(lambda n: dot(n, n), jac=lambda n: 2 * n, x0=initialN,
+			constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
+		if res_cons.success and dbl_check_sol(cons, res_cons):
+			self.n = res_cons.x
+			pass
 		else:
-			print('normal computation not performed.')
 			self.n = None
-
 
 	def computeTangentialStep(self):
 		# for a quadratic program:
@@ -354,7 +305,7 @@ class AlgorithmState:
 				'jac': lambda t: -self.AIneq},
 			{'type': 'ineq',
 				 'fun': lambda t: self.model.modelRadius ** 2 - dot(self.n + t, self.n + t),
-				 'jac': lambda t: reshape(-2 * (self.n + t), (1, 2))},
+				 'jac': lambda t: reshape(-2 * (self.n + t), (1, len(self.x)))},
 			{'type': 'eq',
 				'fun': lambda t: dot(self.AEq, t),
 			 	'jac': lambda t: self.AEq}]
@@ -406,64 +357,67 @@ class AlgorithmState:
 		return maxDist * 1.2
 
 	def show(self, statement, action, suffix):
-		center = self.x
-		radius = self.getPlotRadius()
-		ax1 = statement.createBasePlotAt(center, radius, title=action)
+		try:
+			center = self.x
+			radius = self.getPlotRadius()
+			ax1 = statement.createBasePlotAt(center, radius, title=action)
 
-		self.model.addPointsToPlot(center, radius)
+			self.model.addPointsToPlot(center, radius)
 
-		# amin(shifted, 0)
-		totalDist = radius
-		hw = .05 * totalDist
-		hl = .1 * totalDist
+			# amin(shifted, 0)
+			totalDist = radius
+			hw = .05 * totalDist
+			hl = .1 * totalDist
 
-		# ax1.add_patch(patches.Arrow(
-		# 	x=self.x[0], y=self.x[1],
-		# 	dx=(-self.model.modelRadius * self.grad[0] / norm(self.grad)),
-		# 	dy=(-self.model.modelRadius * self.grad[1] / norm(self.grad)),
-		# 	width=hw,
-		# 	facecolor="black", edgecolor="black"
-		# ))
+			# ax1.add_patch(patches.Arrow(
+			# 	x=self.x[0], y=self.x[1],
+			# 	dx=(-self.model.modelRadius * self.grad[0] / norm(self.grad)),
+			# 	dy=(-self.model.modelRadius * self.grad[1] / norm(self.grad)),
+			# 	width=hw,
+			# 	facecolor="black", edgecolor="black"
+			# ))
 
-		if self.s is not None:
-			ax1.add_patch(patches.Arrow(
-				x=self.x[0], y=self.x[1],
-				dx=(self.s[0]), dy=(self.s[1]),
-				width=hw,
-				facecolor="blue", edgecolor="blue"
-			))
+			if self.s is not None:
+				ax1.add_patch(patches.Arrow(
+					x=self.x[0], y=self.x[1],
+					dx=(self.s[0]), dy=(self.s[1]),
+					width=hw,
+					facecolor="blue", edgecolor="blue"
+				))
 
-		if self.n is not None:
-			ax1.add_patch(patches.Arrow(
-				x=self.x[0], y=self.x[1],
-				dx=self.n[0], dy=self.n[1],
-				width=hw,
-				facecolor="yellow", edgecolor="yellow"
-			))
+			if self.n is not None:
+				ax1.add_patch(patches.Arrow(
+					x=self.x[0], y=self.x[1],
+					dx=self.n[0], dy=self.n[1],
+					width=hw,
+					facecolor="yellow", edgecolor="yellow"
+				))
 
-		if self.t is not None:
-			ax1.add_patch(patches.Arrow(
-				x=self.x[0] + self.n[0], y=self.x[1] + self.n[1],
-				dx=self.t[0], dy=self.t[1],
-				width=hw,
-				facecolor="green", edgecolor="green"
-			))
+			if self.t is not None:
+				ax1.add_patch(patches.Arrow(
+					x=self.x[0] + self.n[0], y=self.x[1] + self.n[1],
+					dx=self.t[0], dy=self.t[1],
+					width=hw,
+					facecolor="green", edgecolor="green"
+				))
 
-		if self.r is not None:
-			ax1.add_patch(patches.Arrow(
-				x=self.x[0], y=self.x[1],
-				dx=self.r[0], dy=self.r[1],
-				width=hw,
-				facecolor="red", edgecolor="red"
-			))
-			# plt.arrow(x=self.x[0], y=self.x[1],
-			# 		  dx=self.r[0], dy=self.r[1],
-			# 		  # head_width=hw, head_length=hl,
-			# 		  fc='r', ec='r')
+			if self.r is not None:
+				ax1.add_patch(patches.Arrow(
+					x=self.x[0], y=self.x[1],
+					dx=self.r[0], dy=self.r[1],
+					width=hw,
+					facecolor="red", edgecolor="red"
+				))
+				# plt.arrow(x=self.x[0], y=self.x[1],
+				# 		  dx=self.r[0], dy=self.r[1],
+				# 		  # head_width=hw, head_length=hl,
+				# 		  fc='r', ec='r')
 
 
-		plt.savefig(statement.getNextPlotFile(suffix))
-		plt.close()
+			plt.savefig(statement.getNextPlotFile(suffix))
+			plt.close()
+		except:
+			print('unable to plot')
 
 	def delta(self):
 		return self.model.modelRadius
@@ -541,19 +495,23 @@ def trust_filter(program, constants, plot=True):
 		state.computeCurrentValues(program)
 
 		state.computeNormalComponent()
+
 		if plot:
 			state.show(program, 'normal_step: theta=' + str(state.theta) + ',radius=' + str(state.delta()), 'normal')
 
 		# This is not the correct feasible region to check non-emptyness!
 		chi, nonempty = state.computeChi()
 
-		if plot:
+		if plot or True:
 			print("current x      = " + str(state.x))
 			print("current theta  = " + str(state.theta))
 			print("current chi    = " + str(chi))
 			print("current radius = " + str(state.delta()))
 			print("current function value = " + str(state.f))
+			print("current # steps rejected by filter = " + str(results.filterRejectedCount))
+			print("current # filter modified = " + str(results.filter_modified_count))
 			print("---------------------------------------")
+
 
 		# check optimality
 		if nonempty and state.theta < program.tol and chi < program.tol:

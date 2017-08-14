@@ -14,7 +14,7 @@ import dfo
 import matplotlib
 
 class Program:
-	def __init__(self, name, obj, eq, ineq, x0):
+	def __init__(self, name, obj, eq, ineq, x0, max_iters):
 		self.eq = eq
 		self.ineq = ineq
 		self.name = name
@@ -24,6 +24,7 @@ class Program:
 		self.x0 = x0
 		self.tol = 1e-8
 		self.imageNumber = 0
+		self.max_iters = max_iters
 
 	def getImageNumber(self):
 		returnValue = self.imageNumber
