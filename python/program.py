@@ -14,7 +14,7 @@ import dfo
 import matplotlib
 
 class Program:
-	def __init__(self, name, obj, eq, ineq, x0, max_iters):
+	def __init__(self, name, obj, eq, ineq, x0, max_iters, tol = 1e-8):
 		self.eq = eq
 		self.ineq = ineq
 		self.name = name
@@ -22,7 +22,7 @@ class Program:
 		self.h = eq
 		self.g = ineq
 		self.x0 = x0
-		self.tol = 1e-8
+		self.tol = tol
 		self.imageNumber = 0
 		self.max_iters = max_iters
 
@@ -67,7 +67,7 @@ class Program:
 	def hessian(self, x):
 		return self.f.hessian(x)
 
-	def createBasePlotAt(self, centerX, r, title='Current Step'):
+	def createBasePlotAt(self, centerX, r, title='Current Step', mf=None):
 		fig = plt.figure()
 		fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
 		ax1 = fig.add_subplot(111)
@@ -88,6 +88,13 @@ class Program:
 				Z[j, i] = self.objective(arr([x[i], y[j]]))
 		CS = plt.contour(X, Y, Z, 6, colors='k')
 		plt.clabel(CS, fontsize=9, inline=1)
+
+		if mf is not None:
+			for i in range(0, len(x)):
+				for j in range(0, len(y)):
+					Z[j, i] = mf(arr([x[i], y[j]]))
+			CS = plt.contour(X, Y, Z, 6, colors='y')
+			plt.clabel(CS, fontsize=9, inline=1)
 
 		for idx in range(0, self.getNumEqualityConstraints()):
 			for i in range(0, len(x)):

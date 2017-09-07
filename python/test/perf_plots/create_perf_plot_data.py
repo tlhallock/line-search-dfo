@@ -64,7 +64,8 @@ def get_data(runner, n, m, nprob):
 				None,
 				inequalities,
 				initialX,
-				max_iters = 1000)
+				max_iters = 1000,
+				tol=1e-3)
 
 	runner(dfovecProgram)
 

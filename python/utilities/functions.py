@@ -8,6 +8,7 @@ from numpy.linalg import norm as norm
 from numpy import empty
 from numpy import sqrt
 from numpy import asarray
+from numpy import copy
 
 from numpy import matrix
 
@@ -109,7 +110,7 @@ class Quadratic:
 	def gradient(self, x):
 		return dot(self.Q, x) + self.b
 	def hessian(self, x):
-		return self.Q
+		return copy(self.Q)
 	def getInDim(self):
 		return self.Q.shape[0]
 	def getOutDim(self):

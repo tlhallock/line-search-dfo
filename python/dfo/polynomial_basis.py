@@ -5,7 +5,7 @@ from math import factorial
 from scipy.misc   import comb
 from numpy        import int       as integral
 from numpy        import multiply
-from numpy import empty
+from numpy import zeros
 from numpy import power
 from numpy import prod
 from numpy import asarray
@@ -44,11 +44,11 @@ class PolynomialBasis:
 		self.degree = degree
 		self.basis_dimension = _getBasisDimension(n, degree)
 
-		self.powers = empty([n, self.basis_dimension], dtype=integral)
-		self.coeff = empty(self.basis_dimension)
+		self.powers = zeros([n, self.basis_dimension], dtype=integral)
+		self.coeff = zeros(self.basis_dimension)
 
 		index = integral(0)
-		powers = empty(n, dtype=integral)
+		powers = zeros(n, dtype=integral)
 		for k in range(0, degree+1):
 			num = integral(comb(k+n-1, n-1))
 			self.coeff[index:index+num] = 1 / factorial(k)
@@ -56,7 +56,7 @@ class PolynomialBasis:
 
 	def evaluateMatToMat(self, mat):
 		npoints = mat.shape[0]
-		retVal = empty((npoints, self.basis_dimension))
+		retVal = zeros((npoints, self.basis_dimension))
 		for i in range(0, npoints):
 			retVal[i,:] = self.evaluateRowToRow(mat[i])
 		return retVal
@@ -69,7 +69,7 @@ class PolynomialBasis:
 
 	def evaluateAtMatrix(self, coefficients, mat):
 		nrows = mat.shape[0]
-		retVal = empty(nrows)
+		retVal = zeros(nrows)
 		for i in range(0, nrows):
 			retVal[i] = self.evaluate(coefficients, mat[i])
 		return retVal
@@ -100,7 +100,7 @@ class PolynomialBasis:
 
 	def getLinearModel(self, phi):
 		c=0
-		b=empty(self.n)
+		b=zeros(self.n)
 		for j in range(self.powers.shape[1]):
 			sumpowers = sum(self.powers[:, j])
 			if sumpowers == 0:
@@ -118,8 +118,8 @@ class PolynomialBasis:
 		phi = asarray(phi).flatten();
 
 		c=0
-		b=empty(self.n)
-		Q=empty((self.n, self.n))
+		b=zeros(self.n)
+		Q=zeros((self.n, self.n))
 		for j in range(self.powers.shape[1]):
 			sumpowers = sum(self.powers[:, j])
 			if sumpowers == 0:

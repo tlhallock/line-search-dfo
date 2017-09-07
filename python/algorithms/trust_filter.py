@@ -103,10 +103,10 @@ def dbl_check_sol(cons, res):
 		return True
 	for c in cons:
 		if c['type'] == 'ineq':
-			if (c['fun'](res.x) < -1e-8).any():
+			if (c['fun'](res.x) < -1e-3).any():
 				return False
 		elif c['type'] == 'eq':
-			if norm(c['fun'](res.x)) > 1e-8:
+			if norm(c['fun'](res.x)) > 1e-3:
 				return False
 		else:
 			raise Exception('unknown type of constraint')
@@ -156,16 +156,17 @@ class AlgorithmState:
 		self.r = None
 		self.x_new = None
 
-	def computeCurrentValues(self, program):
+	def computeCurrentValues(self, plotFile):
 		self.r = None
 		self.n = None
 		self.t = None
 		self.s = None
+		self.q = None
 		self.x_new = None
 
 		self.model.computeValueFromDelegate(self.x)
 		self.model.setNewModelCenter(self.x)
-		self.model.improve(program.getNextPlotFile('improve'))
+		self.model.improve(plotFile)
 
 		self.mf = self.model.getQuadraticModel(0)
 		self.mh = self.model.getQuadraticModels(self.equalityIndices)
@@ -278,6 +279,8 @@ class AlgorithmState:
 			return
 
 		tr_jac_dim=(1, self.getN())
+		# A^T (A * A^T)^-1 c
+		# A^T (A * A^T)^-1 c
 		initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
 		cons = [{'type': 'ineq',
 				 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
@@ -297,7 +300,6 @@ class AlgorithmState:
 			self.n = None
 
 	def computeTangentialStep(self):
-		# for a quadratic program:
 		rhs1 = self.cIneq + dot(self.AIneq, self.n)
 
 		cons = [{'type': 'ineq',
@@ -324,6 +326,82 @@ class AlgorithmState:
 		else:
 			self.t = None
 			return None, False
+
+
+	# def computeQuadraticNormalComponent(self):
+	# 	if not any(self.active):
+	# 		self.n = zeros(len(self.x))
+	# 		return
+	#
+	# 	tr_jac_dim=(1, self.getN())
+	# 	initialN = -asarray(dot(dot(self.A.T, pinv(dot(self.A, self.A.T))), self.c)).flatten() - self.x
+	# 	cons = [{'type': 'ineq',
+	# 			 'fun': lambda n: -self.cIneq - dot(self.AIneq, n),
+	# 			 'jac': lambda n: -self.AIneq},
+	# 			{'type': 'ineq',
+	# 			 'fun': lambda n: self.model.modelRadius**2 - dot(n, n),
+	# 			 'jac': lambda n: reshape(-2*n, tr_jac_dim)},
+	# 			{'type': 'eq',
+	# 			 'fun': lambda n: self.cEq + dot(self.AEq, n),
+	# 			 'jac': lambda n: self.AEq}]
+	# 	res_cons = minimize(lambda n: dot(n, n), jac=lambda n: 2 * n, x0=initialN,
+	# 		constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
+	# 	if res_cons.success and dbl_check_sol(cons, res_cons):
+	# 		self.n = res_cons.x
+	# 		pass
+	# 	else:
+	# 		self.n = None
+	#
+	# def computeQuadraticTangentialStep(self):
+	# 	rhs1 = self.cIneq + dot(self.AIneq, self.n)
+	#
+	# 	cons = [{'type': 'ineq',
+	# 			'fun': lambda t: -rhs1 - dot(self.AIneq, t),
+	# 			'jac': lambda t: -self.AIneq},
+	# 		{'type': 'ineq',
+	# 			 'fun': lambda t: self.model.modelRadius ** 2 - dot(self.n + t, self.n + t),
+	# 			 'jac': lambda t: reshape(-2 * (self.n + t), (1, len(self.x)))},
+	# 		{'type': 'eq',
+	# 			'fun': lambda t: dot(self.AEq, t),
+	# 		 	'jac': lambda t: self.AEq}]
+	#
+	# 	# TODO: If zeros are not cutting it:
+	# 	# x0 = 2 * random.rand(len(self.x)) - 1
+	#
+	# 	res_cons = minimize(
+	# 		lambda t: dot(self.grad + dot(self.H, self.n), t) + .5 * dot(t.T, dot(self.H, t)),
+	# 		jac=lambda t: self.grad + dot(self.H, self.n) + dot(self.H, t),
+	# 		x0=zeros(len(self.x)), constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=self.tol)
+	#
+	# 	if res_cons.success and dbl_check_sol(cons, res_cons):
+	# 		self.t = res_cons.x
+	# 		return res_cons.x, True
+	# 	else:
+	# 		self.t = None
+	# 		return None, False
+
+	def computeQuadraticStep(self):
+		cons = [
+			{'type': 'ineq',
+				 'fun': lambda t: -self.mg.evaluate(self.x + t),
+				 'jac': lambda t: -self.mg.jacobian(self.x + t)},
+			{'type': 'ineq',
+				 'fun': lambda t: self.model.modelRadius ** 2 - dot(t, t),
+				 'jac': lambda t: reshape(-2 * t, (1, len(self.x)))},
+			{'type': 'eq',
+				'fun': lambda t: self.mh.evaluate(self.x + t),
+			 	'jac': lambda t: self.mh.jacobian(self.x + t)}]
+
+		res_cons = minimize(
+			lambda t: self.mf.evaluate(self.x + t),
+			jac=lambda t: self.mf.gradient(self.x + t),
+			x0=zeros(len(self.x)), constraints=cons, method='SLSQP', options={ "disp": True, "maxiter": 1000 }, tol=self.tol)
+
+		if res_cons.success and dbl_check_sol(cons, res_cons):
+			self.q = res_cons.x
+		else:
+			dbl_check_sol(cons, res_cons)
+			self.q = None
 
 	def evaluateAtTrialPoint(self):
 		# compute function value at new point
@@ -360,7 +438,7 @@ class AlgorithmState:
 		try:
 			center = self.x
 			radius = self.getPlotRadius()
-			ax1 = statement.createBasePlotAt(center, radius, title=action)
+			ax1 = statement.createBasePlotAt(center, radius, title=action) #, mf=lambda x: self.mf.evaluate(x)
 
 			self.model.addPointsToPlot(center, radius)
 
@@ -383,6 +461,14 @@ class AlgorithmState:
 					dx=(self.s[0]), dy=(self.s[1]),
 					width=hw,
 					facecolor="blue", edgecolor="blue"
+				))
+
+			if self.q is not None:
+				ax1.add_patch(patches.Arrow(
+					x=self.x[0], y=self.x[1],
+					dx=self.q[0], dy=self.q[1],
+					width=hw,
+					facecolor="pink", edgecolor="pink"
 				))
 
 			if self.n is not None:
@@ -460,7 +546,7 @@ def restore_feasibility(program, constants, state, results, plot):
 
 		if rho < constants.eta_1:
 			state.decreaseRadius(constants)
-			state.computeCurrentValues(program)
+			state.computeCurrentValues(program.getNextPlotFile('feasibility'))
 			continue
 		elif rho < constants.eta_2:
 			state.x = state.x_new
@@ -478,21 +564,14 @@ def restore_feasibility(program, constants, state, results, plot):
 			return True
 
 
-
-
-
-
-
-
-
-
 def trust_filter(program, constants, plot=True):
 	results = Results()
 	state = AlgorithmState(program, constants)
+	plot=True
 
 	while True:
 		# ensure poised and compute model functions
-		state.computeCurrentValues(program)
+		state.computeCurrentValues(program.getNextPlotFile('improve') if plot else None)
 
 		state.computeNormalComponent()
 
@@ -523,28 +602,34 @@ def trust_filter(program, constants, plot=True):
 			results.success = True
 			return results
 
-		# check compatibility
-		if state.n is None or norm(state.n) >= constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
-			if not restore_feasibility(program, constants, state, results, plot):
-				results.success = False
-				break
-			continue
+		state.computeQuadraticStep()
+		if state.q is None:
+			# check compatibility
+			if state.n is None or norm(state.n) >= constants.kappa_delta * state.delta() * min(1, constants.kappa_mu * state.delta() ** constants.mu):
+				if not restore_feasibility(program, constants, state, results, plot):
+					results.success = False
+					break
+				continue
 
-		state.computeTangentialStep()
+			state.computeTangentialStep()
 
-		# This check was not in the paper...
-		if state.t is None:
-			print('Unable to compute t!!!!!!!!!')
-			if not restore_feasibility(program, constants, state, results, plot):
-				results.success = False
-				break
-			continue
+			# This check was not in the paper...
+			if state.t is None:
+				print('Unable to compute t!!!!!!!!!')
+				if not restore_feasibility(program, constants, state, results, plot):
+					results.success = False
+					break
+				continue
 
-		state.s = state.t + state.n
+			state.s = state.t + state.n
+		else:
+			state.s = state.q
+
 		state.x_new = state.x + state.s
 
 		if plot:
 			state.show(program, 'computed tangential step', 'tangential_step')
+
 
 		f_exp = state.model.interpolate(state.x_new)[0]
 		f_new, theta_new, _ = state.evaluateAtTrialPoint()
