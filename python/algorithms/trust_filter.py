@@ -567,7 +567,6 @@ def restore_feasibility(program, constants, state, results, plot):
 def trust_filter(program, constants, plot=True):
 	results = Results()
 	state = AlgorithmState(program, constants)
-	plot=True
 
 	while True:
 		# ensure poised and compute model functions

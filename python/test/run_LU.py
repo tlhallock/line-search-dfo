@@ -22,7 +22,7 @@ poisedSet[1] = poisedSet[0]
 poisedSet[2] = poisedSet[0]
 
 
-params = lagrange.LagrangeParams(center, radius, True, 1e-2)
+params = lagrange.LagrangeParams(center, radius, True, xsi=1e-5)
 params.improve = True
 cert = lagrange.computeLagrangePolynomials(basis, poisedSet, params)
 

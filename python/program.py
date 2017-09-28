@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from numpy import linspace
 from numpy import meshgrid
 from utilities import sys_utils
+import matplotlib
 
 import dfo
 import matplotlib

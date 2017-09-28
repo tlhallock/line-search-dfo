@@ -22,7 +22,7 @@ from dfo import lagrange
 
 
 class MultiFunctionModel:
-	def __init__(self, funs, basis, x0, radius=1, xsi=1e-1):
+	def __init__(self, funs, basis, x0, radius=1, xsi=1e-1, consOpts=None):
 		self.xsi = xsi
 		self.functionEvaluations = 0
 		self.basis = basis
@@ -35,6 +35,7 @@ class MultiFunctionModel:
 
 		self.shifted = None
 		self.unshifted = repmat(x0, basis.basis_dimension, 1)
+		self.consOpts = consOpts
 		self.improve(None)
 
 	def __len__(self):
@@ -138,7 +139,7 @@ class MultiFunctionModel:
 
 		return cert.poised
 
-	def improve(self, plotFile):
+	def improve(self, plotFile=None):
 		""" Ensure that the current set is well poised
 			This also evaluates the delegate functions at new points
 			This also updates the model based on these new values
@@ -146,7 +147,10 @@ class MultiFunctionModel:
 		cert = lagrange.computeLagrangePolynomials(
 			self.basis,
 			self.unshifted,
-			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, True, self.xsi))
+			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, True, self.xsi, self.consOpts))
+
+		if not cert.poised:
+			return False
 
 		self._setUnshiftedFromCert(cert)
 
@@ -156,6 +160,7 @@ class MultiFunctionModel:
 		# update the model
 		self.lmbda = cert.lmbda
 		self.phi = cert.lmbda * self.createY()
+		self.Lambda = cert.Lambda
 
 		if plotFile is not None:
 			cert.plot(plotFile, self.modelCenter(), self.modelRadius)

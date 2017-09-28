@@ -71,7 +71,7 @@ class PolynomialBasis:
 		nrows = mat.shape[0]
 		retVal = zeros(nrows)
 		for i in range(0, nrows):
-			retVal[i] = self.evaluate(coefficients, mat[i])
+			retVal[i] = self.evaluateToNumber(coefficients, mat[i])
 		return retVal
 
 	def print(self):
@@ -144,6 +144,5 @@ class PolynomialBasis:
 			else:
 				pass
 		return functions.Quadratic(Q, b, c)
-
 
 
