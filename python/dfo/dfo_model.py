@@ -130,7 +130,7 @@ class MultiFunctionModel:
 		cert = lagrange.computeLagrangePolynomials(
 			self.basis,
 			self.unshifted,
-			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, False, self.xsi))
+			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, False, self.xsi, self.consOpts))
 
 		if cert.poised:
 			self._setUnshiftedFromCert(cert)
@@ -161,6 +161,7 @@ class MultiFunctionModel:
 		self.lmbda = cert.lmbda
 		self.phi = cert.lmbda * self.createY()
 		self.Lambda = cert.Lambda
+		self.LambdaConstrained = cert.LambdaConstrained
 
 		if plotFile is not None:
 			cert.plot(plotFile, self.modelCenter(), self.modelRadius)

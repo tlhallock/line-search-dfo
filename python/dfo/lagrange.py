@@ -196,11 +196,18 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 	if constraints is not None:
 		cons += constraints
 
-	minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
+	# Here, I should solve a program to find a feasible point, instead of trying several different points.
+
+	minimumResult = None
+	while minimumResult is None or not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4 + tol:
+		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
 						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
 		raise Exception('Uh oh')
-	maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=random.random(basis.n) / 10,
+
+	maximumResult = None
+	while maximumResult is None or not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4 + tol:
+		maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=random.random(basis.n) / 10,
 						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 	if not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4:
 		raise Exception('Uh oh')
@@ -297,8 +304,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 
 		if (maxVal < params.xsi or maxVal > params.maxL) and params.improveWithNew:
 			# If still not poised, Then check for new points
-			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol,
-											 params.getShiftedConstraints() if params.consOpts else None)
+			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
 
 		if maxVal < params.xsi:
@@ -329,6 +335,10 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 	cert.Lambda = empty(npoints)
 	for i in range(npoints):
 		_, cert.Lambda[i] = _maximize_lagrange(bss, V[npoints:h, i], tol)
+
+	cert.LambdaConstrained = empty(npoints)
+	for i in range(npoints):
+		_, cert.LambdaConstrained[i] = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 
 	return cert
 
