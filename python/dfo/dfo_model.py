@@ -1,6 +1,3 @@
-from dfo import polynomial_basis
-from dfo import dfo_model
-
 from numpy.linalg import norm as norm
 from numpy import empty
 from numpy.matlib import repmat
@@ -12,18 +9,14 @@ import matplotlib.pyplot as plt
 
 from utilities import functions
 
-
-from scipy.optimize import minimize
-
-
-
 from dfo import polynomial_basis
 from dfo import lagrange
 
 
 class MultiFunctionModel:
-	def __init__(self, funs, basis, x0, radius=1, xsi=1e-1, consOpts=None):
-		self.xsi = xsi
+	def __init__(self, funs, basis, x0, radius=1, initialXsi=1e-1, minXsi=None, consOpts=None):
+		self.initialXsi = initialXsi
+		self.minXsi = minXsi
 		self.functionEvaluations = 0
 		self.basis = basis
 		self.linearBasis = polynomial_basis.PolynomialBasis(len(x0), 1)
@@ -31,23 +24,21 @@ class MultiFunctionModel:
 		self.modelRadius = radius
 		self.history = EvaluationHistory(len(x0))
 		self.phi = None
-		self.lmbda = None
-
-		self.shifted = None
-		self.unshifted = repmat(x0, basis.basis_dimension, 1)
+		self.cert = None
 		self.consOpts = consOpts
+		self.currentSet = repmat(x0, basis.basis_dimension, 1)
 		self.improve(None)
 
 	def __len__(self):
 		return self.size()
 
 	def setNewModelCenter(self, newCenter):
-		self.unshifted[0, :] = newCenter
+		self.currentSet[0, :] = newCenter
 		self._improveWithoutNewPoints()
 
 	def modelCenter(self):
 		""" Returns the model center: namely the first element of the poised set """
-		return self.unshifted[0, :]
+		return self.currentSet[0, :]
 
 
 	def computeValueFromDelegate(self, x):
@@ -76,9 +67,9 @@ class MultiFunctionModel:
 		There are as many rows as the number of points in the set
 		There are as many columns as the number of functions being modeled
 		"""
-		retVal = empty((self.unshifted.shape[0], len(self.delegates)))
-		for i in range(0, self.unshifted.shape[0]):
-			otherX, otherY = self.history.get(self.unshifted[i])
+		retVal = empty((self.currentSet.shape[0], len(self.delegates)))
+		for i in range(0, self.currentSet.shape[0]):
+			otherX, otherY = self.history.get(self.currentSet[i])
 			if otherY is None:
 				raise Exception("This is a problem...")
 			retVal[i] = otherY
@@ -111,66 +102,51 @@ class MultiFunctionModel:
 	def isLambdaPoised(self):
 		return self._improveWithoutNewPoints()
 
-	def _setUnshiftedFromCert(self, cert):
-		self.shifted = cert.shifted
-		self.unshifted = cert.unshifted
-
-		# the following would attempt to keep the old points...
-		# newunshifted = empty(self.unshifted.shape)
-		# for i in range(self.unshifted.shape[0]):
-		# 	if cert.indices[i] > 0:
-		# 		newunshifted[i, :] = self.unshifted[cert.indices[i], :]
-		# 	else:
-		# 		newunshifted[i, :] = cert.unshifted[i, :]
-		# self.unshifted = newunshifted
-
-
 	def _improveWithoutNewPoints(self):
 		""" Determine if the current set is lambda poised, possibly replacing points with points already evaluated """
-		cert = lagrange.computeLagrangePolynomials(
+		self.cert = lagrange.computeLagrangePolynomials(
 			self.basis,
-			self.unshifted,
-			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, False, self.xsi, self.consOpts))
+			self.currentSet,
+			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, False, self.initialXsi, self.consOpts))
 
-		if cert.poised:
-			self._setUnshiftedFromCert(cert)
-			self.lmbda = cert.lmbda
-			self.phi = cert.lmbda * self.createY()
+		if self.cert.poised:
+			self.phi = self.cert.lmbda * self.createY()
+			self.currentSet = self.cert.unshifted
+			self.cert.unshifted = None
 
-		return cert.poised
+		return self.cert.poised
 
 	def improve(self, plotFile=None):
 		""" Ensure that the current set is well poised
 			This also evaluates the delegate functions at new points
 			This also updates the model based on these new values
 		"""
-		cert = lagrange.computeLagrangePolynomials(
+		self.cert = lagrange.computeLagrangePolynomials(
 			self.basis,
-			self.unshifted,
-			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, True, self.xsi, self.consOpts))
+			self.currentSet,
+			lagrange.LagrangeParams(self.modelCenter(), self.modelRadius, True, self.initialXsi, self.consOpts))
 
-		if not cert.poised:
+		if not self.cert.poised:
 			return False
 
-		self._setUnshiftedFromCert(cert)
+		self.currentSet = self.cert.unshifted
 
-		for i in range(self.unshifted.shape[0]):
-			self.computeValueFromDelegate(self.unshifted[i, :])
+		for i in range(self.currentSet.shape[0]):
+			self.computeValueFromDelegate(self.currentSet[i, :])
 
 		# update the model
-		self.lmbda = cert.lmbda
-		self.phi = cert.lmbda * self.createY()
-		self.Lambda = cert.Lambda
-		self.LambdaConstrained = cert.LambdaConstrained
+		self.phi = self.cert.lmbda * self.createY()
 
 		if plotFile is not None:
-			cert.plot(plotFile, self.modelCenter(), self.modelRadius)
+			self.cert.plot(plotFile, self.modelCenter(), self.modelRadius)
 
-		return cert.poised
+		self.cert.unshifted = None
+
+		return self.cert.poised
 
 	def createUnshiftedQuadraticModel(self, other_fun):
-		y = asmatrix([other_fun(self.unshifted[i]) for i in range(self.unshifted.shape[0])]).T
-		return self.basis.getQuadraticModel(self.lmbda * y)
+		y = asmatrix([other_fun(self.currentSet[i]) for i in range(self.currentSet.shape[0])]).T
+		return self.basis.getQuadraticModel(self.cert.lmbda * y)
 
 	def multiplyRadius(self, factor):
 		self.modelRadius *= factor
@@ -183,56 +159,6 @@ class MultiFunctionModel:
 	def addPointsToPlot(self, center, rad):
 		ax1 = plt.gca()
 		# Only plot the points that lie within the plot!
-		lie_within_plot = norm(self.unshifted - center, axis=1) < rad
-		ax1.scatter(self.unshifted[lie_within_plot, 0], self.unshifted[lie_within_plot, 1], s=10, c='r', marker="x")
+		lie_within_plot = norm(self.cert.unshifted - center, axis=1) < rad
+		ax1.scatter(self.currentSet[lie_within_plot, 0], self.currentSet[lie_within_plot, 1], s=10, c='r', marker="x")
 		ax1.add_artist(plt.Circle(self.modelCenter(), self.modelRadius, color='g', fill=False))
-
-		# def isNearCenter(self, newValue):
-		# 	return norm(newValue - self.unshifted[0, :]) < self.modelRadius / 2
-
-#	def createLinearModelDepricated(self, var):
-#		""" Old code """
-#		yvals = self.createYByIndex(var)
-#		proj = lagrange.computeRegressionPolynomials(self.linearBasis, self.cert.shifted)
-#		c = self.modelCenter()
-#		r = self.modelRadius
-#		def innerFunc(x):
-#			return dot(yvals, dot(self.linearBasis.evaluateRowToRow((x - c) / r), proj))
-#		return innerFunc
-#
-#	def interpolateByIndex(self, x, var):
-#		""" Same as interpolate, but only interpolates function at index var """
-#		dot(self.createYByIndex(var), ravel(self.basis.evaluateRowToRow(
-#			(x - self.modelCenter()) / self.modelRadius) * self.cert.lmbda))
-#
-#	def createYByIndex(self, var):
-#		""" Creates the vector of function values of the current poised set
-#
-#		This only creates the vector for the function at index var
-#
-#		"""
-#		retVal = empty(self.unshifted.shape[0])
-#		for i in range(0, self.unshifted.shape[0]):
-#			y = self.history[tuple(self.unshifted[i])]
-#			retVal[i] = y[var]
-#		return retVal
-
-
-	# def testNewModelCenter(self, x):
-	# 	""" Returns a matrix of predicted versus actual function values
-	#
-	# 	There are as many rows as functions
-	# 	There are two columns:
-	# 		one column for the predicted values
-	# 		one column for the actual values
-	# 	"""
-	# 	predictedVersusActual = empty((len(self.delegates), 2))
-	# 	predictedVersusActual[:, 0] = self.interpolate(x)
-	#
-	# 	actual, evaluated = self.computeValueFromDelegate(x)
-	#
-	# 	predictedVersusActual[:, 1] = actual
-	#
-	# 	return predictedVersusActual
-
-

@@ -25,7 +25,7 @@ from dfo.dfo_model import MultiFunctionModel
 tol=1e-4
 n = 2
 degree = 2
-a = 1
+a = .1
 xsi=1e-3
 center = array((0.5, 0))
 radius = 1
@@ -56,10 +56,8 @@ basis = polynomial_basis.PolynomialBasis(n, degree)
 class ConstraintOptions:
 	def __init__(self):
 		self.constraints = theConstraints
-		self.useInLambda = False
 
-model = MultiFunctionModel([obj], basis, center, radius=radius, xsi=xsi, consOpts=ConstraintOptions())
-
+model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
 
 def createPlot(filename, title, model, newMin=None, rho=None):
 	plt.title(title)
@@ -71,8 +69,8 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 
 	plt.legend(loc='lower left')
 
-	x = linspace(model.unshifted[0, 0] - model.modelRadius, model.unshifted[0, 0] + model.modelRadius, num=100)
-	y = linspace(model.unshifted[0, 1] - model.modelRadius, model.unshifted[0, 1] + model.modelRadius, num=100)
+	x = linspace(model.currentSet[0, 0] - model.modelRadius, model.currentSet[0, 0] + model.modelRadius, num=100)
+	y = linspace(model.currentSet[0, 1] - model.modelRadius, model.currentSet[0, 1] + model.modelRadius, num=100)
 	X, Y = meshgrid(x, y)
 
 	Z = zeros((len(y), len(x)))
@@ -98,44 +96,43 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 		plt.clabel(CS, fontsize=9, inline=1)
 
 	ax1.add_artist(plt.Circle(model.modelCenter(), model.modelRadius, color='g', fill=False))
-	ax1.scatter(model.unshifted[:, 0], model.unshifted[:, 1], s=20, c='r', marker="x", label='poised set')
+	ax1.scatter(model.currentSet[:, 0], model.currentSet[:, 1], s=20, c='r', marker="x", label='poised set')
 	if newMin is not None:
 		ax1.scatter(array((newMin[0])), array((newMin[1])), s=20, c='g', marker="x", label='poised set')
 		if rho is not None:
 			ax1.text(newMin[0], newMin[1], 'rho' + str(rho))
 	#
 	# ax1.axis([center[0] - 2 * radius, center[0] + 2 * radius, center[1] - 2 * radius, center[1] + 2 * radius])
-	if model.Lambda is not None:
-		lmbdaStr = "Lambdas = " + ', '.join(map(str, sorted(model.Lambda, reverse=True)))
-		ax1.text(model.unshifted[0, 0], model.unshifted[0, 1], lmbdaStr)
+
+	lmbdaStr = "Max Lambda = "
+	if model.cert.Lambda is not None:
+		lmbdaStr += str(max(model.cert.Lambda))
+	else:
+		lmbdaStr += "undefined"
+
+	lmbdaStr = lmbdaStr + ", Max Constrained Lambda = "
+	if model.cert.LambdaConstrained is not None:
+		lmbdaStr += str(max(model.cert.LambdaConstrained))
+	else:
+		lmbdaStr += "undefined"
+
+	ax1.text(model.modelCenter()[0], model.modelCenter()[1], lmbdaStr)
 
 	fig.savefig(filename)
 	plt.close()
-
-def replacePointsOutsideOfTrustRegion(model):
-	for i in range(1, model.unshifted.shape[0]):
-		if norm(model.unshifted[i, :] - model.modelCenter()) > model.modelRadius + 1e-4:
-			model.unshifted[i, :] = model.unshifted[0, :]
 
 model.improve()
 
 iteration = 0
 while True:
 	iteration += 1
+	print('function evaluation: ' + str(model.functionEvaluations))
 
-	replacePointsOutsideOfTrustRegion(model)
 	if not model.improve():
-		createPlot('images/iteration_' + str(iteration) + '_unableToModel.png', 'Iteration ' + str(iteration), model)
+		if model.phi is not None:
+			createPlot(filename='images/iteration_' + str(iteration) + '_unableToModel.png', title='Iteration ' + str(iteration), model=model)
 		model.multiplyRadius(0.5)
 		continue
-
-	maxLambda = max(model.LambdaConstrained) if model.consOpts.useInLambda else max(model.Lambda)
-	if maxLambda > 4:
-		print('not poised')
-		createPlot('images/iteration_' + str(iteration) + '_improve.png', 'Iteration ' + str(iteration), model)
-		model.multiplyRadius(0.5)
-		continue
-
 
 	quad = model.getQuadraticModel(0)
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
@@ -151,7 +148,7 @@ while True:
 
 	rho = (oldVal - newVal) / (oldValM - quad.evaluate(trialPoint))
 
-	createPlot('images/iteration_' + str(iteration) + '_new_point.png', 'Iteration ' + str(iteration), model, trialPoint, rho)
+	createPlot(filename='images/iteration_' + str(iteration) + '_new_point.png', title='Iteration ' + str(iteration), model=model, newMin=trialPoint, rho=rho)
 
 	print('rho', rho)
 	if rho < .5:
@@ -163,9 +160,7 @@ while True:
 	delta = norm(model.modelCenter() - trialPoint)
 	if delta < model.modelRadius / 4:
 		if delta < tol:
-			print('delta less than tolerance')
 			break
-		print('decreasing radius')
 		model.multiplyRadius(.5)
 		continue
 

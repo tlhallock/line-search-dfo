@@ -12,13 +12,8 @@ from numpy import reshape
 from numpy import random
 import matplotlib.pyplot as plt
 from numpy.linalg import lstsq
-from numpy import asmatrix
-from numpy import asarray
 from scipy.optimize import minimize
-from utilities import trust
 from utilities import sys_utils
-
-from numpy import array
 
 
 class Certification:
@@ -30,12 +25,12 @@ class Certification:
 		self.indices = arange(0, poisedSet.shape[0])
 		self.unshifted = None
 		self.Lambda = None
-
+		self.LambdaConstrained = None
+		self.outputXsi = params.initialXsi
 		if params.improveWithNew:
 			for i in range(1, self.shifted.shape[0]):
 				if norm(self.shifted[i, :]) > params.max_radius:
 					self.shifted[i, :] = zeros(self.shifted.shape[1])
-
 
 	def fail(self):
 		self.poised = False
@@ -43,6 +38,8 @@ class Certification:
 		self.lmbda = None
 		self.indices = None
 		self.unshifted = None
+		self.LambdaConstrained = None
+		self.outputXsi = None
 
 	def plot(self, filename, center, radius):
 		fig = plt.figure()
@@ -64,14 +61,32 @@ class Certification:
 		fig.savefig(filename)
 		plt.close()
 
+	def plotIncomplete(self, filename, radius, newXsi, iteration, lambdas):
+		fig = plt.figure()
+		fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
+		ax1 = fig.add_subplot(111)
+		center = self.shifted[0, :]
+
+		ax1.add_artist(plt.Circle(center, radius, color='g', fill=False))
+		ax1.scatter(self.shifted[:, 0], self.shifted[:, 1], s=10, c='r', marker="x", label='failed')
+
+		# ax1.axis([center[0] - 2 * radius, center[0] + 2 * radius, center[1] - 2 * radius, center[1] + 2 * radius])
+
+		lambdaStr = "xsi=" + str(newXsi) + " on iteration " + str(iteration) + " Lambda=" + str(max(lambdas))
+		ax1.text(center[0], center[1], lambdaStr)
+
+		plt.legend(loc='lower left')
+		fig.savefig(filename)
+		plt.close()
+
 class LagrangeParams:
-	def __init__(self, center, radius, improve, xsi, consOpts=None):
+	def __init__(self, center, radius, improve, initialXsi, consOpts=None, minXsi=1e-10):
 		self.improveWithNew = improve
-		self.xsi = xsi
+		self.initialXsi = initialXsi
+		self.minXsi = minXsi
 		self.radius = radius
 		self.center = center
-		self.maxL = 2
-		self.max_radius = 1.5
+		self.max_radius = 1.1
 		self.consOpts = consOpts
 
 	def getShiftedConstraints(self):
@@ -97,13 +112,6 @@ class LagrangeParams:
 			'jac': lambda x: self.consOpts.constraints[1]['jac'](x * self.radius + self.center) * self.radius
 		}]
 
-		# Test code
-		# for i in range(100):
-		# 	x = random.rand(2)
-		# 	print(self.consOpts.constraints[0]['fun'](x))
-		# 	print(self.consOpts.constraints[1]['fun'](x))
-		# 	print(constraints[0]['fun']((x - self.center) / self.radius))
-		# 	print(constraints[1]['fun']((x - self.center) / self.radius))
 		return constraints
 
 
@@ -139,51 +147,6 @@ def _getMaxIdx(max):
 def _swapRows(mat, idx1, idx2):
 	mat[[idx1, idx2], :] = mat[[idx2, idx1], :]
 
-def _getBestExistingPoint(basis, row, history):
-	""" Look through points in history and try to replace the current row """
-	#  Priority TODO: implement this!!!!!
-
-	found = False
-	maxX = None
-	# maxY = -1
-	# for point in history's keys:
-	#	if too far away:
-	#		continue
-	#	y = dot(basis.evaluateRowToRow(point), row)
-	#	if y > abs(maxY)
-	#		y = abs(maxY)
-	#		maxX = point
-	#		found = True
-
-	return (found, maxX)
-
-def _maximize_lagrange_arbitrary(basis, row, tol):
-	""" This method would work for any basis... """
-
-	def thePoly(x):
-		return dot(basis.evaluateRowToRow(x), row)
-
-	minimumResult = minimize(lambda x: thePoly(x) if norm(x) < 1 else infinity,
-							 zeros(basis.n), method='Nelder-Mead',
-							 #				constraints = {'type':'ineq', 'fun': constraint},
-							 options={'xtol': tol, 'disp': False})
-
-	maximumResult = minimize(lambda x: -thePoly(x) if norm(x) < 1 else infinity,
-							 zeros(basis.n), method='Nelder-Mead',
-							 #				constraints = {'type':'ineq', 'fun': constraint},
-							 options={'xtol': tol, 'disp': False})
-	if abs(maximumResult.fun) > 1e300 or abs(minimumResult.fun) > 1e300:
-		raise Exception('Too big!!!')
-
-	if abs(minimumResult.fun) > abs(maximumResult.fun):
-		return minimumResult.x, abs(minimumResult.fun)
-	else:
-		return maximumResult.x, abs(maximumResult.fun)
-
-
-
-
-
 def _maximize_lagrange_quad(basis, row, tol, constraints):
 	""" This method uses the fact that we are modelling with quadratics..."""
 	quadmodel = basis.getQuadraticModel(row)
@@ -198,76 +161,43 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 
 	# Here, I should solve a program to find a feasible point, instead of trying several different points.
 
-	minimumResult = None
-	while minimumResult is None or not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4 + tol:
-		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
-						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
-	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
-		raise Exception('Uh oh')
+	feasibleStart = minimize(lambda x: sum([v if v > 0 else 0 for v in [c['fun'](x) for c in cons]]),
+	 x0=zeros(basis.n), method='Nelder-Mead', options={"disp": False, "maxiter": 1000}, tol=tol)
 
+	minimumResult = None
+	if feasibleStart.success:
+		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=feasibleStart.x,
+				constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000},
+				tol=tol)
+	count = 0
+	while count < 1000 and (minimumResult is None or not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4 + tol):
+		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
+							constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+		count += 1
+	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
+		raise Exception('Unable to solve the trust region sub problem')
+
+
+	count = 0
 	maximumResult = None
-	while maximumResult is None or not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4 + tol:
+	if feasibleStart.success:
+		maximumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=feasibleStart.x,
+				constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000},
+				tol=tol)
+	while count < 1000 and (maximumResult is None or not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4 + tol):
 		maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=random.random(basis.n) / 10,
 						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
-	if not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4:
-		raise Exception('Uh oh')
-
-	# print(cons[1]['fun'](minimumResult.x))
-	# print(cons[2]['fun'](minimumResult.x))
-	# print(cons[1]['fun'](maximumResult.x))
-	# print(cons[2]['fun'](maximumResult.x))
+		count += 1
+	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
+		raise Exception('Unable to solve the trust region sub problem')
 
 	if abs(minimumResult.fun) > abs(maximumResult.fun):
 		return minimumResult.x, abs(minimumResult.fun)
 	else:
 		return maximumResult.x, abs(maximumResult.fun)
 
-def _minimize_lagrange_trust(basis, row, tol):
-	quadmodel = basis.getQuadraticModel(row)
-
-	x1, f1, _, _, _ = trust.trust( asmatrix(quadmodel.b).T,  asmatrix(quadmodel.Q), 1)
-	x2, f2, _, _, _ = trust.trust(-asmatrix(quadmodel.b).T, -asmatrix(quadmodel.Q), 1)
-	f1 = quadmodel.c + f1
-	f2 = quadmodel.c - f2
-	if abs(f1) > abs(f2):
-		return asarray(x1).flatten(), abs(f1)
-	else:
-		return asarray(x2).flatten(), abs(f2)
-
-
-
 def _maximize_lagrange(basis, row, tol, constraints=None):
-	# v = True
-	# try:
-	# 	newVal1, funVal1 = _maximize_lagrange_quad(basis, row, tol)
-	# except:
-	# 	v = False
-	newVal1, funVal1 = _maximize_lagrange_quad(basis, row, tol, constraints)
-	# newVal2, funVal2 = _maximize_lagrange_arbitrary(basis, row, tol)
-	# newVal3, funVal3 = _minimize_lagrange_trust(basis, row, tol)
-
-	# if False:
-	# 	print('-------------------')
-	# 	if v: print(funVal1)
-	# 	print(funVal2)
-	# 	print(funVal3)
-	# 	print('-')
-	# 	if v: print(newVal1)
-	# 	print(newVal2)
-	# 	print(newVal3)
-	# 	print('-')
-	# 	if v: print(norm(newVal1))
-	# 	print(norm(newVal2))
-	# 	print(norm(newVal3))
-	# 	print('-------------------')
-
-	# _maximize_lagrange_quad(basis, row, tol)
-	# _maximize_lagrange_arbitrary(basis, row, tol)
-	# _minimize_lagrange_trust(basis, row, tol)
-
-	return newVal1, funVal1
-
-
+	return _maximize_lagrange_quad(basis, row, tol, constraints)
 
 def _replace(cert, i, newValue, npoints, h, V, b):
 	cert.shifted[i] = newValue
@@ -296,21 +226,22 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 		maxVal, maxIdx = _getMaxIdx(abs(V[i:npoints, i]))
 
 		# Check the poisedness
-		if maxVal < params.xsi or maxVal > params.maxL:
-			# First, check for an existing point to replace.
-			found, newValue = _getBestExistingPoint(bss, V[npoints:h, i], history)
-			if found:
-				maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
-
-		if (maxVal < params.xsi or maxVal > params.maxL) and params.improveWithNew:
+		if maxVal < cert.outputXsi and params.improveWithNew:
 			# If still not poised, Then check for new points
 			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
 
-		if maxVal < params.xsi:
-			# If still not poised, we are stuck
-			cert.fail()
-			return cert
+		if maxVal < cert.outputXsi:
+			if maxVal < params.minXsi:
+				# If still not poised, we are stuck
+				lambdas = empty(npoints)
+				for j in range(npoints):
+					_, lambdas[j] = _maximize_lagrange(bss, V[npoints:h, j], tol)
+				cert.plotIncomplete('images/failed.png', params.radius, maxVal, i, lambdas)
+				cert.fail()
+				return cert
+			print('bumping xsi to ' + str(maxVal))
+			cert.outputXsi = maxVal
 
 		# perform pivot
 		if not maxIdx == 0:
@@ -341,8 +272,6 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 		_, cert.LambdaConstrained[i] = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 
 	return cert
-
-
 
 def computeRegressionPolynomials(basis, shifted):
 	p = basis.basis_dimension
