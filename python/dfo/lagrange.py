@@ -161,7 +161,7 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 
 	# Here, I should solve a program to find a feasible point, instead of trying several different points.
 
-	feasibleStart = minimize(lambda x: sum([v if v > 0 else 0 for v in [c['fun'](x) for c in cons]]),
+	feasibleStart = minimize(lambda x: sum([-v if v < 0 else 0 for v in [c['fun'](x) for c in cons]]),
 	 x0=zeros(basis.n), method='Nelder-Mead', options={"disp": False, "maxiter": 1000}, tol=tol)
 
 	minimumResult = None
@@ -169,26 +169,31 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=feasibleStart.x,
 				constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000},
 				tol=tol)
+	else:
+		print('not able to find a feasible starting point.')
 	count = 0
 	while count < 1000 and (minimumResult is None or not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4 + tol):
 		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
 							constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 		count += 1
 	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
+		# Running this one last time with display = true
+		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
+								 constraints=cons, method='SLSQP', options={"disp": True, "maxiter": 1000}, tol=tol)
+		print(minimumResult)
 		raise Exception('Unable to solve the trust region sub problem')
 
 
 	count = 0
 	maximumResult = None
 	if feasibleStart.success:
-		maximumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=feasibleStart.x,
-				constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000},
-				tol=tol)
+		maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=feasibleStart.x,
+						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 	while count < 1000 and (maximumResult is None or not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4 + tol):
 		maximumResult = minimize(lambda x: -quadmodel.evaluate(x), jac=lambda x: -quadmodel.gradient(x), x0=random.random(basis.n) / 10,
 						constraints=cons, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 		count += 1
-	if not minimumResult.success or norm(minimumResult.x) >= 1 + 1e-4:
+	if not maximumResult.success or norm(maximumResult.x) >= 1 + 1e-4:
 		raise Exception('Unable to solve the trust region sub problem')
 
 	if abs(minimumResult.fun) > abs(maximumResult.fun):
@@ -263,13 +268,21 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 	cert.lmbda = V[npoints:h]
 	cert.poised = True
 
+	_testV(V, bss, cert.shifted)
 	cert.Lambda = empty(npoints)
 	for i in range(npoints):
 		_, cert.Lambda[i] = _maximize_lagrange(bss, V[npoints:h, i], tol)
+		# if cert.Lambda[i] < 1 - tol and params.improveWithNew:
+		# 	print('Found a value of lambda that is less than 1', cert.Lambda[i])
+			# raise Exception('Lambda must be greater or equal 1')
 
 	cert.LambdaConstrained = empty(npoints)
 	for i in range(npoints):
 		_, cert.LambdaConstrained[i] = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
+#		if cert.LambdaConstrained[i] < 1 - tol and params.improveWithNew:
+#			print('Found a value of lambda that is less than 1', cert.LambdaConstrained[i])
+#			_maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
+#			raise Exception('Lambda must be greater or equal 1')
 
 	return cert
 
