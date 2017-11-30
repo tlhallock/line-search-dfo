@@ -20,7 +20,10 @@ class Certification:
 	def __init__(self, poisedSet, params):
 		self.original = poisedSet
 		self.poised = False
-		self.shifted = _shift(poisedSet, params.center, params.radius)
+		if params.consOpts.ellipse:
+			self.shifted = _shiftEllipse(poisedSet, params.consOpts.ellipse)
+		else:
+			self.shifted = _shift(poisedSet, params.center, params.radius)
 		self.lmbda = None
 		self.indices = arange(0, poisedSet.shape[0])
 		self.unshifted = None
@@ -45,8 +48,6 @@ class Certification:
 		fig = plt.figure()
 		fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
 		ax1 = fig.add_subplot(111)
-
-
 		ax1.add_artist(plt.Circle(center, radius, color='g', fill=False))
 		ax1.scatter(self.original[:, 0], self.original[:, 1], s=10, c='b', marker="+", label='original')
 		ax1.scatter(self.unshifted[:, 0], self.unshifted[:, 1], s=10, c='r', marker="x", label='poised')
@@ -114,6 +115,17 @@ class LagrangeParams:
 
 		return constraints
 
+def _shiftEllipse(set, ellipse):
+	retVal = empty(set.shape)
+	for i in range(0, set.shape[0]):
+		retVal[i, :] = ellipse['shift'](set[i, :])
+	return retVal
+
+def _unshiftEllipse(set, ellipse):
+	retVal = empty(set.shape)
+	for i in range(0, set.shape[0]):
+		retVal[i, :] = ellipse['unshift'](set[i, :])
+	return retVal
 
 def _shift(set, center, radius):
 	retVal = empty(set.shape)
@@ -162,7 +174,7 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 	# Here, I should solve a program to find a feasible point, instead of trying several different points.
 
 	feasibleStart = minimize(lambda x: sum([-v if v < 0 else 0 for v in [c['fun'](x) for c in cons]]),
-	 x0=zeros(basis.n), method='Nelder-Mead', options={"disp": False, "maxiter": 1000}, tol=tol)
+	 x0 = 2 * random.rand(basis.n) - 1, method='Nelder-Mead', options={"disp": False, "maxiter": 1000}, tol=tol)
 
 	minimumResult = None
 	if feasibleStart.success:
@@ -264,7 +276,10 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 				continue
 			V[:, j] = V[:, j] - V[i, j] * V[:, i]
 
-	cert.unshifted = _unshift(cert.shifted, params.center, params.radius)
+	if params.consOpts.ellipse is not None:
+		cert.unshifted = _unshiftEllipse(cert.shifted, params.consOpts.ellipse)
+	else:
+		cert.unshifted = _unshift(cert.shifted, params.center, params.radius)
 	cert.lmbda = V[npoints:h]
 	cert.poised = True
 

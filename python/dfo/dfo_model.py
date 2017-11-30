@@ -1,16 +1,18 @@
-from numpy.linalg import norm as norm
-from numpy import empty
-from numpy.matlib import repmat
-from numpy import dot
-from numpy import asmatrix
-from numpy import ravel
-from utilities.boxable_query_set import EvaluationHistory
 import matplotlib.pyplot as plt
+from numpy import asmatrix
+from numpy import asarray
+from numpy import dot
+from numpy import empty
+from numpy import ravel
+from numpy.linalg import norm as norm
+from numpy.matlib import repmat
 
-from utilities import functions
-
-from dfo import polynomial_basis
 from dfo import lagrange
+from dfo import polynomial_basis
+from utilities import functions
+from utilities.boxable_query_set import EvaluationHistory
+from utilities.ellipse import getMaximalEllipse
+from numpy import concatenate
 
 
 class MultiFunctionModel:
@@ -102,8 +104,25 @@ class MultiFunctionModel:
 	def isLambdaPoised(self):
 		return self._improveWithoutNewPoints()
 
+	def updateEllipse(self):
+		if not self.consOpts.useEllipse:
+			return
+		ub = self.modelCenter() + self.modelRadius
+		lb = self.modelCenter() - self.modelRadius
+		aWithRadius = concatenate((
+			self.consOpts.A,
+			asarray([[1, 0], [-1, 0], [0, 1], [0, -1]])
+		))
+		bWithRadius = concatenate((
+			self.consOpts.b,
+			asarray((lb[0], -ub[0], lb[1], -ub[1]))
+		))
+
+		self.consOpts.ellipse, _, _, _ = getMaximalEllipse(aWithRadius, bWithRadius, self.modelCenter())
+
 	def _improveWithoutNewPoints(self):
 		""" Determine if the current set is lambda poised, possibly replacing points with points already evaluated """
+		self.updateEllipse()
 		self.cert = lagrange.computeLagrangePolynomials(
 			self.basis,
 			self.currentSet,
@@ -121,6 +140,8 @@ class MultiFunctionModel:
 			This also evaluates the delegate functions at new points
 			This also updates the model based on these new values
 		"""
+		self.updateEllipse()
+
 		self.cert = lagrange.computeLagrangePolynomials(
 			self.basis,
 			self.currentSet,

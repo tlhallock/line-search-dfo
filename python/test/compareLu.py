@@ -3,6 +3,7 @@
 from dfo import polynomial_basis
 from dfo import lagrange
 from numpy import dot
+from numpy import asarray
 from numpy import array as arr
 from numpy import zeros
 from numpy import array
@@ -22,13 +23,13 @@ import matplotlib
 
 from dfo.dfo_model import MultiFunctionModel
 
-tol=1e-4
+tol=1e-8
 n = 2
 degree = 2
 a = .1
 xsi=1e-3
 center = array((0.5, 0))
-radius = 1
+radius = .05
 
 
 theConstraints = [{
@@ -44,7 +45,7 @@ theConstraints = [{
 class objective:
 	def __init__(self, minorSpeed=1e-1, amplitude=a/2, freq=2):
 		self.minorSpeed = minorSpeed
-		self.amplitude=amplitude
+		self.amplitude = amplitude
 		self.freq = freq
 
 	def evaluate(self, x):
@@ -56,6 +57,12 @@ basis = polynomial_basis.PolynomialBasis(n, degree)
 class ConstraintOptions:
 	def __init__(self):
 		self.constraints = theConstraints
+		self.useEllipse = True
+		self.A =  asarray([
+			[-a, 1],
+			[-a, -1]
+		])
+		self.b = asarray([0, 0])
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
 
