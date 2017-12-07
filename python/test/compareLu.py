@@ -30,7 +30,7 @@ a = .1
 xsi=1e-3
 center = array((0.5, 0))
 radius = .05
-
+scale = 2
 
 theConstraints = [{
 	'type': 'ineq',
@@ -135,6 +135,9 @@ while True:
 	iteration += 1
 	print('function evaluation: ' + str(model.functionEvaluations))
 
+	if norm(model.modelCenter()) < tol:
+		break
+
 	if not model.improve():
 		if model.phi is not None:
 			createPlot(filename='images/iteration_' + str(iteration) + '_unableToModel.png', title='Iteration ' + str(iteration), model=model)
@@ -145,8 +148,8 @@ while True:
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
 						constraints=theConstraints + [{
 							'type': 'ineq',
-			 				'fun': lambda x: model.modelRadius - dot(x - model.modelCenter(), x - model.modelCenter()),
-			 				'jac': lambda x: reshape(-2 * (x - model.modelCenter()), (1, basis.n))
+			 				'fun': model.consOpts.ellipse['scaled_fun'](scale),
+			 				'jac': model.consOpts.ellipse['scaled_jac'](scale),
 						}], method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 	trialPoint = minimumResult.x
 	newVal, called = model.computeValueFromDelegate(trialPoint)
@@ -165,7 +168,7 @@ while True:
 
 
 	delta = norm(model.modelCenter() - trialPoint)
-	if delta < model.modelRadius / 4:
+	if delta < model.modelRadius / 8:
 		if delta < tol:
 			break
 		model.multiplyRadius(.5)

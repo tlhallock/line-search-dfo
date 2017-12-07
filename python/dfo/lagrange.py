@@ -192,7 +192,6 @@ def _maximize_lagrange_quad(basis, row, tol, constraints):
 		# Running this one last time with display = true
 		minimumResult = minimize(quadmodel.evaluate, jac=quadmodel.gradient, x0=random.random(basis.n) / 10,
 								 constraints=cons, method='SLSQP', options={"disp": True, "maxiter": 1000}, tol=tol)
-		print(minimumResult)
 		raise Exception('Unable to solve the trust region sub problem')
 
 

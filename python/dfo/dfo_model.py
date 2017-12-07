@@ -36,7 +36,8 @@ class MultiFunctionModel:
 
 	def setNewModelCenter(self, newCenter):
 		self.currentSet[0, :] = newCenter
-		self._improveWithoutNewPoints()
+		self.improve()
+		# self._improveWithoutNewPoints() ################ Just commented this out!!!!!
 
 	def modelCenter(self):
 		""" Returns the model center: namely the first element of the poised set """
