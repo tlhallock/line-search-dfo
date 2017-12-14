@@ -11,7 +11,7 @@ from dfo import lagrange
 from dfo import polynomial_basis
 from utilities import functions
 from utilities.boxable_query_set import EvaluationHistory
-from utilities.ellipse import getMaximalEllipse
+from utilities.ellipse import getMaximalEllipseContaining
 from numpy import concatenate
 
 
@@ -116,10 +116,13 @@ class MultiFunctionModel:
 		))
 		bWithRadius = concatenate((
 			self.consOpts.b,
-			asarray((lb[0], -ub[0], lb[1], -ub[1]))
+			asarray((ub[0], -lb[0], ub[1], -lb[1]))
 		))
 
-		self.consOpts.ellipse, _, _, _ = getMaximalEllipse(aWithRadius, bWithRadius, self.modelCenter())
+		self.consOpts.ellipse = getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter())
+		if not self.consOpts.ellipse['success']:
+			print('unable to find ellipse')
+			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter())
 
 	def _improveWithoutNewPoints(self):
 		""" Determine if the current set is lambda poised, possibly replacing points with points already evaluated """

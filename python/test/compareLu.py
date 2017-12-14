@@ -1,5 +1,3 @@
-
-
 from dfo import polynomial_basis
 from dfo import lagrange
 from numpy import dot
@@ -20,17 +18,20 @@ from numpy import linspace
 from numpy import meshgrid
 from utilities import sys_utils
 import matplotlib
+from numpy.random import seed
 
 from dfo.dfo_model import MultiFunctionModel
+
+seed(1776)
 
 tol=1e-8
 n = 2
 degree = 2
-a = .1
+a = 1
 xsi=1e-3
 center = array((0.5, 0))
-radius = .05
-scale = 2
+radius = 1
+scale = 1
 
 theConstraints = [{
 	'type': 'ineq',
@@ -147,8 +148,8 @@ while True:
 	quad = model.getQuadraticModel(0)
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
 						constraints=theConstraints + [{
-							'type': 'ineq',
-			 				'fun': model.consOpts.ellipse['scaled_fun'](scale),
+						 	'type': 'ineq',
+			 			 	'fun': model.consOpts.ellipse['scaled_fun'](scale),
 			 				'jac': model.consOpts.ellipse['scaled_jac'](scale),
 						}], method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
 	trialPoint = minimumResult.x
