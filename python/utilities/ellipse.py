@@ -19,7 +19,6 @@ import matplotlib.patches as patches
 import time
 
 
-from dividingRects import divideRect
 
 #
 def e(i):
@@ -27,10 +26,10 @@ def e(i):
 	ret[i] = 1
 	return ret
 
-def getMaximalEllipse_inner(A, b, xbar, normalize=True):
+def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None):
 	k = 1
 	bbar = b - dot(A, xbar.T)
-	if normalize:
+	if normalize and False:
 		k = 1 / min(abs(bbar))
 		bbar = k * bbar
 	vec2mat = lambda q: asarray([[q[0], q[1]], [q[1], q[2]]])
@@ -74,17 +73,52 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True):
 		'type': 'ineq'
 	})
 
+	return getEllipseIncluding(A, b, bbar, daConstraints, include, k, vec2mat, xbar, vec2det, vec2jac)
+
+
+def getEllipseIncluding(A, b, bbar, daConstraints, include, k, vec2mat, xbar, vec2det, vec2jac):
+	if include is not None:
+		sInc = include - xbar
+		# We want:
+		#  0.5 * include.T Q include <= 1
+		#  include.T ( q[0] q[1] ; q[1] q[2] )^-1 include <= 2
+		#  include.T ( q[2] -q[1] ; -q[1] q[0] ) include <= 2 * q[0] * q[2] - 2 * q[1] ** 2
+		#  0 <= 2 * q[0] * q[2] - 2 * q[1] ** 2 - include.T ( q[2] -q[1] ; -q[1] q[0] ) include
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include.T ( q[2] -q[1] ; -q[1] q[0] ) include >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include.T ( q[2] * include[0] - q[1] * include[1] ; -q[1] * include[0] + q[0] * include[1]) >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - (include[0] * q[2] * include[0] - include[0] * q[1] * include[1]
+		# 			 - include[1] * q[1] * include[0] + include[1] * q[0] * include[1]) >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include[0] * q[2] * include[0] + include[0] * q[1] * include[1]
+		# 			 + include[1] * q[1] * include[0] - include[1] * q[0] * include[1] >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include[0] * q[2] * include[0] + 2 * include[0] * q[1] * include[1]
+		# 			 - include[1] * q[0] * include[1] >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - q[2] * include[0] ** 2 + 2 * include[0] * q[1] * include[1]
+		# 			 - q[0] * include[1] ** 2 >= 0
+		daConstraints.append({
+			'fun': lambda q: 2 * q[0] * q[2] - 2 * q[1] ** 2
+							 - q[2] * sInc[0] ** 2
+							 + 2 * sInc[0] * q[1] * sInc[1]
+							 - q[0] * sInc[1] ** 2,
+			'jac': lambda q: asarray((
+				2 * q[2] - sInc[1] ** 2,
+				-4 * q[1] + 2 * sInc[0] * sInc[1],
+				2 * q[0] - sInc[0] ** 2
+			)),
+			'type': 'ineq'
+		})
 
 	# result2 = divideRect.constrained(divideRect.Program({
 	# 	'fun': vec2det
 	# }, daConstraints, 1e-8), asarray([0, 0, 0]), asarray([20, 20, 20]))
 	result = minimize(
 		lambda q: -vec2det(q),
-		jac= lambda q: -vec2jac(q),
-		x0=rand(3), constraints=daConstraints, method="SLSQP", options={"disp": False, "maxiter": 1000})
+		jac=lambda q: -vec2jac(q),
+		x0=rand(3), constraints=daConstraints, method="SLSQP", options={"disp": True, "maxiter": 1000})
+	if not result.success:
+		return { success: False }, None, None, None
 	ds = []
 	lambdas = []
-	for i in range(A.shape[0]):
+	for i in range(A.shape[0] - 1):  # -1 for the include constraint
 		c = daConstraints[i]
 		q = vec2mat(result.x) / (k * k)
 		ar = A[i, :]
@@ -94,31 +128,33 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True):
 		d = lmbda * qa
 		lambdas.append(lmbda)
 		ds.append(d)
-
 	Qinv = vec2mat(result.x) / (k * k)
 	Q = inv(Qinv)
-
 	plotEllipse(-1, 1, -0.5, 0.5, A, b, xbar, {
 		'fun': lambda v: 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar))
 	}, ds)
-
 	print('found the Q and Qinv of', Q, Qinv)
-	Linv = cholesky(Qinv) # don't need to perform 2 Cholesky's here
+	Linv = cholesky(Qinv)  # don't need to perform 2 Cholesky's here
 	L = cholesky(Q)
+
 	theEllipse = {
+		'volume': -result.fun,
 		'shift': lambda v: sqrt(0.5) * dot(L, v - xbar),
 		'unshift': lambda v: xbar + sqrt(2) * dot(Linv, v),
 		'fun': lambda v: 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)),
 		'jac': lambda v: -dot(Q, v - xbar),
 		'scaled_fun': lambda scale: lambda v: 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)),
-		'scaled_jac': lambda scale: lambda v: -dot(Q, v - xbar)
+		'scaled_jac': lambda scale: lambda v: -dot(Q, v - xbar),
+		'success': True
 	}
+	daConstraints[5]['fun'](result.x)
+	theEllipse['fun'](include)
 	return theEllipse, Q, ds, lambdas
 
 
-def getMaximalEllipse(A, b, xbar):
+def getMaximalEllipse(A, b, xbar, include):
 	# ellipse1 = getMaximalEllipse_inner(A, b, xbar, normalize=False)
-	ellipse2 = getMaximalEllipse_inner(A, b, xbar, normalize=True)
+	ellipse2 = getMaximalEllipse_inner(A, b, xbar, normalize=True, include=include)
 	return ellipse2
 
 

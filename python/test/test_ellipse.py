@@ -16,7 +16,6 @@ from scipy.optimize import minimize
 import matplotlib.patches as patches
 
 
-from dividingRects import divideRect
 
 from utilities.ellipse import getMaximalEllipse
 
@@ -32,61 +31,68 @@ b = asarray([
 	1,
 	8
 ])
-mat2cons = lambda idx: lambda x: dot(A[idx, :], x) - b[idx]
 
 
-ellipse, Q, ds, lambdas = getMaximalEllipse(A, b, x)
-for d in ds:
-	print('norm', dot(d,dot(Q, d)))
 
-# mat = zeros((2, 2))
-# # mat[:, 0] = array((0, 0)) - x
-# mat[:, 0] = another - x
-# mat[:, 1] = array((closestX, closestY)) - x
-# A = inv(mat)
-#
+for yInclude in [-8]:
+	include = array((2, yInclude))
+	mat2cons = lambda idx: lambda x: dot(A[idx, :], x) - b[idx]
 
 
-L = 10
-fig = plt.figure()
-ax = plt.axes()
-ax.set_xlim([-L, L])
-ax.set_ylim([-L, L])
-t = linspace(0, 2 * L, 1000)
-# ax.plot(t, a * t)
-# ax.plot(t, -a * t)
-ax.plot(array(x[0]), array(x[1]), 'bo')
+	ellipse, Q, ds, lambdas = getMaximalEllipse(A, b, x, include=include)
+	for d in ds:
+		print('norm', dot(d,dot(Q, d)))
 
-tx = linspace(-L, L, num=100)
-ty = linspace(-L, L, num=100)
-X, Y = meshgrid(tx, ty)
-Z = empty((len(ty), len(tx)))
+	# mat = zeros((2, 2))
+	# # mat[:, 0] = array((0, 0)) - x
+	# mat[:, 0] = another - x
+	# mat[:, 1] = array((closestX, closestY)) - x
+	# A = inv(mat)
+	#
 
-def plotContour(fun, color, levels=[-1, 0]):
-	for i in range(0, len(tx)):
-		for j in range(0, len(ty)):
-			Z[j, i] = fun(array([tx[i], ty[j]]))
-	CS = plt.contour(X, Y, Z, levels, colors=color)
 
-for i in arange(A.shape[0]):
-	plotContour(mat2cons(i), 'b')
+	L = 10
+	fig = plt.figure()
+	ax = plt.axes()
+	ax.set_xlim([-L, L])
+	ax.set_ylim([-L, L])
+	t = linspace(0, 2 * L, 1000)
+	# ax.plot(t, a * t)
+	# ax.plot(t, -a * t)
+	ax.plot(array(x[0]), array(x[1]), 'bo')
+	ax.plot(array(include[0]), array(include[1]), 'ro')
 
-for d in ds:
-	ax.add_patch(patches.Arrow(
-		x=x[0], y=x[1],
-		dx=d[0], dy=d[1],
-		facecolor="green", edgecolor="green"
-	))
+	tx = linspace(-L, L, num=100)
+	ty = linspace(-L, L, num=100)
+	X, Y = meshgrid(tx, ty)
+	Z = empty((len(ty), len(tx)))
 
-plotContour(ellipse['fun'], 'k', levels=[-1, 0])
+	def plotContour(fun, color, levels=[-1, 0]):
+		for i in range(0, len(tx)):
+			for j in range(0, len(ty)):
+				Z[j, i] = fun(array([tx[i], ty[j]]))
+		CS = plt.contour(X, Y, Z, levels, colors=color)
 
-plt.show()
+	for i in arange(A.shape[0]):
+		plotContour(mat2cons(i), 'b')
 
-f = lambda x: 0.5 * dot(x, dot(Q, x))
-fg = lambda x: dot(Q, x)
-for i in range(len(ds)):
-	print('gradient of ellipse', fg(ds[i]))
-	print('gradient of constraint', lambdas[i] * A[i, :])
+	for d in ds:
+		ax.add_patch(patches.Arrow(
+			x=x[0], y=x[1],
+			dx=d[0], dy=d[1],
+			facecolor="green", edgecolor="green"
+		))
+
+	plotContour(ellipse['fun'], 'k', levels=[-1, 0])
+
+	# plt.show()
+	plt.savefig('images/ellipse_' + str(yInclude) + '.png')
+
+	# f = lambda x: 0.5 * dot(x, dot(Q, x))
+	# fg = lambda x: dot(Q, x)
+	# for i in range(len(ds)):
+	# 	print('gradient of ellipse', fg(ds[i]))
+	# 	print('gradient of constraint', lambdas[i] * A[i, :])
 
 print('all done')
 
