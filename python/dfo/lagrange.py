@@ -10,6 +10,7 @@ from numpy import eye
 from numpy import dot
 from numpy import reshape
 from numpy import random
+from numpy import array
 import matplotlib.pyplot as plt
 from numpy.linalg import lstsq
 from scipy.optimize import minimize
@@ -20,7 +21,7 @@ class Certification:
 	def __init__(self, poisedSet, params):
 		self.original = poisedSet
 		self.poised = False
-		if params.consOpts.ellipse:
+		if params.consOpts and params.consOpts.ellipse:
 			self.shifted = _shiftEllipse(poisedSet, params.consOpts.ellipse)
 		else:
 			self.shifted = _shift(poisedSet, params.center, params.radius)
@@ -102,6 +103,8 @@ class LagrangeParams:
 		# 	'fun':  lambda x: constraint['fun'](x * self.radius + self.center),
 		# 	'jac':  lambda x: constraint['jac'](x * self.radius + self.center) * self.radius
 		# } for constraint in self.consOpts.constraints]
+		if self.consOpts is None:
+			return []
 
 		constraints = [{
 			'type': 'ineq',
@@ -242,7 +245,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 		maxVal, maxIdx = _getMaxIdx(abs(V[i:npoints, i]))
 
 		# Check the poisedness
-		if maxVal < cert.outputXsi and params.improveWithNew:
+		if True or (maxVal < cert.outputXsi and params.improveWithNew):
 			# If still not poised, Then check for new points
 			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
@@ -275,7 +278,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 				continue
 			V[:, j] = V[:, j] - V[i, j] * V[:, i]
 
-	if params.consOpts.ellipse is not None:
+	if params.consOpts is not None and params.consOpts.ellipse is not None:
 		cert.unshifted = _unshiftEllipse(cert.shifted, params.consOpts.ellipse)
 	else:
 		cert.unshifted = _unshift(cert.shifted, params.center, params.radius)

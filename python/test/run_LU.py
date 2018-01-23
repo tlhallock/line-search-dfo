@@ -11,10 +11,10 @@ degree = 2
 
 basis = polynomial_basis.PolynomialBasis(n, degree)
 
-radius = 2
-center = arr([5, 5])
+radius = 1
+center = arr([0, 0])
 poisedSet = center + zeros((basis.basis_dimension, n))
-poisedSet = center + 2 * (.1 * random((basis.basis_dimension, n))) - 1
+poisedSet = center + 0 * (2 * (.1 * random((basis.basis_dimension, n))) - 1)
 
 print(poisedSet)
 
@@ -22,7 +22,7 @@ poisedSet[1] = poisedSet[0]
 poisedSet[2] = poisedSet[0]
 
 
-params = lagrange.LagrangeParams(center, radius, True, xsi=1e-5)
+params = lagrange.LagrangeParams(center, radius, True, initialXsi=1e-5, consOpts=None)
 params.improve = True
 cert = lagrange.computeLagrangePolynomials(basis, poisedSet, params)
 

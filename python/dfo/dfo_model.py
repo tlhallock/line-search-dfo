@@ -116,13 +116,18 @@ class MultiFunctionModel:
 		))
 		bWithRadius = concatenate((
 			self.consOpts.b,
-			asarray((ub[0], -lb[0], ub[1], -lb[1]))
+			asarray((lb[0], -ub[0], lb[1], -ub[1]))
 		))
 
-		self.consOpts.ellipse = getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter())
+		self.consOpts.ellipse = getMaximalEllipseContaining(
+			aWithRadius,
+			bWithRadius,
+			self.modelCenter(),
+			self.consOpts.tol
+		)
 		if not self.consOpts.ellipse['success']:
 			print('unable to find ellipse')
-			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter())
+			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter(), self.consOpts.tol)
 
 	def _improveWithoutNewPoints(self):
 		""" Determine if the current set is lambda poised, possibly replacing points with points already evaluated """

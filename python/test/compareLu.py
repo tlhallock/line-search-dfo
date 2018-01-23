@@ -22,6 +22,8 @@ from numpy.random import seed
 
 from dfo.dfo_model import MultiFunctionModel
 
+from utilities.ellipse import plotEllipse_inner
+
 seed(1776)
 
 tol=1e-8
@@ -29,9 +31,9 @@ n = 2
 degree = 2
 a = 1
 xsi=1e-3
-center = array((0.5, 0))
+center = array((5, 0.25))
 radius = 1
-scale = 1
+scale = 1.2
 
 theConstraints = [{
 	'type': 'ineq',
@@ -50,7 +52,8 @@ class objective:
 		self.freq = freq
 
 	def evaluate(self, x):
-		return  self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2
+		return x[0]
+		#return  self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2
 obj = objective()
 
 basis = polynomial_basis.PolynomialBasis(n, degree)
@@ -60,10 +63,11 @@ class ConstraintOptions:
 		self.constraints = theConstraints
 		self.useEllipse = True
 		self.A =  asarray([
-			[-a, 1],
-			[-a, -1]
+			[a, 1],
+			[a, -1]
 		])
 		self.b = asarray([0, 0])
+		self.tol = tol
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
 
@@ -77,8 +81,15 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 
 	plt.legend(loc='lower left')
 
-	x = linspace(model.currentSet[0, 0] - model.modelRadius, model.currentSet[0, 0] + model.modelRadius, num=100)
-	y = linspace(model.currentSet[0, 1] - model.modelRadius, model.currentSet[0, 1] + model.modelRadius, num=100)
+	bounds = {
+		'lbX': -10, #model.currentSet[0, 0] - 2 * model.modelRadius,
+		'ubX': 10, #model.currentSet[0, 0] + 2 * model.modelRadius,
+		'lbY': -10, #model.currentSet[0, 1] - 2 * model.modelRadius,
+		'ubY': 10, #model.currentSet[0, 1] + 2 * model.modelRadius,
+		'plotArrows': True
+	}
+	x = linspace(bounds['lbX'], bounds['ubX'], num=100)
+	y = linspace(bounds['lbY'], bounds['ubY'], num=100)
 	X, Y = meshgrid(x, y)
 
 	Z = zeros((len(y), len(x)))
@@ -103,7 +114,9 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 		CS = plt.contour(X, Y, Z, 6, colors='b')
 		plt.clabel(CS, fontsize=9, inline=1)
 
-	ax1.add_artist(plt.Circle(model.modelCenter(), model.modelRadius, color='g', fill=False))
+	# ax1.add_artist(plt.Circle(model.modelCenter(), model.modelRadius, color='g', fill=False))
+	plotEllipse_inner(model.consOpts.ellipse, ax1, bounds, scaled=scale)
+	########################################################################################################################################################
 	ax1.scatter(model.currentSet[:, 0], model.currentSet[:, 1], s=20, c='r', marker="x", label='poised set')
 	if newMin is not None:
 		ax1.scatter(array((newMin[0])), array((newMin[1])), s=20, c='g', marker="x", label='poised set')
@@ -129,7 +142,7 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 	fig.savefig(filename)
 	plt.close()
 
-model.improve()
+#model.improve()
 
 iteration = 0
 while True:
@@ -146,12 +159,15 @@ while True:
 		continue
 
 	quad = model.getQuadraticModel(0)
+	constraintsCopy = theConstraints + [{
+		'type': 'ineq',
+		'fun': model.consOpts.ellipse['scaled_fun'](scale),
+		'jac': model.consOpts.ellipse['scaled_jac'](scale),
+	}]
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
-						constraints=theConstraints + [{
-						 	'type': 'ineq',
-			 			 	'fun': model.consOpts.ellipse['scaled_fun'](scale),
-			 				'jac': model.consOpts.ellipse['scaled_jac'](scale),
-						}], method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+						constraints=constraintsCopy, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+	if not minimumResult.success:
+		print('unable to solve trust region problem')
 	trialPoint = minimumResult.x
 	newVal, called = model.computeValueFromDelegate(trialPoint)
 	oldVal = obj.evaluate(model.modelCenter())
