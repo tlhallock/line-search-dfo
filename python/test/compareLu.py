@@ -32,7 +32,7 @@ degree = 2
 a = 1
 xsi=1e-3
 center = array((5, 0.25))
-radius = 1
+radius = 3
 scale = 1.2
 
 theConstraints = [{

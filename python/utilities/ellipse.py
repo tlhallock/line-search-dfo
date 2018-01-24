@@ -215,12 +215,15 @@ class SearchPath:
 		if len(self.points) == 1:
 			return self.points[0]
 
-		idx = int(t * (len(self.points) - 1))
+		idx = min(
+			int(t * (len(self.points) - 1)),
+			len(self.points) - 2
+		)
 		l1 = (idx + 0) / (len(self.points) - 1)
 		l2 = (idx + 1) / (len(self.points) - 1)
 		between = (l2 - l1)
 
-		return (t - l1) / between * self.points[idx] + (l2 - t) / between * self.points[idx + 1]
+		return (l2 - t) / between * self.points[idx] + (t - l1) / between * self.points[idx + 1]
 
 	def plot(self, ax):
 		for i in range(len(self.points) - 1):
@@ -243,8 +246,8 @@ def get_search_path(x, A, b):
 	all_points = []
 	all_points.append(x)
 
-	A = copy(A)
-	b = copy(b)
+	A = copy(A).astype(float)
+	b = copy(b).astype(float)
 	for i in range(A.shape[0]):
 		n = norm(A[i, :])
 		A[i, :] /= n
@@ -260,8 +263,8 @@ def get_search_path(x, A, b):
 
 	Ac = A[idx_min, :]
 	Ab = A[idx_sec, :]
-	first_direction = -Ac
-	second_direction = -(Ac + Ab) / 2
+	first_direction = -Ac * -1
+	second_direction = -(Ac + Ab) / 2 * -1
 	if norm(second_direction) < 1e-12:
 		# BANG HEAD AGAINST TABLE
 		Ab = A[s_distances[2][0]]
@@ -273,7 +276,9 @@ def get_search_path(x, A, b):
 	for i in range(A.shape[0]):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
-		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i])
+		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i]) * -1
+		if t_intersection < 0:
+			print("oh boy")
 		if t_min is None or t_intersection < t_min:
 			t_min = t_intersection
 
@@ -288,7 +293,7 @@ def get_search_path(x, A, b):
 	for i in range(A.shape[0]):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
-		t_intersection = (d2[i] - d2[idx_min]) / (dd[idx_min] - dd[i])
+		t_intersection = (d2[i] - d2[idx_min]) / (dd[idx_min] - dd[i]) * -1
 		if t_min is None or t_intersection < t_min:
 			t_min = t_intersection
 
@@ -341,7 +346,6 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 	)
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
-		return
 	else:
 		return
 
@@ -381,14 +385,14 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 	search_path = get_search_path(xbar, A, b)
 
 	# EXTREMELY dumb search!!!!!!!!!!!
-	delta = 1
-	while delta > 1e-12:
+	delta = 0.5
+	center = 0.5
+	TRIAL_POINTS = 10
+	while delta > 1e-12 and len(search_path.points) > 1:
 		improved = False
 
-		for direction in [delta * nd, -delta * nd]:
-			# direction = 2 * rand() - 1
-			# direction = delta * direction
-			otherCenter = maxCenter + direction
+		for t in linspace(center - delta, center + delta, TRIAL_POINTS):
+			otherCenter = search_path.get_point(t)
 			if not (dot(A, otherCenter) >= b).all():
 				continue
 
@@ -402,6 +406,9 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 
 			if not otherEllipse['success']:
 				continue
+
+			plotEllipse(otherEllipse)
+
 			if otherEllipse['volume'] <= maxEllipse['volume']:
 				continue
 
@@ -410,9 +417,13 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 			maxEllipse = otherEllipse
 			maxCenter = otherCenter
 			improved = True
+			center = t
 
-		if not improved:
-			delta /= 2
+		delta = min(
+			2 * delta / TRIAL_POINTS,
+			center,
+			1 - center
+		)
 	maxEllipse['center'] = maxCenter
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
@@ -488,9 +499,10 @@ def plotEllipse_inner(ellipse, ax, bounds, scaled=None):
 	#	'mx'
 	#)
 
-	#plotContour(ellipse['fun'], 'k', levels=[0])
-	#if scaled is not None:
-	#	plotContour(ellipse['scaled_fun'](scaled), 'r', levels=[0])
+	if 'fun' in ellipse:
+		plotContour(ellipse['fun'], 'k', levels=[0])
+		if scaled is not None:
+			plotContour(ellipse['scaled_fun'](scaled), 'r', levels=[0])
 
 
 ellipseCount = 0
@@ -500,7 +512,7 @@ def plotEllipse(ellipse, bounds = {'lbX': -10, 'ubX': 10, 'lbY': -10, 'ubY': 10,
 	ax = plt.axes()
 	ax.set_xlim([bounds['lbX'], bounds['ubX']])
 	ax.set_ylim([bounds['lbY'], bounds['ubY']])
-	plt.show()
+	# plt.show()
 
 	plotEllipse_inner(ellipse, bounds=bounds, ax=ax)
 
