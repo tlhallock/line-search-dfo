@@ -125,7 +125,7 @@ class MultiFunctionModel:
 			self.modelCenter(),
 			self.consOpts.tol
 		)
-		if not self.consOpts.ellipse['success']:
+		if self.consOpts.ellipse is None or not self.consOpts.ellipse['success']:
 			print('unable to find ellipse')
 			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter(), self.consOpts.tol)
 

@@ -277,16 +277,16 @@ def get_search_path(x, A, b):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
 		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i]) * -1
-		if t_intersection < 0:
-			print("oh boy")
-		if t_min is None or t_intersection < t_min:
+		if abs(t_intersection) < 1e-12:
+			t_min = 0
+		if t_intersection >= 0 and (t_min is None or t_intersection < t_min):
 			t_min = t_intersection
 
 	p1 = x + t_min * first_direction
 	all_points.append(p1)
 
 	d2 = abs(dot(A, p1) - b) / sum(multiply(A, A), axis=1)
-	print("After first point", d2)
+	#print("After first point", d2)
 
 	dd = -dot(A, second_direction)
 	t_min = None
@@ -294,14 +294,17 @@ def get_search_path(x, A, b):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
 		t_intersection = (d2[i] - d2[idx_min]) / (dd[idx_min] - dd[i]) * -1
-		if t_min is None or t_intersection < t_min:
+		if abs(t_intersection) < 1e-12:
+			t_min = 0
+		if t_intersection >= 0 and (t_min is None or t_intersection < t_min):
 			t_min = t_intersection
 
 	p2 = p1 + t_min * second_direction
-	all_points.append(p2)
+	if False:
+		all_points.append(p2)
 
 	d3 = abs(dot(A, p2) - b) / sum(multiply(A, A), axis=1)
-	print("After second point", d3)
+	#print("After second point", d3)
 
 	return SearchPath(all_points)
 
@@ -346,8 +349,6 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 	)
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
-	else:
-		return
 
 	#while False and not (dot(A, xbar) + tol >= b).all():
 	#	feasibility = dot(A, xbar) - b
@@ -407,7 +408,7 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 			if not otherEllipse['success']:
 				continue
 
-			plotEllipse(otherEllipse)
+			# plotEllipse(otherEllipse)
 
 			if otherEllipse['volume'] <= maxEllipse['volume']:
 				continue
@@ -512,14 +513,16 @@ def plotEllipse(ellipse, bounds = {'lbX': -10, 'ubX': 10, 'lbY': -10, 'ubY': 10,
 	ax = plt.axes()
 	ax.set_xlim([bounds['lbX'], bounds['ubX']])
 	ax.set_ylim([bounds['lbY'], bounds['ubY']])
+	ax.set_aspect('auto')
 	# plt.show()
 
 	plotEllipse_inner(ellipse, bounds=bounds, ax=ax)
 
 	global ellipseCount
 	ellipseCount += 1
-	plt.savefig('images/ellipse_' + str(ellipseCount) + '.png')
-	# plt.show()
+	#plt.savefig('images/ellipse_' + str(ellipseCount) + '.png', dpi=300)
+	plt.savefig('images/ellipse_' + str(ellipseCount) + '.svg')
+	#plt.show()
 	plt.close()
 # f = lambda x: 0.5 * dot(x, dot(Q, x))
 # fg = lambda x: dot(Q, x)
