@@ -29,6 +29,7 @@ class MultiFunctionModel:
 		self.cert = None
 		self.consOpts = consOpts
 		self.currentSet = repmat(x0, basis.basis_dimension, 1)
+		self.trust_region_center = self.modelCenter()
 		self.improve(None)
 
 	def __len__(self):
@@ -36,6 +37,7 @@ class MultiFunctionModel:
 
 	def setNewModelCenter(self, newCenter):
 		self.currentSet[0, :] = newCenter
+		self.trust_region_center = newCenter
 		self.improve()
 		# self._improveWithoutNewPoints() ################ Just commented this out!!!!!
 
@@ -108,8 +110,8 @@ class MultiFunctionModel:
 	def updateEllipse(self):
 		if not self.consOpts.useEllipse:
 			return
-		ub = self.modelCenter() + self.modelRadius
-		lb = self.modelCenter() - self.modelRadius
+		ub = self.trust_region_center + self.modelRadius
+		lb = self.trust_region_center - self.modelRadius
 		aWithRadius = concatenate((
 			self.consOpts.A,
 			asarray([[1, 0], [-1, 0], [0, 1], [0, -1]])
@@ -122,7 +124,7 @@ class MultiFunctionModel:
 		self.consOpts.ellipse = getMaximalEllipseContaining(
 			aWithRadius,
 			bWithRadius,
-			self.modelCenter(),
+			self.trust_region_center, # self.modelCenter()
 			self.consOpts.tol
 		)
 		if self.consOpts.ellipse is None or not self.consOpts.ellipse['success']:

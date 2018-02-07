@@ -26,14 +26,20 @@ from utilities.ellipse import plotEllipse_inner
 
 seed(1776)
 
-tol=1e-8
+tol=1e-4
 n = 2
 degree = 2
-a = 1
+a = .1
 xsi=1e-3
 center = array((5, 0.25))
 radius = 3
 scale = 1.2
+
+
+TYPE_OF_
+
+
+
 
 theConstraints = [{
 	'type': 'ineq',
@@ -52,15 +58,13 @@ class objective:
 		self.freq = freq
 
 	def evaluate(self, x):
-		return x[0]
-		#return  self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2
+		return  self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2
 obj = objective()
 
 basis = polynomial_basis.PolynomialBasis(n, degree)
 
 class ConstraintOptions:
 	def __init__(self):
-		self.constraints = theConstraints
 		self.useEllipse = True
 		self.A =  asarray([
 			[a, 1],
@@ -165,7 +169,7 @@ while True:
 		'jac': model.consOpts.ellipse['scaled_jac'](scale),
 	}]
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
-						constraints=constraintsCopy, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol)
+						constraints=constraintsCopy, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol / 4)
 	if not minimumResult.success:
 		print('unable to solve trust region problem')
 	trialPoint = minimumResult.x
@@ -177,14 +181,18 @@ while True:
 
 	createPlot(filename='images/iteration_' + str(iteration) + '_new_point.png', title='Iteration ' + str(iteration), model=model, newMin=trialPoint, rho=rho)
 
-	print('rho', rho)
+	# print('rho', rho)
 	if rho < .5:
 		print('decreasing radius')
 		model.multiplyRadius(0.5)
 		continue
 
 
-	delta = norm(model.modelCenter() - trialPoint)
+	print("the old model center", model.trust_region_center)
+	print("the new model center", trialPoint)
+	print("the difference", norm(model.trust_region_center - trialPoint))
+	#print("compared to ", model.modelRadius / 8)
+	delta = norm(model.trust_region_center - trialPoint)
 	if delta < model.modelRadius / 8:
 		if delta < tol:
 			break
@@ -195,4 +203,8 @@ while True:
 	if minimumResult.success:
 		model.setNewModelCenter(trialPoint)
 
+print("iterations")
+print(iteration)
+
+print("Function evaluations")
 print(model.functionEvaluations)

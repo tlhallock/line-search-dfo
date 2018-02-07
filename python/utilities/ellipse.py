@@ -159,7 +159,11 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
 		Linv = Linv / abs(k)
 	except:
 		return { 'success': False, 'volume': -1 }
-
+	def get_scale(point):
+		lower = 1e-12
+		while scaled_fun(lower)(point) > 0:
+			lower *= 2
+		return lower
 	returnVal = {
 		'A': A,
 		'b': b,
@@ -175,7 +179,11 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
 		'scaled_fun': lambda scale: lambda v: 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale,
 		'scaled_jac': lambda scale: lambda v: -dot(Q, v - xbar) / scale,
 		'success': True,
-		'include': include
+		'include': include,
+			# 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale == 0
+			# scale - 0.5 * dot(point - xbar, dot(Q, point - xbar)) == 0
+			# scale == 0.5 * dot(point - xbar, dot(Q, point - xbar))
+		'include_point': lambda point: 1.2 * 0.5 * dot(point - xbar, dot(Q, point - xbar))
 	}
 
 	# Sanity check for debugging
@@ -300,7 +308,7 @@ def get_search_path(x, A, b):
 			t_min = t_intersection
 
 	p2 = p1 + t_min * second_direction
-	if False:
+	if True:
 		all_points.append(p2)
 
 	d3 = abs(dot(A, p2) - b) / sum(multiply(A, A), axis=1)
