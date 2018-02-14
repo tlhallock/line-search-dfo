@@ -245,7 +245,7 @@ def computeLagrangePolynomials(bss, poisedSet, params, history=None, tol=1e-8):
 		maxVal, maxIdx = _getMaxIdx(abs(V[i:npoints, i]))
 
 		# Check the poisedness
-		if True or (maxVal < cert.outputXsi and params.improveWithNew):
+		if maxVal < cert.outputXsi and params.improveWithNew:
 			# If still not poised, Then check for new points
 			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
 			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)

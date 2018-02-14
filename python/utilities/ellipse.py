@@ -37,7 +37,7 @@ def e(i):
 	ret[i] = 1
 	return ret
 
-def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
+def getMaximalEllipse_inner(A, b, xbar, include_as_constraint, normalize=True, include=None, tol=1e-8):
 	k = 1
 	bbar = b - dot(A, xbar.T)
 	if normalize and include is None:
@@ -84,7 +84,7 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
 		'type': 'ineq'
 	})
 
-	if include is not None:
+	if include is not None and not include_as_constraint:
 		sInc = include - xbar
 		# We want:
 		#  0.5 * include.T Q include <= 1
@@ -164,6 +164,7 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
 		while scaled_fun(lower)(point) > 0:
 			lower *= 2
 		return lower
+
 	returnVal = {
 		'A': A,
 		'b': b,
@@ -179,13 +180,14 @@ def getMaximalEllipse_inner(A, b, xbar, normalize=True, include=None, tol=1e-8):
 		'scaled_fun': lambda scale: lambda v: 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale,
 		'scaled_jac': lambda scale: lambda v: -dot(Q, v - xbar) / scale,
 		'success': True,
-		'include': include,
-			# 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale == 0
-			# scale - 0.5 * dot(point - xbar, dot(Q, point - xbar)) == 0
-			# scale == 0.5 * dot(point - xbar, dot(Q, point - xbar))
-		'include_point': lambda point: 1.2 * 0.5 * dot(point - xbar, dot(Q, point - xbar))
+		'include': include
 	}
 
+	if include_as_constraint:
+		# 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale == 0
+		# scale - 0.5 * dot(point - xbar, dot(Q, point - xbar)) == 0
+		# scale == 0.5 * dot(point - xbar, dot(Q, point - xbar))
+		returnVal['include_point_scale'] = max(1, 0.5 * dot(include - xbar, dot(Q, include - xbar)))
 	# Sanity check for debugging
 	foo = rand(2)
 	foo
@@ -250,7 +252,7 @@ class SearchPath:
 
 
 
-def get_search_path(x, A, b):
+def get_search_path(x, A, b, num):
 	all_points = []
 	all_points.append(x)
 
@@ -280,10 +282,29 @@ def get_search_path(x, A, b):
 		# SOMEHOW NEED TO MAKE SURE THEY ARE LINEARLY INDEPENDENT
 
 	dd = -dot(A, first_direction)
+
+	if num == 0:
+		t_min = None
+		for i in range(A.shape[0]):
+			if abs(dd[i]) < 1e-12:
+				continue
+
+			t_intersection = distances[i] / dd[i]
+			if abs(t_intersection) < 1e-12:
+				t_min = 0
+			if t_intersection >= 0 and (t_min is None or t_intersection < t_min):
+				t_min = t_intersection
+
+		all_points.append(x + t_min * first_direction)
+		return SearchPath(all_points)
+
+
+
 	t_min = None
 	for i in range(A.shape[0]):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
+
 		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i]) * -1
 		if abs(t_intersection) < 1e-12:
 			t_min = 0
@@ -308,7 +329,7 @@ def get_search_path(x, A, b):
 			t_min = t_intersection
 
 	p2 = p1 + t_min * second_direction
-	if True:
+	if num == 2:
 		all_points.append(p2)
 
 	d3 = abs(dot(A, p2) - b) / sum(multiply(A, A), axis=1)
@@ -346,14 +367,15 @@ def get_search_path(x, A, b):
 
 
 
-def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
+def getMaximalEllipseContaining(A, b, xbar, consOpts, tol=1e-8):
 	maxCenter = xbar
 	maxEllipse = getMaximalEllipse_inner(
 		A=A,
 		b=b,
 		xbar=xbar,
 		normalize=False,
-		include=xbar
+		include=xbar,
+		include_as_constraint=True
 	)
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
@@ -391,48 +413,90 @@ def getMaximalEllipseContaining(A, b, xbar, tol=1e-8):
 	#nd = getSearchDirection(xbar, A, b)
 	#nd = nd / norm(nd)
 
-	search_path = get_search_path(xbar, A, b)
+	if not consOpts.ellipse_search:
+		return maxEllipse
 
-	# EXTREMELY dumb search!!!!!!!!!!!
-	delta = 0.5
-	center = 0.5
-	TRIAL_POINTS = 10
-	while delta > 1e-12 and len(search_path.points) > 1:
-		improved = False
+	# EXTREMELY dumb searches!!!!!!!!!!!
+	if consOpts.search_everything:
+		delta = 1
+		TRIAL_POINTS = 50
+		while delta > 1e-12:
+			improved = False
+			for i in range(TRIAL_POINTS):
+				otherCenter = 2 * rand(len(xbar)) - 1
+				otherCenter *= delta / norm(otherCenter)
+				if not (dot(A, otherCenter) >= b).all():
+					continue
 
-		for t in linspace(center - delta, center + delta, TRIAL_POINTS):
-			otherCenter = search_path.get_point(t)
-			if not (dot(A, otherCenter) >= b).all():
-				continue
+				otherEllipse = getMaximalEllipse_inner(
+					A=A,
+					b=b,
+					xbar=otherCenter,
+					normalize=False,
+					include=xbar,
+					include_as_constraint=consOpts.scale_to_original_point
+				)
 
-			otherEllipse = getMaximalEllipse_inner(
-				A=A,
-				b=b,
-				xbar=otherCenter,
-				normalize=False,
-				include=xbar
+				if not otherEllipse['success']:
+					continue
+
+				# plotEllipse(otherEllipse)
+
+				if otherEllipse['volume'] <= maxEllipse['volume']:
+					continue
+
+				# plotEllipse(maxEllipse)
+
+				maxEllipse = otherEllipse
+				maxCenter = otherCenter
+				improved = True
+
+			if not improved:
+				delta /= 2
+
+	elif consOpts.line_search:
+		search_path = get_search_path(xbar, A, b, consOpts.num_points_on_path)
+
+		delta = 0.5
+		center = 0.5
+		TRIAL_POINTS = 10
+		while delta > 1e-12 and len(search_path.points) > 1:
+			improved = False
+
+			for t in linspace(center - delta, center + delta, TRIAL_POINTS):
+				otherCenter = search_path.get_point(t)
+				if not (dot(A, otherCenter) >= b).all():
+					continue
+
+				otherEllipse = getMaximalEllipse_inner(
+					A=A,
+					b=b,
+					xbar=otherCenter,
+					normalize=False,
+					include=xbar,
+					include_as_constraint=consOpts.scale_to_original_point
+				)
+
+				if not otherEllipse['success']:
+					continue
+
+				# plotEllipse(otherEllipse)
+
+				if otherEllipse['volume'] <= maxEllipse['volume']:
+					continue
+
+				# plotEllipse(maxEllipse)
+
+				maxEllipse = otherEllipse
+				maxCenter = otherCenter
+				improved = True
+				center = t
+
+			delta = min(
+				2 * delta / TRIAL_POINTS,
+				center,
+				1 - center
 			)
-
-			if not otherEllipse['success']:
-				continue
-
-			# plotEllipse(otherEllipse)
-
-			if otherEllipse['volume'] <= maxEllipse['volume']:
-				continue
-
-			# plotEllipse(maxEllipse)
-
-			maxEllipse = otherEllipse
-			maxCenter = otherCenter
-			improved = True
-			center = t
-
-		delta = min(
-			2 * delta / TRIAL_POINTS,
-			center,
-			1 - center
-		)
 	maxEllipse['center'] = maxCenter
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
@@ -496,7 +560,7 @@ def plotEllipse_inner(ellipse, ax, bounds, scaled=None):
 			width=0.05
 		))
 
-	search_path = get_search_path(x, A, b)
+	search_path = get_search_path(x, A, b, 2)
 	search_path.plot(ax)
 
 	# should be include if it is there...

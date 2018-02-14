@@ -109,7 +109,8 @@ class MultiFunctionModel:
 
 	def updateEllipse(self):
 		if not self.consOpts.useEllipse:
-			return
+			return False
+
 		ub = self.trust_region_center + self.modelRadius
 		lb = self.trust_region_center - self.modelRadius
 		aWithRadius = concatenate((
@@ -125,11 +126,16 @@ class MultiFunctionModel:
 			aWithRadius,
 			bWithRadius,
 			self.trust_region_center, # self.modelCenter()
+			self.consOpts,
 			self.consOpts.tol
 		)
 		if self.consOpts.ellipse is None or not self.consOpts.ellipse['success']:
 			print('unable to find ellipse')
-			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.modelCenter(), self.consOpts.tol)
+			# For debugging purposes
+			getMaximalEllipseContaining(aWithRadius, bWithRadius, self.trust_region_center, self.consOpts, self.consOpts.tol)
+			return False
+
+		return True
 
 	def _improveWithoutNewPoints(self):
 		""" Determine if the current set is lambda poised, possibly replacing points with points already evaluated """
@@ -151,7 +157,8 @@ class MultiFunctionModel:
 			This also evaluates the delegate functions at new points
 			This also updates the model based on these new values
 		"""
-		self.updateEllipse()
+		if not self.updateEllipse():
+			return False
 
 		self.cert = lagrange.computeLagrangePolynomials(
 			self.basis,

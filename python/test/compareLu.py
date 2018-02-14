@@ -29,14 +29,11 @@ seed(1776)
 tol=1e-4
 n = 2
 degree = 2
-a = .1
+a = 1
 xsi=1e-3
 center = array((5, 0.25))
 radius = 3
 scale = 1.2
-
-
-TYPE_OF_
 
 
 
@@ -58,7 +55,8 @@ class objective:
 		self.freq = freq
 
 	def evaluate(self, x):
-		return  self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2
+		return 0.9 * (x[0]) + 0.1 * (self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2)
+
 obj = objective()
 
 basis = polynomial_basis.PolynomialBasis(n, degree)
@@ -72,6 +70,18 @@ class ConstraintOptions:
 		])
 		self.b = asarray([0, 0])
 		self.tol = tol
+
+		self.ellipse_search = False
+
+		self.line_search = True
+		self.num_points_on_path = 1
+
+		self.scale_to_original_point = True
+
+		self.bump_xsi = False
+
+		self.search_everything = False
+		self.constraints = theConstraints
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
 
@@ -119,7 +129,10 @@ def createPlot(filename, title, model, newMin=None, rho=None):
 		plt.clabel(CS, fontsize=9, inline=1)
 
 	# ax1.add_artist(plt.Circle(model.modelCenter(), model.modelRadius, color='g', fill=False))
-	plotEllipse_inner(model.consOpts.ellipse, ax1, bounds, scaled=scale)
+	try:
+		plotEllipse_inner(model.consOpts.ellipse, ax1, bounds, scaled=scale)
+	except:
+		pass
 	########################################################################################################################################################
 	ax1.scatter(model.currentSet[:, 0], model.currentSet[:, 1], s=20, c='r', marker="x", label='poised set')
 	if newMin is not None:
@@ -158,15 +171,25 @@ while True:
 
 	if not model.improve():
 		if model.phi is not None:
-			createPlot(filename='images/iteration_' + str(iteration) + '_unableToModel.png', title='Iteration ' + str(iteration), model=model)
+			createPlot(
+				filename='images/iteration_' + str(iteration) + '_unableToModel.png',
+				title='Iteration ' + str(iteration),
+				model=model
+			)
 		model.multiplyRadius(0.5)
 		continue
 
 	quad = model.getQuadraticModel(0)
+
+	rscale = scale
+	if model.consOpts.scale_to_original_point:
+		rscale = model.consOpts.ellipse['include_point_scale']
+		if rscale > 1:
+			print("this happens")
 	constraintsCopy = theConstraints + [{
 		'type': 'ineq',
-		'fun': model.consOpts.ellipse['scaled_fun'](scale),
-		'jac': model.consOpts.ellipse['scaled_jac'](scale),
+		'fun': model.consOpts.ellipse['scaled_fun'](rscale),
+		'jac': model.consOpts.ellipse['scaled_jac'](rscale),
 	}]
 	minimumResult = minimize(quad.evaluate, jac=quad.gradient, x0=0.5 * model.modelCenter() + 0.5 * center,
 						constraints=constraintsCopy, method='SLSQP', options={"disp": False, "maxiter": 1000}, tol=tol / 4)
@@ -181,7 +204,7 @@ while True:
 
 	createPlot(filename='images/iteration_' + str(iteration) + '_new_point.png', title='Iteration ' + str(iteration), model=model, newMin=trialPoint, rho=rho)
 
-	# print('rho', rho)
+	print('rho', rho)
 	if rho < .5:
 		print('decreasing radius')
 		model.multiplyRadius(0.5)
