@@ -592,8 +592,8 @@ def plotEllipse(ellipse, bounds = {'lbX': -10, 'ubX': 10, 'lbY': -10, 'ubY': 10,
 
 	global ellipseCount
 	ellipseCount += 1
-	#plt.savefig('images/ellipse_' + str(ellipseCount) + '.png', dpi=300)
-	plt.savefig('images/ellipse_' + str(ellipseCount) + '.svg')
+	plt.savefig('images/ellipse_' + str(ellipseCount) + '.png', dpi=300)
+	#plt.savefig('images/ellipse_' + str(ellipseCount) + '.svg')
 	#plt.show()
 	plt.close()
 # f = lambda x: 0.5 * dot(x, dot(Q, x))

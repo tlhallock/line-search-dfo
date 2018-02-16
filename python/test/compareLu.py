@@ -71,16 +71,16 @@ class ConstraintOptions:
 		self.b = asarray([0, 0])
 		self.tol = tol
 
-		self.ellipse_search = False
+		self.ellipse_search = True
 
-		self.line_search = True
-		self.num_points_on_path = 1
+		self.line_search = False
+		self.num_points_on_path = 2
 
-		self.scale_to_original_point = True
+		self.scale_to_original_point = False
 
 		self.bump_xsi = False
 
-		self.search_everything = False
+		self.search_everything = True
 		self.constraints = theConstraints
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
@@ -166,7 +166,8 @@ while True:
 	iteration += 1
 	print('function evaluation: ' + str(model.functionEvaluations))
 
-	if norm(model.modelCenter()) < tol:
+	if norm(model.modelCenter()) < tol and model.modelRadius < tol:
+		print(model.modelRadius)
 		break
 
 	if not model.improve():
@@ -218,7 +219,7 @@ while True:
 	delta = norm(model.trust_region_center - trialPoint)
 	if delta < model.modelRadius / 8:
 		if delta < tol:
-			break
+			continue
 		model.multiplyRadius(.5)
 		continue
 
