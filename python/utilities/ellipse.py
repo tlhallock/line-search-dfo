@@ -425,6 +425,7 @@ def getMaximalEllipseContaining(A, b, xbar, consOpts, tol=1e-8):
 			for i in range(TRIAL_POINTS):
 				otherCenter = 2 * rand(len(xbar)) - 1
 				otherCenter *= delta / norm(otherCenter)
+				otherCenter += xbar
 				if not (dot(A, otherCenter) >= b).all():
 					continue
 

@@ -31,8 +31,8 @@ n = 2
 degree = 2
 a = 1
 xsi=1e-3
-center = array((5, 0.25))
-radius = 3
+center = array((5, 4.75))
+radius = .25
 scale = 1.2
 
 
@@ -46,7 +46,13 @@ theConstraints = [{
 	'type': 'ineq',
 	'fun': lambda x: a * x[0] - x[1],
 	'jac': lambda x: array((a, -1)),
-}]
+}
+#	,  {
+#	'type': 'ineq',
+#	'fun': lambda x:  +0.5 - a * x[0]  + x[1],
+#	'jac': lambda x: array((a, -1)),
+#}
+]
 
 class objective:
 	def __init__(self, minorSpeed=1e-1, amplitude=a/2, freq=2):
@@ -73,14 +79,15 @@ class ConstraintOptions:
 
 		self.ellipse_search = True
 
-		self.line_search = False
-		self.num_points_on_path = 2
+		self.line_search = True
 
-		self.scale_to_original_point = False
+		self.num_points_on_path = 1
+
+		self.scale_to_original_point = True
 
 		self.bump_xsi = False
 
-		self.search_everything = True
+		self.search_everything = not self.line_search
 		self.constraints = theConstraints
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())
@@ -198,8 +205,11 @@ while True:
 		print('unable to solve trust region problem')
 	trialPoint = minimumResult.x
 	newVal, called = model.computeValueFromDelegate(trialPoint)
-	oldVal = obj.evaluate(model.modelCenter())
-	oldValM = quad.evaluate(model.modelCenter())
+	oldVal = obj.evaluate(model.trust_region_center)
+	oldValM = oldVal # quad.evaluate(model.trust_region_center)
+
+	#if quad.evaluate(trialPoint) > oldVal:
+	#	print("here")
 
 	rho = (oldVal - newVal) / (oldValM - quad.evaluate(trialPoint))
 
