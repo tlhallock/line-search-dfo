@@ -106,6 +106,7 @@ class LagrangeParams:
 		if self.consOpts is None:
 			return []
 
+
 		constraints = [{
 			'type': 'ineq',
 			'fun': lambda x: self.consOpts.constraints[0]['fun'](x * self.radius + self.center),
@@ -114,6 +115,10 @@ class LagrangeParams:
 			'type': 'ineq',
 			'fun': lambda x: self.consOpts.constraints[1]['fun'](x * self.radius + self.center),
 			'jac': lambda x: self.consOpts.constraints[1]['jac'](x * self.radius + self.center) * self.radius
+		#}, {
+		#	'type': 'ineq',
+		#	'fun': lambda x: self.consOpts.constraints[2]['fun'](x * self.radius + self.center),
+		#	'jac': lambda x: self.consOpts.constraints[2]['jac'](x * self.radius + self.center) * self.radius
 		}]
 
 		return constraints

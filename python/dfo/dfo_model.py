@@ -46,6 +46,8 @@ class MultiFunctionModel:
 		return self.currentSet[0, :]
 
 
+
+
 	def computeValueFromDelegate(self, x):
 		""" computes the function values at x by calling the delegate methods
 		returns a tuple:

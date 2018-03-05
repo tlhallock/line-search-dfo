@@ -31,8 +31,8 @@ n = 2
 degree = 2
 a = 1
 xsi=1e-3
-center = array((5, 4.75))
-radius = .25
+center = array((5, 0))
+radius = 3
 scale = 1.2
 
 
@@ -79,7 +79,7 @@ class ConstraintOptions:
 
 		self.ellipse_search = True
 
-		self.line_search = True
+		self.line_search = False
 
 		self.num_points_on_path = 1
 
@@ -87,7 +87,7 @@ class ConstraintOptions:
 
 		self.bump_xsi = False
 
-		self.search_everything = not self.line_search
+		self.search_everything = True #  not self.line_search
 		self.constraints = theConstraints
 
 model = MultiFunctionModel([obj], basis, center, radius=radius, minXsi=1e-10, consOpts=ConstraintOptions())

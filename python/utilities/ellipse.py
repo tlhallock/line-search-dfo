@@ -84,7 +84,7 @@ def getMaximalEllipse_inner(A, b, xbar, include_as_constraint, normalize=True, i
 		'type': 'ineq'
 	})
 
-	if include is not None and not include_as_constraint:
+	if include is not None and include_as_constraint:
 		sInc = include - xbar
 		# We want:
 		#  0.5 * include.T Q include <= 1
@@ -183,7 +183,7 @@ def getMaximalEllipse_inner(A, b, xbar, include_as_constraint, normalize=True, i
 		'include': include
 	}
 
-	if include_as_constraint:
+	if not include_as_constraint:
 		# 1 - 0.5 * dot(v - xbar, dot(Q, v - xbar)) / scale == 0
 		# scale - 0.5 * dot(point - xbar, dot(Q, point - xbar)) == 0
 		# scale == 0.5 * dot(point - xbar, dot(Q, point - xbar))
@@ -375,7 +375,7 @@ def getMaximalEllipseContaining(A, b, xbar, consOpts, tol=1e-8):
 		xbar=xbar,
 		normalize=False,
 		include=xbar,
-		include_as_constraint=True
+		include_as_constraint=not consOpts.scale_to_original_point
 	)
 	if maxEllipse['success']:
 		plotEllipse(maxEllipse)
@@ -435,7 +435,7 @@ def getMaximalEllipseContaining(A, b, xbar, consOpts, tol=1e-8):
 					xbar=otherCenter,
 					normalize=False,
 					include=xbar,
-					include_as_constraint=consOpts.scale_to_original_point
+					include_as_constraint=not consOpts.scale_to_original_point
 				)
 
 				if not otherEllipse['success']:
@@ -455,7 +455,7 @@ def getMaximalEllipseContaining(A, b, xbar, consOpts, tol=1e-8):
 			if not improved:
 				delta /= 2
 
-	elif consOpts.line_search:
+	elif consOpts.line_search:ch
 		search_path = get_search_path(xbar, A, b, consOpts.num_points_on_path)
 
 		delta = 0.5
