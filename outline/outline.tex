@@ -41,9 +41,69 @@ Hidden constraints.
 The classical algorithm handling when there are no constraints.
 
 
-Define trust region subproblem.
-Explain how to use model functions.
-Update policy of the trust region radius.
+\section{Interpolation Functions}
+
+Within Interpolation methods, we construct our model by regressing basis functions onto a set of sample points.
+For example, given a function $f(x) : \mathbb R^n \to \mathbb R$ we can use a set of basis functions $\phi_i : \mathbb R^n \to \mathbb R \quad \forall 1 \le i \le d_1$ to construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting appropriate $\lambda_i \in \mathbb R$.
+This is done by choosing a set of sample points
+$Y = \{y^1, y^2, \ldots, y^{d_2}\}$,
+evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$ and forcing model agreement with the original function $f(x)$ by ensuring
+
+\begin{equation}
+\label{reg}
+\begin{bmatrix}
+    \phi_1(y^1)      & \phi_2(y^1)       & \ldots & \phi_{d_1}(y^1)      \\
+    \phi_1(y^2)      & \phi_2(y^2)       & \dots  & \phi_{d_1}(y^2)      \\
+                     &                   & \vdots &                      \\
+    \phi_1(y^{d_2})  & \phi_2(y^{d_2})   & \ldots & \phi_{d_1}(y^{d_2})
+\end{bmatrix}
+\begin{bmatrix}
+    \lambda_1      \\
+    \lambda_2      \\
+    \vdots         \\            
+    \lambda_{d_1}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+    f_1      \\
+    f_2      \\
+    \vdots         \\            
+    f_{d_2}
+\end{bmatrix}.
+\end{equation}
+
+When $d_1 = d_2$ this is called interpolation and equality is desired within \ref{reg}.
+When $d_1 < d_2$ this is called underdetermined interpolation.
+This can be handled by requesting and a minimum norm solution.
+Finally, when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
+Note that in practice, the set $Y$ is shifted and scaled.
+
+In our case, we use quadratic interpolation for the objective function, and linear regression for the constraints.
+A basis of lagrange polynomials can be computed by performing an LU factorization with pivots on the Vandermode matrix.
+When a coefficient of the Vandermode matrix becomes less than a fixed tolerance $\xi$, we replace the point corresponding to that row.
+
+
+After creating a model, we form the trust region subproblem by minimizing the objective over the trust region.
+
+
+
+
+
+
+\begin{center}
+\begin{align}
+\label{problem}
+\min_x & \quad m_f(x) \\
+  m_{c_i}(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
+  m_{c_i}(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber
+\end{align}
+\end{center}
+
+
+
+\subsection{Trust region update}
+$$\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$$
+
 
 
 \subsection{}
@@ -102,9 +162,18 @@ If we do not include the current iterate, we may arbitrarly? decrease the functi
 Insert images here.
 
 In order to include the original point as a constraint, we require that
-$$
-\bar{x}^T Q \bar{x} \le 1.
-$$
+
+
+\begin{center}
+\begin{align}
+\label{problem}
+\min_x & \quad m_f(x) \\
+  m_{c_i}(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
+  m_{c_i}(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber \\
+  \bar{x}^T Q \bar{x} \le 1
+\end{align}
+\end{center}
+
 Because this problem is stated in terms of the inverse, the problem has a constraint including the inverse of decision variables.
 
 The alternative is to scale $Q$ by a constant to that this statement becomes true.
@@ -220,6 +289,8 @@ s.t. \quad A_i^T Q^{-1} A_i \ge \frac 1 2 \bar{b}^T\bar{b}
 
 
 The problem difficulty includes a maximization of a determinant
+
+In order to ensure that the trust region goes to zero, we must also ensure that the maximum eigenvalue of the matrix is bounded.
 
 
 \subsection{Stationary center}
