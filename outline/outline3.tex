@@ -3,11 +3,11 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{color}
-\usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
-\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+%\usepackage{algorithm}
+%\usepackage[noend]{algpseudocode}
+%\usepackage{varwidth}% http://ctan.org/pkg/varwidth
 \usepackage{xspace}
-\usepackage{placeins}
+%\usepackage{placeins}
 \usepackage[margin=0.5in]{geometry}
 \usepackage{amsfonts}
 %\theoremstyle{definition}
@@ -34,9 +34,9 @@
 \begin{document}
 
 
-\algnewcommand{\algorithmicgoto}{\textbf{go to}}%
-\algnewcommand{\Goto}{\algorithmicgoto\xspace}%
-\algnewcommand{\Label}{\State\unskip}
+%\algnewcommand{\algorithmicgoto}{\textbf{go to}}%
+%\algnewcommand{\Goto}{\algorithmicgoto\xspace}%
+%\algnewcommand{\Label}{\State\unskip}
 
 
 \maketitle
@@ -48,14 +48,12 @@
 
 \section{Introduction}
 
-This paper will discuss research topics for my research in derivative free optimization (DFO).
-It begins with an introduction to derivative free optimization supplemented by some of the recent advancements.
-It then details several future research directions and one in particular (filter methods) that has been studied.
+This paper will discuss research in derivative free optimization (DFO).
+It begins with an introduction to derivative free optimization \color{red}supplemented by some of the recent advancements\color{black}.
+It then details several approaches for optimization over thin feasible regions.
 The focus is on model-based trust region algorithms for local search within constrained derivative free optimization.
-Specifically, we are interested in problems with narrow feasible regions.
-Narrow constraints introduce numerical instability and make it hard to to form approximates for a function.
-We have experimented with several strategies for handling hidden constraints.
-These introduce numerical instability and make it difficult to form model functions. 
+Specifically, we are interested in problems with thin, \color{red}hidden\color{black} constraints.
+Narrow constraints introduce numerical instability and make it hard to to model the relavent functions.
 
 \subsection{Introduction to Derivative Free Optimization}
 \subsubsection{What it is}
@@ -77,22 +75,22 @@ This proposal aims to develop derivative-free algorithms for solving constrained
 where at least one of the functions $f, c_i, i \in \mathcal{I} \cup \mathcal{E}$ is a black box function, meaning that we have no information about its derivatives.
 
 We will introduce several different forms this problem can take noting those which we will discuss algorithms for.
-For a more comprehensive characterization of the types constraints, consult \cite{DUMMY:typesofconstraints}.
+For a more comprehensive characterization of the types constraints, consult \color{red}citation\color{black} %\cite{DUMMY:typesofconstraints}.
 
 
 \subsubsection{Where Problems come from}
 
-\color{red}
-laziness and parameter tuning were circled.
+%\color{red}
+%laziness and parameter tuning were circled.
 
 
-There are a growing number of applications for DFO. 
-For example, derivative free methods can be useful when the objective is the result of a simulation that does not admit automatic differentiation.
-As the popularity of complicated simulations increase, so does the demand for optimizing over black box software codes.
- which may be copyrighted.
-Derivative free optimization has also been a popular method for parameter tuning, as simulations may have several parameters with unidentified relationships to their output.
+%There are a growing number of applications for DFO. 
+%For example, derivative free methods can be useful when the objective is the result of a simulation that does not admit automatic differentiation.
+%As the popularity of complicated simulations increase, so does the demand for optimizing over black box software codes.
+% which may be copyrighted.
+%Derivative free optimization has also been a popular method for parameter tuning, as simulations may have several parameters with unidentified relationships to their %output.
 
-\color{black}
+%\color{black}
 
 
 
@@ -138,7 +136,8 @@ This may mean that it is not possible to tell how close to a ``hidden" constrain
 
 Another area that received attention recently is that of imposing structure on $f$, and $c$.
 For example, a method called Practical Optimization Using No Derivatives for sums of Squares
-is developed within \cite{DUMMY:leastsquares} when $f$ takes the form of a least squares error
+is developed within \color{red}citation\color{black} %\cite{DUMMY:leastsquares} 
+when $f$ takes the form of a least squares error
 $f(x) = \frac 1 2 \|F(x)\|^2$ over bound constraints where $F$ is a nonlinear, vector valued function.
 
 %Many DFO methods simply let $f(x,S(x)) = S(x)$.
@@ -152,7 +151,7 @@ First and second derivative information is explicit in algorithms with quadratic
 They are also present in conditions for convergence results such as Wolf's, Armijo or Goldstien for line search methods.
 Additionally, stopping criteria usually involve a criticality test involving derivatives.
 When derivatives are known, they should be used.
-% For this reason, it is desirable for $n$, the dimension of $x$, to be small.
+%% For this reason, it is desirable for $n$, the dimension of $x$, to be small.
 
 \subsection{}
 
@@ -248,7 +247,7 @@ Note that in practice, the set $Y$ is shifted and scaled.
 
 \paragraph{Basis functions}
 
-The choice of model functions $\phi_i$ can have some affect on the convergence rate, as Powell showed in \cite{DUMMY:PowellRadialBasis}.
+The choice of model functions $\phi_i$ can have some affect on the convergence rate, as Powell showed in \color{red}citation\color{black} % \cite{DUMMY:PowellRadialBasis}.
 One common choice of basis functions is the Lagrange polynomials, in which we select polynomials satisfying $\phi_{i}(y^j) = \delta_{ij}$, the kroneker delta function.
 This reduces the matrix within \ref{reg} to an identity matrix.
 Lagrange polynomials of order $p$ can be computed by starting with the monomial basis $\prod_{i=1}^{n} x_i^{n_i}$ for all choices of $0 \le n_i \le p$ with $\sum_{i=1}^n n_i \le p$ and inverting the corresponding Vandermonde matrix.
@@ -375,18 +374,18 @@ However, in derivative free optimization, solving a costly trust region subprobl
 
 \paragraph{Derivative free methods}
 
-Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
-This is the first text book devoted to derivative free optimization.
-It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+%Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
+%This is the first text book devoted to derivative free optimization.
+%It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
 
-A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
-This compares several software libraries, and reviews the development of derivative free optimization since it started.
-Another recent review can be found in \cite{DUMMY:review2}.
+%A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
+%This compares several software libraries, and reviews the development of derivative free optimization since it started.
+%Another recent review can be found in \cite{DUMMY:review2}.
 
-Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework.
+%Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework.
 
 \section{Experiments}
-\subsection{SQP Filter method}
+\subsection{Setting}
 
 We will be considering problems of the form
 
@@ -405,12 +404,17 @@ $c_{\mathcal {I}}(x) = (c_1(x), c_2(x), \ldots, c_{|\mathcal{I}|})^T$,
 $c_{\mathcal {E}}(x) = (c_{|\mathcal{I}|+1}(x), c_{|\mathcal{I}|+2}(x), \ldots, c_{|\mathcal{I}| + |\mathcal{E}|})^T$ and
 $c(x) = (c_{\mathcal{I}}^T(x), c_{\mathcal{E}}^T(x))^T$.
 
+It will also be convenient to let $F^k = \{ x \in \mathbb R^n | c_i(x) \le 0 \forall i \in \mathcal{I} \wedge c_i(x) = 0 \forall i \in \mathcal{E}\}$ be the feasible region.
 
-We work within a trust region, sequential quadratic programming framework with interpolating model functions that uses a filter method introduced by Gould and Toint \cite{original_filter}.
+We work within a trust region, sequential quadratic programming framework with interpolating model functions.
 For our algorithm, we assume that all functions are derivative-free: all functions are evaluated by a single call to a black box function:
 $S(x) = (f(x), c_{\mathcal {I}}(x)^T, c_{\mathcal {E}}(x)^T)^T$.
 
-We also assume that we are not able to  evaluate points outside the feasible region.
+\color{blue}
+We also assume that we are not able to evaluate points outside the feasible region.
+This introduces a new type of constraint: it is not quite a hidden constraint because we do observe function values within the feasible region.
+However, it does implies similar difficulty to construct the model function near the boundary of the feasible region because we have limited sampling ability.
+\color{black}
 
 We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
 Although we have enough sample points to construct a quadratic model of the constraints, we only construct linear models to avoid the complexity of Quadratically Constrained Quadratic Programming which is NP-hard.
@@ -425,35 +429,35 @@ $A_{{\mathcal{I}}}^k = \nabla m_{\mathcal{I}}^k(x^k)$,
 $c_{{\mathcal{E}}}^k = c_{\mathcal{E}}(x^k)$, and
 $A_{{\mathcal{E}}}^k = \nabla m_{\mathcal{E}}^k(x^k)$.
 
-We will also need to compute the Hessian of the Lagrangian for \ref{problem}.
-The Lagrangian is defined as 
- $L(x, \mu, \lambda) =
- f(x)  
- + \sum_{i \in {\mathcal{I}}} \mu_i     c_i(x)
- + \sum_{i \in {\mathcal{E}}} \lambda_i c_i(x)$.
-To compute its second derivative, we let $A^k$ and $c^k$ contain $A_{\mathcal{E}}^k$ and $c_{\mathcal{E}}^k$ as well as any rows of $A_{{\mathcal{I}}}^k$ and $c_{\mathcal{E}}^k$ corresponding
-to active constraints at $x^k$.
-The set of active constraints $\mathcal A \subseteq \mathcal I \cup \mathcal E$ includes $\mathcal E$ and any $i \in \mathcal I$ for which $c_i(x^k) \ge 0$.
-We then solve the system
-\begin{align*}
-\nabla^2m_k(x_k) & d + {A^k}^T\lambda & = g^k \\
-A^k              & d                & = c^k
-\end{align*}
-for $\lambda$ and compute
-\[
-H^k = \nabla^2 m_k(x^k) 
-+ \sum_{i \in \mathcal E} \lambda_i \nabla^2 m_{g,i}^k(x^k) 
-+ \sum_{i \in \mathcal A \backslash \mathcal E} \lambda_i \nabla^2 m_{h,i}^k(x^k).
-\]
+%We will also need to compute the Hessian of the Lagrangian for \ref{problem}.
+%The Lagrangian is defined as 
+% $L(x, \mu, \lambda) =
+% f(x)  
+% + \sum_{i \in {\mathcal{I}}} \mu_i     c_i(x)
+% + \sum_{i \in {\mathcal{E}}} \lambda_i c_i(x)$.
+%To compute its second derivative, we let $A^k$ and $c^k$ contain $A_{\mathcal{E}}^k$ and $c_{\mathcal{E}}^k$ as well as any rows of $A_{{\mathcal{I}}}^k$ and %$c_{\mathcal{E}}^k$ corresponding
+%to active constraints at $x^k$.
+%The set of active constraints $\mathcal A \subseteq \mathcal I \cup \mathcal E$ includes $\mathcal E$ and any $i \in \mathcal I$ for which $c_i(x^k) \ge 0$.
+%We then solve the system
+%\begin{align*}
+%\nabla^2m_k(x_k) & d + {A^k}^T\lambda & = g^k \\
+%A^k              & d                & = c^k
+%\end{align*}
+%for $\lambda$ and compute
+%\[
+%H^k = \nabla^2 m_k(x^k) 
+%+ \sum_{i \in \mathcal E} \lambda_i \nabla^2 m_{g,i}^k(x^k) 
+%+ \sum_{i \in \mathcal A \backslash \mathcal E} \lambda_i \nabla^2 m_{h,i}^k(x^k).
+%\]
 
-With these definitions, we define the quadratic subproblem as
+%With these definitions, we define the quadratic subproblem as
 
-\begin{align*}
-\argmin_s  f(x^k+s) = f^k + (g^k)^Ts + \frac 1 2 (s^k)^T H^ks^k  &\\
-     c_{{\mathcal{I}}}^k + A_{{\mathcal{I}}}^ks       &\le \; 0  \\
-s.t. \hspace{1cm} c_{{\mathcal{E}}}^k + A_{{\mathcal{E}}}^ks           &=\; 0 \\
-     \| s \|                      &\le \; \Delta_k.
-\end{align*}
+%\begin{align*}
+%\argmin_s  f(x^k+s) = f^k + (g^k)^Ts + \frac 1 2 (s^k)^T H^ks^k  &\\
+%     c_{{\mathcal{I}}}^k + A_{{\mathcal{I}}}^ks       &\le \; 0  \\
+%s.t. \hspace{1cm} c_{{\mathcal{E}}}^k + A_{{\mathcal{E}}}^ks           &=\; 0 \\
+%     \| s \|                      &\le \; \Delta_k.
+%\end{align*}
 
 
 
@@ -483,7 +487,7 @@ This suggests the following definition:
 
 Notice that this must be computed after the normal step $n^k$ has been computed.
 
-
+\color{red}
 \subsubsection{Sufficient reduction of model}
 It is not enough to simply ask for decrease in the objective every iteration.
 We also require \emph{sufficient} reduction, so that any accumulation point of the sequences of iterates is feasible.
@@ -493,6 +497,7 @@ To this end, we introduce constants $0 < \kappa_{\theta} < 1$ and $\psi > \frac{
 \label{predicted_decrease}
 m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
 \end{equation}
+\color{black}
 
 %\color{red}
 %Although this only references the model functions, we ensure accuracy by computing $\rho$.
@@ -500,76 +505,360 @@ m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
 
 %\subsubsection{Compatibility}
 
-\newpage
-\subsection{The Algorithm}
+%\newpage
+%\subsection{The Algorithm}
 
-With these tools, we can now describe the algorithm.
-The overall steps are as follows:
+%With these tools, we can now describe the algorithm.
+%The overall steps are as follows:
 
-\underline{\hspace{20cm}}
-\FloatBarrier
-\begin{enumerate}
-\item \textbf{Initialize} each constant introduced so far
+%\underline{\hspace{20cm}}
+%\FloatBarrier
+%\begin{enumerate}
+%\item \textbf{Initialize} each constant introduced so far
 
-\item \textbf{Compute model functions} $m_f$, $m_g$, $m_h$, the active constraints $\mathcal A$, and the Hessian of the Lagrangian $H_k$
+%\item \textbf{Compute model functions} $m_f$, $m_g$, $m_h$, the active constraints $\mathcal A$, and the Hessian of the Lagrangian $H_k$
 
-\item \textbf{Compute the normal step} $n_k$ according to \ref{normal}
+%\item \textbf{Compute the normal step} $n_k$ according to \ref{normal}
 
-If the feasible region of \ref{normal} is empty or \ref{compat} is not satisfied, then 
+%If the feasible region of \ref{normal} is empty or \ref{compat} is not satisfied, then 
+%\begin{itemize}
+%\item Add $(\theta_k, f_k)$ to the filter
+%\item Call the feasibility restoration routine
+%\item Increment $k$
+%\item Go to step 2
+%\end{itemize}
+
+%\item \textbf{Compute criticality measure} $\chi$ from \ref{critical}
+%\begin{itemize}
+%\item If $\chi$ is small, but the trust region radius is larger than the tolerance, then decrease the trust region, increment $k$ and return to step 2
+%\item Otherwise, if $\chi$ and the trust region radius is smaller than the tolerance, return success
+%\item If $\chi$ is zero, then return success
+%\end{itemize}
+
+
+%\item \textbf{Compute tangential step} $t_k$ according to \ref{tangent}
+
+%Define $s_k = n_k + t_k$.
+
+%\item Check for \textbf{sufficient reduction} in the model function
+
+%If \ref{predicted_decrease} is satisfied
+%\begin{itemize}
+%\item Add $(\theta_k, f_k)$ to the filter
+%\item Increment $k$
+%item Go to step 2
+%\end{itemize}
+
+%\item \textbf{Evaluate} the function and constraints at the trial point $x_k + s_k$
+
+%If the new point is not acceptable to the filter according to either \ref{acceptable1} or \ref{acceptable2}, then
+%\begin{itemize}
+%\item Add $(\theta_k, f_k)$ to the filter
+%\item Increment $k$
+%\item Go to step 2
+%\end{itemize}
+
+%\item \textbf{Compute $\rho$} according to \ref{rho}
+%\begin{itemize}
+%\item If $\rho \le \gamma_1$ is small, then decrease the trust region radius and go to step 2
+%\item If $\gamma_1 < \rho \le \gamma_2$ is intermediate, then accept the trial point $x_{k+1} = x_{k} + s_k$.
+%\item If $\rho > \gamma_2$, and $\chi$ is small, then decrease the trust region radius.
+%\item If $\rho > \gamma_2$ is large, and $\chi$ is large, then increase the trust region radius.
+%\end{itemize}
+
+%\item increment $k$ and go to step 2
+%\end{enumerate}
+%\FloatBarrier
+
+%\underline{\hspace{20cm}}
+
+
+
+\section{Algorithms}
+
+
+\section{naive}
+One simple approach to handling hidden constraints is to simply avoid letting points fall outside the feasible region.
+Within this model, we maintain the same policies for updating the trust region radius.
+However, within the LU factorization algorithm to select new points, we add to the trust region subproblem that the new points must also lie within the current model of the trust region.
+
+This can happen when the feasible region intersect the trust region is small compared to the trust region.
+As the number of dimensions grows, this can become worse.
+
+\includegraphics[scale=0.4]{bad_lambda.png}
+
+\section{Bumping $\xi$}
+
+
+Within the classical algorithm, we used $\xi$ as a lower bound of the pivot values of the Vandermode matrix.
+When requiring points to live within the trust region intersect the feasible region, it can happen that even after replacing a point, we still have not satisfied this bound.
+One way to handle this is to simply allow $\xi$ to decrease until a threshold is reached.
+(The threshold is for maintaining a fixed lambda.)
+
+
+    
+\section{Ellipse}
+
+
+We decided to keep the trust region entirely within the feasible region because of the high lambda when only requiring the points to lie in the feasible region.
+In order to deal with the numerical problems from having a circular trust region, we can map the feasible region back to a circle.
+More specifically, at iteration $k$, we select an ellipse center $\mu^k$, a scaling factor $\pi^k$ and positive definite matrix $Q^k$ to define and ellipse
+$E_k = \{x \in \mathbb R^n \| \pi^k - \frac 1 2 (x - \mu^{k})^TQ^{k}(x - \mu^{k}) \ge 0 \}$.
+We then map this back to the origin with the affine transformation $T^k : \mathbb R^n \to R$ $T^k(x) = \frac {\sqrt{2}}{\pi^k} L^k(x-\mu^k)$ where $L = cholesky(Q)$.
+This will allow us to construct a lambda poised set within narrow trust regions.
+
+There are a number of issues to be solved to define this ellipse:
 \begin{itemize}
-\item Add $(\theta_k, f_k)$ to the filter
-\item Call the feasibility restoration routine
-\item Increment $k$
-\item Go to step 2
+\item How do we ensure that $x^k \in E^k$?
+\item How do we choose the center of the ellipse $\mu^k$?
+\item Is $E_k \subset F_k$?
 \end{itemize}
 
-\item \textbf{Compute criticality measure} $\chi$ from \ref{critical}
-\begin{itemize}
-\item If $\chi$ is small, but the trust region radius is larger than the tolerance, then decrease the trust region, increment $k$ and return to step 2
-\item Otherwise, if $\chi$ and the trust region radius is smaller than the tolerance, return success
-\item If $\chi$ is zero, then return success
-\end{itemize}
+We have tried a couple of ways of ensuring the current iterate is within the trust region, $x^k \in E^k$.
+If we do not include the current iterate \color{red} within the interior \color{black}, we likely lose sufficient reduction.
+This can be done by either expanding the radius of the ellipse, or by including the original point as a constraint for the ellipse problem.
+
+% Insert images here.
+
+In order to include the original point as a constraint, we simply add the following constraint to the definition of the ellipse:
+$$ \pi^k - \frac 1 2 (x^k - \mu^{k})^TQ^{k}(x^k - \mu^{k}) \ge 0. $$
+However, the optimization problem we construct to find $Q^k$ solves for ${Q^k}^{-1}$, so that adding this constraint is a constraint on the inverse of $Q^k$.
 
 
-\item \textbf{Compute tangential step} $t_k$ according to \ref{tangent}
 
-Define $s_k = n_k + t_k$.
-
-\item Check for \textbf{sufficient reduction} in the model function
-
-If \ref{predicted_decrease} is satisfied
-\begin{itemize}
-\item Add $(\theta_k, f_k)$ to the filter
-\item Increment $k$
-\item Go to step 2
-\end{itemize}
-
-\item \textbf{Evaluate} the function and constraints at the trial point $x_k + s_k$
-
-If the new point is not acceptable to the filter according to either \ref{acceptable1} or \ref{acceptable2}, then
-\begin{itemize}
-\item Add $(\theta_k, f_k)$ to the filter
-\item Increment $k$
-\item Go to step 2
-\end{itemize}
-
-\item \textbf{Compute $\rho$} according to \ref{rho}
-\begin{itemize}
-\item If $\rho \le \gamma_1$ is small, then decrease the trust region radius and go to step 2
-\item If $\gamma_1 < \rho \le \gamma_2$ is intermediate, then accept the trial point $x_{k+1} = x_{k} + s_k$.
-\item If $\rho > \gamma_2$, and $\chi$ is small, then decrease the trust region radius.
-\item If $\rho > \gamma_2$ is large, and $\chi$ is large, then increase the trust region radius.
-\end{itemize}
-
-\item increment $k$ and go to step 2
-\end{enumerate}
-\FloatBarrier
-
-\underline{\hspace{20cm}}
+%\begin{center}
+%\begin{align}
+%\label{problem}
+%\min_x & \quad m_f(x) \\
+%  m_{c_i}(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
+%  m_{c_i}(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber \\
+%  \bar{x}^T Q^k \bar{x} \le s^k
+%\end{align}
+%\end{center}
 
 
-\bibliography{proposal}
-\bibliographystyle{ieeetr}
+The alternative is to scale $Q$ by a constant.
+To do this, we use the scaling factor $\pi^k$ by defining it to be
+
+$$\pi^k = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T Q^k (x^{k} - \mu^{k})^T \}$$
+
+and let the ellipse be:
+$$\{x \in \mathbb | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T Q (x - \mu^{k}) \ge 0\} $$
+However, this means that we do not ensure $E_k \subset F_k$ so that the trust region subproblem must contain constraints for both the ellipse and the feasible region.
+
+
+The are some concerns we have to consider while defining the ellipse.
+One major concern is that we can accidently define the ellise in a way that forces the trust region away from the desired drection.
+Also, unless we include points outside the ellipse, we cannot find a second order solution because the ellipse can only be tangent to the constraint.
+We also want consecutive ellipse to share volume, in order to avoid evaluating as many points as possible.
+(So far, we have been re-evaluating the set of trial points each iteration.)
+Finally, we have the problem of computing the ellipse once given a suitable definition.
+
+
+\subsection{Finding the maximal $E_k$ given $\mu^k$}
+
+Within this paper, we first solve the problem of finding the maximal ellipse given the center, and then perform a simple search over different centers of the ellipse.
+Because of this, we will first show how to find an ellipse with maximal volume given a fixed center.
+For now, we also let $s^k = 1$.
+
+Given a polyhedron $P$ defined by an $m \times n$ matrix $A$,
+\[
+P = \{ x \; | \;  Ax \le b \},
+\]
+and we wish to find the largest ellipse $E \subset P$ centered at a point $\mu^{k}$ within this polyhedron.
+
+We can shift the polyhedron by letting $\bar{b} = b - A\mu^{k}$ and letting $x \to x - \mu^{k}$ so that the polyhedron becomes
+\[
+P = \{ x \; | \;  Ax \le \bar{b} \}
+\]
+The ellipse can then be centered at zero, and defined by a positive semi-definite matrix $Q \succeq 0$:
+\[
+E = \{ d \; | \; \frac 1 2 d^T Q d \le 1 \}.
+\]
+where $Q = Q^T$.
+We can define the auxiliary function 
+\[
+f(x) = \frac 1 2 x^T Q x
+\]
+so that this becomes
+\[
+E = \{ d \; | \; f(d) \le 1 \}.
+\]
+
+
+At the locations where the ellipse intersects the polyhedra with minimum value of $f$, the gradients of $f$ must be orthogonal to the faces.
+Each face is defined by at least one $A_i x \le \bar{b}_i$ where $A_i$ is the $i$th row of $A$ for $1\le i \le m$.
+This implies that if $d^{(i)}$ is such a point, then
+\[
+\nabla f(d^{(i)}) = \lambda_i A_i \quad \forall 1\le i\le m
+\]
+for some $\lambda_i$.
+This means
+\[
+Q d^{(i)} = \lambda_i A_i \quad \forall 1\le i\le m
+\]
+\[
+d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall 1\le i\le m
+\]
+We also know that 
+\[
+A_i^T d^{(i)} = \bar{b} \quad \forall 1\le i\le m
+\]
+\[
+A_i^T \lambda_i Q^{-1}A_i = \bar{b} \quad \forall 1\le i\le m
+\]
+\[
+\lambda_i = \frac {\bar{b}}{A_i^T  Q^{-1}A_i} \quad \forall 1\le i\le m
+\]
+so that 
+\[
+d^{(i)} = \lambda_i Q^{-1}A_i \forall 1\le i\le m
+\]
+\[
+d^{(i)} = \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
+\]
+
+Finally, we need that for each $i$, $f(d^{(i)}) \le 1$:
+\[
+\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \le 1
+\]
+\[
+\frac 1 2 (\frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i)^{T} Q \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \le 1
+\]
+\[
+\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b}^T A_i^T Q^{-1} Q \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \le 1
+\]
+\[
+\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b}^T \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \le 1
+\]
+\[
+\frac 1 2 \bar{b}^T \frac {\bar{b}}{A_i^T  Q^{-1}A_i} \le 1
+\]
+\[
+\frac 1 2 \bar{b}^T \bar{b}\le A_i^T  Q^{-1}A_i
+\]
+\[
+A_i^T  Q^{-1}A_i \ge \frac 1 2 \bar{b}^T \bar{b}
+\]
+
+Thus, the maximal ellipse is defined by
+
+\[
+\sup_{Q \succeq 0} \det(Q^{-1})
+\]
+\[
+s.t. \quad A_i^T Q^{-1} A_i \ge \frac 1 2 \bar{b}^T\bar{b}
+\]
+
+
+This problem includes a maximization of a determinant.
+In order to ensure that the trust region goes to zero, we must also ensure that the maximum eigenvalue of the matrix is bounded.
+Thus, for some bound $M^k$ we define $Q^k$ as
+
+\begin{center}
+\begin{align}
+\label{ellipse_1}
+Q^k = V(\mu_k) = \sup_{Q \succeq 0} & \det(Q^{-1}) & \\
+  & {A^k}_i^T Q^{-1} {A^k}_i \ge \frac 1 2 (b^k - A^k\mu^{k})^T(b^k - A^k \mu^{k}) & \\
+  & eig(Q)_i \le M^k & \forall i \in \mathcal I \cup \mathcal E \\
+  & \pi^k - \frac 1 2 (x^k - \mu^{k})^TQ^{k}(x^k - \mu^{k}) \ge 0
+\end{align}
+\end{center}
+
+if we wish to include the original point explicitly.
+This gives rise to the trust region sub problem of
+
+
+
+
+
+%$$\{x \in \mathbb | 1 - \frac 1 {2s^k} (x - \mu^{k})^T Q (x - \mu^{k}) \ge 0\} $$
+%$$s^k = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T Q^k (x^{k} - \mu^{k})^T \}$$
+
+
+
+
+
+
+\subsection{Stationary center}
+The simplest approach is to not change the center of the ellipse, but instead let $\mu^k = x^k$.
+In the example below, we begin with a trust region that must be very small to lie within the feasible region, and note that if we even keep the same center, we are still able to search towards the vertex of the feasible region.
+After solving the trust region subproblem in the first image, the iterate is near a constraint within the next iteration.
+However, the ellipse elongates along an axis parallel to this constraint.
+
+\includegraphics[scale=0.4]{advantage_of_ellipse_1.png}
+\includegraphics[scale=0.4]{advantage_of_ellipse_2.png}
+
+
+
+\subsection{Search everything}
+Another simple approach is to define the ellipse as to maximize the area within the ellipse.
+That is,
+$$\mu^k = \sup_{\mu \in F^k} V(\mu))$$
+This has the advantage that it captures much of the feasible region.
+However, one problem with this search is that it can force the trust region away from the desired direction.
+
+\includegraphics[scale=0.4]{everything_runs_1.png}
+\includegraphics[scale=0.4]{everything_runs_2.png}
+
+
+One attempt to fix this problem is by limiting the search direction for the center of the ellipse.
+
+\subsection{Line searches}
+Although the minimum of problem $P$ can appear anywhere within the trust region, there are some reasons for expecting it to be at a ``vertex."
+If it lies on the interiorer, there is little need for using constrained approaches once near the solution.
+
+The ellipse with maximum volume, however, tends to lead away from vertices because there is more space away from vertices.
+One way of trying to leave the direction towards a vertex within the trust region, while still allowing to incease the ellipse volume is by limiting the search for the new center to lie on line segments starting at the current iterate.
+
+For example, our first attempt was to simply search a line directed away from the closest constraint.
+This has obvious problems though, as we should avoid letting the new center get closer to another constraint:
+
+\includegraphics[scale=0.4]{line_1.png}
+\includegraphics[scale=0.4]{line_2.png}
+
+
+To fix this, we break the line into segments based on the nearest constraint.
+We find the center that maximizes the volume of the ellipse after restricting it to lie on a ray perpendicular to the nearest constraint.
+Nearest here means means the constraint with the smallest distance from the iterate to the projection of that iterate onto the constraint.
+If there are two constraints that are both closer than all others, then we follow a ray whose points are equidistant from both of these constraints.
+
+We search along this away from the current iterate until we reach a point that has the same distance to another constraint as the nearest to the iterate.
+We could then in general continue to follow line segments by always travelling away from the nearest constraints.
+However, after we include enough constraints, we will eventually once again head away from a vertex.
+
+This means that we can define the a class of searches that each use a different number of line segments to search.
+In this paper, we consider one and two line segments.
+
+\includegraphics[scale=0.4]{run_away_1.png}
+\includegraphics[scale=0.4]{run_away_2.png}
+
+\section{Results}
+
+the example problem I have been working with
+    linear constraints
+%\min \alpha sin(x) + \beta (minor * x + (y - self.amplitude * x sin(freq * x)) ^ 2 
+%
+%		return 0.9 * (x[0]) + 0.1 * (self.minorSpeed * x[0] + (x[1] - self.amplitude * x[0] * sin(self.freq * x[0])) ** 2)
+
+
+
+
+
+\begin{center}
+\begin{tabular}{ c c c }
+ Algorithm & Iterations & Evaluations \\ 
+ Search everything (include the original) & 24 & 169 \\  
+ Search everything & 19 & 106    \\
+ One line segment & 21 & 86 \\
+ Two line segments & 23 & 115 \\
+\end{tabular}
+\end{center}
+
+\end{document}
+
+%\bibliography{proposal}
+%\bibliographystyle{ieeetr}
 
 \end{document}
 
