@@ -48,12 +48,78 @@
 
 \section{Introduction}
 
+
+
+
+
+\begin{table}\caption{Table of Notation My Research}
+\begin{center}% used the environment to augment the vertical space
+% between the caption and the table
+\begin{tabular}{r c p{10cm} }
+${T}_{c}$ & a  & A very long description of this specific variable and is needed in the research and looks good when wrapped and aligned to the left.\\
+$TC$ & a & Total overall cost(\$)\\  
+\multicolumn{3}{c}{}\\
+\multicolumn{3}{c}{\underline{Decision Variables}}\\
+\multicolumn{3}{c}{}
+\end{tabular}
+\end{center}
+\label{tab:TableOfNotationForMyResearch}
+\end{table}
+
+
+
+
+$f$ is the objective
+$c_i$ are the constraints
+$\mathcal{I}$ is the index of the inequality constraints
+$\mathcal{E}$ is the index of the equality constraints
+$e_i$ is the unit vector
+$\phi_i$ is a basis vector
+$m$ is a model fucntion
+$y^i$ is a sample point
+$d$ is the dimension of the basis functions
+$\lambda_i$ are the weights of the linear combination
+$x^{(k)}$ is the current iterate
+$s$ is the search point point within the trust region subproblem
+$B_{x}(\Delta)$ is the ball of radius $\Delta$ centered at point $x$
+$\Delta$ is the trust region radius
+$\rho$ measures actual improvement over the predicted improvement
+$\tau$ is a tolerance
+$F^k$ is the feasible region
+$f^k$ is the function value
+$g^k$ is the gradient of the model
+$A$ is the jacobian of the constraint model functions
+$\xsi$ is a tolerance within the LU pivoting algorithm
+$T$ is an affine transformation that brings the trust region back to the origin
+$Q$ is the semi-definite matrix defining the affine transformation $T$
+$L$ is a cholesky factorization of $Q$
+$\mu^k$ is the center of the ellipse
+$\pi$ is a scaling factor
+$d$ are the differences between the center of the ellipse and where the ellipse intersect the constraints?
+$M$ is an upper bound
+$P$ is a polyhedron
+
+
+
+
+
+
+
+
+
+
+
+
 This paper will discuss research in derivative free optimization (DFO).
 It begins with an introduction to derivative free optimization \color{red}supplemented by some of the recent advancements\color{black}.
 It then details several approaches for optimization over thin feasible regions.
 The focus is on model-based trust region algorithms for local search within constrained derivative free optimization.
 Specifically, we are interested in problems with thin, \color{red}hidden\color{black} constraints.
 Narrow constraints introduce numerical instability and make it hard to to model the relavent functions.
+
+
+Add section on importance of derivatives
+
 
 \subsection{Introduction to Derivative Free Optimization}
 \subsubsection{What it is}
@@ -62,6 +128,9 @@ Derivative free optimization refers to mathematical programs in which derivative
 Derivatives cannot be calculated directly, and function evaluations are computationally expensive.
 %The number of function evaluations can grow when approximating derivatives that are not given explicitly.
 One of the primary goals within derivative free optimization is to solve programs while avoiding as many expensive function evaluations as possible.
+
+Derivatives have historically played a key role in development of optimization algorithms. For example, they frequently appear in optimality conditions search directions. If available, they should be used. 
+% However, they are not always available.
 
 
 \subsubsection{Problem formulations}
@@ -95,22 +164,29 @@ For a more comprehensive characterization of the types constraints, consult \col
 
 
 
-Sometimes user laziness can preclude derivative information.
+%Sometimes user laziness can preclude derivative information.
 Even when it would be possible to compute derivative information, it may be prohibatively time consuming.
 
-A trend within derivative free optimization is the permission for larger tolerances within solutions.
-Their functions are frequently expensive to evaluate, so we can only ask for a small number of significant figures.
-This implies slightly less concern for asymptotic convergence rates.
 
 
-\subsubsection{Noise. Deterministic versus stochastic}
 
-One branch of DFO is concerned with noisy evaluations of $S$.
-Noisy functions can be categorized as either deterministic or stochastic.
-Roundoff error, truncation error and finite termination errors can result in what is called deterministic noise.
-This means that although a function is not evaluated accurately, the error will not change across multiple function calls with the same input.
-On the other hand, stochastic noise means that each point in the domain is associated with a distribution of possible values $S$ may return.
-In this paper we assume $S$ is not noisy.
+%Many DFO methods simply let $f(x,S(x)) = S(x)$.
+
+
+
+%\subsubsection{Importance of Derivatives}
+
+%The lack of derivative information means that DFO methods are at a disadvantage when compared to their counterparts in nonlinear optimization.
+%First and second derivative information is explicit in algorithms with quadratic convergence such as Newton's method.
+%They are also present in conditions for convergence results such as Wolf's, Armijo or Goldstien for line search methods.
+%Additionally, stopping criteria usually involve a criticality test involving derivatives.
+%When derivatives are known, they should be used.
+%% For this reason, it is desirable for $n$, the dimension of $x$, to be small.
+
+\subsection{}
+
+\section{Background}
+\subsection{Derivative Free Algorithm classes}
 
 \subsubsection{Types of constraints}
 
@@ -140,23 +216,22 @@ is developed within \color{red}citation\color{black} %\cite{DUMMY:leastsquares}
 when $f$ takes the form of a least squares error
 $f(x) = \frac 1 2 \|F(x)\|^2$ over bound constraints where $F$ is a nonlinear, vector valued function.
 
-%Many DFO methods simply let $f(x,S(x)) = S(x)$.
 
 
+\subsubsection{Noise. Deterministic versus stochastic}
 
-\subsubsection{Importance of Derivatives}
+One branch of DFO is concerned with noisy evaluations of $S$.
+Noisy functions can be categorized as either deterministic or stochastic.
+Roundoff error, truncation error and finite termination errors can result in what is called deterministic noise.
+This means that although a function is not evaluated accurately, the error will not change across multiple function calls with the same input.
+On the other hand, stochastic noise means that each point in the domain is associated with a distribution of possible values $S$ may return.
+In this paper we assume $S$ is not noisy.
 
-The lack of derivative information means that DFO methods are at a disadvantage when compared to their counterparts in nonlinear optimization.
-First and second derivative information is explicit in algorithms with quadratic convergence such as Newton's method.
-They are also present in conditions for convergence results such as Wolf's, Armijo or Goldstien for line search methods.
-Additionally, stopping criteria usually involve a criticality test involving derivatives.
-When derivatives are known, they should be used.
-%% For this reason, it is desirable for $n$, the dimension of $x$, to be small.
 
-\subsection{}
+A trend within derivative free optimization is the permission for larger tolerances within solutions.
+Their functions are frequently expensive to evaluate, so we can only ask for a small number of significant figures.
+This implies slightly less concern for asymptotic convergence rates.
 
-\section{Background}
-\subsection{Derivative Free Algorithm classes}
 \subsubsection{Automatic Differentiation}
 
 When $S$ is the result of a simulation for which the source code is available, one convenient approach is to perform automatic differentiation.
@@ -461,43 +536,43 @@ $A_{{\mathcal{E}}}^k = \nabla m_{\mathcal{E}}^k(x^k)$.
 
 
 
-\subsubsection{Criticality Measure}
+%\subsubsection{Criticality Measure}
 
-In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
-Once this has reached small enough threshold, and the trust region is small enough, we can terminate the algorithm.
+%In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
+%Once this has reached small enough threshold, and the trust region is small enough, we can terminate the algorithm.
 
-That is, if $x^{\star}$ is a first order critical point satisfying
+%That is, if $x^{\star}$ is a first order critical point satisfying
 
-\begin{align*}
-\nabla f(x^{\star}) + \sum_{i\in\mathcal I} \lambda_i \nabla c_i(x^{\star}) + \sum_{i\in \mathcal E} \mu_i \nabla c_i(x^{\star})  = 0 \\
-c(x^{\star})_i \mu_i = 0 & \quad \forall i\in\mathcal I \\
-c(x^{\star}) \le 0 & \quad \forall i\in\mathcal I\\
-c(x^{\star}) = 0 & \quad \forall i\in\mathcal E
-\end{align*}
-for some $\lambda_i \in \mathbb R$, and $\mu_i \ge 0$, then we need $\lim_{x\to x^{\star}} \chi(x) = 0$.
+%\begin{align*}
+%\nabla f(x^{\star}) + \sum_{i\in\mathcal I} \lambda_i \nabla c_i(x^{\star}) + \sum_{i\in \mathcal E} \mu_i \nabla c_i(x^{\star})  = 0 \\
+%c(x^{\star})_i \mu_i = 0 & \quad \forall i\in\mathcal I \\
+%c(x^{\star}) \le 0 & \quad \forall i\in\mathcal I\\
+%c(x^{\star}) = 0 & \quad \forall i\in\mathcal E
+%\end{align*}
+%for some $\lambda_i \in \mathbb R$, and $\mu_i \ge 0$, then we need $\lim_{x\to x^{\star}} \chi(x) = 0$.
 
-This suggests the following definition:
-\begin{align}
-\label{critical}
-\chi & = & |\min_t \langle g_k + H_kn_k, t\rangle| \\
-& A_{\mathcal {E}}t &=& \; 0 \\
-& c_{\mathcal {I}} + A_{\mathcal {I}}t &\le& \; 0 \\
-& \| t \| &\le& \; 1
-\end{align}
+%This suggests the following definition:
+%\begin{align}
+%\label{critical}
+%\chi & = & |\min_t \langle g_k + H_kn_k, t\rangle| \\
+%& A_{\mathcal {E}}t &=& \; 0 \\
+%& c_{\mathcal {I}} + A_{\mathcal {I}}t &\le& \; 0 \\
+%& \| t \| &\le& \; 1
+%\end{align}
 
-Notice that this must be computed after the normal step $n^k$ has been computed.
+%Notice that this must be computed after the normal step $n^k$ has been computed.
 
-\color{red}
-\subsubsection{Sufficient reduction of model}
-It is not enough to simply ask for decrease in the objective every iteration.
-We also require \emph{sufficient} reduction, so that any accumulation point of the sequences of iterates is feasible.
-To this end, we introduce constants $0 < \kappa_{\theta} < 1$ and $\psi > \frac{1}{1+\mu}$ and require
+%\color{red}
+%\subsubsection{Sufficient reduction of model}
+%It is not enough to simply ask for decrease in the objective every iteration.
+%We also require \emph{sufficient} reduction, so that any accumulation point of the sequences of iterates is feasible.
+%o this end, we introduce constants $0 < \kappa_{\theta} < 1$ and $\psi > \frac{1}{1+\mu}$ and require
 
-\begin{equation}
-\label{predicted_decrease}
-m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
-\end{equation}
-\color{black}
+%\begin{equation}
+%\label{predicted_decrease}
+%m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
+%\end{equation}
+%\color{black}
 
 %\color{red}
 %Although this only references the model functions, we ensure accuracy by computing $\rho$.
@@ -577,8 +652,9 @@ m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
 \section{Algorithms}
 
 
-\section{naive}
+\section{Simple approach}
 One simple approach to handling hidden constraints is to simply avoid letting points fall outside the feasible region.
+
 Within this model, we maintain the same policies for updating the trust region radius.
 However, within the LU factorization algorithm to select new points, we add to the trust region subproblem that the new points must also lie within the current model of the trust region.
 
@@ -793,7 +869,7 @@ However, the ellipse elongates along an axis parallel to this constraint.
 
 \subsection{Search everything}
 Another simple approach is to define the ellipse as to maximize the area within the ellipse.
-That is,
+That is, we add the constraints directly to the trust region subproblem.
 $$\mu^k = \sup_{\mu \in F^k} V(\mu))$$
 This has the advantage that it captures much of the feasible region.
 However, one problem with this search is that it can force the trust region away from the desired direction.
