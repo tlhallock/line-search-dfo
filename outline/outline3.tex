@@ -113,7 +113,7 @@ meaning that we have no information about its derivatives.
 % If $c(x, S(x)) = c(x)$, then 
 
 The best studied case is when the derivatives of $c$ are known, so the objective is the only derivative free function.
-For example, there is a host of libraries for Box Constrained DFO (BCDFO) of the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$.
+For example, there is a host of libraries for Box Constrained DFO (BCDFO) where the constraints take the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$.
 
 However, the problem becomes much more difficult when no derivative information of $c$ or $f$ is known.
 This is what we turn our attention to.
@@ -128,8 +128,8 @@ This means that a single call to the objective provides the constraints and vice
 \subsubsection{}
 
 We restrict our attention to model-based methods which work by using the simulated function's values calculated at a set of sample points to construct model
-functions that approximate the original functions in a trust region.
-Locally minimizing the model functions becomes much easier as their derivatives are easily calculated.
+functions that approximate the original functions within a trust region.
+Locally minimizing the model functions is easier as their derivatives are easily calculated.
 
 \paragraph{Interpolation/regression methods}
 
@@ -215,8 +215,11 @@ However, partially-quantifiable constraints only produce meaningful values withi
 
 If the constraints are fully-quantifiable, a trust-region filter method can be used.
 We describe this approach in \cite{}.
-When the constraints are partially-quantifiable, the goal is modify the trust region to avoid evaluating the simulation function outside of the feasible region.
+When the constraints are partially-quantifiable, the goal is to modify the trust region to avoid evaluating the simulation function outside of the feasible region.
 This is described in \cite{}.
+
+For the first step towards developing this algorithm, we develop develop an algorithm that uses linear constraints to model a linearly constrained region.
+This is described in \cite{}
 
 
 %\color{red} Within noisy optimization, this gives rise to several more problems. If you think there is something else about proximity that I should mention, please let me know. \color{black}
