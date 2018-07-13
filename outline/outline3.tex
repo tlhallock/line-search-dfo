@@ -7,21 +7,45 @@
 %\usepackage[noend]{algpseudocode}
 %\usepackage{varwidth}% http://ctan.org/pkg/varwidth
 \usepackage{xspace}
+\usepackage{cite}
 %\usepackage{placeins}
 \usepackage[margin=0.5in]{geometry}
 \usepackage{amsfonts}
-%\theoremstyle{definition}
-%\newtheorem*{dfn}{A Reasonable Definition}
 
 
+%============================
+
+
+%=======================================
+% Steve's definitions for marking up
+%=======================================
+\usepackage[normalem]{ulem}	% For color comments
+
+\newcommand{\new}[1]{{\color{blue}#1}}
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1} {\rule{\wd0}{1pt}}}}#2} 
+\newcommand{\replace}[2]{{\color{red}\sout{#1}\color{black}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replace}[2]{{{\color{red}#2\color{black}}}} %TeX source markup.
+\newcommand{\replaceb}[2]{{\color{blue}\sout{#1}\color{black}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\replacemath}[2]{{\hcancel[red]{#1}{}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replacemath}[2]{{\color{red}#2\color{black}}} %TeX source markup.
+\newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\sbnote}[1]{\textsf{{\color{cyan}{ SCB note:}   #1} }\marginpar{{\textbf{Comment}}}}
+
+%================================
+% Other macros added by Steve
+%
+\newcommand{\domain}{X}
+\newcommand{\real}{\mathbb R}
+\newcommand{\norm}[1]{\| #1 \|}
+\newcommand{\union}{\cup}
+\newcommand{\intersect}{\cap}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
-
+%=========================================
 
 \title{Derivative Free Model-Based Methods for Local Constrained Optimization}
 \author{Trever Hallock}
-%\institute{CU Denver}
-%\date{January 6, 2012}
+\date{Comments from Steve Billups, June 29, 2018}
 % Remove the % from the previous line and change the date if you want a particular date to be displayed; otherwise, today's date is displayed by default.
 
 \makeatletter
@@ -32,6 +56,41 @@
 \renewcommand{\ref}[1]{(\oldref{#1})}
 
 \begin{document}
+
+%\documentclass{article}
+%
+%\usepackage{amsmath}
+%\usepackage{graphicx}
+%\usepackage{color}
+%%\usepackage{algorithm}
+%%\usepackage[noend]{algpseudocode}
+%%\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+%\usepackage{xspace}
+%%\usepackage{placeins}
+%\usepackage[margin=0.5in]{geometry}
+%\usepackage{amsfonts}
+%%\theoremstyle{definition}
+%%\newtheorem*{dfn}{A Reasonable Definition}
+%
+%
+%
+%\DeclareMathOperator*{\argmin}{arg\,min}
+%
+%
+%\title{Derivative Free Model-Based Methods for Local Constrained Optimization}
+%\author{Trever Hallock}
+%%\institute{CU Denver}
+%%\date{January 6, 2012}
+%% Remove the % from the previous line and change the date if you want a particular date to be displayed; otherwise, today's date is displayed by default.
+%
+%\makeatletter
+%\def\BState{\State\hskip-\ALG@thistlm}
+%\makeatother
+%
+%\let\oldref\ref
+%\renewcommand{\ref}[1]{(\oldref{#1})}
+%
+%\begin{document}
 
 
 %\algnewcommand{\algorithmicgoto}{\textbf{go to}}%
@@ -88,146 +147,79 @@ $P$ & is a polyhedron \\
 \end{table}
 
 
-
-
 \section{Introduction}
 
-Derivative free optimization (DFO) refers to mathematical programs in which derivative information is not explicitly available.
-Derivatives cannot be calculated directly, and computationally expensive function evaluations must be conserved while approximating derivatives.
-Derivatives have historically played a key role in development of optimization algorithms:
-they frequently appear in optimality conditions and search directions, such as the KKT, Wolfe, and Armijo conditions.
-DFO algorithms must find efficient alternatives to using derivatives.
+Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
+Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
+In such applications, function evaluations are expensive, so it is sensible to invest significant computational resources to minimize the number of function evaluations.
 
+This work is aimed at developing algorithms to solve constrained optimization problems of the form 
 
-\subsubsection{Constrained DFO}
-Derivative free optimization problems can be broken into several categories based on the form of functions within the program.
-Several of these categories are described nicely in \cite{taxonomy}.
-For example, a typical constrained program within DFO is given by:
-\[ \begin{array}{ccl} \min & f(x) \\
+\[ \begin{array}{ccl} \min_{x \in \domain} & f(x) \\
 \mbox{subject to} & c_i(x) \le 0 & i \in \mathcal{I} \\
-& c_i(x) = 0 & i \in \mathcal{E}
+& c_i(x) = 0 & i \in \mathcal{E},
 \end{array}
 \]
-where at least one of the functions $f, c_i, i \in \mathcal{I} \cup \mathcal{E}$ is a black box function,
-meaning that we have no information about its derivatives.
-% If $c(x, S(x)) = c(x)$, then 
+where $\domain$ is a subset of $\real^n$, and $f$ and $c_i, i \in \mathcal{I} \cup \mathcal{E}$ are real-valued functions on $X$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.  
 
-The best studied case is when the derivatives of $c$ are known, so the objective is the only derivative free function.
-For example, there is a host of libraries for Box Constrained DFO (BCDFO) where the constraints take the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$.
-
-However, the problem becomes much more difficult when no derivative information of $c$ or $f$ is known.
-This is what we turn our attention to.
-
-Not sure exactly how to fit this in.
-\color{red}
-In one such example, they can be computed by a single simulation giving the constraints and objective values.
-This means that a single call to the objective provides the constraints and vice versa.
-\color{black}
+In our work, we assume that all of the functions in the problem are black-box functions.
+We consider two variations of this problem.
+In the first variation, we assume that the constraints are fully quantifiable.
+This means that all of the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+In the second variation, we assume that the black-box functions return meaningful numerical values only when evaluated at feasible points. In this case, the constraints are called {\em partially quantifiable}.   
 
 
-\subsubsection{}
 
-We restrict our attention to model-based methods which work by using the simulated function's values calculated at a set of sample points to construct model
-functions that approximate the original functions within a trust region.
-Locally minimizing the model functions is easier as their derivatives are easily calculated.
+We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
+Model-based methods work by constructing model functions to approximate the black box functions at each iteration.
+The model functions are determined by fitting previously evaluated function values on a set of sample points.
+In trust-region methods, the model-functions are used to define a trust-region subproblem, whose solution determines the next iterate.
+For example, the trust-region subproblem might have the form
 
-\paragraph{Interpolation/regression methods}
-
-Within interpolation model-based methods, we construct our model by regressing basis functions onto a set of sampled points.
-For example, given a function $f(x) : \mathbb R^n \to \mathbb R$ we can use a set of basis functions $\phi_i : \mathbb R^n \to \mathbb R \quad \forall 1 \le i \le d_1$ to construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting appropriate $\lambda_i \in \mathbb R$.
-This is done by choosing a set of sample points
-$Y = \{y^1, y^2, \ldots, y^{d_2}\}$,
-evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$
-and forcing model agreement with the original function $f(x)$ by ensuring
-
-\begin{equation}
-\label{reg}
-\begin{bmatrix}
-    \phi_1(y^1)      & \phi_2(y^1)       & \ldots & \phi_{d_1}(y^1)      \\
-    \phi_1(y^2)      & \phi_2(y^2)       & \dots  & \phi_{d_1}(y^2)      \\
-                     &                   & \vdots &                      \\
-    \phi_1(y^{d_2})  & \phi_2(y^{d_2})   & \ldots & \phi_{d_1}(y^{d_2})
-\end{bmatrix}
-\begin{bmatrix}
-    \lambda_1      \\
-    \lambda_2      \\
-    \vdots         \\            
-    \lambda_{d_1}
-\end{bmatrix}
-\approx
-\begin{bmatrix}
-    f_1      \\
-    f_2      \\
-    \vdots         \\            
-    f_{d_2}
-\end{bmatrix}.
-\end{equation}
-
-When $d_1 = d_2$ this is called interpolation and equality is desired within \ref{reg}.
-When $d_1 < d_2$ this is called underdetermined interpolation.
-This can be handled by requesting and a minimum norm solution.
-Finally, when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
-Note that in practice, the set $Y$ is shifted and scaled.
-
-\paragraph{Sampling issues}
-
-These methods can have issues with poor sampling choices.
-Two important aspects of the sample points are their geometry and proximity.
-
-\subparagraph{Geometry}
-
-For geometry, regression based methods require that the set the function is evaluated at must be $\Lambda$-poised for a fixed constant $\Lambda$.
-If the set is $\Lambda$-poised for a certain trust region radius, then the maximum absolute value of any Lagrange polynomial over the trust region is one.
-This ensures that the Vandermonde matrix used to find the coefficients used to express the model function in terms of a basis of Lagrange polynomials is well conditioned.
-Although we do not go into the details here, problems become apparent when comparing the Lagrange polynomials associated with a poised set with those of an ill poised set.
-
-Within the first set of pictures below we see the set of quadratic Lagrange polynomials on the interval $[-1,1]$.
-The maximum value of these polynomials over the trust region is simply $1$.
-However, if we use sample points $\{-1, .9, 1\}$ instead of the points $\{-1, 0, 1\}$,
-we find the second set of polynomials.
-
-\includegraphics[width=200px]{poised.png}
-\includegraphics[width=200px]{illpoised.png}
-
-If we use these to approximate $3 + \tan^{-1}(x)$, the first basis functions do not vary far from the objective value over the trust region, and the maximum difference between the function and the model function is $0.0711$.
-However, the second basis functions jump far away from the actual function, and the maximum difference between the model function and actual function is 
-$0.1817$.
-
-\includegraphics[width=200px]{poised_approx.png}
-\includegraphics[width=200px]{illpoised_approx.png}
+\[ \begin{array}{ccl} \min_{s| \norm{s} \le \Delta}
+ & m_{f}(x^k+s) \\
+\mbox{subject to} & m_{c_i}(x^k+s) \le 0 & i \in \mathcal{I} \\
+& m_{c_i}(x^k) = 0 & i \in \mathcal{E},
+\end{array}
+\]
+where $m_{f}, m_{c_i}, i \in \mathcal{I} \union \mathcal{E}$ are the model functions, and $\Delta$ is the radius of the trust-region.
+Conceptually, the model functions are ``trusted'' only within a distance $\Delta$ of the current iterate $x^k$; so the trust-region subproblem restricts the step $s$ to be no larger than $\Delta$.
+To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
 
-\subparagraph{Proximity}
+An important consideration in fitting the model functions is the the ``geometry'' of the sample set.  This will be discussed in more detail in Section \ref{geometry}, but the key point is that the relative positions of the sample points within the trust region has a significant effect on the accuracy of the model functions over the trust region.  When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.  
 
-Proximity refers to the trust region radius.
-The trust region must go to zero if we are to be sure that we have reached a critical point.
-In general, the smaller the trust region, the closer to linear or quadratic the original function will look.
-This is because the model's error term given by Taylor's expansion is proportional to the trust region radius.
+In the case of partially quantifiable constraints, all of the sample points must lie within the feasible region.  This poses some interesting challenges for geometry of the sample set.  As a first step toward developing an algorithm to solve such problems, we consider a simplified problem where all of the constraints are linear, but we impose the restriction that all sample points must lie within the feasible region.  This work is presented in Chapter \ref{feasiblemethod}
 
+In the case of fully quantifiable constraints, there is no difficulty in using sample points outside of the feasible region.  
+In Chapter \ref{chap:Filter}, we describe a Trust-Region SQP Filter method for solving this class of problems.
 
-\paragraph{Types of constraints}
-%Regression based methods work by evaluating model functions on a set of sample points to construct local models of the functions.
-%This atleast allows the algorithm to minimize these easier model functions over a trust region, rather than working with the original function.
+  
+  
+  
+\section{Background}
 
-One distinction important to the choice of sample points is fully quantifiable constraints versus partially-quantifiable constraints.
-If the constraints are fully quantifiable, they can be evaluated anywhere and present no restriction to the sample points.
-However, partially-quantifiable constraints only produce meaningful values within the feasible region.
+\subsection{Strategy}
+A reasonable approach to DFO is to modify classical algorithms that rely on derivatives by using the derivatives of the model functions whenever a derivative is needed in the algorithm.
+However, the lack of explicit derivatives pose several challenges, which necessitate changes in the classical algorithms.
+First, care must be taken to ensure that the model functions are sufficiently accurate approximations to the true functions.
+This means that geometry of the sample points must be considered.
+It also means that the trust-region radius must get arbitrarily small.
 
-If the constraints are fully-quantifiable, a trust-region filter method can be used.
-We describe this approach in \cite{}.
-When the constraints are partially-quantifiable, the goal is to modify the trust region to avoid evaluating the simulation function outside of the feasible region.
-This is described in \cite{}.
+The transition to the derivative-free setting also provides some interesting research opportunities.
+In particular, because function evaluations are so costly, there is potential for significant gains by considering more complex optimization paradigms.
+For example, Sequential Quadratic Programming (SQP) methods use subproblems involving quadratic approximations of the objective function $f$ and linear approximations of the constraint functions.
+In the derivative-free setting, it may be worthwhile to explore other variations of the classical algorithms.
+For example, it might be worthwhile to construct quadratic models of the constraint functions, which might result in fewer iterations overall.
 
-For the first step towards developing this algorithm, we develop develop an algorithm that uses linear constraints to model a linearly constrained region.
-This is described in \cite{}
+It might also be worthwhile to consider using different sample sets for fitting different functions.  
 
-
-%\color{red} Within noisy optimization, this gives rise to several more problems. If you think there is something else about proximity that I should mention, please let me know. \color{black}
+For example, the SQP trust-region filter method involves constructing a quadratic model of the objective function and linear models of the constraint functions.  But this raises an interesting question, since a good sample set for constructing a quadratic model may not be ideal for fitting the linear functions modeling the constraints.  
 
 
 \subsubsection{Model-based, Trust Region Methods}
-
-The overall description of the trust region framework is that a set of poised points are chosen for some radius $\Delta>0$ about the current iterate.
+We will be modifying the following classical algorithm described at a high level here.
+A set of poised points are chosen for some radius $\Delta>0$ about the current iterate.
 The objective and constraints are then evaluated at these points to construct a model function as a linear combination of some set of basis functions.
 Next, the model is minimized over this trust region and the argument minimum becomes the trial point.
 The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
@@ -276,42 +268,142 @@ which measures the actual improvement over predicted improvement
 
 Our goal is generalize this framework to handle constraints, where we must reduce constraint violation while ensuring the accuracy of the models of the constraints.
 
+  
+%\subsection{Constrained DFO}
+%Derivative free optimization problems can be broken into several categories based on the form of functions within the program.
+%Several of these categories are described nicely in \cite{DUMMY:typesofconstraints}.
+%For example, a typical constrained program within DFO is given by:
+%\[ \begin{array}{ccl} \min & f(x) \\
+%\mbox{subject to} & c_i(x) \le 0 & i \in \mathcal{I} \\
+%& c_i(x) = 0 & i \in \mathcal{E}
+%\end{array}
+%\]
+%where at least one of the functions $f, c_i, i \in \mathcal{I} \cup \mathcal{E}$ is a black box function,
+%meaning that we have no information about its derivatives.
+% If $c(x, S(x)) = c(x)$, then 
+
+%A well studied case is when the derivatives of $c$ are known, so the objective is the only derivative free function.
+%For example, there several libraries exist for Box Constrained DFO (BCDFO) where the constraints take the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$.
+%However, the problem becomes more difficult in our case where no derivative information of $c$ or $f$ is known.
+
+\subsubsection{Interpolation/regression methods}
+
+Within interpolation model-based methods, we construct our model by regressing basis functions onto a set of sampled points.
+For example, given a function $f(x) : \mathbb R^n \to \mathbb R$ we can use a set of basis functions $\phi_i : \mathbb R^n \to \mathbb R \quad \forall 1 \le i \le d_1$ to construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting appropriate $\lambda_i \in \mathbb R$.
+This is done by choosing a set of sample points
+$Y = \{y^1, y^2, \ldots, y^{d_2}\}$,
+evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$
+and forcing model agreement with the original function $f(x)$ by ensuring
+
+\begin{equation}
+\label{reg}
+\begin{bmatrix}
+    \phi_1(y^1)      & \phi_2(y^1)       & \ldots & \phi_{d_1}(y^1)      \\
+    \phi_1(y^2)      & \phi_2(y^2)       & \dots  & \phi_{d_1}(y^2)      \\
+                     &                   & \vdots &                      \\
+    \phi_1(y^{d_2})  & \phi_2(y^{d_2})   & \ldots & \phi_{d_1}(y^{d_2})
+\end{bmatrix}
+\begin{bmatrix}
+    \lambda_1      \\
+    \lambda_2      \\
+    \vdots         \\            
+    \lambda_{d_1}
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+    f_1      \\
+    f_2      \\
+    \vdots         \\            
+    f_{d_2}
+\end{bmatrix}.
+\end{equation}
+
+When $d_1 = d_2$ this is called interpolation and equality is desired within \ref{reg}.
+% It could be important to discusss this, because we may use different orders for the constraints than the objective.
+%When $d_1 < d_2$ this is called underdetermined interpolation, 
+%This can be handled by requesting and a minimum norm solution.
+%Finally, when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
+Note that in practice, the set $Y$ is shifted and scaled.
+
+\paragraph{Sampling issues}
+
+These methods can have issues with poor sampling choices.
+Two important aspects of the sample points are their geometry and proximity.
+
+\subparagraph{Geometry}
+\label{geometry}
+
+For geometry, regression based methods require that the set the function is evaluated at must be $\Lambda$-poised for a fixed constant $\Lambda$.
+If the set is $\Lambda$-poised for a certain trust region radius, then the maximum absolute value of any Lagrange polynomial over the trust region is one.
+This ensures that the Vandermonde matrix used to find the coefficients used to express the model function in terms of a basis of Lagrange polynomials is well conditioned.
+Although we do not go into the details here, problems become apparent when comparing the Lagrange polynomials associated with a poised set with those of an ill poised set.
+
+Within the first set of pictures below we see the set of quadratic Lagrange polynomials on the interval $[-1,1]$.
+The maximum value of these polynomials over the trust region is simply $1$.
+However, if we use sample points $\{-1, .9, 1\}$ instead of the points $\{-1, 0, 1\}$,
+we find the second set of polynomials.
+
+If we use these to approximate $3 + \tan^{-1}(x)$, the first basis functions do not vary far from the objective value over the trust region, and the maximum difference between the function and the model function is $0.0711$.
+However, the second basis functions jump far away from the actual function, and the maximum difference between the model function and actual function is 
+$0.1817$.
+
+
+BETTER IMAGES COMING SOON...
+
+
+%\includegraphics[width=200px]{poised.png}
+%\includegraphics[width=200px]{illpoised.png}
+
+%\includegraphics[width=200px]{poised_approx.png}
+%\includegraphics[width=200px]{illpoised_approx.png}
+
+
+\subparagraph{Proximity}
+
+Proximity refers to the trust region radius.
+The trust region must go to zero if we are to be sure that we have reached a critical point.
+In general, the smaller the trust region, the closer to linear or quadratic the original function will look.
+This is because the model's error term given by Taylor's expansion is proportional to the trust region radius.
+
+
+%\paragraph{Types of constraints}
+%%Regression based methods work by evaluating model functions on a set of sample points to construct local models of the functions.
+%%This atleast allows the algorithm to minimize these easier model functions over a trust region, rather than working with the original function.
+
+%One distinction important to the choice of sample points is fully quantifiable constraints versus partially-quantifiable constraints.
+%If the constraints are fully quantifiable, they can be evaluated anywhere and present no restriction to the sample points.
+%However, partially-quantifiable constraints only produce meaningful values within the feasible region.
+
+%If the constraints are fully-quantifiable, a trust-region filter method can be used.
+%We describe this approach in \ref{}.
+%When the constraints are partially-quantifiable, the goal is to modify the trust region to avoid evaluating the simulation function outside of the feasible region.
+%This is described in \ref{}.
+%
+%For the first step towards developing this algorithm, we develop develop an algorithm that uses linear constraints to model a linearly constrained region.
+%This is described in \ref{feasiblemethod}
+
+
+%\color{red} Within noisy optimization, this gives rise to several more problems. If you think there is something else about proximity that I should mention, please let me know. \color{black}
 
 \subsection{Setting}
 
-We will be considering problems of the form
+%We will be considering problems of the form
 
 
-\begin{center}
-\begin{align}
-\label{problem}
-\min_x & \quad f(x) \\
-  c_i(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
-  c_i(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber
-\end{align}
-\end{center}
-where $f : \mathbb R^n \to \mathbb R$, and each $c_i : \mathbb{R} \to \mathbb{R}$.
+%\begin{center}
+%\begin{align}
+%\label{problem}
+%\min_x & \quad f(x) \\
+%  c_i(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
+%  c_i(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber
+%\end{align}
+%\end{center}
+%where $f : \mathbb R^n \to \mathbb R$, and each $c_i : \mathbb{R} \to \mathbb{R}$.
 It will be convenient to write
 $c_{\mathcal {I}}(x) = (c_1(x), c_2(x), \ldots, c_{|\mathcal{I}|})^T$,
 $c_{\mathcal {E}}(x) = (c_{|\mathcal{I}|+1}(x), c_{|\mathcal{I}|+2}(x), \ldots, c_{|\mathcal{I}| + |\mathcal{E}|})^T$ and
 $c(x) = (c_{\mathcal{I}}^T(x), c_{\mathcal{E}}^T(x))^T$.
 
-It will also be convenient to let $\mathcal{F}^k = \{ x \in \mathbb R^n | c_i(x) \le 0 \forall i \in \mathcal{I} \wedge c_i(x) = 0 \forall i \in \mathcal{E}\}$ be the feasible region.
-
-We work within a trust region, sequential quadratic programming framework with interpolating model functions.
-For our algorithm, we assume that all functions are derivative-free: all functions are evaluated by a single call to a black box function:
-$S(x) = (f(x), c_{\mathcal {I}}(x)^T, c_{\mathcal {E}}(x)^T)^T$.
-
-\color{blue}
-We also assume that we are not able to evaluate points outside the feasible region.
-This introduces a new type of constraint: it is not quite a hidden constraint because we do observe function values within the feasible region.
-However, it does implies similar difficulty to construct the model function near the boundary of the feasible region because we have limited sampling ability.
-\color{black}
-
-We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
-Although we have enough sample points to construct a quadratic model of the constraints, we only construct linear models to avoid the complexity of Quadratically Constrained Quadratic Programming which is NP-hard.
-
-\subsubsection{Model functions}
 
 At an iteration $k$, we first construct a model function $m_f^k(x)$ that we use to approximate the first and second derivatives of $f(x)$.
 We also construct $m_{\mathcal{I}}^k(x)$ and $m_{\mathcal{E}}^k(x)$ to approximate the first derivatives of $c(x)$.
@@ -320,6 +412,24 @@ We also define the $c_{{\mathcal{I}}}^k = c^k_{\mathcal{I}}(x^k)$,
 $A_{{\mathcal{I}}}^k = \nabla m_{\mathcal{I}}^k(x^k)$,
 $c_{{\mathcal{E}}}^k = c_{\mathcal{E}}(x^k)$, and
 $A_{{\mathcal{E}}}^k = \nabla m_{\mathcal{E}}^k(x^k)$.
+
+It will also be convenient to let $\mathcal{F}^k = \{ x \in \mathbb R^n | c_i(x) \le 0 \forall i \in \mathcal{I} \wedge c_i(x) = 0 \forall i \in \mathcal{E}\}$ be the feasible region.
+
+We work within a trust region, sequential quadratic programming framework with interpolating model functions.
+%For our algorithm, we assume that all functions are derivative-free: all functions are evaluated by a single call to a black box function:
+%$S(x) = (f(x), c_{\mathcal {I}}(x)^T, c_{\mathcal {E}}(x)^T)^T$.
+
+%\color{blue}
+%We also assume that we are not able to evaluate points outside the feasible region.
+%This introduces a new type of constraint: it is not quite a hidden constraint because we do observe function values within the feasible region.
+%However, it does implies similar difficulty to construct the model function near the boundary of the feasible region because we have limited sampling ability.
+%\color{black}
+
+We first compute an interpolation set poised for regressing a set of model functions, which we choose to be quadratic functions.
+Although we have enough sample points to construct a quadratic model of the constraints, we only construct linear models to avoid the complexity of Quadratically Constrained Quadratic Programming which is NP-hard.
+
+\subsubsection{Model functions}
+
 
 %We will also need to compute the Hessian of the Lagrangian for \ref{problem}.
 %The Lagrangian is defined as 
@@ -467,7 +577,7 @@ $A_{{\mathcal{E}}}^k = \nabla m_{\mathcal{E}}^k(x^k)$.
 
 
 \section{Algorithms}
-
+\label{feasiblemethod}
 
 \section{Simple approach}
 One simple approach to handling hidden constraints is to simply avoid letting points fall outside the feasible region.
@@ -748,10 +858,11 @@ the example problem I have been working with
 \end{tabular}
 \end{center}
 
+\newpage
+
+\bibliography{constraints}
+\bibliographystyle{ieeetr}
+
 \end{document}
 
-%\bibliography{proposal}
-%\bibliographystyle{ieeetr}
-
-\end{document}
 

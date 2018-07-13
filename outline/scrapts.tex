@@ -45,6 +45,19 @@ This means that
 
 
 
+Not sure exactly how to fit this in.
+\color{red}
+In one such example, they can be computed by a single simulation giving the constraints and objective values.
+This means that a single call to the objective provides the constraints and vice versa.
+\color{black}
+
+
+\subsubsection{}
+
+We restrict our attention to model-based methods which work by using the simulated function's values calculated at a set of sample points to construct model
+functions that approximate the original functions within a trust region.
+Locally minimizing the model functions is easier as their derivatives are easily calculated.
+
 
 %Within simulated constraints, there are still several interesting categories.
 %Of particular importatance to this paper is that of 
@@ -53,6 +66,15 @@ This means that
 %\begin{red}This means that each call to the objective gives values of the constraints as well, and vice versa.\end{red}
 
 % This produces $c(x, S(x))=c(S(x))$.
+
+  
+
+Derivative free optimization (DFO) refers to mathematical programs in which derivative information is not explicitly available.
+Derivatives cannot be calculated directly, and computationally expensive function evaluations must be conserved while approximating derivatives.
+Derivatives have historically played a key role in development of optimization algorithms:
+they frequently appear in optimality conditions and search directions, such as the KKT, Wolfe, and Armijo conditions.
+DFO algorithms must find efficient alternatives to using derivatives.
+
 
 
 
