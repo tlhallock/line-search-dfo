@@ -1,5 +1,7 @@
 
 import numpy
+from trust_region.optimization import maximize_lagrange_quadratic
+
 
 class LagrangeParams:
 	def  __init__(self):
@@ -12,14 +14,17 @@ class Certification:
 		self.shifted = None
 		self.poised = False
 		self.shifted = None
+		self.indices = None
 
 	def fail(self):
 		self.poised = False
 		self.shifted = None
 		self.unshifted = None
+		self.indices = None
 		# lambdas = numpy.empty(n_points)
 
 	def plot(self, filename, center, radius):
+		pass
 		#fig = plt.figure()
 		#fig.set_size_inches(sys_utils.get_plot_size(), sys_utils.get_plot_size())
 		#ax1 = fig.add_subplot(111)
@@ -57,8 +62,20 @@ def _get_max_index(max):
 	return val, idx
 
 
-def _replace(cert, i, new_value, n_points, h, V, b):
-	cert.shifted[i] = new_value
+def _replace_row(
+		basis,
+		certification,
+		i,
+		new_sample_point,
+		n_points,
+		h,
+		V
+):
+	cert.shifted[i] = new_sample_point
+	new_v_row = numpy.multiply(
+		basis.evaluate_to_matrix(numpy.asarray([new_sample_point])),
+		V[n_points:h, :]
+	)
 	V[i] = dot(b.evaluateRowToRow(new_value), V[n_points:h, :])
 	cert.indices[i] = -1
 	_test_v(V, b, cert.shifted)
@@ -77,6 +94,7 @@ def computeLagrangePolynomials(
 	h = n_points + p
 
 	cert = Certification()
+	cert.indices = [i for i in range(n_points)]
 	cert.unshifted = points
 	cert.shifted = trust_region.unshift(points)
 
@@ -97,8 +115,17 @@ def computeLagrangePolynomials(
 		## Check the poisedness
 		if max_index < lagrange_params.xsi and lagrange_params.improve_with_new_points:
 			# If still not poised, Then check for new points
-			newValue, _ = _maximize_lagrange(bss, V[npoints:h, i], tol, params.getShiftedConstraints())
-			maxVal, maxIdx = _replace(cert, i, newValue, npoints, h, V, bss)
+			maximization_result = maximize_lagrange_quadratic(V[npoints:h, i])
+			new_sample_point = maximization_result['x']
+			maxVal, maxIdx = _replace_row(
+				basis,
+				cert,
+				i,
+				new_sample_point,
+				n_points,
+				h,
+				V
+			)
 
 
 
