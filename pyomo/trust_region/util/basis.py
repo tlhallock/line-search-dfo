@@ -40,6 +40,17 @@ class QuadraticBasis(Basis):
 
 		return ret_val
 
+	def debug_evaluate(self, x, coefficients):
+		return (
+				1.0 * coefficients[0] +
+				1.0 * coefficients[1] * x[0] +
+				1.0 * coefficients[2] * x[1] +
+				0.5 * coefficients[3] * x[0] * x[0] +
+				0.5 * coefficients[4] * x[1] * x[0] +
+				0.5 * coefficients[5] * x[1] * x[1]
+		)
+
+
 	def to_pyomo_expression(self, model, coefficients):
 		return (
 				1.0 * coefficients[0] +

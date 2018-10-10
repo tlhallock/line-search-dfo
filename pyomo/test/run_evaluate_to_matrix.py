@@ -1,6 +1,6 @@
 import numpy
 
-from trust_region.basis import QuadraticBasis
+from trust_region.util.basis import QuadraticBasis
 
 
 points = numpy.asarray([
