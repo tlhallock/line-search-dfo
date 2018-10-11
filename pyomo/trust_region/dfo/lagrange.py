@@ -8,6 +8,7 @@ class LagrangeParams:
 	def __init__(self):
 		self.improve_with_new_points = True
 		self.xsi = 0.00001
+		self.far_radius = 1.5
 
 
 class Certification:
@@ -18,6 +19,7 @@ class Certification:
 		self.original = None
 		self.original_shifted = None
 		self.poised = False
+		self.forced_removal = None
 
 	def fail(self):
 		self.unshifted = None
@@ -30,7 +32,7 @@ class Certification:
 
 	def add_to_plot(self, plot_object):
 		plot_object.add_points(points=self.original, label='original', color='b', marker='+', s=10)
-		plot_object.add_points(points=self.unshifted, label='poised', color='r', marker='x', s=10)
+		plot_object.add_points(points=self.unshifted, label='poised', color='k', marker='x', s=10)
 
 
 def _test_v(v, basis, shifted):
@@ -71,7 +73,7 @@ def _replace_row(
 	return _get_max_index(abs(v[i:n_points, i]))
 
 
-def computeLagrangePolynomials(
+def compute_lagrange_polynomials(
 		basis,
 		trust_region,
 		points,
@@ -88,6 +90,10 @@ def computeLagrangePolynomials(
 	cert.shifted = trust_region.shift(points)
 	cert.original = numpy.copy(cert.unshifted)
 	cert.original_shifted = numpy.copy(cert.shifted)
+	cert.forced_removal = [
+		lagrange_params.far_radius is not None and numpy.linalg.norm(cert.shifted[i]) > lagrange_params.far_radius
+		for i in range(points.shape[0])
+	]
 
 	if not n_points == p:
 		raise Exception("currently, have to have all points")
@@ -104,7 +110,10 @@ def computeLagrangePolynomials(
 		max_value, max_index = _get_max_index(abs(v[i:n_points, i]))
 
 		# Check the poisedness
-		if max_value < lagrange_params.xsi and lagrange_params.improve_with_new_points:
+		if lagrange_params.improve_with_new_points and (
+			cert.forced_removal[i] or
+			max_value < lagrange_params.xsi
+		):
 			# If still not poised, Then check for new points
 			coefficients = numpy.asarray(v[n_points:h, i]).flatten()
 			maximization_result = maximize_lagrange_quadratic(coefficients)
@@ -131,6 +140,10 @@ def computeLagrangePolynomials(
 			tmp = cert.indices[i]
 			cert.indices[i] = cert.indices[other_idx]
 			cert.indices[other_idx] = tmp
+
+			tmp = cert.forced_removal[i]
+			cert.forced_removal[i] = cert.forced_removal[other_idx]
+			cert.forced_removal[other_idx] = tmp
 
 		# perform LU
 		v[:, i] = v[:, i] / v[i, i]

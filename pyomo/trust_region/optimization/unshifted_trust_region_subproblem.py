@@ -26,13 +26,14 @@ def _solve_trust_region_subproblem(
 	model.x = Var(model.dimension)
 	model.constraints = ConstraintList()
 
-	# outer_trust_region.add_unshifted_pyomo_constraints(model)
-	trust_region.add_shifted_pyomo_constraints(model)
+	outer_trust_region.add_unshifted_pyomo_constraints(model)
+	trust_region.add_unshifted_pyomo_constraints(model)
 
 	# Needs to be shifted first
 	def objective_rule(m):
+		shifted_model = trust_region.shift_pyomo_model(m)
 		return objective_basis.to_pyomo_expression(
-			model=m,
+			model=shifted_model,
 			coefficients=objective_coefficients
 		)
 
@@ -46,12 +47,10 @@ def _solve_trust_region_subproblem(
 	if not optimal:
 		raise Exception("warning solver did not return optimal")
 
-	shifted_solution = numpy.asarray([model.x[i]() for i in model.dimension])
-
 	ret_value = TrustRegionSubProblem()
 	ret_value.success = ok and optimal
 	ret_value.predicted_objective_value = model.objective()
-	ret_value.trial_point = trust_region.unshift_row(shifted_solution)
+	ret_value.trial_point = numpy.asarray([model.x[i]() for i in model.dimension])
 	return ret_value
 
 

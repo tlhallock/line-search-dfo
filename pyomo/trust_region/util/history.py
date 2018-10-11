@@ -9,11 +9,11 @@ class Bounds:
 	def extend(self, x):
 		if self.ubX is None or x[0] > self.ubX:
 			self.ubX = x[0]
-		if self.lbX is None or x[0] > self.lbX:
+		if self.lbX is None or x[0] < self.lbX:
 			self.lbX = x[0]
-		if self.lbY is None or x[1] > self.lbY:
-			self.lbY = x[1]
-		if self.lbY is None or x[1] > self.lbY:
+		if self.lbY is None or x[1] > self.ubY:
+			self.ubY = x[1]
+		if self.lbY is None or x[1] < self.lbY:
 			self.lbY = x[1]
 
 	def expand(self, factor=1.2):

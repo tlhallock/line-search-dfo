@@ -3,7 +3,7 @@ import numpy
 import matplotlib.pyplot as plt
 from trust_region.util.basis import QuadraticBasis
 from trust_region.util.trust_region import CircularTrustRegion
-from trust_region.dfo.lagrange import computeLagrangePolynomials
+from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.dfo.lagrange import LagrangeParams
 
 points = numpy.asarray([
@@ -24,7 +24,7 @@ trust_region = CircularTrustRegion(
 )
 context = {}
 
-certification = computeLagrangePolynomials(basis, trust_region, points, context, params)
+certification = compute_lagrange_polynomials(basis, trust_region, points, context, params)
 
 fig = plt.figure()
 fig.set_size_inches(15, 15)

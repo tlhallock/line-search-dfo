@@ -7,8 +7,9 @@ class TrustRegion(metaclass=abc.ABCMeta):
 	def __init__(self):
 		pass
 
+	@abc.abstractmethod
 	def add_shifted_pyomo_constraints(self, model):
-		return sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0
+		raise Exception("Not implemented")
 
 	@abc.abstractmethod
 	def shift(self, points):
@@ -16,6 +17,14 @@ class TrustRegion(metaclass=abc.ABCMeta):
 
 	@abc.abstractmethod
 	def unshift(self, points):
+		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def shift_row(self, point):
+		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def unshift_row(self, point):
 		raise Exception("Not implemented")
 
 	@abc.abstractmethod
@@ -59,6 +68,12 @@ class CircularTrustRegion(TrustRegion):
 			unshifted[i, :] = points[i, :] * self.radius + self.center
 		return unshifted
 
+	def shift_row(self, point):
+		return (point - self.center) / self.radius
+
+	def unshift_row(self, point):
+		return point * self.radius + self.center
+
 	def add_to_plot(self, plot_object):
 		plot_object.ax.add_artist(plt.Circle(self.center, self.radius, color='g', fill=False))
 
@@ -76,6 +91,9 @@ class CircularTrustRegion(TrustRegion):
 			) <= self.radius * self.radius
 		)
 
+	def add_shifted_pyomo_constraints(self, model):
+		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0)
+
 	def shift_pyomo_model(self, model):
 		class mocked:
 			def __init__(self, x):
@@ -91,10 +109,16 @@ class L1TrustRegion(CircularTrustRegion):
 	def add_to_plot(self, plot_object):
 		for i in range(len(self.center)):
 			plot_object.add_contour(
-				lambda x: x[i] - self.center[i] + self.radius,
+				lambda x: -(x[i] - self.center[i] + self.radius),
 				'outer_tr_' + str(i),
-				color='b',
-				lvls=[0.0, -0.1]
+				color='r',
+				lvls=[-0.1, 0.0]
+			)
+			plot_object.add_contour(
+				lambda x: x[i] - self.center[i] - self.radius,
+				'outer_tr_' + str(i),
+				color='r',
+				lvls=[-0.1, 0.0]
 			)
 
 	def add_shifted_pyomo_constraints(self, model):
@@ -108,3 +132,17 @@ class L1TrustRegion(CircularTrustRegion):
 			model.constraints.add(
 				model.x[idx] >= self.center[idx] - self.radius
 			)
+
+	def get_a(self):
+		ret_val = numpy.zeros((2 * len(self.center), len(self.center)))
+		for i in range(len(self.center)):
+			ret_val[2 * i + 0, i] = +1.0
+			ret_val[2 * i + 1, i] = -1.0
+		return ret_val
+
+	def get_b(self):
+		ret_val = numpy.zeros(2 * len(self.center))
+		for i in range(len(self.center)):
+			ret_val[2 * i + 0] = +self.center[i] + self.radius
+			ret_val[2 * i + 1] = -self.center[i] + self.radius
+		return ret_val

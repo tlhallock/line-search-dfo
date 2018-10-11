@@ -16,7 +16,7 @@ class LagrangeMaximization:
 
 def _maximize_lagrange_quadratic(coefficients, initialization):
 	model = ConcreteModel()
-	model.dimension = range(2)
+	model.dimension = range(2) # dimension...
 	model.x = Var(model.dimension, initialize=initialization, bounds=(-1, 1))
 	model.constraints = ConstraintList()
 	model.constraints.add(

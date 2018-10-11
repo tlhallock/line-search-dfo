@@ -2,15 +2,14 @@
 import numpy
 
 from trust_region.dfo.lagrange import LagrangeParams
-from trust_region.dfo.lagrange import computeLagrangePolynomials
+from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.optimization.trust_region_subproblem import solve_trust_region_subproblem
-from trust_region.util.trust_region import CircularTrustRegion
 from trust_region.util.trust_region import L1TrustRegion
 from trust_region.util.basis import QuadraticBasis
 from trust_region.util.plots import create_plot
 from trust_region.util.history import History
-
-a = 1.0
+from trust_region.algorithm.tr_search.circle import CircularTrustRegionStrategy
+from trust_region.algorithm.tr_search.ellipse import EllipticalTrustRegionStrategy
 
 
 class AlgorithmParams:
@@ -23,6 +22,8 @@ class AlgorithmParams:
 		self.criticality_tolerance = 1e-4
 		self.tolerance = 1e-4
 		self.radius_decrease_factor = 0.5
+		self.trust_region_strategy = EllipticalTrustRegionStrategy
+		self.plot_bounds = []
 
 
 class AlgorithmContext:
@@ -44,6 +45,9 @@ class AlgorithmContext:
 			self.current_objective_value for _ in range(self.basis.basis_dimension)
 		])
 
+		for p in params.plot_bounds:
+			self.history.bounds.extend(p)
+
 	def evaluate_original_objective(self, x):
 		y = self.params.objective_function.evaluate(x)
 		self.history.add_objective_value(x, y)
@@ -55,15 +59,27 @@ class AlgorithmContext:
 	def decrease_radius(self):
 		self.outer_trust_region.multiply_radius(self.params.radius_decrease_factor)
 
+	def increase_radius(self):
+		self.outer_trust_region.multiply_radius(1 / (2 * self.params.radius_decrease_factor))
+
 	def start_current_plot(self):
 		title = 'iteration {}'.format(self.iteration)
-		file_name = 'images/{}_iteration.png'.format(self.plot_number)
+		file_name = 'images/{}_iteration.png'.format(str(self.plot_number).zfill(5))
 		self.plot_number += 1
 		self.current_plot = create_plot(title, file_name, self.history.get_plot_bounds())
 
 	def finish_current_plot(self):
 		self.current_plot.save()
 		self.current_plot = None
+
+	def get_polyhedron(self):
+		return numpy.array(numpy.bmat([
+			[self.params.constraints_A],
+			[self.outer_trust_region.get_a()]
+		])), numpy.array(numpy.bmat([
+			self.params.constraints_b,
+			self.outer_trust_region.get_b()
+		])).flatten()
 
 
 def check_criticality(context):
@@ -72,20 +88,12 @@ def check_criticality(context):
 
 
 def update_inner_trust_region(context):
-	distance_to_closest_constraint = min(
-		numpy.divide(
-			abs(numpy.dot(context.params.constraints_A, context.model_center()) - context.params.constraints_b),
-			numpy.linalg.norm(context.params.constraints_A, axis=1)
-		)
-	)
-	trust_region = CircularTrustRegion(
-		center=context.model_center(),
-		radius=distance_to_closest_constraint
-	)
+	trust_region_strategy = context.params.trust_region_strategy(context)
+	trust_region = trust_region_strategy.find_trust_region()
 
 	params = LagrangeParams()
 
-	certification = computeLagrangePolynomials(
+	certification = compute_lagrange_polynomials(
 		context.basis,
 		trust_region,
 		context.sample_points,
@@ -113,6 +121,7 @@ def update_inner_trust_region(context):
 		certification.lmbda * numpy.asmatrix(context.sample_values).T
 	).flatten()
 
+	trust_region_strategy.add_to_plot(context.current_plot)
 	trust_region.add_to_plot(context.current_plot)
 	certification.add_to_plot(context.current_plot)
 
@@ -123,12 +132,16 @@ def always_feasible_algorithm(params):
 	context = AlgorithmContext(params)
 	while True:
 		context.iteration += 1
+		print('----------------------------------------')
+		print('iteration = {}'.format(context.iteration))
 		context.start_current_plot()
 
 		if check_criticality(context):
 			if context.outer_trust_region.radius < context.params.tolerance:
+				print('converged')
 				context.finish_current_plot()
 				break
+			print('critical, radius too large')
 			context.decrease_radius()
 			context.finish_current_plot()
 			continue
@@ -142,9 +155,14 @@ def always_feasible_algorithm(params):
 			outer_trust_region=context.outer_trust_region,
 			trust_region=trust_region
 		)
-		context.current_plot.add_arrow(context.model_center(), solution.trial_point)
+
+		context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m')
 		context.current_plot.add_polyhedron(context.params.constraints_A, context.params.constraints_b, label='constraints')
 		context.outer_trust_region.add_to_plot(context.current_plot)
+		context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o')
+
+		context.current_plot.add_contour(lambda x: context.params.objective_function.evaluate(x), label='true objective', color='g')
+		context.current_plot.add_contour(lambda x: context.basis.debug_evaluate(trust_region.shift_row(x), context.objective_coefficients), label='modelled objective', color='y')
 
 		trial_objective_value = context.evaluate_original_objective(solution.trial_point)
 		trial_model_value = solution.predicted_objective_value
@@ -159,18 +177,27 @@ def always_feasible_algorithm(params):
 		print('new function value = {}'.format(trial_objective_value))
 		print('trial point = {}'.format(solution.trial_point))
 		print('rho = {}'.format(rho))
-		if rho < .5:
+
+		if rho < 1e-5:
+			print('oh boy')
+		if rho < 0.5:
+			print('poor model')
 			context.decrease_radius()
 			context.finish_current_plot()
 			continue
 
 		delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
 		if delta < context.outer_trust_region.radius / 8:
+			print('step too small')
 			context.decrease_radius()
 			context.finish_current_plot()
 			continue
 
+		if rho > 0.9:
+			context.increase_radius()
+
 		context.outer_trust_region.recenter(solution.trial_point)
 		context.current_objective_value = trial_objective_value
 
+		print('accepted')
 		context.finish_current_plot()
