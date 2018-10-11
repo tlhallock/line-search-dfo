@@ -28,9 +28,9 @@ class Certification:
 		self.poised = False
 		# lambdas = numpy.empty(n_points)
 
-	def add_to_plot(self, ax):
-		ax.scatter(self.original[:, 0], self.original[:, 1], s=10, c='b', marker="+", label='original')
-		ax.scatter(self.unshifted[:, 0], self.unshifted[:, 1], s=10, c='r', marker="x", label='poised')
+	def add_to_plot(self, plot_object):
+		plot_object.add_points(points=self.original, label='original', color='b', marker='+', s=10)
+		plot_object.add_points(points=self.unshifted, label='poised', color='r', marker='x', s=10)
 
 
 def _test_v(v, basis, shifted):

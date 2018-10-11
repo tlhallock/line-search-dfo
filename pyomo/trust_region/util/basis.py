@@ -50,7 +50,6 @@ class QuadraticBasis(Basis):
 				0.5 * coefficients[5] * x[1] * x[1]
 		)
 
-
 	def to_pyomo_expression(self, model, coefficients):
 		return (
 				1.0 * coefficients[0] +

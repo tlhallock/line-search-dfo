@@ -31,7 +31,11 @@ def _solve_trust_region_subproblem(
 
 	# Needs to be shifted first
 	def objective_rule(m):
-		return objective_basis.to_pyomo_expression(model=m, coefficients=objective_coefficients)
+		shifted_model = trust_region.shift_pyomo_model(m)
+		return objective_basis.to_pyomo_expression(
+			model=shifted_model,
+			coefficients=objective_coefficients
+		)
 
 	model.objective = Objective(rule=objective_rule, sense=minimize)
 	opt = SolverFactory(SOLVER_NAME, executable=SOLVER_PATH)

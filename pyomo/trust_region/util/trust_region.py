@@ -19,7 +19,7 @@ class TrustRegion(metaclass=abc.ABCMeta):
 		raise Exception("Not implemented")
 
 	@abc.abstractmethod
-	def add_to_plot(self, ax):
+	def add_to_plot(self, plot_object):
 		raise Exception("Not implemented")
 
 	@abc.abstractmethod
@@ -32,6 +32,10 @@ class TrustRegion(metaclass=abc.ABCMeta):
 
 	@abc.abstractmethod
 	def add_unshifted_pyomo_constraints(self, model):
+		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def shift_pyomo_model(self, model):
 		raise Exception("Not implemented")
 
 
@@ -55,8 +59,8 @@ class CircularTrustRegion(TrustRegion):
 			unshifted[i, :] = points[i, :] * self.radius + self.center
 		return unshifted
 
-	def add_to_plot(self, ax):
-		ax.add_artist(plt.Circle(self.center, self.radius, color='g', fill=False))
+	def add_to_plot(self, plot_object):
+		plot_object.ax.add_artist(plt.Circle(self.center, self.radius, color='g', fill=False))
 
 	def multiply_radius(self, factor):
 		self.radius *= factor
@@ -72,11 +76,26 @@ class CircularTrustRegion(TrustRegion):
 			) <= self.radius * self.radius
 		)
 
+	def shift_pyomo_model(self, model):
+		class mocked:
+			def __init__(self, x):
+				self.dimension = model.dimension
+				self.x = x
+		return mocked([
+			(model.x[idx] - self.center[idx]) / self.radius
+			for idx in model.dimension
+		])
+
 
 class L1TrustRegion(CircularTrustRegion):
-	def add_to_plot(self, ax):
-		ax.add_artist(plt.Circle(self.center, self.radius, color='r', fill=False))
-		raise Exception("not implemented")
+	def add_to_plot(self, plot_object):
+		for i in range(len(self.center)):
+			plot_object.add_contour(
+				lambda x: x[i] - self.center[i] + self.radius,
+				'outer_tr_' + str(i),
+				color='b',
+				lvls=[0.0, -0.1]
+			)
 
 	def add_shifted_pyomo_constraints(self, model):
 		raise Exception("not implemented yet")
