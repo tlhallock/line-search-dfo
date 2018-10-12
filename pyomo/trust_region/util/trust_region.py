@@ -76,6 +76,7 @@ class CircularTrustRegion(TrustRegion):
 		return point * self.radius + self.center
 
 	def add_to_plot(self, plot_object, detailed=True):
+		plot_object.add_point(self.center, 'trust region center', color='g', s=20, marker="*")
 		plot_object.ax.add_artist(plt.Circle(self.center, self.radius, color='g', fill=False))
 
 	def multiply_radius(self, factor):
@@ -158,4 +159,4 @@ class L1TrustRegion(CircularTrustRegion):
 			point = numpy.copy(self.center)
 			point[i] = self.center[i] - self.radius
 			bounds.extend(point)
-		return bounds.expand()
+		return bounds

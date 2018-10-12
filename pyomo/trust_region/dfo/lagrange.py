@@ -109,6 +109,20 @@ def compute_lagrange_polynomials(
 		# Get maximum value in matrix
 		max_value, max_index = _get_max_index(abs(v[i:n_points, i]))
 
+		# perform pivot
+		if not max_index == 0:
+			other_idx = max_index + i
+			v[[i, other_idx], :] = v[[other_idx, i], :]
+			cert.shifted[[i, other_idx], :] = cert.shifted[[other_idx, i], :]
+
+			tmp = cert.indices[i]
+			cert.indices[i] = cert.indices[other_idx]
+			cert.indices[other_idx] = tmp
+
+			tmp = cert.forced_removal[i]
+			cert.forced_removal[i] = cert.forced_removal[other_idx]
+			cert.forced_removal[other_idx] = tmp
+
 		# Check the poisedness
 		if lagrange_params.improve_with_new_points and (
 			cert.forced_removal[i] or
@@ -125,25 +139,13 @@ def compute_lagrange_polynomials(
 				v[n_points:h, :]
 			)
 			cert.indices[i] = -1
+			cert.forced_removal[i] = False
 			_test_v(v, basis, cert.shifted)
-			max_value, max_index = _get_max_index(abs(v[i:n_points, i]))
+
+			max_value = abs(v[i, i])
 
 		if max_value < lagrange_params.xsi and lagrange_params.improve_with_new_points:
 			print('This is a problem')
-
-		# perform pivot
-		if not max_index == 0:
-			other_idx = max_index + i
-			v[[i, other_idx], :] = v[[other_idx, i], :]
-			cert.shifted[[i, other_idx], :] = cert.shifted[[other_idx, i], :]
-
-			tmp = cert.indices[i]
-			cert.indices[i] = cert.indices[other_idx]
-			cert.indices[other_idx] = tmp
-
-			tmp = cert.forced_removal[i]
-			cert.forced_removal[i] = cert.forced_removal[other_idx]
-			cert.forced_removal[other_idx] = tmp
 
 		# perform LU
 		v[:, i] = v[:, i] / v[i, i]

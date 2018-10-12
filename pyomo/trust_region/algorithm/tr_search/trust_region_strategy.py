@@ -1,5 +1,5 @@
 from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_region_objective
-from trust_region.algorithm.tr_search.shape.circle import get_elliptical_trust_region_objective
+from trust_region.algorithm.tr_search.shape.ellipse import get_elliptical_trust_region_objective
 
 from trust_region.algorithm.tr_search.searches.no_search import no_search
 from trust_region.algorithm.tr_search.searches.polyhedron_pattern_search import search_anywhere
@@ -24,8 +24,9 @@ def parse_tr_strategy(params):
 		options['number_of_points'] = params['number_of_points']
 		options['num_trial_points'] = 5
 	elif params['search'] == 'anywhere':
+		options['random-starting-points'] = 5 if params['shape'] == 'circle' else 1
+		options['random-search-directions'] = 10 if params['shape'] == 'circle' else 2
 		search = search_anywhere
-		options['starting_radius'] = 1.0
 	elif params['search'] == 'none':
 		search = no_search
 	else:

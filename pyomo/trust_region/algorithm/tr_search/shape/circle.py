@@ -13,7 +13,7 @@ def get_circular_trust_region_objective(context, x, hot_start, options):
 
 		value = ObjectiveValue()
 		value.point = x
-		value.success = distance_to_center < distance_to_closest_constraint
+		value.success = distance_to_center <= distance_to_closest_constraint
 		value.objective = distance_to_closest_constraint ** 2
 		value.hot_start = None
 		value.trust_region = CircularTrustRegion(

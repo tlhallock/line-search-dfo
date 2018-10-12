@@ -21,11 +21,14 @@ class PlotObject:
 		self.fig.savefig(self.filename)
 		plt.close()
 
-	def add_contour(self, func, label, color='k', lvls=6):
+	def add_contour(self, func, label, color='k', lvls=None):
 		for i in range(0, len(self.x)):
 			for j in range(0, len(self.y)):
-				self.Z[j, i] = func(numpy.array(([self.x[i], self.y[j]])))
-		CS = plt.contour(self.X, self.Y, self.Z, lvls, colors=color)
+				self.Z[j, i] = func(numpy.array([self.x[i], self.y[j]]))
+		if lvls is None:
+			CS = plt.contour(self.X, self.Y, self.Z, colors=color, label=label)
+		else:
+			CS = plt.contour(self.X, self.Y, self.Z, levels=lvls, colors=color, label=label)
 		plt.clabel(CS, fontsize=9, inline=1)
 
 	def add_points(self, points, label, color='r', s=20, marker="x"):
@@ -46,10 +49,7 @@ class PlotObject:
 	def add_polyhedron(self, A, b, label, color='b', lvls=[-0.1, 0.0]):
 		for i in range(A.shape[0]):
 			func = lambda x: numpy.dot(A[i], x) - b[i]
-			if lvls is None:
-				self.add_contour(func, label + '_' + str(i), color=color)
-			else:
-				self.add_contour(func, label + '_' + str(i), color=color, lvls=lvls)
+			self.add_contour(func, label + '_' + str(i), color=color, lvls=lvls)
 
 
 def create_plot(title, filename, bounds):
@@ -68,8 +68,8 @@ def create_plot(title, filename, bounds):
 	ret_val.ax = ax
 	ret_val.filename = filename
 
-	ret_val.x = numpy.linspace(bounds.lbX, bounds.ubX, num=100)
-	ret_val.y = numpy.linspace(bounds.lbY, bounds.ubY, num=100)
+	ret_val.x = numpy.linspace(bounds.lb[0], bounds.ub[0], num=100)
+	ret_val.y = numpy.linspace(bounds.lb[1], bounds.ub[1], num=100)
 	ret_val.X, ret_val.Y = numpy.meshgrid(ret_val.x, ret_val.y)
 	ret_val.Z = numpy.zeros((len(ret_val.y), len(ret_val.x)))
 

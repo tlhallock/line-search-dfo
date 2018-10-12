@@ -15,6 +15,7 @@ class Ellipse(TrustRegion):
 		self.q_inverse = None
 		self.l = None
 		self.l_inverse = None
+		self.hot_start = None
 
 	def evaluate(self, v, scale=1.0):
 		return 1 - 0.5 * numpy.dot(v - self.center, numpy.dot(self.q, v - self.center)) / scale
@@ -45,6 +46,7 @@ class Ellipse(TrustRegion):
 		raise Exception("Not implemented")
 
 	def add_to_plot(self, plot_object, detailed=True):
+		plot_object.add_point(self.center, 'trust region center', color='g', s=20, marker="*")
 		plot_object.add_contour(
 			lambda x: -self.evaluate(x),
 			label='ellipse',

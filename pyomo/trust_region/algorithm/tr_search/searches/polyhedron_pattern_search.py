@@ -17,23 +17,33 @@ def get_starting_points(A, b, x0, bounds, n):
 
 
 def search_anywhere(context, objective, options):
+	plot_count = 1
+
 	A, b = context.get_polyhedron()
 	x0 = numpy.copy(context.model_center())
-	bounds = context.outer_truster_region.get_bounds()
-	starting_radius = options['starting_radius']
+	bounds = context.outer_trust_region.get_bounds()
+	tolerance = context.params.subproblem_search_tolerance * context.outer_trust_region.radius
+	num_starting_points = options['random-starting-points']
+	num_search_directions = options['random-search-directions']
 
+	starting_point_count = 0
 	best_solution_so_far = None
-
-	for starting_point in get_starting_points(A, b, x0, bounds, 5):
+	for starting_point in get_starting_points(A, b, x0, bounds, num_starting_points):
 		local_best_point = starting_point
+		starting_point_count += 1
+		print('inner iteration {} of {}'.format(starting_point_count, num_starting_points))
+
 		local_best_solution = objective(context=context, x=starting_point, hot_start=None, options=options)
 		if not local_best_solution.success:
 			continue
 
-		radius = starting_radius
+		radius = context.outer_trust_region.radius / 2
+		number_of_improvements = 0
 		while radius > tolerance:
+			print(starting_point_count, radius, local_best_solution.objective)
+
 			improved = False
-			for search_direction in sample_search_directions(len(x0), 5):
+			for search_direction in sample_search_directions(len(x0), num_search_directions):
 				trial_point = local_best_point + radius * search_direction
 				if (numpy.dot(A, trial_point) > b).any():
 					continue
@@ -45,17 +55,48 @@ def search_anywhere(context, objective, options):
 				)
 				if not trial_solution.success:
 					continue
-				if trial_solution.objective > local_best_solution.objective:
+				if trial_solution.objective <= local_best_solution.objective:
 					continue
+
+
+				# #####################################################################################
+				#
+				# from trust_region.util.history import Bounds
+				# from trust_region.util.plots import create_plot
+				#
+				# bounds = Bounds()
+				# bounds.extend(numpy.array([7, 7]))
+				# bounds.extend(numpy.array([-2, -2]))
+				#
+				# plot = create_plot('testing_ellipse', 'images/ellipse_{}.png'.format(str(plot_count).zfill(4)), bounds)
+				# plot_count += 1
+				#
+				# plot.ax.text(
+				# 	0.1, 0.1,
+				# 	str(trial_solution.trust_region.volume),
+				# 	horizontalalignment='center',
+				# 	verticalalignment='center',
+				# 	transform=plot.ax.transAxes
+				# )
+				#
+				# plot.add_polyhedron(A, b, label='bounds')
+				# plot.add_point(trial_point, label='center', marker='x', color='r')
+				# plot.add_point(context.model_center(), label='include', marker='+', color='y')
+				# trial_solution.trust_region.add_to_plot(plot)
+				# plot.save()
+				# #####################################################################################
+
 
 				local_best_solution = trial_solution
 				local_best_point = trial_point
 				improved = True
+				number_of_improvements += 1
 				break
 
-			if not improved:
+			if not improved or number_of_improvements > 10:
 				radius /= 2.0
-		if best_solution_so_far is not None and local_best_solution.objective > best_solution_so_far.objective:
+				number_of_improvements = 0
+		if best_solution_so_far is not None and local_best_solution.objective <= best_solution_so_far.objective:
 			continue
 
 		best_solution_so_far = local_best_solution

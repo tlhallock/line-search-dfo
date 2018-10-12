@@ -5,7 +5,7 @@ from trust_region.algorithm.tr_search.searches.segment_search_path import get_se
 def search_segment(context, objective, options):
 	A, b = context.get_polyhedron()
 	x0 = numpy.copy(context.model_center())
-	tolerance = context.params.subproblem_tolerance
+	tolerance = context.params.subproblem_search_tolerance * context.outer_trust_region.radius
 	number_of_points = options['number_of_points']
 	num_trial_points = options['num_trial_points']
 
@@ -27,14 +27,14 @@ def search_segment(context, objective, options):
 
 			other_solution = objective(
 					context=context,
-					x=trial_point,
+					x=other_point,
 					hot_start=best_solution_so_far.hot_start,
 					options=options
 				)
 			if not other_solution.success:
 				continue
 
-			if other_solution.objective > best_solution_so_far.objective or not best_solution_so_far.success:
+			if best_solution_so_far.success and other_solution.objective <= best_solution_so_far.objective:
 				continue
 
 			best_solution_so_far = other_solution

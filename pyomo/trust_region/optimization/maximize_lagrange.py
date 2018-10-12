@@ -45,7 +45,7 @@ def _maximize_lagrange_quadratic(coefficients, initialization):
 
 	ret_value = LagrangeMaximization()
 	ret_value.success = ok and optimal
-	ret_value.objective  = model.objective()
+	ret_value.objective = model.objective()
 	ret_value.x = numpy.asarray([model.x[i]() for i in model.dimension])
 	return ret_value
 

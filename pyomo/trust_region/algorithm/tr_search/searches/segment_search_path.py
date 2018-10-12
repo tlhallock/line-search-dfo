@@ -40,7 +40,7 @@ def get_search_path(x, A, b, num):
 		A[i, :] /= n
 		b[i] /= n
 
-	distances = abs(numpy.dot(A, x) - b) / sum(numpy.multiply(A, A), axis=1)
+	distances = numpy.divide(abs(numpy.dot(A, x) - b), numpy.linalg.norm(A, axis=1))
 	s_distances = sorted(enumerate(distances), key=operator.itemgetter(1))
 	idx_min = s_distances[0][0]
 	idx_sec = s_distances[1][0]
@@ -50,9 +50,9 @@ def get_search_path(x, A, b, num):
 
 	Ac = A[idx_min, :]
 	Ab = A[idx_sec, :]
-	first_direction = -Ac * -1
-	second_direction = -(Ac + Ab) / 2 * -1
-	if numpy.norm(second_direction) < 1e-12:
+	first_direction = -Ac
+	second_direction = -(Ac + Ab) / 2
+	if numpy.linalg.norm(second_direction) < 1e-12:
 		# BANG HEAD AGAINST TABLE
 		Ab = A[s_distances[2][0]]
 		second_direction = -(Ac + Ab) / 2
@@ -82,7 +82,7 @@ def get_search_path(x, A, b, num):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
 
-		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i]) * -1
+		t_intersection = (distances[i] - distances[idx_min]) / (dd[idx_min] - dd[i])
 		if abs(t_intersection) < 1e-12:
 			t_min = 0
 		if t_intersection >= 0 and (t_min is None or t_intersection < t_min):
@@ -91,7 +91,7 @@ def get_search_path(x, A, b, num):
 	p1 = x + t_min * first_direction
 	all_points.append(p1)
 
-	d2 = abs(dot(A, p1) - b) / sum(multiply(A, A), axis=1)
+	d2 = numpy.divide(abs(numpy.dot(A, p1) - b), numpy.linalg.norm(A, axis=1))
 	#print("After first point", d2)
 
 	dd = -numpy.dot(A, second_direction)
@@ -99,7 +99,7 @@ def get_search_path(x, A, b, num):
 	for i in range(A.shape[0]):
 		if abs(dd[idx_min] - dd[i]) < 1e-12:
 			continue
-		t_intersection = (d2[i] - d2[idx_min]) / (dd[idx_min] - dd[i]) * -1
+		t_intersection = (d2[i] - d2[idx_min]) / (dd[idx_min] - dd[i])
 		if abs(t_intersection) < 1e-12:
 			t_min = 0
 		if t_intersection >= 0 and (t_min is None or t_intersection < t_min):
@@ -109,7 +109,7 @@ def get_search_path(x, A, b, num):
 	if num == 2:
 		all_points.append(p2)
 
-	d3 = abs(numpy.dot(A, p2) - b) / sum(numpy.multiply(A, A), axis=1)
+	d3 = numpy.divide(abs(numpy.dot(A, p2) - b), numpy.linalg.norm(A, axis=1))
 	#print("After second point", d3)
 
 	return SearchPath(all_points)

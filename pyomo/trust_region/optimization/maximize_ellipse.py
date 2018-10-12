@@ -19,17 +19,28 @@ class EllipseParams:
 		self.include_point = None
 		self.center = None
 		self.tolerance = None
+		self.hot_start = None
 
 
 def compute_maximal_ellipse(p):
 	bbar = p.b - numpy.dot(p.A, p.center)
-	k = 1.0
-	if p.include_point is None:
-		k = 1.0 / min(abs(bbar))
-		bbar = k * bbar
+
+	# scale
+	k = 1.0 / min(abs(bbar))
+	if k < 1e-10 or k > 1e8:
+		print("========================================================")
+		print(k)
+		print("========================================================")
+		return False, None
+
+	bbar = k * bbar
 
 	model = ConcreteModel()
 	model.q = Var(range(3))
+
+	if p.hot_start is not None:
+		for i in range(len(p.hot_start)):
+			model.q[i].set_value(p.hot_start[i])
 
 	model.constraints = ConstraintList()
 
@@ -58,14 +69,30 @@ def compute_maximal_ellipse(p):
 		# 			 - include[1] * q[1] * include[0] + include[1] * q[0] * include[1]) >= 0
 		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include[0] * q[2] * include[0] + include[0] * q[1] * include[1]
 		# 			 + include[1] * q[1] * include[0] - include[1] * q[0] * include[1] >= 0
-		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include[0] * q[2] * include[0] + 2 * include[0] * q[1] * include[1]
-		# 			 - include[1] * q[0] * include[1] >= 0
-		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - q[2] * include[0] ** 2 + 2 * include[0] * q[1] * include[1]
-		# 			 - q[0] * include[1] ** 2 >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - include[0] * q[2] * include[0] + 2 * include[0] * q[1] * include[1] - include[1] * q[0] * include[1] >= 0
+		#  2 * q[0] * q[2] - 2 * q[1] ** 2 - q[2] * include[0] ** 2 + 2 * include[0] * q[1] * include[1] - q[0] * include[1] ** 2 >= 0
+
+		#model.constraints.add(
+		#	k ** 2 * 2 * model.q[0] * model.q[2] - k ** 2 * 2 * model.q[1] * model.q[1] -
+		#	model.q[2] * si[0] ** 2 + 2 * si[0] * model.q[1] * si[1] - model.q[0] * si[1] ** 2 >= 0
+		#)
+
+		#model.constraints.add(
+		#	si[0] * model.q[2] * si[0] - model.q[1] * si[1] - si[1] * model.q[1] * si[0] + model.q[0] * si[1]
+		#)
+
+		# s₀⋅⎝- q₁⋅s₁ + q₂⋅s₀⎠ + s₁⋅⎝q₀⋅s₁ - q₁⋅s₀⎠
+
+		k2 = k * k
 		model.constraints.add(
-			2 * model.q[0] * model.q[2] - 2 * model.q[1] * model.q[1] -
-			model.q[2] * si[0] ** 2 + 2 * si[0] * model.q[1] * si[1] - model.q[0] * si[1] ** 2 >= 0
+			-si[0] * model.q[1] * si[1] + si[0] * model.q[2] * si[0] +
+			si[1] * model.q[0] * si[1] - si[1] * model.q[1] * si[0] -
+			2 * model.q[0] * model.q[2] * k2 + 2 * model.q[1] * model.q[1] * k2 <= 0
 		)
+
+		# include[0] * q[2] * include[0] - include[0] * q[1] * include[1] - include[1] * q[1] * include[0] + include[1] * q[0] * include[1]
+		# si[0] * model.q[2] * si[0] + -model.q[1] * si[1] + si[1] * -model.q[1] * si[0] + model.q[0] * si[1]                    +
+		# 2 * q(1,1) * q(2,2) - 2 * q(1,2) * q(1,2) - q(2,2) * include(1) ** 2 + 2 * include(1) * model.q[1] * si[1] - model.q[0] * si[1] ** 2 >= 0
 
 	# positive definite
 	model.constraints.add(model.q[0] >= p.tolerance)
@@ -81,13 +108,16 @@ def compute_maximal_ellipse(p):
 	ok = result.solver.status == SolverStatus.ok
 	if not ok:
 		print("warning solver did not return ok")
+		return False, None
 	optimal = result.solver.termination_condition == TerminationCondition.optimal
 	if not optimal:
 		print("warning solver did not return optimal")
+		return False, None
 
 	ellipse = Ellipse()
 	ellipse.center = p.center
 	ellipse.volume = -model.objective()
+	ellipse.hot_start = [model.q[0](), model.q[1](), model.q[2]()]
 
 	ellipse.q_inverse = numpy.array([
 		[model.q[0](), model.q[1]()],
@@ -115,7 +145,7 @@ def compute_maximal_ellipse(p):
 		ellipse.lambdas.append(lmbda)
 		ellipse.ds.append(d)
 
-	return ellipse
+	return True, ellipse
 
 # q0 - l q1
 # q1     q2 - l
