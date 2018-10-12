@@ -46,19 +46,22 @@ class PlotObject:
 	def add_polyhedron(self, A, b, label, color='b', lvls=[-0.1, 0.0]):
 		for i in range(A.shape[0]):
 			func = lambda x: numpy.dot(A[i], x) - b[i]
-			self.add_contour(func, label + '_' + str(i), color=color, lvls=lvls)
+			if lvls is None:
+				self.add_contour(func, label + '_' + str(i), color=color)
+			else:
+				self.add_contour(func, label + '_' + str(i), color=color, lvls=lvls)
 
 
 def create_plot(title, filename, bounds):
 	ret_val = PlotObject()
 	ret_val.fig = plt.figure()
 	plt.title(title)
-	plt.ylim(bounds.lbY, bounds.ubY)
-	plt.xlim(bounds.lbX, bounds.ubX)
+	plt.ylim(bounds.lb[1], bounds.ub[1])
+	plt.xlim(bounds.lb[0], bounds.ub[0])
 	ax = ret_val.fig.add_subplot(111)
 
 	plt.legend(loc='lower left')
-	ret_val.fig.set_size_inches(15, (bounds.ubY - bounds.lbY) / (bounds.ubX - bounds.lbX) * 15)
+	ret_val.fig.set_size_inches(15, (bounds.ub[1] - bounds.lb[1]) / (bounds.ub[0] - bounds.lb[0]) * 15)
 	matplotlib.rcParams['xtick.direction'] = 'out'
 	matplotlib.rcParams['ytick.direction'] = 'out'
 

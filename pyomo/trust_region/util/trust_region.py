@@ -1,6 +1,7 @@
 import abc
 import numpy
 import matplotlib.pyplot as plt
+from trust_region.util.history import Bounds
 
 
 class TrustRegion(metaclass=abc.ABCMeta):
@@ -28,7 +29,7 @@ class TrustRegion(metaclass=abc.ABCMeta):
 		raise Exception("Not implemented")
 
 	@abc.abstractmethod
-	def add_to_plot(self, plot_object):
+	def add_to_plot(self, plot_object, detailed=True):
 		raise Exception("Not implemented")
 
 	@abc.abstractmethod
@@ -74,7 +75,7 @@ class CircularTrustRegion(TrustRegion):
 	def unshift_row(self, point):
 		return point * self.radius + self.center
 
-	def add_to_plot(self, plot_object):
+	def add_to_plot(self, plot_object, detailed=True):
 		plot_object.ax.add_artist(plt.Circle(self.center, self.radius, color='g', fill=False))
 
 	def multiply_radius(self, factor):
@@ -106,7 +107,7 @@ class CircularTrustRegion(TrustRegion):
 
 
 class L1TrustRegion(CircularTrustRegion):
-	def add_to_plot(self, plot_object):
+	def add_to_plot(self, plot_object, detailed=True):
 		for i in range(len(self.center)):
 			plot_object.add_contour(
 				lambda x: -(x[i] - self.center[i] + self.radius),
@@ -146,3 +147,15 @@ class L1TrustRegion(CircularTrustRegion):
 			ret_val[2 * i + 0] = +self.center[i] + self.radius
 			ret_val[2 * i + 1] = -self.center[i] + self.radius
 		return ret_val
+
+	def get_bounds(self):
+		bounds = Bounds()
+		for i in range(len(self.center)):
+			point = numpy.copy(self.center)
+			point[i] = self.center[i] + self.radius
+			bounds.extend(point)
+
+			point = numpy.copy(self.center)
+			point[i] = self.center[i] - self.radius
+			bounds.extend(point)
+		return bounds.expand()

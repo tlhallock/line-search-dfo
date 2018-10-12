@@ -1,15 +1,14 @@
 
 import numpy
 
+from trust_region.algorithm.tr_search.trust_region_strategy import parse_tr_strategy
 from trust_region.dfo.lagrange import LagrangeParams
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.optimization.trust_region_subproblem import solve_trust_region_subproblem
-from trust_region.util.trust_region import L1TrustRegion
 from trust_region.util.basis import QuadraticBasis
-from trust_region.util.plots import create_plot
 from trust_region.util.history import History
-from trust_region.algorithm.tr_search.circle import CircularTrustRegionStrategy
-from trust_region.algorithm.tr_search.ellipse import EllipticalTrustRegionStrategy
+from trust_region.util.plots import create_plot
+from trust_region.util.trust_region import L1TrustRegion
 
 
 class AlgorithmParams:
@@ -18,11 +17,13 @@ class AlgorithmParams:
 		self.constraints_A = None
 		self.constraints_b = None
 		self.objective_function = None
+		self.trust_region_strategy_params = None
 
 		self.criticality_tolerance = 1e-4
+		self.subproblem_constraint_tolerance = 1e-10
 		self.tolerance = 1e-4
-		self.radius_decrease_factor = 0.5
-		self.trust_region_strategy = EllipticalTrustRegionStrategy
+		self.radius_decrease_factor = 0.75
+		self.radius_increase_factor = 1.5
 		self.plot_bounds = []
 
 
@@ -60,7 +61,7 @@ class AlgorithmContext:
 		self.outer_trust_region.multiply_radius(self.params.radius_decrease_factor)
 
 	def increase_radius(self):
-		self.outer_trust_region.multiply_radius(1 / (2 * self.params.radius_decrease_factor))
+		self.outer_trust_region.multiply_radius(self.params.radius_increase_factor)
 
 	def start_current_plot(self):
 		title = 'iteration {}'.format(self.iteration)
@@ -71,6 +72,25 @@ class AlgorithmContext:
 	def finish_current_plot(self):
 		self.current_plot.save()
 		self.current_plot = None
+
+	def plot_accuracy(self, trust_region):
+		title = 'accuracy {}'.format(self.iteration)
+		file_name = 'images/{}_accuracy.png'.format(str(self.plot_number).zfill(5))
+		self.plot_number += 1
+		accuracy_plot = create_plot(title, file_name, self.outer_trust_region.get_bounds())
+		self.outer_trust_region.add_to_plot(accuracy_plot)
+		accuracy_plot.add_contour(
+			lambda x: self.params.objective_function.evaluate(x),
+			label='true objective',
+			color='g'
+		)
+		accuracy_plot.add_contour(
+			lambda x: self.basis.debug_evaluate(trust_region.shift_row(x), self.objective_coefficients),
+			label='modelled objective',
+			color='y'
+		)
+		trust_region.add_to_plot(accuracy_plot, detailed=False)
+		accuracy_plot.save()
 
 	def get_polyhedron(self):
 		return numpy.array(numpy.bmat([
@@ -88,8 +108,10 @@ def check_criticality(context):
 
 
 def update_inner_trust_region(context):
-	trust_region_strategy = context.params.trust_region_strategy(context)
-	trust_region = trust_region_strategy.find_trust_region()
+	find_trust_region = parse_tr_strategy(context.params.trust_region_strategy_params)
+	success, trust_region, plot_details = find_trust_region(context)
+	if not success:
+		raise Exception('Unable to find the trust region')
 
 	params = LagrangeParams()
 
@@ -121,7 +143,7 @@ def update_inner_trust_region(context):
 		certification.lmbda * numpy.asmatrix(context.sample_values).T
 	).flatten()
 
-	trust_region_strategy.add_to_plot(context.current_plot)
+	plot_details.add_to_plot(context.current_plot)
 	trust_region.add_to_plot(context.current_plot)
 	certification.add_to_plot(context.current_plot)
 
@@ -135,6 +157,9 @@ def always_feasible_algorithm(params):
 		print('----------------------------------------')
 		print('iteration = {}'.format(context.iteration))
 		context.start_current_plot()
+		context.current_plot.add_polyhedron(context.params.constraints_A, context.params.constraints_b, label='constraints')
+		context.outer_trust_region.add_to_plot(context.current_plot)
+		context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
 
 		if check_criticality(context):
 			if context.outer_trust_region.radius < context.params.tolerance:
@@ -147,6 +172,7 @@ def always_feasible_algorithm(params):
 			continue
 
 		trust_region = update_inner_trust_region(context)
+		context.plot_accuracy(trust_region)
 
 		solution = solve_trust_region_subproblem(
 			objective_basis=context.basis,
@@ -157,12 +183,6 @@ def always_feasible_algorithm(params):
 		)
 
 		context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m')
-		context.current_plot.add_polyhedron(context.params.constraints_A, context.params.constraints_b, label='constraints')
-		context.outer_trust_region.add_to_plot(context.current_plot)
-		context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o')
-
-		context.current_plot.add_contour(lambda x: context.params.objective_function.evaluate(x), label='true objective', color='g')
-		context.current_plot.add_contour(lambda x: context.basis.debug_evaluate(trust_region.shift_row(x), context.objective_coefficients), label='modelled objective', color='y')
 
 		trial_objective_value = context.evaluate_original_objective(solution.trial_point)
 		trial_model_value = solution.predicted_objective_value

@@ -16,17 +16,14 @@ class EllipseParams:
 		self.center = None
 		self.A = None
 		self.b = None
-		self.normalize = False
 		self.include_point = None
 		self.center = None
+		self.tolerance = None
 
 
 def compute_maximal_ellipse(p):
-	tolerance = 1e-12
-
 	bbar = p.b - numpy.dot(p.A, p.center)
 	k = 1.0
-	#if p.normalize and p.include_point is None:
 	if p.include_point is None:
 		k = 1.0 / min(abs(bbar))
 		bbar = k * bbar
@@ -71,9 +68,9 @@ def compute_maximal_ellipse(p):
 		)
 
 	# positive definite
-	model.constraints.add(model.q[0] >= tolerance)
-	model.constraints.add(model.q[2] >= tolerance)
-	model.constraints.add(model.q[0] * model.q[2] - model.q[1] * model.q[1] >= tolerance)
+	model.constraints.add(model.q[0] >= p.tolerance)
+	model.constraints.add(model.q[2] >= p.tolerance)
+	model.constraints.add(model.q[0] * model.q[2] - model.q[1] * model.q[1] >= p.tolerance)
 
 	def objective_rule(m):
 		return m.q[0] * m.q[2] - m.q[1] * m.q[1]

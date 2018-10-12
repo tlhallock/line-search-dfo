@@ -5,8 +5,85 @@ from trust_region.algorithm.always_feasible_algorithm import AlgorithmParams
 from trust_region.algorithm.always_feasible_algorithm import always_feasible_algorithm
 from trust_region.util.test_objectives import Objective
 
-
 numpy.set_printoptions(linewidth=255)
+
+
+trust_region_params = [{
+		'trust_region_options': {
+	'shape': 'circle',
+	'search': 'none',
+
+	},
+}, {
+
+		'trust_region_options': {
+	'shape': 'ellipse',
+	'include_as_constraint': True,
+	'search': 'none',
+
+
+	},
+}, {
+
+		'trust_region_options': {
+
+			'shape': 'circle',
+			'search': 'anywhere',
+
+	},
+}, {
+
+		'trust_region_options': {
+
+
+
+	'shape': 'ellipse',
+	'include_as_constraint': True,
+	'search': 'anywhere',
+		},
+}, {
+
+		'trust_region_options': {
+	'shape': 'circle',
+	'search': 'segment',
+	'number_of_points': 1,
+
+
+	}
+}, {
+
+		'trust_region_options': {
+
+			'shape': 'ellipse',
+			'include_as_constraint': True,
+			'search': 'segment',
+			'number_of_points': 1,
+		},
+
+}, {
+
+		'trust_region_options': {
+
+			'shape': 'circle',
+			'search': 'segment',
+			'number_of_points': 2,
+		},
+
+}, {
+
+		'trust_region_options': {
+
+			'shape': 'ellipse',
+			'include_as_constraint': True,
+			'search': 'segment',
+			'number_of_points': 2,
+		},
+
+}]
+
+# to add shift xsi
+# to add scale
+# to add 
 
 
 a = 1.0

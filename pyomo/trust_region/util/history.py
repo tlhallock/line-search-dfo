@@ -1,20 +1,29 @@
 
+import numpy
+
+
 class Bounds:
 	def __init__(self):
-		self.lbX = None
-		self.ubX = None
-		self.lbY = None
-		self.ubY = None
+		self.ub = None
+		self.lb = None
+
+	def sample(self):
+		if self.ub is None or self.lb is None:
+			return None
+		return self.lb + numpy.multiply(
+			numpy.random.random(len(self.ub)), self.ub - self.lb
+		)
 
 	def extend(self, x):
-		if self.ubX is None or x[0] > self.ubX:
-			self.ubX = x[0]
-		if self.lbX is None or x[0] < self.lbX:
-			self.lbX = x[0]
-		if self.lbY is None or x[1] > self.ubY:
-			self.ubY = x[1]
-		if self.lbY is None or x[1] < self.lbY:
-			self.lbY = x[1]
+		if self.ub is None:
+			self.ub = x
+		if self.lb is None:
+			self.lb = x
+		for i in range(len(x)):
+			if x[i] > self.ub[i]:
+				self.ub[i] = x[i]
+			if x[i] < self.lb[i]:
+				self.lb[i] = x[i]
 
 	def expand(self, factor=1.2):
 		def increase(x):
@@ -34,10 +43,11 @@ class Bounds:
 				return x / factor
 
 		b = Bounds()
-		b.lbX = decrease(self.lbX)
-		b.ubX = increase(self.ubX)
-		b.lbY = decrease(self.lbY)
-		b.ubY = increase(self.ubY)
+		b.ub = numpy.copy(self.ub)
+		b.lb = numpy.copy(self.lb)
+		for i in range(len(self.ub)):
+			b.ub[i] = increase(b.ub[i])
+			b.lb[i] = decrease(b.lb[i])
 		return b
 
 

@@ -51,6 +51,8 @@ def _maximize_lagrange_quadratic(coefficients, initialization):
 
 
 def maximize_lagrange_quadratic(coefficients):
+	# Learned how to set the initial values
+	# I should use the util.directions here
 	current = None
 	for initialization in (0.0, -0.1, .1):
 		test = _maximize_lagrange_quadratic([+c for c in coefficients], initialization=initialization)

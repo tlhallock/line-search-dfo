@@ -39,18 +39,20 @@ class Ellipse(TrustRegion):
 		return numpy.max(1.0, scale)
 
 	def add_shifted_pyomo_constraints(self, model):
-		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0 - 1e-8)
+		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0)
 
 	def add_unshifted_pyomo_constraints(self, model):
 		raise Exception("Not implemented")
 
-	def add_to_plot(self, plot_object):
+	def add_to_plot(self, plot_object, detailed=True):
 		plot_object.add_contour(
 			lambda x: -self.evaluate(x),
 			label='ellipse',
 			color='g',
 			lvls=[-0.1, 0.0]
 		)
+		if not detailed:
+			return
 		for d in self.ds:
 			plot_object.add_arrow(self.center, self.center + d, color="c")
 
