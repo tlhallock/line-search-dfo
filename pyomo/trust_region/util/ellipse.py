@@ -45,12 +45,12 @@ class Ellipse(TrustRegion):
 	def add_unshifted_pyomo_constraints(self, model):
 		raise Exception("Not implemented")
 
-	def add_to_plot(self, plot_object, detailed=True):
-		plot_object.add_point(self.center, 'trust region center', color='g', s=20, marker="*")
+	def add_to_plot(self, plot_object, detailed=True, color='g'):
+		plot_object.add_point(self.center, 'trust region center', color=color, s=20, marker="*")
 		plot_object.add_contour(
 			lambda x: -self.evaluate(x),
 			label='ellipse',
-			color='g',
+			color=color,
 			lvls=[-0.1, 0.0]
 		)
 		if not detailed:

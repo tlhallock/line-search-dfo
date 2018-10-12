@@ -56,7 +56,7 @@ def compute_maximal_ellipse(p):
 			p.A[i, 1] ** 2 * model.q[2] <= bbar[i] * bbar[i] / 2
 		)
 
-	if p.include_point is not None:
+	if p.include_point is not None and False:
 		si = p.include_point - p.center
 		# We want:
 		#  0.5 * include.T Q include <= 1

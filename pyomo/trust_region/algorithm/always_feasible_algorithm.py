@@ -23,8 +23,8 @@ class AlgorithmParams:
 		self.directory = None
 
 		self.criticality_tolerance = 1e-4
-		self.subproblem_constraint_tolerance = 1e-10
-		self.subproblem_search_tolerance = 1e-2
+		self.subproblem_constraint_tolerance = 1e-8
+		self.subproblem_search_tolerance = 1e-3
 		self.tolerance = 1e-4
 		self.radius_decrease_factor = 0.75
 		self.radius_increase_factor = 1.5

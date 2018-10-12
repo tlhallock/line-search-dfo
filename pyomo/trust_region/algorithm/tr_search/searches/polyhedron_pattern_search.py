@@ -1,6 +1,7 @@
 import numpy
 from trust_region.util.directions import sample_search_directions
 from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
+from trust_region.algorithm.tr_search.searches.common import ObjectiveValue
 
 
 def random_point(A, b, bounds):
@@ -27,11 +28,11 @@ def search_anywhere(context, objective, options):
 	num_search_directions = options['random-search-directions']
 
 	starting_point_count = 0
-	best_solution_so_far = None
+	best_solution_so_far = ObjectiveValue()
 	for starting_point in get_starting_points(A, b, x0, bounds, num_starting_points):
 		local_best_point = starting_point
 		starting_point_count += 1
-		print('inner iteration {} of {}'.format(starting_point_count, num_starting_points))
+		print('\tinner iteration {} of {}'.format(starting_point_count, num_starting_points + 1))
 
 		local_best_solution = objective(context=context, x=starting_point, hot_start=None, options=options)
 		if not local_best_solution.success:
@@ -40,7 +41,7 @@ def search_anywhere(context, objective, options):
 		radius = context.outer_trust_region.radius / 2
 		number_of_improvements = 0
 		while radius > tolerance:
-			print(starting_point_count, radius, local_best_solution.objective)
+			print('\t\t', starting_point_count, radius, local_best_solution.objective)
 
 			improved = False
 			for search_direction in sample_search_directions(len(x0), num_search_directions):
@@ -57,7 +58,6 @@ def search_anywhere(context, objective, options):
 					continue
 				if trial_solution.objective <= local_best_solution.objective:
 					continue
-
 
 				# #####################################################################################
 				#
@@ -86,7 +86,6 @@ def search_anywhere(context, objective, options):
 				# plot.save()
 				# #####################################################################################
 
-
 				local_best_solution = trial_solution
 				local_best_point = trial_point
 				improved = True
@@ -96,7 +95,8 @@ def search_anywhere(context, objective, options):
 			if not improved or number_of_improvements > 10:
 				radius /= 2.0
 				number_of_improvements = 0
-		if best_solution_so_far is not None and local_best_solution.objective <= best_solution_so_far.objective:
+		if best_solution_so_far.objective is not None and\
+			local_best_solution.objective <= best_solution_so_far.objective:
 			continue
 
 		best_solution_so_far = local_best_solution
