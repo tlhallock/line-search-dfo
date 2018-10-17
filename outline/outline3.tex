@@ -609,9 +609,8 @@ For now, our algorithm is designed to work with convex constraints, so emply a c
 \]
 
 This can be computed as 
-\[
 \label{critical}
-
+\[
 \chi_k = \chi(x_k) = \| \argmin s \|
 \]
 
@@ -745,19 +744,16 @@ $k \leftarrow k + 1$
 	\item Ensure poisedness, and create the model functions ${m_f}_k(x)$, ${c_i}_k(x), i \in \mathcal I \cup \mathcal E$ as described in \ref{reg}
 	\item Compute critically measure $\chi_k = \chi(x_k)$ as described in \ref{critical}
     \begin{itemize}
-        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k <= \tau_{\Delta}$, return as converged
+        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k \le \tau_{\Delta}$, return as converged
         \item If $\chi_k < \tau_{\chi}$ and $\Delta_k > \tau_{\Delta}$, then $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$, $k \leftarrow k + 1$
     \end{itemize}
 	
 	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B(x^{(k)};\Delta_k)} m_k(x^{(k)} + s)$
-	\begin {itemize}
-	\end{itemize}
 	
 	\item Test for improvement
 	\begin{itemize}
 		\item Compute $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$
-    \begin{equation}
-    \item \end{equation}
+    \item Update the outer trust region
 		\item If $\rho < \gamma_1$, then $x^{(k+1)}=x^{(k)}$ (reject) $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
 		\item If $\gamma_1 \le \rho \le \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
 		\item If $\rho > \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept)
