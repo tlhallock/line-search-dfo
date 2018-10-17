@@ -1,5 +1,7 @@
 from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_region_objective
 from trust_region.algorithm.tr_search.shape.ellipse import get_elliptical_trust_region_objective
+from trust_region.algorithm.tr_search.shape.polyhedron import get_polyhedral_trust_region_objective
+from trust_region.algorithm.tr_search.shape.scaled_ellipse import get_scaled_elliptical_trust_region_objective
 
 from trust_region.algorithm.tr_search.searches.no_search import no_search
 from trust_region.algorithm.tr_search.searches.polyhedron_pattern_search import search_anywhere
@@ -13,9 +15,11 @@ def parse_tr_strategy(params):
 		shape = get_circular_trust_region_objective
 	elif params['shape'] == 'ellipse':
 		shape = get_elliptical_trust_region_objective
-		options['must_include_center'] = params['search'] != 'none' and params['include_as_constraint']
-		if not params['include_as_constraint']:
-			raise Exception('not implemented')
+		options['must_include_center'] = params['search'] != 'none'
+	elif params['shape'] == 'polyhedral':
+		shape = get_polyhedral_trust_region_objective
+	elif params['shape'] == 'scaled-ellipse':
+		shape = get_scaled_elliptical_trust_region_objective
 	else:
 		raise Exception('unknown trust region shape: {}'.format(params['shape']))
 

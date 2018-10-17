@@ -100,6 +100,11 @@
 
 \maketitle
 
+\begin{abstract}
+
+We propose trust-region algorithm for constrained optimization problems in which derivatives of the objection function are not available with linear constraints. In each iteration, the objective function is approximated by an interpolation model, which is then minimized over a trust region. We explore several choices of trust region and compare them with different objectives, and ?narrowness? of constraints. Because the constraints are included within the trust region, all iterates as well as sample points are feasible. We work within the pyomo framework and tested using ipopt optimization routines. We provide some numerical results, and suggest how we will extend this to include more general constraints.
+
+\end{abstract}
 
 \tableofcontents
 
@@ -147,6 +152,21 @@ $P$ & is a polyhedron \\
 \end{table}
 
 
+\section{Images}
+ $B(x^{(k)};\Delta_k) = \{ x \in \mathbb{R}^n : \| x - x^{(k)} \le \Delta_k \}$ 
+		is the ball of radius $\Delta_k$ centered at $x^{(k)}$
+
+\includegraphics[width=200px]{images/BAD_CIRCLE.png}
+
+\includegraphics[width=200px]{images/infeasible_constraint.png}
+\includegraphics[width=200px]{images/good_bad_geometry.png}
+
+
+
+
+
+
+
 \section{Introduction}
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
@@ -165,9 +185,10 @@ where $\domain$ is a subset of $\real^n$, and $f$ and $c_i, i \in \mathcal{I} \c
 In our work, we assume that all of the functions in the problem are black-box functions.
 We consider two variations of this problem.
 In the first variation, we assume that the constraints are fully quantifiable.
-This means that all of the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
-In the second variation, we assume that the black-box functions return meaningful numerical values only when evaluated at feasible points. In this case, the constraints are called {\em partially quantifiable}.   
 
+
+As in \cite{DUMMY:typesofconstraints}, this means that all of the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+In the second variation, we assume that the black-box functions return meaningful numerical values only when evaluated at feasible points. In this case, the constraints are called {\em partially quantifiable}.   
 
 
 We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
@@ -176,7 +197,7 @@ The model functions are determined by fitting previously evaluated function valu
 In trust-region methods, the model-functions are used to define a trust-region subproblem, whose solution determines the next iterate.
 For example, the trust-region subproblem might have the form
 
-\[ \begin{array}{ccl} \min_{s| \norm{s} \le \Delta}
+\[ \begin{array}{ccl} \min_{\norm{s} \le \Delta}
  & m_{f}(x^k+s) \\
 \mbox{subject to} & m_{c_i}(x^k+s) \le 0 & i \in \mathcal{I} \\
 & m_{c_i}(x^k) = 0 & i \in \mathcal{E},
@@ -187,9 +208,12 @@ Conceptually, the model functions are ``trusted'' only within a distance $\Delta
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
 
-An important consideration in fitting the model functions is the the ``geometry'' of the sample set.  This will be discussed in more detail in Section \ref{geometry}, but the key point is that the relative positions of the sample points within the trust region has a significant effect on the accuracy of the model functions over the trust region.  When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.  
+An important consideration in fitting the model functions is the the ``geometry'' of the sample set.
+This will be discussed in more detail in Section \ref{geometry}, but the key point is that the relative positions of the sample points within the trust region has a significant effect on the accuracy of the model functions over the trust region.
+When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.
+A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but this step is required for convergence analysis although it may come at the expense of function evaluations.
 
-In the case of partially quantifiable constraints, all of the sample points must lie within the feasible region.  This poses some interesting challenges for geometry of the sample set.  As a first step toward developing an algorithm to solve such problems, we consider a simplified problem where all of the constraints are linear, but we impose the restriction that all sample points must lie within the feasible region.  This work is presented in Chapter \ref{feasiblemethod}
+In the case of partially quantifiable constraints, all of the sample points must lie within the feasible region.  This poses some interesting challenges for the geometry of the sample set.  As a first step toward developing an algorithm to solve such problems, we consider a simplified problem where all of the constraints are linear, but we impose the restriction that all sample points must lie within the feasible region.  This work is presented in Chapter \ref{feasiblemethod}
 
 In the case of fully quantifiable constraints, there is no difficulty in using sample points outside of the feasible region.  
 In Chapter \ref{chap:Filter}, we describe a Trust-Region SQP Filter method for solving this class of problems.
@@ -216,10 +240,134 @@ It might also be worthwhile to consider using different sample sets for fitting 
 
 For example, the SQP trust-region filter method involves constructing a quadratic model of the objective function and linear models of the constraint functions.  But this raises an interesting question, since a good sample set for constructing a quadratic model may not be ideal for fitting the linear functions modeling the constraints.  
 
+\subsection{Recent Work}
+
+
+Within  \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
+This is the first text book devoted to derivative free optimization.
+It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+
+A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
+This compares several software libraries, and reviews the development of derivative free optimization since it started.
+Another recent review can be found in \cite{DUMMY:review2}.
+
+
+
+
+
+\paragraph{Applications}
+A number of applications of derivative free optimization have risen recently including .
+To reliability based optimization \cite{Gao2017}.
+Larson co-authored \cite{1742-6596-874-1-012062}.
+To parallel computing \cite{Cheng2017}
+To circuitry arrangements \cite{PLOSKAS201816}
+\cite{KS2018}
+
+
+\paragraph{Complexity Analysis}
+
+A derivation is found in \cite{doi:10.1137/151005683} which shows that a bound of $O(\epsilon^{-2})$ and $O(n^2\epsilon^{-2})$ function evaluations.
+Using cubic over estimation using finite differences $O(\epsilon^{-1.5})$.
+ function evalutaions.
+
+ 
+\cite{doi:10.1093/imanum/drx043}
+
+
+\begin{verbatim}
+https://arxiv.org/abs/1710.11005
+\end{verbatim}
+Replaces quadratic models with residual linear models
+
+
+\paragraph{Related Algorithms}
+
+\cite{doi:10.1080/10556788.2015.1026968}
+
+\cite{Tröltzsch2016}
+\cite{infeasiblestarting}
+\cite{Gao2018}
+
+
+
+
+%\section{Subproblems}
+%\cite{doi:10.1080/10556780802409296}
+%\cite{DBLP:journals/ol/KamandiAA17}
+%\cite{Verdério2017}
+%\cite{Powell2015}
+%\cite{AMAIOUA201813}
+%\cite{Kamandi2017}
+
+
+
+
+%Within \cite{DUMMY:linesearch_global} and \cite{DUMMY:linesearch_local} Biegler uses a filter method to ensure global convergence within a line search framework.
+%Could talk about filter methods
+
+
+
+\cite{Conejo:2013:GCT:2620806.2621814}
+\cite{doi:10.1137/151005683}
+\cite{Audet2016APB}
+\cite{Tröltzsch2016}
+\cite{doi:10.1080/02331934.2016.1263629}
+\cite{infeasiblestarting}
+\cite{doi:10.1080/10556780802409296}
+\cite{doi:10.1080/10556788.2015.1026968}
+\cite{doi:10.1093/imanum/drx043}
+\cite{Beyhaghi2017}
+\cite{Golovin:2017:GVS:3097983.3098043}
+\cite{DBLP:journals/ol/KamandiAA17}
+\cite{1742-6596-874-1-012062}
+\cite{KS2018}
+\cite{8247938} 
+\cite{doi:10.1002/aic.16364}
+\cite{AuHa2017}
+\cite{Verdério2017}
+\cite{Gao2017}
+\cite{Cheng2017}
+\cite{Martínez2013}
+\cite{AMAIOUA201813}
+\cite{Amaran2014}
+\cite{Costa2014RBFOptA}
+\cite{doi:10.1137/15M1031679}
+\cite{Gao2018}
+\cite{PLOSKAS201816}
+\cite{doi:10.1137/1.9781611974683.ch37}
+\cite{Powell2015}
+\cite{Kamandi2017}
+\cite{Kieslich2018}
+\cite{DUMMY:Biegler}
+\cite{DUMMY:Fletcher}
+\cite{DUMMY:Brekelman}
+\cite{DUMMY:CombineTrustAndLine}
+\cite{DUMMY:linesearch_global}
+\cite{DUMMY:linesearch_local}
+\cite{DUMMY:intro_book}
+\cite{DUMMY:trust_funnel_dfo}
+\cite{DUMMY:original_filter}
+\cite{DUMMY:sqp_filter}
+\cite{DUMMY:Colson2004}
+\cite{DUMMY:SQPFilter}
+\cite{DUMMY:Rios2013}
+\cite{DUMMY:PowellRadialBasis}
+\cite{DUMMY:leastsquares}
+\cite{DUMMY:typesofconstraints}
+\cite{DUMMY:FasanoLLR14}
+\cite{DUMMY:filterpattern}
+\cite{DUMMY:activeset1}
+\cite{DUMMY:LiuzziLS10}
+\cite{DUMMY:augmented}
+
+
+
+
+
 
 \subsubsection{Model-based, Trust Region Methods}
 We will be modifying the following classical algorithm described at a high level here.
-A set of poised points are chosen for some radius $\Delta>0$ about the current iterate.
+A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
 The objective and constraints are then evaluated at these points to construct a model function as a linear combination of some set of basis functions.
 Next, the model is minimized over this trust region and the argument minimum becomes the trial point.
 The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
@@ -338,24 +486,11 @@ If the set is $\Lambda$-poised for a certain trust region radius, then the maxim
 This ensures that the Vandermonde matrix used to find the coefficients used to express the model function in terms of a basis of Lagrange polynomials is well conditioned.
 Although we do not go into the details here, problems become apparent when comparing the Lagrange polynomials associated with a poised set with those of an ill poised set.
 
-Within the first set of pictures below we see the set of quadratic Lagrange polynomials on the interval $[-1,1]$.
-The maximum value of these polynomials over the trust region is simply $1$.
-However, if we use sample points $\{-1, .9, 1\}$ instead of the points $\{-1, 0, 1\}$,
-we find the second set of polynomials.
+In the following image, a set of quadratic polynomials used to interpolate the function $5 + x + y + (x + y) ^ 2 - \alpha y ^ 4$.
+However, the sample points are chosen to be nearly colinear.
 
-If we use these to approximate $3 + \tan^{-1}(x)$, the first basis functions do not vary far from the objective value over the trust region, and the maximum difference between the function and the model function is $0.0711$.
-However, the second basis functions jump far away from the actual function, and the maximum difference between the model function and actual function is 
-$0.1817$.
+\includegraphics[width=200px]{images/bad_geometry.png}
 
-
-BETTER IMAGES COMING SOON...
-
-
-%\includegraphics[width=200px]{poised.png}
-%\includegraphics[width=200px]{illpoised.png}
-
-%\includegraphics[width=200px]{poised_approx.png}
-%\includegraphics[width=200px]{illpoised_approx.png}
 
 
 \subparagraph{Proximity}
@@ -463,10 +598,24 @@ Although we have enough sample points to construct a quadratic model of the cons
 
 
 
-%\subsubsection{Criticality Measure}
+\subsubsection{Criticality Measure}
 
-%In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
-%Once this has reached small enough threshold, and the trust region is small enough, we can terminate the algorithm.
+In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
+Once this has reached small enough threshold, and the trust region is small enough, we can terminate the algorithm.
+For now, our algorithm is designed to work with convex constraints, so emply a classic criticallity measure of
+
+\[
+\chi(x) = \|x - Proj_{\domain}(x - \nabla m_f(x))\|
+\]
+
+This can be computed as 
+\[
+\label{critical}
+
+\chi_k = \chi(x_k) = \| \argmin s \|
+\]
+
+
 
 %That is, if $x^{\star}$ is a first order critical point satisfying
 
@@ -579,6 +728,56 @@ Although we have enough sample points to construct a quadratic model of the cons
 \section{Algorithms}
 \label{feasiblemethod}
 
+
+\subsection{Algorithm Template}
+
+
+
+$k \leftarrow k + 1$
+
+
+\begin{enumerate}
+    \item Initialize $k=0$, $0<\gamma_1<\gamma_2<1$,$\tau_{\chi}>0$,$\tau_{\Delta}>0$, $\Delta_0 > 0$, $x_0$ a feaisble starting point, $0<\omega_{\text{dec}} < 1 \le \omega_{\text{inc}}$, $\gamma_{\Delta}$
+    \item Compute the inner trust region.
+    \begin{itemize}
+        \item This may mean maximizing an ellipse as in \ref{ellipse_optimization}
+    \end{itemize}
+	\item Ensure poisedness, and create the model functions ${m_f}_k(x)$, ${c_i}_k(x), i \in \mathcal I \cup \mathcal E$ as described in \ref{reg}
+	\item Compute critically measure $\chi_k = \chi(x_k)$ as described in \ref{critical}
+    \begin{itemize}
+        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k <= \tau_{\Delta}$, return as converged
+        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k > \tau_{\Delta}$, then $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$, $k \leftarrow k + 1$
+    \end{itemize}
+	
+	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B(x^{(k)};\Delta_k)} m_k(x^{(k)} + s)$
+	\begin {itemize}
+	\end{itemize}
+	
+	\item Test for improvement
+	\begin{itemize}
+		\item Compute $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$
+    \begin{equation}
+    \item \end{equation}
+		\item If $\rho < \gamma_1$, then $x^{(k+1)}=x^{(k)}$ (reject) $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+		\item If $\gamma_1 \le \rho \le \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+		\item If $\rho > \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept)
+		\begin{itemize}
+            \item If $\|x^{(k)} - s^{(k)} \| < \gamma_{\Delta} \Delta_k$ then $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+            \item else $\Delta_{k+1} \leftarrow \omega_{\text{inc}} \Delta_k$
+		\end{itemize}
+	\end{itemize}
+    $k \leftarrow k + 1$
+	
+	
+	
+	\item Go to step 2
+\end{enumerate}
+
+
+
+
+
+
 \section{Simple approach}
 One simple approach to handling hidden constraints is to simply avoid letting points fall outside the feasible region.
 
@@ -589,6 +788,9 @@ This can happen when the feasible region intersect the trust region is small com
 As the number of dimensions grows, this can become worse.
 
 \includegraphics[scale=0.4]{bad_lambda.png}
+
+
+\includegraphics[width=200px]{images/good_bad_geometry.png}
 
 \section{Bumping $\xi$}
 
@@ -659,6 +861,8 @@ Finally, we have the problem of computing the ellipse once given a suitable defi
 
 
 \subsection{Finding the maximal $E_k$ given $\mu^k$}
+
+\label{ellipse_optimization}
 
 Within this paper, we first solve the problem of finding the maximal ellipse given the center, and then perform a simple search over different centers of the ellipse.
 Because of this, we will first show how to find an ellipse with maximal volume given a fixed center.
@@ -771,12 +975,8 @@ Q^k = V(\mu_k) = \sup_{Q \succeq 0} & \det(Q^{-1}) & \\
 if we wish to include the original point explicitly.
 This gives rise to the trust region sub problem of
 
-
-
-
-
-%$$\{x \in \mathbb | 1 - \frac 1 {2s^k} (x - \mu^{k})^T Q (x - \mu^{k}) \ge 0\} $$
-%$$s^k = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T Q^k (x^{k} - \mu^{k})^T \}$$
+$$\{x \in \mathbb | 1 - \frac 1 {2s^k} (x - \mu^{k})^T Q (x - \mu^{k}) \ge 0\} $$
+$$s^k = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T Q^k (x^{k} - \mu^{k})^T \}$$
 
 
 
@@ -836,6 +1036,22 @@ In this paper, we consider one and two line segments.
 \includegraphics[scale=0.4]{run_away_1.png}
 \includegraphics[scale=0.4]{run_away_2.png}
 
+\section{Analysis Thoughts}
+
+We plan to leverage convergence results found in \cite{Conejo:2013:GCT:2620806.2621814} which presents very general global convergence results for derivative free algorithms over convex constraints.
+A key step in showing using this proof will be satisfying the efficiency condition
+$m_f(x_{k}) - m_f(x_{k+1}) \ge c \chi(x_{k+1}) \min\{ \frac{\chi(x_{k+1})}{1 + \|\nabla^2m_f(x_{k+1})\|}, \Delta_k, 1 \}$.
+
+Should $\rho$ include the constraints.
+
+\section{Extensions}
+The ellipse may be preferrable when we wish to avoid getting too close to the constraints.
+
+
+
+\includegraphics[width=200px]{images/second_order_critical_point.png}
+
+
 \section{Results}
 
 the example problem I have been working with
@@ -855,12 +1071,15 @@ the example problem I have been working with
  Search everything & 19 & 106    \\
  One line segment & 21 & 86 \\
  Two line segments & 23 & 115 \\
+ Circle search everywhere &  & 133 \\
 \end{tabular}
 \end{center}
 
 \newpage
 
-\bibliography{constraints}
+\newpage
+
+\bibliography{bibliography}
 \bibliographystyle{ieeetr}
 
 \end{document}

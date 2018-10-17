@@ -2,7 +2,7 @@ import numpy
 
 import matplotlib.pyplot as plt
 from trust_region.util.basis import QuadraticBasis
-from trust_region.util.trust_region import CircularTrustRegion
+from trust_region.dfo.trust_region.trust_region import CircularTrustRegion
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.dfo.lagrange import LagrangeParams
 

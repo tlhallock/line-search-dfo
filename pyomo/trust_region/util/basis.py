@@ -2,6 +2,15 @@ import abc
 import numpy
 
 
+def parse_basis(basis_type, dimension):
+	if basis_type == 'quadratic':
+		return QuadraticBasis(dimension)
+	elif basis_type == 'linear':
+		return LinearBasis(dimension)
+	else:
+		raise Exception('unknown basis type: {}'.format(basis_type))
+
+
 class Basis(metaclass=abc.ABCMeta):
 	def __init__(self, n, basis_dimension):
 		self.n = int(n)
@@ -79,3 +88,17 @@ class LinearBasis(Basis):
 				idx += 1
 
 		return ret_val
+
+	def debug_evaluate(self, x, coefficients):
+		return (
+				1.0 * coefficients[0] +
+				1.0 * coefficients[1] * x[0] +
+				1.0 * coefficients[2] * x[1]
+		)
+
+	def to_pyomo_expression(self, model, coefficients):
+		return (
+				1.0 * coefficients[0] +
+				1.0 * coefficients[1] * model.x[0] +
+				1.0 * coefficients[2] * model.x[1]
+		)

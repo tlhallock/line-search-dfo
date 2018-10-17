@@ -1,14 +1,8 @@
 
 import numpy
-import matplotlib.pyplot as plt
-from trust_region.optimization.maximize_lagrange import maximize_lagrange_quadratic
 
-
-class LagrangeParams:
-	def __init__(self):
-		self.improve_with_new_points = True
-		self.xsi = 0.00001
-		self.far_radius = 1.5
+from trust_region.dfo.lagrange_replacement_strategy import parse_replacement_policy
+from trust_region.dfo.lagrange_replacement_strategy import ReplacementCheck
 
 
 class Certification:
@@ -77,9 +71,10 @@ def compute_lagrange_polynomials(
 		basis,
 		trust_region,
 		points,
-		context,
-		lagrange_params
+		replacement_strategy_params
 ):
+	checkers, options = parse_replacement_policy(replacement_strategy_params)
+
 	p = basis.basis_dimension
 	n_points = points.shape[0]
 	h = n_points + p
@@ -90,10 +85,6 @@ def compute_lagrange_polynomials(
 	cert.shifted = trust_region.shift(points)
 	cert.original = numpy.copy(cert.unshifted)
 	cert.original_shifted = numpy.copy(cert.shifted)
-	cert.forced_removal = [
-		lagrange_params.far_radius is not None and numpy.linalg.norm(cert.shifted[i]) > lagrange_params.far_radius
-		for i in range(points.shape[0])
-	]
 
 	if not n_points == p:
 		raise Exception("currently, have to have all points")
@@ -119,33 +110,20 @@ def compute_lagrange_polynomials(
 			cert.indices[i] = cert.indices[other_idx]
 			cert.indices[other_idx] = tmp
 
-			tmp = cert.forced_removal[i]
-			cert.forced_removal[i] = cert.forced_removal[other_idx]
-			cert.forced_removal[other_idx] = tmp
-
-		# Check the poisedness
-		if lagrange_params.improve_with_new_points and (
-			cert.forced_removal[i] or
-			max_value < lagrange_params.xsi
-		):
-			# If still not poised, Then check for new points
-			coefficients = numpy.asarray(v[n_points:h, i]).flatten()
-			maximization_result = maximize_lagrange_quadratic(coefficients)
-
+		current_point = cert.shifted[i]
+		basis_coefficients = numpy.asarray(v[n_points:h, i]).flatten()
+		check = ReplacementCheck(basis, trust_region, max_value, current_point, basis_coefficients)
+		for checker in checkers:
+			checker(check, options)
+		if check.should_replace:
 			# replace the row of V with new point
-			cert.shifted[i] = maximization_result.x
+			cert.shifted[i] = check.new_point
 			v[i] = numpy.dot(
-				basis.evaluate_to_matrix(numpy.asarray([maximization_result.x])),
+				basis.evaluate_to_matrix(numpy.asarray([check.new_point])),
 				v[n_points:h, :]
 			)
 			cert.indices[i] = -1
-			cert.forced_removal[i] = False
 			_test_v(v, basis, cert.shifted)
-
-			max_value = abs(v[i, i])
-
-		if max_value < lagrange_params.xsi and lagrange_params.improve_with_new_points:
-			print('This is a problem')
 
 		# perform LU
 		v[:, i] = v[:, i] / v[i, i]

@@ -2,13 +2,14 @@
 import numpy
 
 from trust_region.algorithm.tr_search.trust_region_strategy import parse_tr_strategy
-from trust_region.dfo.lagrange import LagrangeParams
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.optimization.trust_region_subproblem import solve_trust_region_subproblem
-from trust_region.util.basis import QuadraticBasis
+from trust_region.util.basis import parse_basis
 from trust_region.util.history import History
 from trust_region.util.plots import create_plot
-from trust_region.util.trust_region import L1TrustRegion
+from trust_region.dfo.trust_region.l1_trust_region import L1TrustRegion
+from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_region_objective
+from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
 
 OUTPUT_DIRECTORY = 'images'
 
@@ -20,7 +21,9 @@ class AlgorithmParams:
 		self.constraints_b = None
 		self.objective_function = None
 		self.trust_region_strategy_params = None
+		self.point_replacement_params = None
 		self.directory = None
+		self.basis_type = None
 
 		self.criticality_tolerance = 1e-4
 		self.subproblem_constraint_tolerance = 1e-8
@@ -28,6 +31,8 @@ class AlgorithmParams:
 		self.tolerance = 1e-4
 		self.radius_decrease_factor = 0.75
 		self.radius_increase_factor = 1.5
+		self.rho_upper = 0.9
+		self.rho_lower = 0.1
 		self.plot_bounds = []
 
 
@@ -35,7 +40,7 @@ class AlgorithmContext:
 	def __init__(self, params, log_file):
 		self.log_file = log_file
 		self.params = params
-		self.basis = QuadraticBasis(len(params.x0))
+		self.basis = parse_basis(params.basis_type, len(params.x0))
 		self.outer_trust_region = L1TrustRegion(center=params.x0, radius=1.0)
 		self.iteration = 0
 		self.history = History()
@@ -145,19 +150,23 @@ def check_criticality(context):
 
 
 def update_inner_trust_region(context):
-	find_trust_region = parse_tr_strategy(context.params.trust_region_strategy_params)
-	success, trust_region, plot_details = find_trust_region(context)
+	if context.outer_trust_region.contained_in(context.params.constraints_A, context.params.constraints_b):
+		value = get_circular_trust_region_objective(context, context.model_center(), None, None)
+		trust_region = value.trust_region
+		success = value.success
+		plot_details = NoPlotDetails()
+	else:
+		find_trust_region = parse_tr_strategy(context.params.trust_region_strategy_params)
+		success, trust_region, plot_details = find_trust_region(context)
+
 	if not success:
 		raise Exception('Unable to find the trust region')
-
-	params = LagrangeParams()
 
 	certification = compute_lagrange_polynomials(
 		context.basis,
 		trust_region,
 		context.sample_points,
-		context,
-		params
+		context.params.point_replacement_params
 	)
 	if not certification.poised:
 		raise Exception('Not poised')
@@ -205,6 +214,7 @@ def always_feasible_algorithm(params):
 					context.finish_current_plot('converged')
 					break
 				context.decrease_radius()
+				context.current_plot.add_points(context.sample_points, label='poised points', color='k', s=20, marker="x")
 				context.finish_current_plot('critical, radius too large')
 				continue
 
@@ -235,7 +245,7 @@ def always_feasible_algorithm(params):
 			context.log('trial point = {}'.format(solution.trial_point))
 			context.log('rho = {}'.format(rho))
 
-			if rho < 0.1:
+			if rho < context.params.rho_lower:
 				context.decrease_radius()
 				context.finish_current_plot('poor model')
 				continue
@@ -246,7 +256,7 @@ def always_feasible_algorithm(params):
 				context.finish_current_plot('step too small')
 				continue
 
-			if rho > 0.9:
+			if rho > context.params.rho_lower:
 				context.increase_radius()
 
 			context.outer_trust_region.recenter(solution.trial_point)

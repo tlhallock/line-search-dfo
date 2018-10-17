@@ -17,6 +17,8 @@ def search_segment(context, objective, options):
 		options=options
 	)
 
+	plot_count = 0
+
 	delta = 0.5
 	center = 0.5
 	while delta > tolerance and len(search_path.points) > 1:
@@ -36,6 +38,32 @@ def search_segment(context, objective, options):
 
 			if best_solution_so_far.success and other_solution.objective <= best_solution_so_far.objective:
 				continue
+
+			# # #####################################################################################
+			# from trust_region.util.history import Bounds
+			# from trust_region.util.plots import create_plot
+			#
+			# bounds = Bounds()
+			# bounds.extend(numpy.array([3, 3]))
+			# bounds.extend(numpy.array([-2, -2]))
+			#
+			# plot = create_plot('testing_ellipse', 'images/ellipse_{}.png'.format(str(plot_count).zfill(4)), bounds)
+			# plot_count += 1
+			#
+			# plot.ax.text(
+			# 	0.1, 0.1,
+			# 	str(other_solution.trust_region.volume),
+			# 	horizontalalignment='center',
+			# 	verticalalignment='center',
+			# 	transform=plot.ax.transAxes
+			# )
+			#
+			# plot.add_polyhedron(A, b, label='bounds')
+			# plot.add_point(other_point, label='center', marker='x', color='r')
+			# plot.add_point(context.model_center(), label='include', marker='+', color='y')
+			# other_solution.trust_region.add_to_plot(plot)
+			# plot.save()
+			# # #####################################################################################
 
 			best_solution_so_far = other_solution
 			center = t

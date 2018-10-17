@@ -1,7 +1,7 @@
 import numpy
 
 
-def sample_search_directions(dim, number):
+def sample_search_directions(dim, number, include_axis=True):
 	for i in range(dim):
 		ret_val = numpy.zeros(dim)
 		ret_val[i] = 1.0

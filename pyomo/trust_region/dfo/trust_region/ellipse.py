@@ -1,7 +1,8 @@
 
 import numpy
 
-from trust_region.util.trust_region import TrustRegion
+from trust_region.dfo.trust_region.trust_region import TrustRegion
+from trust_region.util.directions import sample_search_directions
 
 
 class Ellipse(TrustRegion):
@@ -10,15 +11,26 @@ class Ellipse(TrustRegion):
 		self.volume = None
 		self.ds = None
 		self.lambdas = None
-		self.scale = 1.0
 		self.q = None
 		self.q_inverse = None
 		self.l = None
 		self.l_inverse = None
 		self.hot_start = None
 
-	def evaluate(self, v, scale=1.0):
-		return 1 - 0.5 * numpy.dot(v - self.center, numpy.dot(self.q, v - self.center)) / scale
+	def to_json(self):
+		return {
+			'center': [c for c in self.center],
+			'volume': self.volume,
+			'ds': [[di for di in d] for d in self.ds],
+			'lambdas': [l for l in self.lambdas],
+			'q': [[self.q[r, c] for c in range(self.q.shape[1])] for r in range(self.q.shape[0])],
+			'q^-1': [[self.q_inverse[r, c] for c in range(self.q_inverse.shape[1])] for r in range(self.q_inverse.shape[0])],
+			'l': [[self.l[r, c] for c in range(self.l.shape[1])] for r in range(self.l.shape[0])],
+			'l^-1': [[self.l_inverse[r, c] for c in range(self.l_inverse.shape[1])] for r in range(self.l_inverse.shape[0])],
+		}
+
+	def evaluate(self, v):
+		return 1 - 0.5 * numpy.dot(v - self.center, numpy.dot(self.q, v - self.center))
 
 	def shift_row(self, v):
 		return numpy.sqrt(0.5) * numpy.dot(self.l, v - self.center)
@@ -37,7 +49,7 @@ class Ellipse(TrustRegion):
 		# scale - 0.5 * dot(point - xbar, dot(Q, point - xbar)) == 0
 		# scale == 0.5 * dot(point - xbar, dot(Q, point - xbar))
 		scale = 0.5 * numpy.dot(include - self.center, numpy.dot(self.q, include - self.center))
-		return numpy.max(1.0, scale)
+		return max(1.0, scale)
 
 	def add_shifted_pyomo_constraints(self, model):
 		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0)
@@ -66,3 +78,9 @@ class Ellipse(TrustRegion):
 
 	def shift_pyomo_model(self, model):
 		raise Exception("Not implemented")
+
+	def sample_shifted_region(self, num_points):
+		ret = [numpy.zeros(len(self.center))]
+		for d in sample_search_directions(len(self.center), num_points, include_axis=False):
+			ret.append(numpy.random.random() * d)
+		return ret

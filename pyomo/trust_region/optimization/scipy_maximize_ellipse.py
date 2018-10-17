@@ -2,7 +2,7 @@
 import numpy
 
 
-from trust_region.util.ellipse import Ellipse
+from trust_region.dfo.trust_region.ellipse import Ellipse
 from scipy.optimize import minimize
 
 
@@ -63,7 +63,7 @@ def old_maximize_ellipse(p):
 		'type': 'ineq'
 	})
 
-	if include is not None and False:
+	if include is not None:
 		sInc = include - xbar
 		daConstraints.append({
 			'fun': lambda q: 2 * q[0] * q[2] * k * k - 2 * k * k * q[1] ** 2

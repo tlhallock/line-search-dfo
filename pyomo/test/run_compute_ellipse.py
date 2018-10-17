@@ -51,7 +51,7 @@ if ellipse is not None:
 print(success)
 
 bounds = Bounds()
-bounds.extend(numpy.array([7, 7]))
+bounds.extend(numpy.array([3, 3]))
 bounds.extend(numpy.array([-2, -2]))
 
 plot = create_plot('testing_ellipse', 'images/ellipse.png', bounds)

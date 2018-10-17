@@ -1,4 +1,4 @@
-
+import traceback
 import numpy
 import os
 
@@ -16,6 +16,10 @@ params = [{
 #	},
 #	'directory': 'circle',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
 #		'shape': 'ellipse',
@@ -24,6 +28,10 @@ params = [{
 #	},
 #	'directory': 'ellipse',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
 #		'shape': 'circle',
@@ -31,14 +39,57 @@ params = [{
 #	},
 #	'directory': 'circle_anywhere',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
+#}, {
+	'trust_region_options': {
+		'shape': 'ellipse',
+		'include_as_constraint': True,
+		'search': 'anywhere',
+	},
+	'directory': 'ellipse_anywhere',
+	'increase-radius': False,
+	'replacement-strategy-params': {
+		'strategy': 'fixed-xsi',
+	},
+	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
-#		'shape': 'ellipse',
-#		'include_as_constraint': True,
-#		'search': 'anywhere',
-#	},
-#	'directory': 'ellipse_anywhere',
-#	'increase-radius': False,
+# 		'shape': 'scaled-ellipse',
+# 		'search': 'anywhere',
+# 	},
+# 	'directory': 'scaled_ellipse_anywhere',
+# 	'increase-radius': False,
+# 	'replacement-strategy-params': {
+# 		'strategy': 'fixed-xsi',
+# 	},
+# 	'basis': 'quadratic',
+# }, {
+# 	'trust_region_options': {
+# 		'shape': 'scaled-ellipse',
+# 		'search': 'segment',
+# 		'number_of_points': 1,
+# 	},
+# 	'directory': 'scaled_ellipse_segment_1',
+# 	'increase-radius': False,
+# 	'replacement-strategy-params': {
+# 		'strategy': 'fixed-xsi',
+# 	},
+# 	'basis': 'quadratic',
+# }, {
+# 	'trust_region_options': {
+# 		'shape': 'scaled-ellipse',
+# 		'search': 'segment',
+# 		'number_of_points': 2,
+# 	},
+# 	'directory': 'scaled_ellipse_segment_2',
+# 	'increase-radius': False,
+# 	'replacement-strategy-params': {
+# 		'strategy': 'fixed-xsi',
+# 	},
+# 	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
 #		'shape': 'circle',
@@ -47,6 +98,10 @@ params = [{
 #	},
 #	'directory': 'circle_segment_1',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
 #		'shape': 'ellipse',
@@ -56,6 +111,10 @@ params = [{
 #	},
 #	'directory': 'ellipse_segment_1',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
 #}, {
 #	'trust_region_options': {
 # 		'shape': 'circle',
@@ -64,15 +123,34 @@ params = [{
 # 	},
 # 	'directory': 'circle_segment_2',
 #	'increase-radius': True,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
 # }, {
-	'trust_region_options': {
-		'shape': 'ellipse',
-		'include_as_constraint': True,
-		'search': 'segment',
-		'number_of_points': 2,
-	},
-	'directory': 'ellipse_segment_2',
-	'increase-radius': False,
+#	'trust_region_options': {
+#		'shape': 'ellipse',
+#		'include_as_constraint': True,
+#		'search': 'segment',
+#		'number_of_points': 2,
+#	},
+#	'directory': 'ellipse_segment_2',
+#	'increase-radius': False,
+#	'replacement-strategy-params': {
+#		'strategy': 'fixed-xsi',
+#	},
+#	'basis': 'quadratic',
+# }, {
+#	'trust_region_options': {
+#		'shape': 'polyhedral',
+#		'search': 'none',
+#	},
+#	'directory': 'feasible_intersect_trust',
+#	'increase-radius': False,
+#	'replacement-strategy-params': {
+#		'strategy': 'adaptive-xsi',
+#	},
+#	'basis': 'quadratic',
 }]
 
 
@@ -85,6 +163,7 @@ for p in params:
 		a = 0.5
 
 		params = AlgorithmParams()
+		params.basis_type = p['basis']
 		params.x0 = numpy.array([3.0, 0.5])
 		params.constraints_A = numpy.array([
 			[-a, +1.0],
@@ -101,11 +180,15 @@ for p in params:
 		params.plot_bounds.append(numpy.array([10, +5]))
 		params.plot_bounds.append(numpy.array([10, -5]))
 
+		params.point_replacement_params = p['replacement-strategy-params']
+
 		output_path = 'images/{}'.format(params.directory)
 		if not os.path.exists(output_path):
 			os.makedirs(output_path)
 
 		always_feasible_algorithm(params)
-	except 1:
+	except Exception as e:
 		print("failed")
+		print(e)
+		traceback.print_exc()
 

@@ -14,25 +14,20 @@ class LagrangeMaximization:
 		self.objective = None
 
 
-def _maximize_lagrange_quadratic(coefficients, initialization):
+def _maximize_lagrange_quadratic(basis, trust_region, coefficients, initialization):
 	model = ConcreteModel()
-	model.dimension = range(2) # dimension...
-	model.x = Var(model.dimension, initialize=initialization, bounds=(-1, 1))
+	model.dimension = range(basis.n)
+	model.x = Var(model.dimension, bounds=(-1, 1))
 	model.constraints = ConstraintList()
-	model.constraints.add(
-		# Trust region
-		sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0
-	)
+	if initialization is not None:
+		for i in model.dimension:
+			model.x[i].set_value(initialization[i])
+
+	trust_region.add_shifted_pyomo_constraints(model)
 
 	def objective_rule(m):
-		return (
-			1.0 * coefficients[0] +
-			1.0 * coefficients[1] * m.x[0] +
-			1.0 * coefficients[2] * m.x[1] +
-			0.5 * coefficients[3] * m.x[0] * m.x[0] +
-			0.5 * coefficients[4] * m.x[1] * m.x[0] +
-			0.5 * coefficients[5] * m.x[1] * m.x[1]
-		)
+		return basis.to_pyomo_expression(m, coefficients)
+
 	model.objective = Objective(rule=objective_rule, sense=maximize)
 	opt = SolverFactory(SOLVER_NAME, executable=SOLVER_PATH)
 	result = opt.solve(model)
@@ -50,15 +45,13 @@ def _maximize_lagrange_quadratic(coefficients, initialization):
 	return ret_value
 
 
-def maximize_lagrange_quadratic(coefficients):
-	# Learned how to set the initial values
-	# I should use the util.directions here
+def maximize_lagrange_quadratic(basis, trust_region, coefficients):
 	current = None
-	for initialization in (0.0, -0.1, .1):
-		test = _maximize_lagrange_quadratic([+c for c in coefficients], initialization=initialization)
+	for initialization in trust_region.sample_shifted_region(3):
+		test = _maximize_lagrange_quadratic(basis, trust_region, [+c for c in coefficients], initialization=initialization)
 		if current is None or abs(test.objective) > abs(current.objective):
 			current = test
-		test = _maximize_lagrange_quadratic([-c for c in coefficients], initialization=initialization)
+		test = _maximize_lagrange_quadratic(basis, trust_region, [-c for c in coefficients], initialization=initialization)
 		if abs(test.objective) > abs(current.objective):
 			current = test
 	return current
