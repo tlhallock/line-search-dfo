@@ -15,8 +15,15 @@ class PlotObject:
 		self.X = None
 		self.Y = None
 		self.Z = None
+		self.css = []
 
 	def save(self):
+		for cs in self.css:
+			plt.clabel(cs, fontsize=9, inline=1)
+			#artists, labels = cs.legend_elements()
+			#self.ax.legend()
+		self.ax.legend()
+		self.ax.grid(True)
 		print('saving to {}'.format(self.filename))
 		self.fig.savefig(self.filename)
 		plt.close()
@@ -26,10 +33,9 @@ class PlotObject:
 			for j in range(0, len(self.y)):
 				self.Z[j, i] = func(numpy.array([self.x[i], self.y[j]]))
 		if lvls is None:
-			CS = plt.contour(self.X, self.Y, self.Z, colors=color, label=label)
+			self.css.append(plt.contour(self.X, self.Y, self.Z, colors=color))
 		else:
-			CS = plt.contour(self.X, self.Y, self.Z, levels=lvls, colors=color, label=label)
-		plt.clabel(CS, fontsize=9, inline=1)
+			self.css.append(plt.contour(self.X, self.Y, self.Z, levels=lvls, colors=color))
 
 	def add_points(self, points, label, color='r', s=20, marker="x"):
 		self.ax.scatter(points[:, 0], points[:, 1], s=s, c=color, marker=marker, label=label)
@@ -38,13 +44,21 @@ class PlotObject:
 		self.ax.scatter([point[0]], [point[1]], s=s, c=color, marker=marker, label=label)
 
 	def add_arrow(self, x1, x2, color="red", width=0.05):
-		self.ax.add_patch(patches.Arrow(
-			x=x1[0], y=x1[1],
-			dx=x2[0] - x1[0], dy=x2[1] - x1[1],
-			facecolor=color,
-			edgecolor=color,
-			width=width
-		))
+		if width is None:
+			self.ax.add_patch(patches.Arrow(
+				x=x1[0], y=x1[1],
+				dx=x2[0] - x1[0], dy=x2[1] - x1[1],
+				facecolor=color,
+				edgecolor=color
+			))
+		else:
+			self.ax.add_patch(patches.Arrow(
+				x=x1[0], y=x1[1],
+				dx=x2[0] - x1[0], dy=x2[1] - x1[1],
+				facecolor=color,
+				edgecolor=color,
+				width=width
+			))
 
 	def add_polyhedron(self, A, b, label, color='b', lvls=[-0.1, 0.0]):
 		for i in range(A.shape[0]):

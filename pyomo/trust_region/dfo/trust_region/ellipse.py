@@ -5,6 +5,10 @@ from trust_region.dfo.trust_region.trust_region import TrustRegion
 from trust_region.util.directions import sample_search_directions
 
 
+def _shift_polyhedron(A, b, scale, l_inverse, center):
+	return numpy.sqrt(2 * scale) * numpy.dot(A, l_inverse), b - numpy.dot(A, center)
+
+
 class Ellipse(TrustRegion):
 	def __init__(self):
 		self.center = None
@@ -31,6 +35,9 @@ class Ellipse(TrustRegion):
 
 	def evaluate(self, v):
 		return 1 - 0.5 * numpy.dot(v - self.center, numpy.dot(self.q, v - self.center))
+
+	def contains(self, point):
+		return self.evaluate(point) >= 0.0
 
 	def shift_row(self, v):
 		return numpy.sqrt(0.5) * numpy.dot(self.l, v - self.center)
@@ -65,7 +72,7 @@ class Ellipse(TrustRegion):
 			color=color,
 			lvls=[-0.1, 0.0]
 		)
-		if not detailed:
+		if not detailed or self.ds is None:
 			return
 		for d in self.ds:
 			plot_object.add_arrow(self.center, self.center + d, color="c")
@@ -84,3 +91,7 @@ class Ellipse(TrustRegion):
 		for d in sample_search_directions(len(self.center), num_points, include_axis=False):
 			ret.append(numpy.random.random() * d)
 		return ret
+
+	def shift_polyhedron(self, polyhedron):
+		return _shift_polyhedron(polyhedron[0], polyhedron[1], 1.0, self.l_inverse, self.center)
+

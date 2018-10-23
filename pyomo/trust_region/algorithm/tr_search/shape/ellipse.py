@@ -64,60 +64,14 @@ def get_elliptical_trust_region_objective(context, x, hot_start, options):
 				value.trust_region = None
 				return value
 
-		try:
-			success1, ellipse1 = compute_maximal_ellipse_after_shift(ellipse_params, context.outer_trust_region)
-			#if success1:
-			#	success1 = ellipse1.evaluate(context.model_center()) <= 1.0
-		except:
-			traceback.print_exc()
-			success1 = False
-			ellipse1 = None
-		# try:
-		# 	success2, ellipse2 = old_maximize_ellipse(ellipse_params)
-		# 	#if success2:
-		# 	#	success2 = ellipse2.evaluate(context.model_center()) <= 1.0
-		# except:
-		# 	success2 = False
-		# 	ellipse2 = None
+		value.success, value.trust_region = compute_maximal_ellipse_after_shift(ellipse_params, context.outer_trust_region)
+		if value.success:
+			value.objective = value.trust_region.volume
+			value.hot_start = value.trust_region.hot_start
 
-		# if not success1 or not success2 or abs(ellipse1.volume - ellipse2.volume) > 1e-4:
-		# 	if success1:
-		# 		print(ellipse1.volume)
-		# 	if success2:
-		# 		print(ellipse2.volume)
-		#
-		# 	global difference_plot_count
-		# 	difference_plot_count += 1
-		# 	plot = create_plot(
-		# 		title='ellipses',
-		# 		filename='images/different_ellipses_{}.png'.format(str(difference_plot_count).zfill(4)),
-		# 		bounds=context.outer_trust_region.get_bounds().expand()
-		# 	)
-		# 	context.outer_trust_region.add_to_plot(plot)
-		# 	if success1:
-		# 		ellipse1.add_to_plot(plot, color='b', detailed=False)
-		# 	if success2:
-		# 		ellipse2.add_to_plot(plot, color='y', detailed=False)
-		# 	plot.ax.text(
-		# 		0.1, 0.1,
-		# 		'pyomo: ' + (str(ellipse1.volume) if success1 else 'invalid') + ' (blue), scipy: ' +
-		# 			(str(ellipse2.volume) if success2 else 'invalid') + ' (yellow)',
-		# 		horizontalalignment='center',
-		# 		verticalalignment='center',
-		# 		transform=plot.ax.transAxes
-		# 	)
-		# 	plot.save()
-		# 	print('large difference in solvers')
+		if 'evaluator' in options:
+			value.objective = options['evaluator'](
+				indicator=lambda s: value.trust_region.contains(s)
+			)
 
-		value.hot_start = ellipse1.hot_start if success1 else None
-		if False:  # and ((success2 and not success1) or (success2 and success1 and ellipse2.volume > ellipse1.volume)):
-			# value.success = success2
-			# value.trust_region = ellipse2
-			# value.objective = ellipse2.volume
-			pass
-		else:
-			value.success = success1
-			if value.success:
-				value.trust_region = ellipse1
-				value.objective = ellipse1.volume
 		return value

@@ -6,159 +6,27 @@ from trust_region.algorithm.always_feasible_algorithm import AlgorithmParams
 from trust_region.algorithm.always_feasible_algorithm import always_feasible_algorithm
 from trust_region.util.test_objectives import Objective
 
+from test.run_params import params
+
 numpy.set_printoptions(linewidth=255)
-
-
-params = [{
-#	'trust_region_options': {
-#		'shape': 'circle',
-#		'search': 'none',
-#	},
-#	'directory': 'circle',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-#		'shape': 'ellipse',
-#		'include_as_constraint': True,
-#		'search': 'none',
-#	},
-#	'directory': 'ellipse',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-#		'shape': 'circle',
-#		'search': 'anywhere',
-#	},
-#	'directory': 'circle_anywhere',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-#}, {
-	'trust_region_options': {
-		'shape': 'ellipse',
-		'include_as_constraint': True,
-		'search': 'anywhere',
-	},
-	'directory': 'ellipse_anywhere',
-	'increase-radius': False,
-	'replacement-strategy-params': {
-		'strategy': 'fixed-xsi',
-	},
-	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-# 		'shape': 'scaled-ellipse',
-# 		'search': 'anywhere',
-# 	},
-# 	'directory': 'scaled_ellipse_anywhere',
-# 	'increase-radius': False,
-# 	'replacement-strategy-params': {
-# 		'strategy': 'fixed-xsi',
-# 	},
-# 	'basis': 'quadratic',
-# }, {
-# 	'trust_region_options': {
-# 		'shape': 'scaled-ellipse',
-# 		'search': 'segment',
-# 		'number_of_points': 1,
-# 	},
-# 	'directory': 'scaled_ellipse_segment_1',
-# 	'increase-radius': False,
-# 	'replacement-strategy-params': {
-# 		'strategy': 'fixed-xsi',
-# 	},
-# 	'basis': 'quadratic',
-# }, {
-# 	'trust_region_options': {
-# 		'shape': 'scaled-ellipse',
-# 		'search': 'segment',
-# 		'number_of_points': 2,
-# 	},
-# 	'directory': 'scaled_ellipse_segment_2',
-# 	'increase-radius': False,
-# 	'replacement-strategy-params': {
-# 		'strategy': 'fixed-xsi',
-# 	},
-# 	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-#		'shape': 'circle',
-#		'search': 'segment',
-#		'number_of_points': 1,
-#	},
-#	'directory': 'circle_segment_1',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-#		'shape': 'ellipse',
-#		'include_as_constraint': True,
-#		'search': 'segment',
-#		'number_of_points': 1,
-#	},
-#	'directory': 'ellipse_segment_1',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-#}, {
-#	'trust_region_options': {
-# 		'shape': 'circle',
-# 		'search': 'segment',
-# 		'number_of_points': 2,
-# 	},
-# 	'directory': 'circle_segment_2',
-#	'increase-radius': True,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-# }, {
-#	'trust_region_options': {
-#		'shape': 'ellipse',
-#		'include_as_constraint': True,
-#		'search': 'segment',
-#		'number_of_points': 2,
-#	},
-#	'directory': 'ellipse_segment_2',
-#	'increase-radius': False,
-#	'replacement-strategy-params': {
-#		'strategy': 'fixed-xsi',
-#	},
-#	'basis': 'quadratic',
-# }, {
-#	'trust_region_options': {
-#		'shape': 'polyhedral',
-#		'search': 'none',
-#	},
-#	'directory': 'feasible_intersect_trust',
-#	'increase-radius': False,
-#	'replacement-strategy-params': {
-#		'strategy': 'adaptive-xsi',
-#	},
-#	'basis': 'quadratic',
-}]
-
 
 # to add shift xsi
 # to add scale
-# to add 
+# to add
+
+children = []
+child = False
+distributed = False
 
 for p in params:
+	if 'heuristics' not in p['trust_region_options']:
+		continue
+	if distributed:
+		child_pid = os.fork()
+		if child_pid == 0:
+			children.append(child_pid)
+			continue
+		child = True
 	try:
 		a = 0.5
 
@@ -192,3 +60,7 @@ for p in params:
 		print(e)
 		traceback.print_exc()
 
+if not child:
+	for child_pid in children:
+		pid, status = os.waitpid(child_pid, 0)
+		print(pid, status)

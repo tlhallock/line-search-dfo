@@ -14,6 +14,7 @@ class Certification:
 		self.original_shifted = None
 		self.poised = False
 		self.forced_removal = None
+		self.lmbda = None
 
 	def fail(self):
 		self.unshifted = None
@@ -22,7 +23,7 @@ class Certification:
 		self.original = None
 		self.original_shifted = None
 		self.poised = False
-		# lambdas = numpy.empty(n_points)
+		self.lmbda = None
 
 	def add_to_plot(self, plot_object):
 		plot_object.add_points(points=self.original, label='original', color='b', marker='+', s=10)

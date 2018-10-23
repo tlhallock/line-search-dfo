@@ -3,7 +3,7 @@ import traceback
 
 from trust_region.algorithm.tr_search.searches.common import ObjectiveValue
 from trust_region.optimization.maximize_ellipse import EllipseParams
-from trust_region.optimization.maximize_ellipse import compute_maximal_ellipse
+from trust_region.optimization.maximize_ellipse import compute_maximal_ellipse_after_shift
 from trust_region.dfo.trust_region.scaled_ellipse import ScaledEllipse
 
 
@@ -19,7 +19,7 @@ def get_scaled_elliptical_trust_region_objective(context, x, hot_start, options)
 		value.point = x
 
 		try:
-			success, ellipse = compute_maximal_ellipse(ellipse_params)
+			success, ellipse = compute_maximal_ellipse_after_shift(ellipse_params, context.outer_trust_region)
 		except:
 			traceback.print_exc()
 			success = False

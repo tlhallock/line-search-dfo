@@ -3,6 +3,7 @@ import numpy
 
 from trust_region.dfo.trust_region.trust_region import TrustRegion
 from trust_region.util.directions import sample_search_directions
+from trust_region.dfo.trust_region.ellipse import _shift_polyhedron
 
 
 class ScaledEllipse(TrustRegion):
@@ -28,7 +29,7 @@ class ScaledEllipse(TrustRegion):
 		return self.ellipse.center + numpy.sqrt(2) * numpy.dot(self.ellipse.l_inverse, points.T).T * numpy.sqrt(self.scale)
 
 	def get_shifted_polyhedron(self):
-		return numpy.sqrt(2 * self.scale) * numpy.dot(self.A, self.ellipse.l_inverse), self.b - numpy.dot(self.A, self.ellipse.center)
+		return _shift_polyhedron(self.A, self.b, self.scale, self.ellipse.l_inverse, self.ellipse.center)
 
 	def add_shifted_pyomo_constraints(self, model):
 		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0)
@@ -40,6 +41,7 @@ class ScaledEllipse(TrustRegion):
 		raise Exception("Not implemented")
 
 	def add_to_plot(self, plot_object, detailed=True, color='g'):
+		# We should just call ellipse.add_to_plot
 		plot_object.add_point(self.ellipse.center, 'trust region center', color=color, s=20, marker="*")
 		plot_object.add_contour(
 			lambda x: -self.evaluate(x),
@@ -53,7 +55,7 @@ class ScaledEllipse(TrustRegion):
 			color='r',
 			lvls=[0.0]
 		)
-		if not detailed:
+		if not detailed or self.ellipse.ds is None:
 			return
 		for d in self.ellipse.ds:
 			plot_object.add_arrow(self.ellipse.center, self.ellipse.center + d, color="c")
@@ -77,4 +79,10 @@ class ScaledEllipse(TrustRegion):
 				continue
 			ret.append(p)
 		return ret
+
+	def shift_polyhedron(self, polyhedron):
+		return self.ellipse.shift_polyhedron(polyhedron)
+
+	def contains(self, point):
+		return self.evaluate(point) >= 0.0 and (numpy.dot(A, point) <= b).all()
 

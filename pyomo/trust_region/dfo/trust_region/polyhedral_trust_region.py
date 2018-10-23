@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from trust_region.dfo.trust_region.trust_region import TrustRegion
 
+
 def _add_constraints_to_pyomo(model, A, b):
 	for r in range(A.shape[0]):
 		model.constraints.add(
@@ -26,6 +27,11 @@ class PolyhedralTrustRegion(TrustRegion):
 			self.l1.get_b(),
 			self.constraints_b
 		])).flatten()
+
+	def contains(self, point):
+		if not self.l1.contains(point):
+			return False
+		return (numpy.dot(self.constraints_a, point) <= self.constraints_b).all()
 
 	def get_shifted_polyhedron(self):
 		A, b = self.get_polyhedron()
@@ -75,3 +81,6 @@ class PolyhedralTrustRegion(TrustRegion):
 			if (numpy.dot(A, p) < b).all():
 				ret.append(p)
 		return ret
+
+	def shift_polyhedron(self, polyhedron):
+		return self.l1.shift_polyhedron(polyhedron)

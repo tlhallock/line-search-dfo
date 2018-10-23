@@ -68,3 +68,14 @@ class CircularTrustRegion(TrustRegion):
 		for d in sample_search_directions(len(self.center), num_points, include_axis=False):
 			ret.append(numpy.random.random() * d)
 		return ret
+
+	def shift_polyhedron(self, polyhedron):
+		A = polyhedron[0]
+		b = polyhedron[1]
+		return (
+			A * self.radius,
+			b - numpy.dot(A, self.center)
+		)
+
+	def contains(self, point):
+		raise numpy.linalg.norm(self.center - point) <= self.radius

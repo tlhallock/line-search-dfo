@@ -24,6 +24,10 @@ class Basis(metaclass=abc.ABCMeta):
 	def to_pyomo_expression(self, model, coefficients):
 		pass
 
+	@abc.abstractmethod
+	def evaluate_gradient(self, x, coefficients):
+		pass
+
 
 class QuadraticBasis(Basis):
 	def __init__(self, n):
@@ -50,6 +54,8 @@ class QuadraticBasis(Basis):
 		return ret_val
 
 	def debug_evaluate(self, x, coefficients):
+		if coefficients is None:
+			coefficients = numpy.ones(6)
 		return (
 				1.0 * coefficients[0] +
 				1.0 * coefficients[1] * x[0] +
@@ -58,6 +64,16 @@ class QuadraticBasis(Basis):
 				0.5 * coefficients[4] * x[1] * x[0] +
 				0.5 * coefficients[5] * x[1] * x[1]
 		)
+
+	def evaluate_gradient(self, x, coefficients):
+		return numpy.array([
+			1.0 * coefficients[1] +
+			1.0 * coefficients[3] * x[0] +
+			0.5 * coefficients[4] * x[1],
+			1.0 * coefficients[2] +
+			0.5 * coefficients[4] * x[0] +
+			1.0 * coefficients[5] * x[1]
+		])
 
 	def to_pyomo_expression(self, model, coefficients):
 		return (
@@ -95,6 +111,12 @@ class LinearBasis(Basis):
 				1.0 * coefficients[1] * x[0] +
 				1.0 * coefficients[2] * x[1]
 		)
+
+	def evaluate_gradient(self, x, coefficients):
+		return numpy.array([
+			1.0 * coefficients[1],
+			1.0 * coefficients[2]
+		])
 
 	def to_pyomo_expression(self, model, coefficients):
 		return (

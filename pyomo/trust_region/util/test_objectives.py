@@ -23,3 +23,13 @@ class Objective2:
 	def evaluate(self, x):
 		rotated = numpy.dot(self.rotationMatrix, x)
 		return (self.a - rotated[0]) ** 2 + self.b * (rotated[0] - rotated[1] ** 2) ** 2
+
+
+class RandomOrder2:
+	def __init__(self, dim):
+		self.evaluations = [(
+			numpy.random.normal(numpy.zeros(dim), 1)
+		)]
+
+	def evaluate(self, x):
+		pass

@@ -25,7 +25,13 @@ class L1TrustRegion(CircularTrustRegion):
 			)
 
 	def add_shifted_pyomo_constraints(self, model):
-		raise Exception("not implemented yet")
+		for idx in range(len(self.center)):
+			model.constraints.add(
+				model.x[idx] <= +1.0
+			)
+			model.constraints.add(
+				model.x[idx] >= -1.0
+			)
 
 	def add_unshifted_pyomo_constraints(self, model):
 		for idx in range(len(self.center)):
@@ -73,6 +79,15 @@ class L1TrustRegion(CircularTrustRegion):
 			ret.append(p)
 		return ret
 
+	def sample_unshifted_region(self, num_points):
+		dim = len(self.center)
+		yield numpy.copy(self.center)
+		for _ in range(num_points):
+			p = numpy.copy(self.center)
+			for i in range(dim):
+				p[i] += self.radius * (2 * numpy.random.random() - 1)
+			yield p
+
 	def endpoints(self):
 		for x in itertools.product([self.radius, -self.radius], repeat=len(self.center)):
 			yield self.center + numpy.array(x)
@@ -82,4 +97,16 @@ class L1TrustRegion(CircularTrustRegion):
 			if (numpy.dot(A, endpoint) > b).any():
 				return False
 		return True
+
+	def contains(self, point):
+		delta = point - self.center
+		for d in delta:
+			if d < -self.radius:
+				return False
+			if d > +self.radius:
+				return False
+		return True
+
+	# def shift_polyhedron(self, polyhedron):
+	#	 pass
 

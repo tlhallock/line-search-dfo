@@ -12,4 +12,5 @@ class ObjectiveValue:
 		self.point = None
 		self.hot_start = None
 		self.trust_region = None
+		self.points_hint = None
 

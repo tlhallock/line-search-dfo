@@ -45,3 +45,11 @@ class TrustRegion(metaclass=abc.ABCMeta):
 	@abc.abstractmethod
 	def sample_shifted_region(self, num_points):
 		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def shift_polyhedron(self, polyhedron):
+		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def contains(self, point):
+		raise Exception("Not implemented")

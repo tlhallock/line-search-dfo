@@ -17,8 +17,9 @@ def get_starting_points(A, b, x0, bounds, n):
 		yield random_point(A, b, bounds)
 
 
+plot_count = 0
 def search_anywhere(context, objective, options):
-	plot_count = 1
+	global plot_count
 
 	A, b = context.get_polyhedron()
 	x0 = numpy.copy(context.model_center())
@@ -32,7 +33,7 @@ def search_anywhere(context, objective, options):
 	for starting_point in get_starting_points(A, b, x0, bounds, num_starting_points):
 		local_best_point = starting_point
 		starting_point_count += 1
-		print('\tinner iteration {} of {}'.format(starting_point_count, num_starting_points + 1))
+		# print('\tinner iteration {} of {}'.format(starting_point_count, num_starting_points + 1))
 
 		local_best_solution = objective(context=context, x=starting_point, hot_start=None, options=options)
 		if not local_best_solution.success:
@@ -41,7 +42,7 @@ def search_anywhere(context, objective, options):
 		radius = context.outer_trust_region.radius / 2
 		number_of_improvements = 0
 		while radius > tolerance:
-			print('\t\t', starting_point_count, radius, local_best_solution.objective)
+			# print('\t\t', starting_point_count, radius, local_best_solution.objective)
 
 			improved = False
 			for search_direction in sample_search_directions(len(x0), num_search_directions):
@@ -59,26 +60,28 @@ def search_anywhere(context, objective, options):
 				if trial_solution.objective <= local_best_solution.objective:
 					continue
 
-				# #####################################################################################
+				#####################################################################################
 				#
 				# from trust_region.util.history import Bounds
 				# from trust_region.util.plots import create_plot
 				#
 				# bounds = Bounds()
-				# bounds.extend(numpy.array([7, 7]))
+				# bounds.extend(numpy.array([7, 3]))
 				# bounds.extend(numpy.array([-2, -2]))
 				#
-				# plot = create_plot('testing_ellipse', 'images/ellipse_{}.png'.format(str(plot_count).zfill(4)), bounds)
+				# plot = create_plot('expected ellipse value', 'images/ellipse_{}.png'.format(str(plot_count).zfill(4)), bounds)
 				# plot_count += 1
 				#
 				# plot.ax.text(
 				# 	0.1, 0.1,
-				# 	str(trial_solution.trust_region.volume),
+				# 	str(trial_solution.objective) + ',' + str(trial_solution.trust_region.volume),
 				# 	horizontalalignment='center',
 				# 	verticalalignment='center',
 				# 	transform=plot.ax.transAxes
 				# )
 				#
+				# if 'value-of-point' in options:
+				# 	plot.add_contour(options['value-of-point'], 'value', color='g')
 				# plot.add_polyhedron(A, b, label='bounds')
 				# plot.add_point(trial_point, label='center', marker='x', color='r')
 				# plot.add_point(context.model_center(), label='include', marker='+', color='y')

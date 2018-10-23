@@ -4,12 +4,14 @@ import numpy
 from trust_region.algorithm.tr_search.trust_region_strategy import parse_tr_strategy
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
 from trust_region.optimization.trust_region_subproblem import solve_trust_region_subproblem
+from trust_region.optimization.criticallity import compute_projection
 from trust_region.util.basis import parse_basis
 from trust_region.util.history import History
 from trust_region.util.plots import create_plot
 from trust_region.dfo.trust_region.l1_trust_region import L1TrustRegion
 from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_region_objective
 from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
+from trust_region.algorithm.tr_search.heuristics import Heuristics
 
 OUTPUT_DIRECTORY = 'images'
 
@@ -49,6 +51,7 @@ class AlgorithmContext:
 		self.current_plot = None
 		self.objective_coefficients = None
 		self.current_objective_value = self.evaluate_original_objective(params.x0)
+		self.heuristics = Heuristics(self.basis)
 
 		self.sample_points = numpy.array([
 			params.x0 for _ in range(self.basis.basis_dimension)
@@ -61,7 +64,7 @@ class AlgorithmContext:
 			self.history.bounds.extend(p)
 
 	def log(self, message):
-		print(message)
+		# print(message)
 		self.log_file.write(message + '\n')
 		self.log_file.flush()
 
@@ -103,7 +106,7 @@ class AlgorithmContext:
 		self.current_plot = None
 
 	def plot_history(self):
-		title = 'history'.format(self.iteration)
+		title = 'history'
 		file_name = '{}/{}/history.png'.format(OUTPUT_DIRECTORY, self.params.directory)
 		self.plot_number += 1
 		plot = create_plot(title, file_name, self.history.get_plot_bounds())
@@ -144,9 +147,43 @@ class AlgorithmContext:
 		])).flatten()
 
 
-def check_criticality(context):
-	# TO IMPLEMENT
-	return numpy.linalg.norm(context.model_center()) < context.params.criticality_tolerance
+def check_criticality(context, trust_region):
+	x = context.model_center()
+	g = context.basis.evaluate_gradient(trust_region.shift_row(x), context.objective_coefficients)
+	A, b = context.get_polyhedron()
+	success, proj_x = compute_projection(x - g, A, b, context.outer_trust_region)
+	if not success:
+		return False
+
+	t = numpy.linalg.norm(proj_x - context.model_center())
+	critical = t < context.params.criticality_tolerance
+
+	title = '{} criticality'.format(context.iteration)
+	file_name = '{}/{}/{}_criticality.png'.format(OUTPUT_DIRECTORY, context.params.directory, str(context.plot_number).zfill(5))
+	context.plot_number += 1
+
+	bounds = context.outer_trust_region.get_bounds()
+	bounds.extend(x-g)
+	plot = create_plot(title, file_name, bounds.expand())
+	plot.add_polyhedron(A, b, label='feasible region', color='m', lvls=[0.0])
+	plot.add_point(context.model_center(), label="c", color='k')
+	plot.add_point(x-g, label="x-g", color='y')
+	plot.add_point(proj_x, label="x-g", color='r')
+
+	plot.add_arrow(context.model_center(), x-g, color="green", width=0.05 * context.outer_trust_region.radius)
+	plot.add_arrow(x-g, proj_x, color="blue", width=0.05 * context.outer_trust_region.radius)
+	plot.add_arrow(proj_x, context.model_center(), color="red", width=0.05 * context.outer_trust_region.radius)
+
+	plot.ax.text(
+		0.1, 0.1,
+		str(critical) + ", " + str(t) + " < " + str(context.params.criticality_tolerance),
+		horizontalalignment='center',
+		verticalalignment='center',
+		transform=plot.ax.transAxes
+	)
+	plot.save()
+
+	return critical
 
 
 def update_inner_trust_region(context):
@@ -193,6 +230,8 @@ def update_inner_trust_region(context):
 	trust_region.add_to_plot(context.current_plot)
 	certification.add_to_plot(context.current_plot)
 
+	context.heuristics.update_model_heuristics(context, trust_region)
+
 	return trust_region
 
 
@@ -201,6 +240,7 @@ def always_feasible_algorithm(params):
 		context = AlgorithmContext(params, log_file)
 		while True:
 			context.iteration += 1
+
 			context.log('----------------------------------------')
 			context.log('iteration = {}'.format(context.iteration))
 			context.log('total number of evaluations = {}'.format(context.evaluation_count))
@@ -209,17 +249,16 @@ def always_feasible_algorithm(params):
 			context.outer_trust_region.add_to_plot(context.current_plot)
 			context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
 
-			if check_criticality(context):
+			trust_region = update_inner_trust_region(context)
+			context.plot_accuracy(trust_region)
+
+			if check_criticality(context, trust_region):
 				if context.outer_trust_region.radius < context.params.tolerance:
 					context.finish_current_plot('converged')
 					break
 				context.decrease_radius()
-				context.current_plot.add_points(context.sample_points, label='poised points', color='k', s=20, marker="x")
 				context.finish_current_plot('critical, radius too large')
 				continue
-
-			trust_region = update_inner_trust_region(context)
-			context.plot_accuracy(trust_region)
 
 			solution = solve_trust_region_subproblem(
 				objective_basis=context.basis,
@@ -244,6 +283,8 @@ def always_feasible_algorithm(params):
 			context.log('new function value = {}'.format(trial_objective_value))
 			context.log('trial point = {}'.format(solution.trial_point))
 			context.log('rho = {}'.format(rho))
+
+			context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
 
 			if rho < context.params.rho_lower:
 				context.decrease_radius()
