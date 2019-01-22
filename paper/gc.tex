@@ -1,0 +1,399 @@
+\documentclass{article}
+
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+%\usepackage{algorithm}
+%\usepackage[noend]{algpseudocode}
+%\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+\usepackage{xspace}
+\usepackage{cite}
+%\usepackage{placeins}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{amsfonts}
+\usepackage{array,multirow}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[]{algorithmicx}
+\usepackage{algpseudocode} 
+
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+\theoremstyle{case}
+\newtheorem{case}{Case}
+
+\newcommand{\new}[1]{{\color{blue}#1}}
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1} {\rule{\wd0}{1pt}}}}#2} 
+\newcommand{\replace}[2]{{\color{red}\sout{#1}\color{black}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replace}[2]{{{\color{red}#2\color{black}}}} %TeX source markup.
+\newcommand{\replaceb}[2]{{\color{blue}\sout{#1}\color{black}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\replacemath}[2]{{\hcancel[red]{#1}{}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replacemath}[2]{{\color{red}#2\color{black}}} %TeX source markup.
+\newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\sbnote}[1]{\textsf{{\color{cyan}{ SCB note:}   #1} }\marginpar{{\textbf{Comment}}}}
+
+%================================
+% Other macros added by Steve
+%
+\newcommand{\domain}{X}
+\newcommand{\real}{\mathbb R}
+\newcommand{\norm}[1]{\| #1 \|}
+\newcommand{\union}{\cup}
+\newcommand{\intersect}{\cap}
+
+% Added for consistency
+
+\newcommand{\modelk}{{{m}_f}^{(k)}}
+\newcommand{\gradmodelk}{\nabla{{m}_f}^{(k)}}
+
+\newcommand{\modelkmone}{{{m}_f}^{(k-1)}}
+\newcommand{\modelconstrainti}{{{m}_{c_i}}^{(k)}}
+\newcommand{\iteratek}{{x}^{(k)}}
+\newcommand{\trialk}{{s}^{(k)}}
+\newcommand{\iteratekpone}{{x}^{(k+1)}}
+\newcommand{\innertrk}{{T^{(k)}}_{\text{inner}}}
+\newcommand{\outertrk}{{T^{(k)}}_{\text{outer}}}
+\newcommand{\feasible}{{F}}
+\newcommand{\feasiblek}{{F}^{(k)}}
+
+\newcommand{\ptx}{p(t,x)}
+\newcommand{\Px}{P_X}
+\newcommand{\ptjxk}{p(t_j, \iteratek)}
+\newcommand{\tj}{t_j}
+\newcommand{\gck}{{{x}^{(k)}}_{GC}}
+\newcommand{\sgck}{{{s}^{(k)}}_{GC}}
+\newcommand{\chik}{{\chi^{(k)}}}
+
+\title{Generalized Cauchy Point Proof}
+\author{Trever Hallock}
+
+\begin{document}
+
+\section{Assumptions}
+
+\subsection{AF.1}
+\begin{align}
+f: \mathbb R^n \to \mathbb R
+\end{align}
+is twice-continuously differentiable on $\mathbb R^n$.
+
+\subsection{AC.1}
+Each
+\begin{align}
+c_i(x): \mathbb R^n \to R
+\end{align}
+is twice-continuously differentiable on $\mathbb R^n$
+
+\subsection{AC.2}
+\begin{align}
+X
+\end{align}
+is nonempty, closed, and convex.
+
+
+\subsection{AC.7}
+\begin{align}
+X = \cap_{i=1}^{m} \{x\in\mathbb R^n|c_i(x) \ge 0\}
+\end{align}
+
+
+\subsection{AO.1}
+Regularity assumptions hold.
+
+\subsection{AM.1}
+For all $k$, $m_k$ is twice differentiable.
+
+\subsection{AM.2}
+$m_k(x^k) = f(x^k)$ for all $k$
+
+\section{Notation}
+
+Assume that $\tj$ is a fixed constant defined later.
+$\Px$ is the projection operator on to the convex set $X$.
+\[ \ptx = P_{\feasiblek}[x-t\gradmodelk(x)] \]
+\[ \trialk(t) = p(t,\iteratek)-\iteratek \]
+\[\gck = p(\tj, \iteratek)\]
+\[\sgck = \gck-\iteratek\]
+\[\chik(x, \tau) = | \min_{x+d \in \feasiblek, \|d\| \le \tau}\langle \gradmodelk(x), d\rangle|\]
+\[\chik(x) = \chik(x, 1)\]
+\[\chik = \chik(\iteratek)\]
+\[\beta_k = 1 + \max_{x\in\innertrk}\|\nabla^2\modelk(x)\|\]
+
+\newpage
+\section{Definition}
+
+
+If we parameterize this projected line search with a parameter $t$,
+the generalized Cauchy point is found at $t=\tj$ where the following conditions hold
+for some chosen fixed constants
+\begin{align}
+0 < \kappa_{ubs} < \kappa_{lbs} < 1, \quad \kappa_{frd} \in (0, 1), \quad \text{and} \quad\kappa_{epp} \in (0, \frac 1 2 ):
+\end{align}
+
+\begin{align}
+\label{too_big_1}
+\|\sgck\|\le \Delta_k
+\end{align}
+\begin{center}and\end{center}
+\begin{align}
+\label{too_big_2}
+\modelk(\gck) \le \modelk(\iteratek) + \kappa_{ubs}\langle \gradmodelk(\iteratek), \sgck\rangle
+\end{align}
+and at least one of
+\begin{align}
+\label{too_small_1}
+\|\sgck\| \ge \kappa_{frd}\Delta_k
+\end{align}
+\begin{center}or\end{center}
+\begin{align}
+\label{too_small_2}
+\modelk(\gck) \ge \modelk(\iteratek) + \kappa_{lbs}\langle \nabla\modelk(\iteratek), \sgck\rangle
+\end{align}
+\begin{center}or\end{center}
+\begin{align}
+\label{too_small_3}
+\|P_{\mathcal T(\gck)}[-\gradmodelk(\iteratek)]\| \le \kappa_{epp} \frac{\langle \nabla\modelk(\iteratek), \sgck \rangle}{\Delta_k}
+\end{align}
+where $\mathcal T(x)$ is the tangent cone at $x$ with respect to $\feasiblek$.
+
+
+
+\section{Proofs}
+
+\begin{theorem}
+\label{chi_non_inc}
+The function $\chi(x,\theta)$ is nonincreasing as a function of $\theta$ for all $\theta>0$.
+\end{theorem}
+
+\begin{proof}
+\end{proof}
+
+\begin{theorem}
+\label{chi_non_inc}
+The function $\frac{\chi(x,\theta)}{\theta}$ is nonincreasing as a function of $\theta$ for all $\theta>0$.
+\end{theorem}
+
+\begin{proof}
+\end{proof}
+
+\begin{theorem}
+\begin{align}
+\label{12_1_5_3}
+\chik(x, \theta) \le \|\langle\nabla \modelk, d\rangle\| + 2\theta \|P_{T(x+d)}[-\nabla\modelk(x)]\|
+\end{align}
+\end{theorem}
+
+\begin{proof}
+\end{proof}
+
+
+\begin{theorem}
+\label{12_1_4}
+For each point $\ptx$ on the projected-gradient path, $\ptx-x$ is a solution to the problem
+\begin{align}
+\label{12_1_8}
+\min_{x+d\in \feasiblek, \|d\| \le \theta} \langle \nabla \modelk(x), d\rangle
+\end{align}
+where $\theta = \|\ptx - x\|$.
+Furthermore, $\ptx - x$ is also a solution of this problem for all $\theta \ge \|\ptx - x\|$ whenever
+\begin{align}
+\label{12_1_9}
+-\nabla \modelk(x) \in \mathcal N(\ptx)
+\end{align}
+\end{theorem}
+
+\begin{proof}
+Consider the problem of projecting $x-t\nabla \modelk(x)$ onto $\feasiblek$, that is
+
+\begin{align}
+\label{proj_to_feas}
+\min_{x+u \in \feasiblek} \|x-t\nabla \modelk(x) - (x + u) \|^2 = \min_{x+u\in \feasiblek}\|t\nabla m_f(x) + u\|^2
+\end{align}
+If $t=0$, then $\ptx = x$ and the solution is $u=0$, so that $\theta = \ptx-x = 0$, $d=0$ is a solution.
+
+Suppose that $t>0$ and that $u$ solves \ref{proj_to_feas}.
+Note that the first order optimality conditions for this problem are
+\[
+-t\nabla \modelk(x)-u \in \mathcal N (x+u).
+\]
+
+Since $t>0$ and $\mathcal N(x+u)$ is a cone, this condition may be rewritten as 
+\[
+\label{rewritten}
+-\frac 1 t u -\nabla \modelk(x) \in \mathcal N(x+u)
+\]
+On the other hand, problem \ref{12_1_8} is equivalent to
+\[\min_{x+d\in \feasiblek, \|d\|^2 \le \theta^2} \langle\nabla \modelk(x), d\rangle \]
+whose first-order optimality conditions are given by some $\lambda \ge 0$ such that
+\begin{align}
+\label{12_1_11}
+-2\lambda d-\nabla \modelk(x) \in N(x+d)
+\end{align}
+and
+\begin{align}
+\lambda(\|d\|^2-\theta^2) = 0.
+\end{align}
+The first of these conditions is identical to \ref{rewritten} if one sets $d=u$ and $\lambda=\frac 1 {2t}>0$.
+The third immediately results from the identity 
+\[
+\theta=\|d\| = \|u\|=\|\ptx-x\|
+\]
+Now suppose that \ref{12_1_9} holds. Then $d=\ptx-x$ and $\lambda=0$ then satisfy \ref{12_1_11} for all $\theta \ge \|\ptx-x\|$, which concludes the proof.
+
+
+\end{proof}
+
+
+
+
+
+\begin{theorem}
+This cauchy point satisifies
+\[
+\modelk(\iteratek) - \modelk(\gck) \ge \kappa_{dcp} \chik \min\{\frac{\chik}{\beta_k}, \Delta_k, 1\}
+\]
+and
+\[
+\label{12_2_6}
+\modelk(\iteratek) - \modelk(\gck) \ge \kappa_{ubs}|\langle \gradmodelk(\iteratek), \sgck\rangle|
+\]
+
+\end{theorem}
+
+\begin{proof}
+\ref{12_2_6} follows from \ref{too_big_2}
+%\begin{align}
+%\modelk(\gck) \le \modelk(\iteratek) + \kappa_{ubs}\langle \gradmodelk(\iteratek), \sgck \rangle \nonumber \\
+%-\kappa_{ubs}\langle \nabla m_f(x^k), s_k(t_j)\rangle  \le m_k(x_k) - m_k(p(t_j, x_k))\nonumber \\
+%\kappa_{ubs}|\langle \nabla m_f(x^k), s_k(t_j)\rangle|  \le |m_k(x_k) - m_k(p(t_j, x_k))| = m_k(x_k) - m_k(p(t_j, x_k))\nonumber 
+%\end{align}
+
+Also, \ref{12_1_4} gives us that
+\begin{align}
+|\langle \nabla \modelk(x), \sgck \rangle| =  | \min_{\iteratek+d \in \feasiblek, \|d\| \le \|\sgck\|}\langle \gradmodelk(x), d\rangle| = \chi(\iteratek, \|\sgck\|),
+\end{align}
+so that
+\begin{align}
+\label{12_2_8}
+\modelk(\iteratek) - \modelk(\gck) \ge \kappa_{ubs}\chi(\iteratek, \|\sgck\|).
+\end{align}
+
+Next, consider the case where $\|\sgck\| \ge 1$.
+Then because $\chi(x, \theta)$ is continuous and nondecreasing as a function (\ref{chi_non_inc}) of $\theta$ for all $\theta \ge 0$,
+we also know that
+\[
+\modelk(\iteratek)-\modelk(\gck) \ge \kappa_{ubs}\chik(\iteratek, 1) = \kappa_{ubs}\chik
+\]
+We may now assume that $\|\sgck\| < 1$.
+Because of \ref{12_2_8} and \ref{chi_non_inc}, 
+\[
+\modelk(\iteratek) - \modelk(\gck) \ge \kappa_{ubs}\chik\|\sgck\|.
+\]
+
+If $\|\sgck\| \ge \kappa_{frd}\Delta_k$ (condition \ref{too_small_1}), then
+\begin{align}
+\modelk(\iteratek) - \modelk(\gck) \ge \kappa_{ubs}\kappa_{frd}\chik \Delta_k
+\end{align}
+
+On the other hand, if \ref{too_small_2} holds, then from Taylor's theorem, there is some $\xi_k$ in the segment $[\iteratek, \gck]$ such that
+
+\[
+\modelk(\gck) = \modelk(\iteratek)  + \langle \gradmodelk, \sgck \rangle + \frac 1 2 \langle \sgck, \nabla^2\modelk(\xi_k)\sgck\rangle
+\]
+This implies
+\begin{align}
+\langle \sgck, \nabla^2 \modelk(\chik)\sgck \rangle = 2 [\modelk(\gck) - \modelk(\iteratek) + |\langle \gradmodelk, \sgck\rangle|] \ge 0
+\end{align}
+
+Therefore, we see that
+
+\[
+\beta_k \ge \frac {\langle \sgck,\nabla^2\modelk(\chi_k)\sgck\rangle}{\|\sgck\|^2}
+\]
+
+\[ \ge \frac {2(1-\kappa_{lbs})|\langle\gradmodelk,\sgck\rangle|}{\|\sgck\|^2} \]
+and once again because $\chik(\iteratek, \|\sgck\|) \ge \chik \|\sgck\|$
+
+\[
+\ge \frac {2(1-\kappa_{lbs})\chik}{\|\sgck\|^2}
+\]
+
+This produces
+\[
+\modelk(\iteratek)-\modelk(\gck) \ge 2 \kappa_{ubs}(1-\kappa_{lbs})\frac{\chik^2}{\beta_k}.
+\]
+
+If \ref{too_small_3} holds but $\|\sgck\|<\kappa_{frd}\Delta_k$, we know because of \ref{12_1_5_3} that
+\[
+\chik(\iteratek, \min[\kappa_{frd}\Delta_k, 1]) \le \|\gradmodelk, \sgck\| + 2 \min[\kappa_{frd}\Delta_k, 1]\|P_{T(\gck)}[-\gradmodelk]\|\le 2 \|\langle\gradmodelk, \sgck\rangle\|
+\]
+
+Also,
+\begin{align}
+\|\gradmodelk, \sgck\| \ge \frac 1 2 \chik(\iteratek, \min[\kappa_{frd}\Delta_k,1]) \ge \frac 1 2 \kappa_{frd}\chik \min[\Delta_k, 1]
+\end{align}
+
+so that
+\begin{align}
+\modelk(\iteratek)-\modelk(\gck) \ge \frac 1 2 \kappa_{ubs}\kappa_{frd}\chik \min[\Delta_k, 1].
+\end{align}
+
+Finally, we must only set
+\[
+\kappa_{dep} = \min[\frac 1 2 \kappa_{ubs}\kappa_{frd}, 2\kappa_{ubs}(1-\kappa_{lbs})] < 1
+\]
+
+
+
+\end{proof}
+
+
+
+
+
+\section{Algorithm}
+
+\begin{algorithmic}
+\State $t_{\text{min}} \gets 0$
+\State $t_{\text{max}} \gets \infty$
+\State $t_{0} \gets \frac{\Delta_k}{\|\nabla \modelk(\iteratek)\|}$
+\State $j=0$
+\While{true}
+    \State{$p(t_j, \iteratek) \gets Proj_{\feasiblek}(\iteratek-t_j\nabla \modelk(\iteratek))$}
+    \State{$\trialk(t_j) \gets p(t_j, \iteratek) - \iteratek$}
+    \State Evaluate $\modelk(p(t_j, \iteratek))$
+    \If{\ref{too_big_1} or \ref{too_big_2} is violated}
+        \State{$t_{\text{max}} \gets t_j$}
+    \ElsIf{\ref{too_small_1} and \ref{too_small_2} and \ref{too_small_3} are violated}
+        \State{$t_{\text{min}} \gets t_j$}
+    \Else
+        \State \textbf{return}  $p(t_j, \iteratek)$
+    \EndIf
+    \If{$t_{\text{max}} = \infty$}
+        \State{$t_{j+1} \gets 2\tj$}
+    \Else
+        \State{$t_{j+1} \gets \frac 1 2 (t_{\text{min}} + t_{\text{max}})$}
+    \EndIf
+    \State{$j \gets j+1$}
+\EndWhile
+\end{algorithmic}
+
+
+
+\begin{theorem}
+The algorithm terminates in a finite number of steps.
+\end{theorem}
+
+\begin{proof}
+%$t_max = \infty \forall j$ means $\trialk(\tj) \le  \Delta_k \forall j$
+\end{proof}
+
+
+\end{document}
+
+
+
