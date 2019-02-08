@@ -33,7 +33,7 @@ end
 
 
 % One equality constraint
-if false
+if true
 
 	if isfield(statement, 'g')
 		statement = rmfield(statement, 'g');

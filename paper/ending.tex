@@ -1,0 +1,96 @@
+
+
+\section{Results}
+
+\subsection{Sample problem}
+We have tested these algorithms on a simple problem.
+We wish to expand this problem to other test cases that may show more advantages disadvantages of the most promising algorithms.
+Here we let $f(x) = \epsilon x + (1-\epsilon)(y - \alpha x \sin(\gamma x))^2$ for a fixed constant $\epsilon$, and set the constraints to be
+$x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
+
+We summarize the number of function evaluations and iterations taken here:
+\begin{center}
+\begin{tabular}{ c c c c c c c c }
+Shape & Search & Num. Segments & Basis & Iterations & Evaluations \\
+\hline
+                spherical &   anywhere &       &     linear & 159  &   202  &  470 &  630 \\
+                spherical &   anywhere &       &  quadratic & 164  &   277  &  467 &  805 \\
+                spherical &       none &       &     linear &  77* &   122* &  255 &  387 \\
+                spherical &       none &       &  quadratic &  74  &   149  &  250 &  561 \\
+                spherical &    segment &     1 &     linear &  74  &   116  &  224 &  413 \\
+                spherical &    segment &     1 &  quadratic &  74  &   164  &  224 &  525 \\
+                spherical &    segment &     2 &     linear & 164  &   223  &  313 &  503 \\
+                spherical &    segment &     2 &  quadratic & 152  &   259  &  313 &  657 \\
+  circumscribed ellipsoid &       none &       &     linear &  41  &    50  &   41 &   55 \\
+  circumscribed ellipsoid &       none &       &  quadratic &  41  &   104  &   41 &  105 \\
+                ellipsoid &   anywhere &       &     linear &  65  &   109  &   67 &  110 \\
+                ellipsoid &   anywhere &       &  quadratic &  66  &   170  &   67 &  185 \\
+                ellipsoid &  anywhere* &       &  quadratic &  61  &   157  &   60 &  155 \\
+                ellipsoid &       none &       &     linear &  53  &    65  &   50 &   52 \\
+                ellipsoid &       none &       &  quadratic &  53  &    88  &   50 &   75 \\
+                ellipsoid &    segment &     1 &     linear &  55  &    70  &   58 &   75 \\
+                ellipsoid &    segment &     1 &  quadratic &  55  &    97  &   58 &  104 \\
+                ellipsoid &    segment &     2 &     linear &  67  &   144  &   68 &  121 \\
+                ellipsoid &    segment &     2 &  quadratic &  67  &   196  &   64 &  159 \\
+               polyhedral &       none &       &     linear &  37  &    43  &   38 &   46 \\
+               polyhedral &       none &       &  quadratic &  37  &    82  &   38 &   89 \\
+         scaled ellipsoid &   anywhere &       &     linear &  66  &   103  &   67 &  104 \\
+         scaled ellipsoid &   anywhere &       &  quadratic &  68  &   156  &   67 &  169 \\
+         scaled ellipsoid &    segment &     1 &     linear &  44  &    65  &   45 &   67 \\
+         scaled ellipsoid &    segment &     1 &  quadratic &  44  &    94  &   45 &   93 \\
+         scaled ellipsoid &    segment &     2 &     linear &  67  &   125  &   68 &  122 \\
+         scaled ellipsoid &    segment &     2 &  quadratic &  67  &   189  &   63 &  146 \\
+                  simplex & max volume &       &     linear &  41  &    44  &   41 &   45 \\
+                  simplex & max volume &       &  quadratic &  41  &    94  &   41 &   84 \\
+
+%                spherical &   anywhere &       &     linear &   159 &   202 \\
+%                spherical &   anywhere &       &  quadratic &   164 &   277 \\
+%                spherical &       none &       &     linear &    77* &   122* \\
+%                spherical &       none &       &  quadratic &    74 &   149 \\
+%                spherical &    segment &     1 &     linear &    74 &   116 \\
+%                spherical &    segment &     1 &  quadratic &    74 &   164 \\
+%                spherical &    segment &     2 &     linear &   164 &   223 \\
+%                spherical &    segment &     2 &  quadratic &   152 &   259 \\
+%  circumscribed ellipsoid &       none &       &     linear &    41 &    50 \\
+%  circumscribed ellipsoid &       none &       &  quadratic &    41 &   104 \\
+%                ellipsoid &   anywhere &       &     linear &    65 &   109 \\
+%                ellipsoid &   anywhere &       &  quadratic &    66 &   170 \\
+%                ellipsoid &  anywhere* &       &  quadratic &    61 &   157 \\
+%                ellipsoid &       none &       &     linear &    53 &    65 \\
+%                ellipsoid &       none &       &  quadratic &    53 &    88 \\
+%                ellipsoid &    segment &     1 &     linear &    55 &    70 \\
+%                ellipsoid &    segment &     1 &  quadratic &    55 &    97 \\
+%                ellipsoid &    segment &     2 &     linear &    67 &   144 \\
+%                ellipsoid &    segment &     2 &  quadratic &    67 &   196 \\
+%               polyhedral &       none &       &     linear &    37 &    43 \\
+%               polyhedral &       none &       &  quadratic &    37 &    82 \\
+%         scaled ellipsoid &   anywhere &       &     linear &    66 &   103 \\
+%         scaled ellipsoid &   anywhere &       &  quadratic &    68 &   156 \\
+%         scaled ellipsoid &    segment &     1 &     linear &    44 &    65 \\
+%         scaled ellipsoid &    segment &     1 &  quadratic &    44 &    94 \\
+%         scaled ellipsoid &    segment &     2 &     linear &    67 &   125 \\
+%         scaled ellipsoid &    segment &     2 &  quadratic &    67 &   189 \\
+%                  simplex & max volume &       &     linear &    41 &    44 \\
+%                  simplex & max volume &       &  quadratic &    41 &    94 \\
+
+
+
+
+
+
+\end{tabular}
+\end{center}
+
+*The spherical trust region with no search for the center did not actually converge.
+
+In general, the linear models converge more quickly than quadratic models.
+We see that the method with fewest iterations and function evaluations is the linear polyhedral shape.
+This is likely due to the fact that the polyhedral shape is allowed to search the entire outer trust region.
+This also explains why the circumscribed ellipse and maximum volume simplex also perform well.
+We also notices that with a simple heuristic we were able to improve the ellipse slightly from 170 to 157.
+Also, the scaled ellipsoid performs comparably to the unscaled version.
+
+.
+%Add another column for $a$.
+%Want to average over multiple starting points.
+%Include a runtime for each (will hurt ellipses).

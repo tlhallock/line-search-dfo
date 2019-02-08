@@ -1,0 +1,55 @@
+
+%============================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+\theoremstyle{case}
+\newtheorem{case}{Case}
+
+
+%=======================================
+% Steve's definitions for marking up
+%=======================================
+
+\newcommand{\new}[1]{{\color{blue}#1}}
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1} {\rule{\wd0}{1pt}}}}#2} 
+\newcommand{\replace}[2]{{\color{red}\sout{#1}\color{black}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replace}[2]{{{\color{red}#2\color{black}}}} %TeX source markup.
+\newcommand{\replaceb}[2]{{\color{blue}\sout{#1}\color{black}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\replacemath}[2]{{\hcancel[red]{#1}{}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replacemath}[2]{{\color{red}#2\color{black}}} %TeX source markup.
+\newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\sbnote}[1]{\textsf{{\color{cyan}{ SCB note:}   #1} }\marginpar{{\textbf{Comment}}}}
+
+%================================
+% Other macros added by Steve
+%
+\newcommand{\domain}{X}
+\newcommand{\real}{\mathbb R}
+\newcommand{\norm}[1]{\| #1 \|}
+\newcommand{\union}{\cup}
+\newcommand{\intersect}{\cap}
+
+% Added for consistency
+
+\newcommand{\modelk}{{{m}_f}^{(k)}}
+\newcommand{\modelkmone}{{{m}_f}^{(k-1)}}
+\newcommand{\modelconstrainti}{{{m}_{c_i}}^{(k)}}
+\newcommand{\modelconstraint}{{{m}_{c}}^{(k)}}
+\newcommand{\iteratek}{{x}^{(k)}}
+\newcommand{\trialk}{{s}^{(k)}}
+\newcommand{\iteratekpone}{{x}^{(k+1)}}
+\newcommand{\innertrk}{{T^{(k)}}_{\text{in}}}
+\newcommand{\outertrk}{{T^{(k)}}_{\text{out}}}
+\newcommand{\feasible}{{F}}
+\newcommand{\feasiblek}{{F}^{(k)}}
+\newcommand{\ellipsek}{{E^{(k)}}}
+\newcommand{\chik}{{\chi^{(k)}}}
+\newcommand{\xik}{{\xi^{(k)}}}
+\newcommand{\gradmodelk}{\nabla{{m}_f}^{(k)}}
+
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}

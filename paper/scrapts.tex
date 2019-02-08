@@ -1,0 +1,393 @@
+
+
+
+
+%
+%The following example shows a prototypical subroutine implementation:
+%
+%\begin{algorithmic}
+%\Procedure{ConstructTrustRegion}{}
+%    \State $T_{\text{in}} \gets \empty$
+%    \ForAll{$T_{\text{trial}$}
+%        \State check heuristic
+%    \EndFor
+%\EndProcedure
+%\end{algorithmic}
+
+
+
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+MORE SIMILAR TO WHAT I HAVE CODED:
+
+REPLACE $\gamma$ with $\eta$.
+\begin{enumerate}
+    \item Initialize $k=0$, $0<\gamma_1<\gamma_2<1$,$\tau_{\chi}>0$,$\tau_{\Delta}>0$, $\Delta_0 > 0$, $x_0$ a feasible starting point, $0<\omega_{\text{dec}} < 1 \le \omega_{\text{inc}}$, $\gamma_{\Delta}$
+    \item Compute the inner trust region.
+    \begin{itemize}
+        \item This may mean maximizing an ellipse as in \ref{ellipse_optimization}
+    \end{itemize}
+	\item Ensure poisedness, and create the model functions ${m_f}_k(x)$, ${c_i}_k(x), i \in \mathcal I \cup \mathcal E$ as described in \ref{reg}
+	\item Compute criticality measure $\chi_k = \chi(x_k)$ as described in \ref{critical}
+    \begin{itemize}
+        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k \le \tau_{\Delta}$, return as converged
+        \item If $\chi_k < \tau_{\chi}$ and $\Delta_k > \tau_{\Delta}$, then $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$, $k \leftarrow k + 1$
+    \end{itemize}
+	
+	\item Solve the Trust region subproblem: $s^{(k)} = \argmin_{s\in B(x^{(k)};\Delta_k)} m_k(x^{(k)} + s)$
+	
+	\item Test for improvement
+	\begin{itemize}
+		\item Compute $\rho_k$ using \ref{rho}
+    \item Update the outer trust region $\Delta_k$
+		\item If $\rho < \gamma_1$, then $x^{(k+1)}=x^{(k)}$ (reject) $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+		\item If $\gamma_1 \le \rho \le \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+		\item If $\rho > \gamma_2$, then $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept)
+		\begin{itemize}
+            \item If $\|x^{(k)} - s^{(k)} \| < \gamma_{\Delta} \Delta_k$ then $\Delta_{k+1} \leftarrow \omega_{\text{dec}} \Delta_k$
+            \item else $\Delta_{k+1} \leftarrow \omega_{\text{inc}} \Delta_k$
+		\end{itemize}
+	\end{itemize}
+    $k \leftarrow k + 1$
+	\item Go to step 2
+\end{enumerate}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
+
+
+
+
+
+%\subsection{Constrained DFO}
+%Derivative free optimization problems can be broken into several categories based on the form of functions within the program.
+%Several of these categories are described nicely in \cite{DUMMY:typesofconstraints}.
+%For example, a typical constrained program within DFO is given by:
+%\[ \begin{array}{ccl} \min & f(x) \\
+%\mbox{subject to} & c_i(x) \le 0 & i \in \mathcal{I} \\
+%& c_i(x) = 0 & i \in \mathcal{E}
+%\end{array}
+%\]
+%where at least one of the functions $f, c_i, i \in \mathcal{I} \cup \mathcal{E}$ is a black box function,
+%meaning that we have no information about its derivatives.
+% If $c(x, S(x)) = c(x)$, then 
+
+%A well studied case is when the derivatives of $c$ are known, so the objective is the only derivative free function.
+%For example, there several libraries exist for Box Constrained DFO (BCDFO) where the constraints take the form $b_{L} \le x \le b_{U}$ for some $b_{L} < b_{U}$.
+%However, the problem becomes more difficult in our case where no derivative information of $c$ or $f$ is known.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\paragraph{Types of constraints}
+%%Regression based methods work by evaluating model functions on a set of sample points to construct local models of the functions.
+%%This at least allows the algorithm to minimize these easier model functions over a trust region, rather than working with the original function.
+
+%One distinction important to the choice of sample points is fully quantifiable constraints versus partially-quantifiable constraints.
+%If the constraints are fully quantifiable, they can be evaluated anywhere and present no restriction to the sample points.
+%However, partially-quantifiable constraints only produce meaningful values within the feasible region.
+
+%If the constraints are fully-quantifiable, a trust-region filter method can be used.
+%We describe this approach in \ref{}.
+%When the constraints are partially-quantifiable, the goal is to modify the trust region to avoid evaluating the simulation function outside of the feasible region.
+%This is described in \ref{}.
+%
+%For the first step towards developing this algorithm, we develop develop an algorithm that uses linear constraints to model a linearly constrained region.
+%This is described in \ref{feasiblemethod}
+
+
+
+
+
+%We work within a trust region, sequential quadratic programming framework with interpolating model functions.
+%For our algorithm, we assume that all functions are derivative-free: all functions are evaluated by a single call to a black box function:
+%$S(x) = (f(x), c_{\mathcal {I}}(x)^T, c_{\mathcal {E}}(x)^T)^T$.
+
+%\color{blue}
+%We also assume that we are not able to evaluate points outside the feasible region.
+%This introduces a new type of constraint: it is not quite a hidden constraint because we do observe function values within the feasible region.
+%However, it does implies similar difficulty to construct the model function near the boundary of the feasible region because we have limited sampling ability.
+%\color{black}
+%\color{red}
+
+%\subsubsection{Interpolation/regression models}
+%Within interpolation model-based methods, we construct our model by regressing basis functions onto a set of sampled points.
+%For example, given a function $f(x) : \mathbb R^n \to \mathbb R$ we can use a set of basis functions $\phi_i : \mathbb R^n \to \mathbb R \quad \forall 1 \le i \le d_1$ to %construct a model function $m(x) = \sum_{i=1}^{d_1} \lambda_i \phi_i(x)$ approximating $f(x)$ by selecting appropriate $\lambda_i \in \mathbb R$.
+%This is done by choosing a set of sample points
+%$Y = \{y^1, y^2, \ldots, y^{d_2}\}$,
+%evaluating $f = (f_1 = f(y^1), f_2 = f(y^2), \ldots, f_d = f(y^{d_2}))^T$
+%and forcing model agreement with the original function $f(x)$ by ensuring
+
+%\begin{equation}
+%\label{reg}
+%\begin{bmatrix}
+%    \phi_1(y^1)      & \phi_2(y^1)       & \ldots & \phi_{d_1}(y^1)      \\
+%    \phi_1(y^2)      & \phi_2(y^2)       & \dots  & \phi_{d_1}(y^2)      \\
+%                     &                   & \vdots &                      \\
+%    \phi_1(y^{d_2})  & \phi_2(y^{d_2})   & \ldots & \phi_{d_1}(y^{d_2})
+%\end{bmatrix}
+%\begin{bmatrix}
+%    \lambda_1      \\
+%    \lambda_2      \\
+%    \vdots         \\            
+%    \lambda_{d_1}
+%\end{bmatrix}
+%\approx
+%\begin{bmatrix}
+%    f_1      \\
+%    f_2      \\
+%    \vdots         \\            
+%    f_{d_2}
+%\end{bmatrix}.
+%\end{equation}
+
+%The matrix on the left hand side is called the Vandermonde matrix defined in \ref{vandermonde} and the set $y^i, i=1\ldots d_2$ are the sample points.
+%When $d_1 = d_2$ this is called interpolation and equality is desired within \ref{reg}.
+% It could be important to discusss this, because we may use different orders for the constraints than the objective.
+%When $d_1 < d_2$ this is called underdetermined interpolation, 
+%This can be handled by requesting and a minimum norm solution.
+%Finally, when $d_1 > d_2$ this is called regression and only a least squares solution can be requested.
+%Note that in practice, the set $Y$ is shifted and scaled.
+%\color{black}
+
+
+%It is not enough to simply ask for decrease in the objective every iteration.
+%We also require \emph{sufficient} reduction, so that any accumulation point of the sequences of iterates is feasible.
+%o this end, we introduce constants $0 < \kappa_{\theta} < 1$ and $\psi > \frac{1}{1+\mu}$ and require
+
+%\begin{equation}
+%\label{predicted_decrease}
+%m_k(x_k) - m_k(x_k+s_k) \ge \kappa_{\theta} \theta_k^{\psi}.
+%\end{equation}
+%\color{black}
+
+%\color{red}
+%Although this only references the model functions, we ensure accuracy by computing $\rho$.
+%\color{black}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% Within iteration $k$, we first construct a model function $m_f^k(x)$ that we use to approximate the first and second derivatives of $f(x)$.
+% We also construct $m_{\mathcal{I}}^k(x)$ and $m_{\mathcal{E}}^k(x)$ to approximate the first derivatives of $c(x)$.
+% Namely, at an iterate $x^k$, we let $f^k = f(x^k)$, $g^k = \nabla m_f^k(x^k)$. %be the gradient of the objective's model at $x^k$.
+% We also define the $c_{{\mathcal{I}}}^k = c^k_{\mathcal{I}}(x^k)$, 
+% $A_{{\mathcal{I}}}^k = \nabla m_{\mathcal{I}}^k(x^k)$,
+% $c_{{\mathcal{E}}}^k = c_{\mathcal{E}}(x^k)$, and
+% $A_{{\mathcal{E}}}^k = \nabla m_{\mathcal{E}}^k(x^k)$.
+
+
+
+
+
+
+
+%For convenience, we let
+%\begin{align}
+%f_k &= f(x^{(k)}) = m_f(x^{(k)}) \\
+%g_k &= \nabla m_f(x^{(k)})
+%\end{align}
+
+
+
+
+
+
+
+
+
+%The generalized Cauchy point extends the Cauchy point of following a line search along the gradient, but projects this line search onto the feasible region.
+%To define the generalized Cauchy point, we first define 
+%$P_X$ to be the projection operator on to the convex set $X$
+%\[ p(t,x) = P_{\feasiblek}[x-t\nabla \modelk(x)] \]
+%\[ \trialk(t) = p(t,\iteratek)-\iteratek \].
+
+%If we parameterize this projected line search with a parameter $t$,
+%the generalized Cauchy point is found at $t=t_j$ where the following conditions hold
+%for some chosen fixed constants
+%\begin{align}
+%0 < \kappa_{ubs} < \kappa_{lbs} < 1, \quad \kappa_{frd} \in (0, 1), \quad \text{and} \quad\kappa_{epp} \in (0, \frac 1 2 ):
+%\end{align}
+
+%\begin{align}
+%\label{too_big_1}
+%\|\trialk(t_j)\|\le \Delta_k
+%\end{align}
+%\begin{center}and\end{center}
+%\begin{align}
+%\label{too_big_2}
+%\modelk(p(t_j, \iteratek)) \le \modelk(\iteratek) + \kappa_{ubs}\langle \nabla\modelk(\iteratek), \trialk(t_j)\rangle
+%\end{align}
+%and at least one of
+%\begin{align}
+%\label{too_small_1}
+%\|\trialk(t_j)\| \ge \kappa_{trd}\Delta_k
+%\end{align}
+%\begin{center}or\end{center}
+% \begin{align}
+% \label{too_small_2}
+% \modelk(p(t_j, \iteratek)) \ge \modelk(\iteratek) + \kappa_{lbs}\langle \nabla\modelk(\iteratek), s_k(t_j)\rangle
+% \end{align}
+% \begin{center}or\end{center}
+% \begin{align}
+% \label{too_small_3}
+% \|P_{\mathcal T(p(t_j, \iteratek))}[-\nabla\modelk(\iteratek)]\| \le \kappa_{epp} \frac{\langle \nabla\modelk(\iteratek), s_k(t_j) \rangle}{\Delta_k}
+% \end{align}
+% where $\mathcal T(x)$ is the tangent cone at $x$ with respect to $\feasiblek$.
+% 
+% 
+% \color{red}
+% It can be computed with the following algorithm:
+% 
+% \begin{algorithmic}
+% \State $t_{\text{min}} \gets 0$
+% \State $t_{\text{max}} \gets \infty$
+% \State $t_{0} \gets \frac{\Delta_k}{\|g_k\|}$
+% \State $j=0$
+% \While{true}
+%     \State{$p(t_j, x_k) \gets Proj_{X}(x_k-t_jg_k)$}
+%     \State{$s_k(t_j) \gets p(t_j, x_k) - x_k$}
+%     \State Evaluate $m_k(p(t_j, x_k))$
+%     \If{\ref{too_big_1} or \ref{too_big_2} is violated}
+%         \State{$t_{\text{max}} \gets t_j$}
+%     \ElsIf{\ref{too_small_1} and \ref{too_small_2} and \ref{too_small_3} are violated}
+%         \State{$t_{\text{min}} \gets t_j$}
+%     \Else
+%         \State \textbf{return}  $p(t_j, x_k)$
+%     \EndIf
+%     \If{$t_{\text{max}} = \infty$}
+%         \State{$t_{j+1} \gets 2t_{j}$}
+%     \Else
+%         \State{$t_{j+1} \gets \frac 1 2 (t_{\text{min}} + t_{\text{max}})$}
+%     \EndIf
+%     \State{$j \gets j+1$}
+% \EndWhile
+% \end{algorithmic}
+% 
+% \color{black}
+
+
+
+
+%In the following illustrations, the green arrow is the negative gradient, the blue arrow is the projection, and the red arrow has length of $\chi$.
+%The point in the second image is critical, because there is no room for improvement along the negative gradient.
+
+%\begin{center}
+%\includegraphics[width=200px]{images/algorithm_iterations/criticality_measure.png}
+%\includegraphics[width=200px]{images/algorithm_iterations/criticality_measure_critical.png}
+%\end{center}
+
+%That is, if $x^{\star}$ is a first order critical point satisfying
+
+%\begin{align*}
+%\nabla f(x^{\star}) + \sum_{i\in\mathcal I} \lambda_i \nabla c_i(x^{\star}) + \sum_{i\in \mathcal E} \mu_i \nabla c_i(x^{\star})  = 0 \\
+%c(x^{\star})_i \mu_i = 0 & \quad \forall i\in\mathcal I \\
+%c(x^{\star}) \le 0 & \quad \forall i\in\mathcal I\\
+%c(x^{\star}) = 0 & \quad \forall i\in\mathcal E
+%\end{align*}
+%for some $\lambda_i \in \mathbb R$, and $\mu_i \ge 0$, then we need $\lim_{x\to x^{\star}} \chi(x) = 0$.
+
+%This suggests the following definition:
+%\begin{align}
+%\label{critical}
+%\chi & = & |\min_t \langle g_k + H_kn_k, t\rangle| \\
+%& A_{\mathcal {E}}t &=& \; 0 \\
+%& c_{\mathcal {I}} + A_{\mathcal {I}}t &\le& \; 0 \\
+%& \| t \| &\le& \; 1
+%\end{align}
+
+%Notice that this must be computed after the normal step $n^k$ has been computed.
+
+%\color{red}
+
+
+%\begin{center}
+%\begin{align}
+%\label{problem}
+%\min_x & \quad m_f(x) \\
+%  m_{c_i}(x) \le 0   & \quad \forall i \in \mathcal {I} \nonumber \\
+%  m_{c_i}(x)  = 0    & \quad \forall i \in \mathcal {E} \nonumber \\
+%  \bar{x}^T Q^k \bar{x} \le s^k
+%\end{align}
+%\end{center}
+
+
+
+
+
+
+
+%\documentclass{article}
+%
+%\usepackage{amsmath}
+%\usepackage{graphicx}
+%\usepackage{color}
+%%\usepackage{algorithm}
+%%\usepackage[noend]{algpseudocode}
+%%\usepackage{varwidth}% http://ctan.org/pkg/varwidth
+%\usepackage{xspace}
+%%\usepackage{placeins}
+%\usepackage[margin=0.5in]{geometry}
+%\usepackage{amsfonts}
+%%\theoremstyle{definition}
+%%\newtheorem*{dfn}{A Reasonable Definition}
+%
+%
+%
+%\DeclareMathOperator*{\argmin}{arg\,min}
+%
+%
+%\title{Derivative Free Model-Based Methods for Local Constrained Optimization}
+%\author{Trever Hallock}
+%%\institute{CU Denver}
+%%\date{January 6, 2012}
+%% Remove the % from the previous line and change the date if you want a particular date to be displayed; otherwise, today's date is displayed by default.
+%
+%\makeatletter
+%\def\BState{\State\hskip-\ALG@thistlm}
+%\makeatother
+%
+%\let\oldref\ref
+%\renewcommand{\ref}[1]{(\oldref{#1})}
+%
+%\begin{document}
+
+
+%\algnewcommand{\algorithmicgoto}{\textbf{go to}}%
+%\algnewcommand{\Goto}{\algorithmicgoto\xspace}%
+%\algnewcommand{\Label}{\State\unskip}

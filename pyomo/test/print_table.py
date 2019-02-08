@@ -3,8 +3,8 @@ import re
 
 from test.run_params import params
 
-
 lst = []
+
 
 def tr(s):
 	if s == 'circle':
@@ -19,34 +19,39 @@ def tr(s):
 		return 'max volume'
 	return s
 
+
 for p in params:
 	num_evaluations = -1
 	num_iterations = -1
-	with open(os.path.join('images', p['directory'], 'log.txt'), 'r') as logfile:
-		for line in logfile:
-			m = re.search('total number of evaluations = ([0-9]*)', line)
-			if m:
-				try:
-					num_evaluations = max(num_evaluations, int(m.group(1)))
-				except:
-					continue
+	try:
+		path = os.path.join('images', p['directory'], 'log.txt')
+		with open(path, 'r') as logfile:
+			for line in logfile:
+				m = re.search('total number of evaluations = ([0-9]*)', line)
+				if m:
+					try:
+						num_evaluations = max(num_evaluations, int(m.group(1)))
+					except:
+						continue
 
-			m = re.search('iteration = ([0-9]*)', line)
-			if m:
-				try:
-					num_iterations = max(num_iterations, int(m.group(1)))
-				except:
-					continue
+				m = re.search('iteration = ([0-9]*)', line)
+				if m:
+					try:
+						num_iterations = max(num_iterations, int(m.group(1)))
+					except:
+						continue
 
-	lst.append((
-		p['trust_region_options']['shape'],
-		p['trust_region_options']['search'] + ('*' if 'heuristics' in p['trust_region_options'] else ''),
-		p['trust_region_options']['number_of_points'] if 'number_of_points' in p['trust_region_options'] else ' ',
-		p['basis'],
-		num_iterations,
-		num_evaluations
-	))
-
+			lst.append((
+				p['trust_region_options']['shape'],
+				p['trust_region_options']['search'] + ('*' if 'heuristics' in p['trust_region_options'] else ''),
+				p['trust_region_options']['number_of_points'] if 'number_of_points' in p[
+					'trust_region_options'] else ' ',
+				p['basis'],
+				num_iterations,
+				num_evaluations
+			))
+	except:
+		print('unable to read', path)
 
 pl = None
 for t in sorted(lst):
@@ -71,6 +76,3 @@ for t in sorted(lst):
 	tp = ml
 	print(' & '.join([tr(tp[i]).rjust(lens[i]) for i in range(len(tp))]) + ' \\\\')
 	pl = l
-
-
-

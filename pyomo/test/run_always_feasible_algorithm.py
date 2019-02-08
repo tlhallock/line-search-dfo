@@ -1,6 +1,8 @@
 import traceback
 import numpy
 import os
+import numpy as np
+from multiprocessing.dummy import Pool as ThreadPool
 
 from trust_region.algorithm.always_feasible_algorithm import AlgorithmParams
 from trust_region.algorithm.always_feasible_algorithm import always_feasible_algorithm
@@ -14,25 +16,14 @@ numpy.set_printoptions(linewidth=255)
 # to add scale
 # to add
 
-children = []
-child = False
-distributed = False
 
-for p in params:
-	if 'heuristics' not in p['trust_region_options']:
-		continue
-	if distributed:
-		child_pid = os.fork()
-		if child_pid == 0:
-			children.append(child_pid)
-			continue
-		child = True
+def run_always_feasible(p):
 	try:
-		a = 0.5
+		a = 0.1
 
 		params = AlgorithmParams()
 		params.basis_type = p['basis']
-		params.x0 = numpy.array([3.0, 0.5])
+		params.x0 = numpy.array([4.0, 0.2])
 		params.constraints_A = numpy.array([
 			[-a, +1.0],
 			[-a, -1.0]
@@ -60,7 +51,12 @@ for p in params:
 		print(e)
 		traceback.print_exc()
 
-if not child:
-	for child_pid in children:
-		pid, status = os.waitpid(child_pid, 0)
-		print(pid, status)
+
+num_threads = 0
+
+if num_threads > 0:
+	pool = ThreadPool(num_threads)
+	pool.map(run_always_feasible, params)
+else:
+	for p in params:
+		run_always_feasible(p)
