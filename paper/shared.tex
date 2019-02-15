@@ -141,7 +141,7 @@ Next, this model function is minimized over the trust region and the minimum arg
 The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
 If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
 Otherwise, the trust region is reduced to increase model accuracy.
-The algorithm terminates when both and a critcallity measure $\xik$ and the trust region radius $\Delta_k$ reach a sufficiently small thresholds.
+The algorithm terminates when both and a critcallity measure $\chik$ and the trust region radius $\Delta_k$ reach a sufficiently small thresholds.
 
 
 For unconstrained optimization, the algorithmic framework can be described with these steps:
@@ -305,6 +305,43 @@ We can see that the difference between the model and $f$ are much larger when th
 
 A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure geometry is required for convergence analysis although it may come at the expense of function evaluations.
 
+\paragraph{Geometry Ensuring Algorihms}
+
+In order to ensure that the sample points maintain good geometry, sample points are chosen .
+At any given time, the algorithm has evaluated 0 or more sample points.
+These points should be reused when possible, but the algorithm may have to replace some points that are no longer well poised as well as select new points when the sample set is not large enough.
+We call the algorithm that add adds points, replacing where necessary, the model improvement algorithm.
+One classic such algorithm is presented in \cite{DUMMY:intro_book}.
+
+The idea behind this algorithm is to perform an LU factorization with pivoting on the Vandermde matrix.
+As we have seen, this computes the basis for the lagrange polynomials corresponding to $Y$.
+However, when this LU factorization encounters a small pivot, the point corresponding to that row is replaced, improving the condition number of the Vandermode matrix.
+
+In practice, we first shift the sample set $Y$ by subtracting the current iterate and dividing by the trust region radius:
+\begin{align}
+\bar{Y} = [0, \frac{y^1 - y^0}{\Delta}, \ldots, \frac{y^p - y^0}{\Delta}]
+\end{align}
+
+If the sample set does not contain all $p+1$ points, then we fill in $y^0$ for all remaining points.
+We choose a threshold $0 < \xi_{\text{min}} < 1$, and follow these steps:
+
+\begin{algorithmic}[1]
+\State Construct the vandermode matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$
+\For{$i = 1 \ldots p$}
+    \State Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
+    \If {$|V_{i,i}| < \xi_{\text{min}}$}
+        \State \label{next_point} $y' = \arg\max_{t \in T_K \cap X} |\phi_i(t)|$
+    \EndIf
+    \State $V_i \gets \frac{1}{V_{i,i}} V_i$
+    \For{$j=i \ldots p$}
+        \State $V_{,j} \gets V_{, j} - V_{i,j} V_{, i}$
+    \EndFor
+\EndFor
+\label{model_improving_algorithm}
+\end{algorithmic}
+
+
+
 \paragraph{Proximity}
 
 Proximity refers to the trust region radius.
@@ -382,7 +419,7 @@ This means that we can let the feasible region be denoted $\feasible = \{x \in \
 & Ax \le b & 
 \end{array}
 \]
-We assume that $A$ has full row rank, and that  $dim(\domain) = n$.
+We assume that $A$ has full row rank, and that  $dim(A) = n$.
 
 
 
@@ -395,7 +432,7 @@ We will discuss several building blocks of the algorithm before going into the a
 
 In order to construct stopping criteria, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
 When the criticallity measure is small, we must also decrease the trust region radius.
-Once this has reached a small enough threshold $\tau_{\chi}$ and the trust region is small enough ($\Delta_k < \tau_f$), we can terminate the algorithm.
+Once this has reached a small enough threshold $\tau_{\chi}$ and the trust region is small enough ($\Delta_k < \tau_{\Delta}$), we can terminate the algorithm.
 For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure of
 
 \[
@@ -457,8 +494,8 @@ However, we must be careful to choose $\innertrk$ to allow sufficient reduction 
 
 We have two choices for this trust region subproblem:
 \begin{align}
-\trialk = \min_{\trialk \in \innertrk \subset \feasiblek} \modelk(\iteratek + \trialk) \\
-\trialk = \min_{\trialk \in \outertrk \cap \feasiblek} \modelk(\iteratek + \trialk)
+\trialk = \min_{\trialk \in \innertrk \subset \feasiblek} \modelk(\iteratek + \trialk) \label{search_a_little} \\
+\trialk = \min_{\trialk \in \outertrk \cap \feasiblek} \modelk(\iteratek + \trialk) \label{search_a_lot}
 \end{align}
 
 In either case, work to find a point satisfisfying \ref{efficiency} and 
@@ -533,7 +570,7 @@ Although some details depend on the particular choice of $\innertrk$, we follow 
 \EndLoop
 \end{algorithmic}
 
-Much of the work is defered to the ConstructTrustRegion subroutine.
+Much of the work is defered to the \emph{ConstructTrustRegion} subroutine.
 We will describe several different approaches we have taken for this subroutine.
 For convergence analysis, \ref{accuracy} must be satisfied by the trust region choice in this method.
 Not all searches for an inner trust region must guarantee this: the algorithm is allowed to try a bounded number of trust regions as long as one is gauranteed to satisfy these conditions.
@@ -543,13 +580,14 @@ This may not involve constructing a model or function evaluations.
 
 
 \subsection{First Approach: Bumping $\xi$}
-One simple approach to handle partially-quantifiable constraints is to simply avoid letting points fall outside the feasible region.
-Within the model improvement algorithm to select new points, we constrain the new points to also lie within the current model of the trust region.
+One simple approach to handle partially-quantifiable constraints is to maintaining the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \ref{model_improving_algorithm}.
+That is, we add the outer constraints to the model improvement algorithm to select new points, we constrain the new points to also lie within the current model of the trust region in algorithm \ref{model_improving_algorithm} line \ref{next_point}.
+We will let search space for this optimization problem be the feasible region intersect the trust region: $\outerfritr = \feasiblek \cap \outertrk $.
 
 The problem lies in finding suffiently poised sample points.
 The classical model algorithm uses a parameter $\xi$ as a lower bound of the pivot values of the Vandermode matrix.
-When requiring points to live within the trust region intersect the feasible region, it can happen that even after replacing a point, we still have not satisfied this bound.
-In figure \ref{lspc}, the sample points are not be poised for some values $\xi$, however no better points exist within the feasible region intersect the trust region.
+When requiring points to live within the $ \outerfritr $, it can happen that even after replacing a point, we still have not satisfied this bound.
+In figure \ref{lspc}, for some values of $\xi$, there is point in $ \outerfritr $ that will leave a sufficiently large pivot.
 
 \begin{figure}[h]
     \centering
@@ -558,16 +596,19 @@ In figure \ref{lspc}, the sample points are not be poised for some values $\xi$,
     \label{lspc}
 \end{figure}
 
-As the number of dimensions grows the ratio of volume of the trust region intersect the feasible region to the feasible region can become smaller.
+%As the number of dimensions grows the ratio of volume of the trust region intersect the feasible region to the feasible region can become smaller.
 
 One way to handle this is to simply allow $\xi$ to decrease. (Possibly, until a threshold is reached for maintaining a fixed $\Lambda$.)
 If the new point does not improve the geometry of the set significantly, then there is no other point that would do better.
 In this case, we cannot do better and simply proceed with our current point.
 
+Alternatively, we can check how much the next point will improve the current pivot, and only replace the existing point if it provides sufficient improvement in the Vandermode matrix's condition number.
+
 
 
 \subsubsection{Requiring sufficient model improvement}
 
+We introduce a constant $0<\delta_{\text{improv}}$ and require that a new point must improve the current pivot by more than $\delta_{\text{improv}}$.
 The new modified improvement algorithm is as follows:
 
 \begin{algorithmic}[1]
@@ -577,13 +618,14 @@ The new modified improvement algorithm is as follows:
 \For{$i = 1 \ldots p$}
     \State Swap row $i$ with row $i_{\max} = \arg \max_{j\ge i} V_{j,i} $
     \If {$|V_{i,i}| < \xi_{\text{cur}}$}
-        \State $y' = \arg\max_{t \in T_K \cap X} |\phi_i(t)|$
+        \State $y' = \arg\max_{t \in \outerfritr} |\phi_i(t)|$
         \State $v = |\phi_i(y')|$
         \If {$\label{impossibly_poised} v < \xi_{\text{min}}$}
             \State $\mathbf {fail}$
         \EndIf
         \If {$\xi_{\text{cur}} - v > \delta_{\text{improv}} \xi_{\text{cur}}$}
             \State Replace $V_i$ with $y'$
+            \State $\xi_{\text{cur}} \gets v$
         \EndIf
     \EndIf
     \State $V_i \gets \frac{V_i}{V_{i,i}} $
@@ -594,30 +636,33 @@ The new modified improvement algorithm is as follows:
 \end{algorithmic}
 
 As is usual, we may also wish to remove points larger than a certain radius from the current model center.
-The construct model routine for this approach follows the protype with $T_{in} = X \cap  T_k$.
-If a lower bound on the maximum value of each polynomial is known ahead of time, then the check on \ref{impossibly_poised} is not needed.
+The \emph{ConstructTrustRegion} for this approach follows the prototype with $T_{in} = \outerfritr$.
+If a lower bound $\kappa_{\phi}$ on the maximum value of each polynomial is known ahead of time, then the check on \ref{impossibly_poised} is not needed.
+That is, for a given set of linear constraints and largest trust region radius, it may be possible to calculate $\xi_{\text{min}} \le \kappa_{\phi} \le \max_{V}\max_{j}\max_{i}\|\phi_i(y^j)\|$.
 
-Another interesting approach we have not investigated is to decrease the size of the sample set when a new point cannot be computed.
+%Another interesting approach we have not investigated is to decrease the size of the sample set when a new point cannot be computed.
 
-
-The analysis for this approach may be more difficult.
+%The analysis for this approach may be more difficult.
 
 
 
 
 \subsection{Second Approach: Feasible trust regions}
 
-If we adopt the second approach to maintain a feasible inner trust region with a ``nice" shape, we will be ensured of a weaker version of \ref{accuracy}.
+If we adopt the second approach to maintain a feasible inner trust region with a ``nice" shape, we ensure of a stronger version of \ref{accuracy}.
 Namely, we will know that 
-\[\
-    \|\modelk(x) - \nabla f(x) \| \le \kappa_g \Delta_{\text{inner}} \quad \forall x \in T_{\text{in}}.
+\[
+    \|\modelk(x) - \nabla f(x) \| \le \kappa_g \Delta_{k} \quad \forall x \in \innertrk.
 \]
-If bounds can be shown relating the model error of the inner trust region to the outer trust region, then we will satisfy \ref{accuracy}.
+If we also choose to our trial point with \ref{search_a_little}, we have no garauntee of \ref{efficiency}.
+However, the model will likely be more accurate over this region.
+
+%If bounds can be shown relating the model error of the inner trust region to the outer trust region, then we will satisfy \ref{accuracy}.
 %In this case, classical methods ensure that $\|\nabla f(x^{(k)}) - \nabla m_f(x^{(k)})\| < \Delta_{inner} \le \Delta_k$.
 
 \subsubsection{Circular trust region}
 The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
-Within the construct inner trust region subroutine, this method sets the trust region radius to the minimum distance to the any constraint:
+Within the \emph{ConstructTrustRegion} subroutine, this method sets the trust region radius to the minimum distance to the any constraint:
 $\outertrk = B_2(\iteratek, \min\{\Delta_k, \min_{i}\frac{|A_i\iteratek - b_i|}{\|A_i\|} \})$.
 
 In practice, this does not work well as the radius can become too small to allow any progress.
@@ -847,7 +892,7 @@ In most cases, we have simply used the heurstic $H(E_k) \to \text{Vol}(E_k)$.
 
 \subsubsection{Search everything}
 
-One approach is to search all possible centers within the feasible region intersect the trust region:
+One approach is to search all possible centers within the $ \outerfritr $:
 $ \feasiblek \cap \outertrk$.
 That is, we add the constraints directly to the trust region subproblem by modifying \ref{ellipse_1}:
 $$\mu^k = \sup_{\mu \in \feasiblek \cap \outertrk} V(\mu)$$
