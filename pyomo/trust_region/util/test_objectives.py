@@ -33,3 +33,19 @@ class RandomOrder2:
 
 	def evaluate(self, x):
 		pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -61,8 +61,10 @@ model.constraints.add(model.q[2] >= 0.0)
 
 model.objective = Objective(expr=model.q[0] * model.q[2] - model.q[1] * model.q[1], sense=maximize)
 
-opt = SolverFactory('ipopt', executable='/home/thallock/anaconda3/envs/trust_region/bin/ipopt')
+#opt = SolverFactory('ipopt', executable='/home/thallock/anaconda3/envs/trust_region/bin/ipopt')
+opt = SolverFactory('cplex', executable='/home/thallock/Applications/cplex/cplex/bin/x86-64_linux/cplex')
 result = opt.solve(model)
+print(result)
 ok = result.solver.status == SolverStatus.ok
 if not ok:
 	print("warning solver did not return ok")
