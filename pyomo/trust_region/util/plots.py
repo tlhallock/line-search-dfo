@@ -75,7 +75,9 @@ def create_plot(title, filename, bounds):
 	ax = ret_val.fig.add_subplot(111)
 
 	plt.legend(loc='lower left')
-	ret_val.fig.set_size_inches(15, (bounds.ub[1] - bounds.lb[1]) / (bounds.ub[0] - bounds.lb[0]) * 15)
+	PLOT_SIZE = 10
+	scale_factor = min(3.0, (bounds.ub[1] - bounds.lb[1]) / (bounds.ub[0] - bounds.lb[0]))
+	ret_val.fig.set_size_inches(PLOT_SIZE, scale_factor * PLOT_SIZE)
 	matplotlib.rcParams['xtick.direction'] = 'out'
 	matplotlib.rcParams['ytick.direction'] = 'out'
 

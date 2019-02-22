@@ -27,11 +27,11 @@ class AlgorithmParams:
 		self.directory = None
 		self.basis_type = None
 
-		self.criticality_tolerance = 1e-4
+		self.criticality_tolerance = 1e-8
 		self.subproblem_constraint_tolerance = 1e-8
-		self.subproblem_search_tolerance = 1e-3
-		self.tolerance = 1e-4
-		self.radius_decrease_factor = 0.75
+		self.subproblem_search_tolerance = 1e-6
+		self.tolerance = 1e-7
+		self.radius_decrease_factor = 0.25
 		self.radius_increase_factor = 1.5
 		self.rho_upper = 0.9
 		self.rho_lower = 0.1
@@ -145,6 +145,15 @@ class AlgorithmContext:
 			self.params.constraints_b,
 			self.outer_trust_region.get_b()
 		])).flatten()
+
+	def success(self):
+		min_idx = numpy.argmin(self.sample_values)
+		return {
+			'success': True,
+			'message': 'converged',
+			'minimum': self.sample_values[min_idx],
+			'minimizer': self.sample_points[min_idx, :]
+		}
 
 
 def check_criticality(context, trust_region):
@@ -305,3 +314,5 @@ def always_feasible_algorithm(params):
 
 			context.finish_current_plot('accepted')
 		context.plot_history()
+
+		return context.success()
