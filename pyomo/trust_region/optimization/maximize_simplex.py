@@ -142,3 +142,7 @@ for Q, b, c in zip(Qs, bs, cs):
 	)
 p.add_points(points, label='simplex')
 p.save()
+
+
+
+
