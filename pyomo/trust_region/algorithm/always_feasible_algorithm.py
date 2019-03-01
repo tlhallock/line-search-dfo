@@ -1,5 +1,6 @@
 
 import numpy
+import json
 
 from trust_region.algorithm.tr_search.trust_region_strategy import parse_tr_strategy
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
@@ -12,6 +13,7 @@ from trust_region.dfo.trust_region.l1_trust_region import L1TrustRegion
 from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_region_objective
 from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
 from trust_region.algorithm.tr_search.heuristics import Heuristics
+from trust_region.util.utils import write_json
 
 OUTPUT_DIRECTORY = 'images'
 
@@ -19,13 +21,13 @@ OUTPUT_DIRECTORY = 'images'
 class AlgorithmParams:
 	def __init__(self):
 		self.x0 = None
-		self.constraints_A = None
-		self.constraints_b = None
+		self.constraints_polyhedron = None
 		self.objective_function = None
 		self.trust_region_strategy_params = None
 		self.point_replacement_params = None
 		self.directory = None
 		self.basis_type = None
+		self.buffer_factor = None
 
 		self.criticality_tolerance = 1e-8
 		self.subproblem_constraint_tolerance = 1e-8
@@ -39,8 +41,7 @@ class AlgorithmParams:
 
 
 class AlgorithmContext:
-	def __init__(self, params, log_file):
-		self.log_file = log_file
+	def __init__(self, params):
 		self.params = params
 		self.basis = parse_basis(params.basis_type, len(params.x0))
 		self.outer_trust_region = L1TrustRegion(center=params.x0, radius=1.0)
@@ -62,11 +63,6 @@ class AlgorithmContext:
 
 		for p in params.plot_bounds:
 			self.history.bounds.extend(p)
-
-	def log(self, message):
-		# print(message)
-		self.log_file.write(message + '\n')
-		self.log_file.flush()
 
 	def evaluate_original_objective(self, x):
 		y = self.params.objective_function.evaluate(x)
@@ -91,10 +87,13 @@ class AlgorithmContext:
 			str(self.plot_number).zfill(5)
 		)
 		self.plot_number += 1
-		self.current_plot = create_plot(title, file_name, self.history.get_plot_bounds())
+		self.current_plot = create_plot(
+			title,
+			file_name,
+			self.outer_trust_region.get_bounds().expand(1.2)  # self.history.get_plot_bounds()
+		)
 
 	def finish_current_plot(self, iteration_result):
-		self.log(iteration_result)
 		self.current_plot.ax.text(
 			0.1, 0.1,
 			iteration_result,
@@ -137,14 +136,20 @@ class AlgorithmContext:
 		trust_region.add_to_plot(accuracy_plot, detailed=False)
 		accuracy_plot.save()
 
-	def get_polyhedron(self):
-		return numpy.array(numpy.bmat([
-			[self.params.constraints_A],
-			[self.outer_trust_region.get_a()]
-		])), numpy.array(numpy.bmat([
-			self.params.constraints_b,
-			self.outer_trust_region.get_b()
-		])).flatten()
+	def construct_polyhedron(self):
+		return (
+			self.outer_trust_region.get_polyhedron()
+			.intersect(self.params.constraints_polyhedron)
+		)
+
+	def construct_buffer(self):
+		if self.params.buffer_factor is None:
+			return None
+		return self.params.constraints_polyhedron.shrink(
+			self.model_center(), self.params.buffer_factor
+		).shift(
+			self.outer_trust_region.center, self.outer_trust_region.radius
+		)
 
 	def success(self):
 		min_idx = numpy.argmin(self.sample_values)
@@ -155,17 +160,40 @@ class AlgorithmContext:
 			'minimizer': self.sample_points[min_idx, :]
 		}
 
+	def create_log_object(self):
+		print('Iteration', self.iteration)
+		print('Number of evaluations', self.evaluation_count)
+		print('Center', self.model_center())
+		print('Radius', self.outer_trust_region.radius)
+		print('Lowest sample point', min(self.sample_values))
+		print('Constraints at center', self.params.constraints_polyhedron.evaluate(self.model_center()))
+		print('=============================================')
 
-def check_criticality(context, trust_region):
+		return {
+			"iteration": self.iteration,
+			"number-of-evaluations": self.evaluation_count,
+			"previous-sample-points": self.sample_points,
+			"previous-sample-values": self.sample_values,
+			"outer-trust-region": self.outer_trust_region.to_json(),
+			"center": self.model_center()
+		}
+
+
+def check_criticality(context, trust_region, iteration_object):
 	x = context.model_center()
 	g = context.basis.evaluate_gradient(trust_region.shift_row(x), context.objective_coefficients)
-	A, b = context.get_polyhedron()
-	success, proj_x = compute_projection(x - g, A, b, context.outer_trust_region)
+	iteration_object['gradient'] = g
+	polyhedron = context.construct_polyhedron()
+	success, proj_x = compute_projection(x - g, polyhedron, context.outer_trust_region)
 	if not success:
 		return False
+	iteration_object['projected-gradient'] = proj_x
 
 	t = numpy.linalg.norm(proj_x - context.model_center())
 	critical = t < context.params.criticality_tolerance
+
+	iteration_object['xsi'] = t
+	iteration_object['critical'] = critical
 
 	title = '{} criticality'.format(context.iteration)
 	file_name = '{}/{}/{}_criticality.png'.format(OUTPUT_DIRECTORY, context.params.directory, str(context.plot_number).zfill(5))
@@ -174,7 +202,7 @@ def check_criticality(context, trust_region):
 	bounds = context.outer_trust_region.get_bounds()
 	bounds.extend(x-g)
 	plot = create_plot(title, file_name, bounds.expand())
-	plot.add_polyhedron(A, b, label='feasible region', color='m', lvls=[0.0])
+	plot.add_polyhedron(polyhedron, label='feasible region', color='m', lvls=[0.0])
 	plot.add_point(context.model_center(), label="c", color='k')
 	plot.add_point(x-g, label="x-g", color='y')
 	plot.add_point(proj_x, label="x-g", color='r')
@@ -195,15 +223,22 @@ def check_criticality(context, trust_region):
 	return critical
 
 
-def update_inner_trust_region(context):
-	if context.outer_trust_region.contained_in(context.params.constraints_A, context.params.constraints_b):
+def update_inner_trust_region(context, log_object):
+	if context.outer_trust_region.contained_in(context.params.constraints_polyhedron):
+		log_object['tr-contained-in-constraints'] = True
 		value = get_circular_trust_region_objective(context, context.model_center(), None, None)
 		trust_region = value.trust_region
 		success = value.success
 		plot_details = NoPlotDetails()
 	else:
+		log_object['tr-contained-in-constraints'] = False
 		find_trust_region = parse_tr_strategy(context.params.trust_region_strategy_params)
 		success, trust_region, plot_details = find_trust_region(context)
+
+	if trust_region is None:
+		raise Exception('Unable to find trust region')
+
+	log_object["inner-trust-region"] = trust_region.to_json()
 
 	if not success:
 		raise Exception('Unable to find the trust region')
@@ -212,13 +247,15 @@ def update_inner_trust_region(context):
 		context.basis,
 		trust_region,
 		context.sample_points,
-		context.params.point_replacement_params
+		context.params.point_replacement_params,
+		log_object
 	)
 	if not certification.poised:
 		raise Exception('Not poised')
 
 	context.sample_points = certification.unshifted
 	original_sample_values = numpy.copy(context.sample_values)
+
 	for idx in range(len(certification.indices)):
 		if certification.indices[idx] < 0:
 			context.sample_values[idx] = context.evaluate_original_objective(
@@ -235,6 +272,10 @@ def update_inner_trust_region(context):
 		certification.lmbda * numpy.asmatrix(context.sample_values).T
 	).flatten()
 
+	log_object["new-sample-points"] = context.sample_points
+	log_object["new-sample-values"] = context.sample_values
+	log_object['coefficients'] = context.objective_coefficients
+
 	plot_details.add_to_plot(context.current_plot)
 	trust_region.add_to_plot(context.current_plot)
 	certification.add_to_plot(context.current_plot)
@@ -244,40 +285,55 @@ def update_inner_trust_region(context):
 	return trust_region
 
 
+def write_log_object(log_file, log_object, needs_comma):
+	if needs_comma:
+		log_file.write(',')
+	log_file.write('\n')
+	write_json(log_object, log_file, False)
+	return True
+
+
 def always_feasible_algorithm(params):
-	with open('{}/{}/log.txt'.format(OUTPUT_DIRECTORY, params.directory), 'w') as log_file:
-		context = AlgorithmContext(params, log_file)
+	with open('{}/{}/log.json'.format(OUTPUT_DIRECTORY, params.directory), 'w') as log_file:
+		log_file.write('{\n\t"iterations": [')
+		needs_comma = False
+		context = AlgorithmContext(params)
 		while True:
 			context.iteration += 1
 
-			context.log('----------------------------------------')
-			context.log('iteration = {}'.format(context.iteration))
-			context.log('total number of evaluations = {}'.format(context.evaluation_count))
+			log_object = context.create_log_object()
 			context.start_current_plot()
-			context.current_plot.add_polyhedron(context.params.constraints_A, context.params.constraints_b, label='constraints')
+			context.current_plot.add_polyhedron(context.construct_polyhedron(), label='constraints')
 			context.outer_trust_region.add_to_plot(context.current_plot)
 			context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
 
-			trust_region = update_inner_trust_region(context)
+			trust_region = update_inner_trust_region(context, log_object)
+
 			context.plot_accuracy(trust_region)
 
-			if check_criticality(context, trust_region):
+			if check_criticality(context, trust_region, log_object):
 				if context.outer_trust_region.radius < context.params.tolerance:
+					log_object['converged'] = True
 					context.finish_current_plot('converged')
 					break
+
+				log_object['converged'] = False
+				log_object['iteration-result'] = 'critical, radius too large'
+				needs_comma = write_log_object(log_file, log_object, needs_comma)
+
 				context.decrease_radius()
-				context.finish_current_plot('critical, radius too large')
+				context.finish_current_plot(log_object['iteration-result'])
 				continue
 
 			solution = solve_trust_region_subproblem(
 				objective_basis=context.basis,
 				objective_coefficients=context.objective_coefficients,
 				model_center=context.model_center(),
-				outer_trust_region=context.outer_trust_region,
-				trust_region=trust_region
+				trust_region=trust_region,
+				buffer=context.construct_buffer(),
 			)
 
-			context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m')
+			context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m', width=0.05 * context.outer_trust_region.radius)
 
 			trial_objective_value = context.evaluate_original_objective(solution.trial_point)
 			trial_model_value = solution.predicted_objective_value
@@ -289,21 +345,30 @@ def always_feasible_algorithm(params):
 			) / (
 				current_model_value - trial_model_value
 			)
-			context.log('new function value = {}'.format(trial_objective_value))
-			context.log('trial point = {}'.format(solution.trial_point))
-			context.log('rho = {}'.format(rho))
+
+			log_object['trial-point'] = [xi for xi in solution.trial_point]
+			log_object['new-function-value'] = trial_objective_value
+			log_object['rho'] = rho
 
 			context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
 
 			if rho < context.params.rho_lower:
 				context.decrease_radius()
-				context.finish_current_plot('poor model')
+
+				log_object['iteration-result'] = 'poor model'
+				needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+				context.finish_current_plot(log_object['iteration-result'])
 				continue
 
 			delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
 			if delta < context.outer_trust_region.radius / 8:
 				context.decrease_radius()
-				context.finish_current_plot('step too small')
+
+				log_object['iteration-result'] = 'step too small'
+				needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+				context.finish_current_plot(log_object['iteration-result'])
 				continue
 
 			if rho > context.params.rho_lower:
@@ -312,7 +377,12 @@ def always_feasible_algorithm(params):
 			context.outer_trust_region.recenter(solution.trial_point)
 			context.current_objective_value = trial_objective_value
 
-			context.finish_current_plot('accepted')
+			log_object['iteration-result'] = 'accepted'
+			needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+			context.finish_current_plot(log_object['iteration-result'])
+
 		context.plot_history()
 
+		log_file.write('\n\t]\n}\n')
 		return context.success()

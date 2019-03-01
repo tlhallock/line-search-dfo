@@ -72,10 +72,11 @@ class Ellipse(TrustRegion):
 			color=color,
 			lvls=[-0.1, 0.0]
 		)
-		if not detailed or self.ds is None:
+		if not detailed or self.ds is None or len(self.ds) == 0:
 			return
+		approx_distance = max(numpy.linalg.norm(d - self.center) for d in self.ds)
 		for d in self.ds:
-			plot_object.add_arrow(self.center, self.center + d, color="c")
+			plot_object.add_arrow(self.center, self.center + d, color="c", width=approx_distance / 200)
 
 	def multiply_radius(self, factor):
 		raise Exception("Not implemented")

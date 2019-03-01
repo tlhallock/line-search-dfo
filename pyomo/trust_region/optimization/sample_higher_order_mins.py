@@ -5,8 +5,6 @@ import numpy
 
 from trust_region.optimization.common import *
 
-from trust_region.dfo.trust_region.polyhedral_trust_region import _add_constraints_to_pyomo
-
 
 def minimize_other_polynomial(
 		n,
@@ -20,11 +18,7 @@ def minimize_other_polynomial(
 	model.x = Var(model.dimension)
 	model.constraints = ConstraintList()
 
-	_add_constraints_to_pyomo(
-		model,
-		shifted_polyhedron[0],
-		shifted_polyhedron[1]
-	)
+	shifted_polyhedron.add_to_pyomo(model)
 
 	model.objective = Objective(
 		expr=objective_basis.to_pyomo_expression(model, sample_coefficients),

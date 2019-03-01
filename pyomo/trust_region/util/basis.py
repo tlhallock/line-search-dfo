@@ -1,12 +1,14 @@
 import abc
 import numpy
+import itertools
+import math
 
 
 def parse_basis(basis_type, dimension):
 	if basis_type == 'quadratic':
-		return QuadraticBasis(dimension)
+		return PolynomialBasis(dimension, 2)
 	elif basis_type == 'linear':
-		return LinearBasis(dimension)
+		return PolynomialBasis(dimension, 1)
 	else:
 		raise Exception('unknown basis type: {}'.format(basis_type))
 
@@ -124,3 +126,100 @@ class LinearBasis(Basis):
 				1.0 * coefficients[1] * model.x[0] +
 				1.0 * coefficients[2] * model.x[1]
 		)
+
+
+class Monomial:
+	def __init__(self, powers, coefficient, degree):
+		self.powers = powers
+		self.coefficient = coefficient
+		self.degree = degree
+
+	def differentiate(self, idx):
+		if self.powers[idx] == 0:
+			return Monomial(
+				[0 for _ in range(len(self.powers))],
+				0.0,
+				0
+			)
+		return Monomial(
+			[p if i != idx else p-1 for i, p in enumerate(self.powers)],
+			self.coefficient * self.powers[idx],
+			-1
+		)
+
+	def to_pyomo(self, model):
+		ret = self.coefficient
+		for comp, p in enumerate(self.powers):
+			for i in range(p):
+				ret = ret * model.x[comp]
+		return ret
+
+	def evaluate(self, point):
+		ret = self.coefficient
+		for comp, p in enumerate(self.powers):
+			ret *= point[comp] ** p
+		return ret
+
+	def pretty_print(self):
+		products = "*".join([
+			"x[" + str(i) + "]" + (" ** " + str(p) if p > 1 else "")
+			for i, p in enumerate(self.powers)
+			if p > 0
+		])
+		return str(self.coefficient) + ("*" + products if products != "" else "")
+
+
+class PolynomialBasis:
+	def __init__(self,  dimension, order):
+		self.dimension = dimension
+		self.order = order
+		self.monomials = [
+			Monomial(
+				[
+					len([k for k in term if k == i])
+					for i in range(dimension)
+				],
+				1.0 / math.factorial(degree),
+				degree
+			)
+			for degree in range(order + 1)
+			for term in itertools.combinations_with_replacement(list(range(dimension)), degree)
+		]
+
+	@property
+	def basis_dimension(self):
+		return len(self.monomials)
+
+	@property
+	def n(self):
+		return self.dimension
+
+	def evaluate_to_matrix(self, points):
+		return numpy.array([
+			[
+				monomial.evaluate(points[i])
+				for monomial in self.monomials
+			]
+			for i in range(points.shape[0])
+		])
+
+	def to_pyomo_expression(self, model, coefficients):
+		ret = 0
+		for i, monomial in enumerate(self.monomials):
+			ret = ret + coefficients[i] * monomial.to_pyomo(model)
+		return ret
+
+	def debug_evaluate(self, x, coefficients):
+		ret = 0
+		for i, monomial in enumerate(self.monomials):
+			ret += coefficients[i] * monomial.evaluate(x)
+		return ret
+
+	def evaluate_gradient(self, x, coefficients):
+		return numpy.array([
+			sum([
+				coefficients[j] * monomial.differentiate(i).evaluate(x)
+				for j, monomial in enumerate(self.monomials)
+			])
+			for i in range(self.dimension)
+		])

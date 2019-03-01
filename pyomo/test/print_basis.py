@@ -62,7 +62,6 @@ def get_hessian_component(powers, i, j, coeff):
 	)
 
 
-
 def print_basis_func(dimension, power):
 	ret = []
 	for powers in itertools.combinations_with_replacement([i for i in range(dimension)], power):

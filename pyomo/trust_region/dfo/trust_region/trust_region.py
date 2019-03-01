@@ -53,3 +53,7 @@ class TrustRegion(metaclass=abc.ABCMeta):
 	@abc.abstractmethod
 	def contains(self, point):
 		raise Exception("Not implemented")
+
+	@abc.abstractmethod
+	def to_json(self):
+		raise Exception("Not implemented")

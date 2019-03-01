@@ -34,8 +34,9 @@ def _test_v(v, basis, shifted):
 	p = basis.basis_dimension
 	n_points = shifted.shape[0]
 	h = n_points + p
-	if numpy.linalg.norm(v[0:n_points, :] - basis.evaluate_to_matrix(shifted) * v[n_points:h, :]) > 1e-3:
-		raise Exception("did not work")
+	error = numpy.linalg.norm(v[0:n_points, :] - basis.evaluate_to_matrix(shifted) * v[n_points:h, :]) / numpy.linalg.norm(v[0:n_points, :])
+	if error > 1e-3:
+		raise Exception("did not work: " + str(error))
 
 
 def _get_max_index(vec):
@@ -69,10 +70,11 @@ def _replace_row(
 
 
 def compute_lagrange_polynomials(
-		basis,
-		trust_region,
-		points,
-		replacement_strategy_params
+	basis,
+	trust_region,
+	points,
+	replacement_strategy_params,
+	log_object
 ):
 	checkers, options = parse_replacement_policy(replacement_strategy_params)
 
@@ -89,6 +91,9 @@ def compute_lagrange_polynomials(
 
 	if not n_points == p:
 		raise Exception("currently, have to have all points")
+
+	log_object['shifted'] = cert.shifted
+	log_object['shifted-vandermode'] = basis.evaluate_to_matrix(cert.shifted)
 
 	v = numpy.bmat([
 		[basis.evaluate_to_matrix(cert.shifted)],
@@ -136,6 +141,8 @@ def compute_lagrange_polynomials(
 	cert.unshifted = trust_region.unshift(cert.shifted)
 	cert.lmbda = v[n_points:h]
 	cert.poised = True
+
+	log_object['lambda'] = cert.lmbda
 
 	_test_v(v, basis, cert.shifted)
 

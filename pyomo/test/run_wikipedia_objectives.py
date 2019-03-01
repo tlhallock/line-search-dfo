@@ -6,30 +6,12 @@ import numpy as np
 
 from trust_region.algorithm.always_feasible_algorithm import AlgorithmParams
 from trust_region.algorithm.always_feasible_algorithm import always_feasible_algorithm
-
+from trust_region.util.polyhedron import translate
+from trust_region.util.polyhedron import rotate
+from trust_region.util.polyhedron import intersection
 from trust_region.util.wikipedia_objectives import WIKIPEDIA_OBJECTIVES
 
 numpy.set_printoptions(linewidth=255)
-
-
-def translate(A, b, center):
-	# Ax \le b
-	# A(x - center) \le b
-	# Ax \le b + A*center
-	return A, b + numpy.dot(A, center)
-
-
-def rotate(A, b, theta):
-	rotation = numpy.array([
-		[+numpy.cos(theta), -numpy.sin(theta)],
-		[+numpy.sin(theta), +numpy.cos(theta)]
-	])
-	# ARx \le b
-	return numpy.dot(A, rotation), b
-
-
-def intersection(A1, b1, A2, b2):
-	return numpy.append(A1, A2, axis=0), numpy.append(b1, b2)
 
 
 def run_on_objective(objective):

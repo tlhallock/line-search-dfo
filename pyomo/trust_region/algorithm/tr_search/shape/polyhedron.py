@@ -13,7 +13,6 @@ def get_polyhedral_trust_region_objective(context, x, hot_start, options):
 	value.hot_start = None
 	value.trust_region = PolyhedralTrustRegion(
 		context.outer_trust_region,
-		context.params.constraints_A,
-		context.params.constraints_b
+		context.params.constraints_polyhedron
 	)
 	return value

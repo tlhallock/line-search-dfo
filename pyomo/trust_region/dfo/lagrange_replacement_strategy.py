@@ -1,5 +1,3 @@
-import abc
-
 import numpy
 import copy
 
@@ -80,6 +78,10 @@ def adaptive_xsi(check, options):
 
 
 REPLACEMENT_CHECKS = {
+	'far-fixed-xsi': {
+		'checkers': [replace_far_points, fixed_xsi, finisher],
+		'options': {'far-radius': 5, 'xsi': 1e-6}
+	},
 	'fixed-xsi': {
 		'checkers': [replace_far_points, fixed_xsi, finisher],
 		'options': {'far-radius': 1.5, 'xsi': 1e-4}

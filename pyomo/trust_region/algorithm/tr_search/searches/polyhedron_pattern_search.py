@@ -4,24 +4,24 @@ from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
 from trust_region.algorithm.tr_search.searches.common import ObjectiveValue
 
 
-def random_point(A, b, bounds):
+def random_point(p, bounds):
 	point = bounds.sample()
-	while (numpy.dot(A, point) > b).any():
+	while not p.contains(point):
 		point = bounds.sample()
 	return point
 
 
-def get_starting_points(A, b, x0, bounds, n):
+def get_starting_points(p, x0, bounds, n):
 	yield x0
 	for _ in range(n):
-		yield random_point(A, b, bounds)
+		yield random_point(p, bounds)
 
 
 plot_count = 0
 def search_anywhere(context, objective, options):
 	global plot_count
 
-	A, b = context.get_polyhedron()
+	polyhedron = context.construct_polyhedron()
 	x0 = numpy.copy(context.model_center())
 	bounds = context.outer_trust_region.get_bounds()
 	tolerance = context.params.subproblem_search_tolerance * context.outer_trust_region.radius
@@ -30,7 +30,7 @@ def search_anywhere(context, objective, options):
 
 	starting_point_count = 0
 	best_solution_so_far = ObjectiveValue()
-	for starting_point in get_starting_points(A, b, x0, bounds, num_starting_points):
+	for starting_point in get_starting_points(polyhedron, x0, bounds, num_starting_points):
 		local_best_point = starting_point
 		starting_point_count += 1
 		# print('\tinner iteration {} of {}'.format(starting_point_count, num_starting_points + 1))
@@ -47,7 +47,7 @@ def search_anywhere(context, objective, options):
 			improved = False
 			for search_direction in sample_search_directions(len(x0), num_search_directions):
 				trial_point = local_best_point + radius * search_direction
-				if (numpy.dot(A, trial_point) > b).any():
+				if not polyhedron.contains(trial_point):
 					continue
 				trial_solution = objective(
 					context=context,

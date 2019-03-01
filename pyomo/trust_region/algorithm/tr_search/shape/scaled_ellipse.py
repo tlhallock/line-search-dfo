@@ -2,8 +2,8 @@ import numpy
 import traceback
 
 from trust_region.algorithm.tr_search.searches.common import ObjectiveValue
-from trust_region.optimization.maximize_ellipse import EllipseParams
-from trust_region.optimization.maximize_ellipse import compute_maximal_ellipse_after_shift
+from trust_region.optimization.maximize_2d_ellipse import EllipseParams
+from trust_region.optimization.maximize_2d_ellipse import compute_maximal_ellipse_after_shift
 from trust_region.dfo.trust_region.scaled_ellipse import ScaledEllipse
 
 

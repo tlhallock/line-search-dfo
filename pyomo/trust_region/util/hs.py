@@ -7,10 +7,10 @@ OBJECTIVES = [
 		'constraints': np.array([
 			[-10, 1, -10],
 		]),
-		'bounds': {
-			'x': [2, 50],
-			'y': [-50, 50]
-		},
+		'bounds': np.array([
+			[2, 50],
+			[-50, 50]
+		]),
 		'minimizer': np.array([2, 0]),
 		'minimum': -99.96,
 		'dimension': 2,
@@ -23,7 +23,7 @@ OBJECTIVES = [
 			(-0.01*i + np.exp(-1.0/x[0] * (25 + (-50 * np.log(0.01 * i)) ** (2.0/3) - x[1]) ** x[2])) ** 2
 			for i in range(1, 100)
 		]),
-		'constraints': np.array([]),
+		'constraints': np.zeros((0, 4)),
 		'bounds': np.array([
 			[0.1, 100],
 			[0, 25.6],

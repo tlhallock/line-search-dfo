@@ -11,6 +11,13 @@ class CircularTrustRegion(TrustRegion):
 		self.center = center
 		self.radius = radius
 
+	def to_json(self):
+		return {
+			'type': 'spherical',
+			'center': self.center,
+			'radius': self.radius
+		}
+
 	def shift_vector(self, vector):
 		return (vector - self.center) / self.radius
 

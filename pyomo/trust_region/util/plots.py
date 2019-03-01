@@ -5,6 +5,39 @@ import matplotlib
 import numpy
 
 
+class NoPlot:
+	def save(self):
+		pass
+
+	def add_contour(self, *args, **kwargs):
+		pass
+
+	def add_points(self, *args, **kwargs):
+		pass
+
+	def add_point(self, *args, **kwargs):
+		pass
+
+	def add_arrow(self, *args, **kwargs):
+		pass
+
+	def add_polyhedron(self, *args, **kwargs):
+		pass
+
+	@property
+	def ax(self):
+		class axis:
+			def add_artist(self, *args, **kwargs):
+				pass
+
+			def text(self, *args, **kwargs):
+				pass
+
+			def transAxes(self, *args, **kwargs):
+				pass
+		return axis()
+
+
 class PlotObject:
 	def __init__(self):
 		self.ax = None
@@ -60,13 +93,16 @@ class PlotObject:
 				width=width
 			))
 
-	def add_polyhedron(self, A, b, label, color='b', lvls=[-0.1, 0.0]):
-		for i in range(A.shape[0]):
-			func = lambda x: numpy.dot(A[i], x) - b[i]
+	def add_polyhedron(self, polyhedron, label, color='b', lvls=[-0.1, 0.0]):
+		for i in range(polyhedron.A.shape[0]):
+			func = lambda x: numpy.dot(polyhedron.A[i], x) - polyhedron.b[i]
 			self.add_contour(func, label + '_' + str(i), color=color, lvls=lvls)
 
 
 def create_plot(title, filename, bounds):
+	if len(bounds.lb) != 2:
+		return NoPlot()
+
 	ret_val = PlotObject()
 	ret_val.fig = plt.figure()
 	plt.title(title)

@@ -6,6 +6,9 @@ import numpy
 
 from trust_region.optimization.common import *
 
+from trust_region.util.bounds import Bounds
+from trust_region.util.plots import create_plot
+
 
 class TrustRegionSubProblem:
 	def __init__(self):
@@ -13,21 +16,24 @@ class TrustRegionSubProblem:
 		self.predicted_objective_value = None
 		self.trial_point = None
 
+# cntr = 0
 
-def _solve_trust_region_subproblem(
+
+def solve_trust_region_subproblem(
 		objective_basis,
 		objective_coefficients,
-		outer_trust_region,
 		trust_region,
-		initialization
+		model_center,
+		buffer
 ):
 	model = ConcreteModel()
 	model.dimension = range(objective_basis.n)
 	model.x = Var(model.dimension)
 	model.constraints = ConstraintList()
 
-	# outer_trust_region.add_unshifted_pyomo_constraints(model)
 	trust_region.add_shifted_pyomo_constraints(model)
+	if buffer is not None:
+		buffer.add_to_pyomo(model)
 
 	# Needs to be shifted first
 	def objective_rule(m):
@@ -48,26 +54,21 @@ def _solve_trust_region_subproblem(
 
 	shifted_solution = numpy.asarray([model.x[i]() for i in model.dimension])
 
+	# global cntr
+	# bounds = Bounds()
+	# bounds.extend(numpy.array([-2, -2]))
+	# bounds.extend(numpy.array([6, 6]))
+	# p = create_plot('tr', 'images/higher_dimension/trust_region_subproblem_' + str(cntr) + '.png', bounds)
+	# p.add_polyhedron(buffer, label='buffer', color='r')
+	# p.add_polyhedron(constraints, label='buffer', color='b')
+	# trust_region.add_to_plot(p)
+	# p.save()
+	#
+	# cntr += 1
+
+
 	ret_value = TrustRegionSubProblem()
 	ret_value.success = ok and optimal
 	ret_value.predicted_objective_value = model.objective()
 	ret_value.trial_point = trust_region.unshift_row(shifted_solution)
 	return ret_value
-
-
-def solve_trust_region_subproblem(
-		objective_basis,
-		objective_coefficients,
-		model_center,
-		outer_trust_region,
-		trust_region
-):
-	return _solve_trust_region_subproblem(
-		objective_basis,
-		objective_coefficients,
-		outer_trust_region,
-		trust_region,
-		model_center
-	)
-	# if current is None or abs(test['objective']) > abs(current['objective']):
-	#	current = test

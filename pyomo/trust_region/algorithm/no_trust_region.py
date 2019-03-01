@@ -3,8 +3,8 @@ import numpy
 
 from trust_region.util.plots import create_plot
 from trust_region.util.bounds import Bounds
-from trust_region.util.enumerate_polyhedron import get_polyhedron
-from trust_region.util.enumerate_polyhedron import get_diameter
+from trust_region.util.polyhedron import get_polyhedron
+from trust_region.util.polyhedron import get_diameter
 
 
 # distance to expected minimum

@@ -1,7 +1,6 @@
 import numpy
 
 from trust_region.optimization.sample_higher_order_mins import minimize_other_polynomial
-from trust_region.util.enumerate_polyhedron import get_diameter
 from trust_region.dfo.higher_order_terms import ExtraTerms
 
 from trust_region.util.plots import create_plot
@@ -39,7 +38,7 @@ class Heuristics:
 		self.previous_error = abs(true_objective-expected_objective)
 
 	def sample_objectives(self, context, num_samples):
-		current_polyhedron = context.get_polyhedron()
+		current_polyhedron = context.construct_polyhedron()
 		extra_terms = ExtraTerms(self.basis)
 		variance = 1.0
 
@@ -70,7 +69,7 @@ class Heuristics:
 			other_solutions.append(other_solution)
 		ret_val = self.previous_trust_region.unshift(numpy.asarray(other_solutions))
 
-		diam = get_diameter(current_polyhedron[0], current_polyhedron[1])
+		diam = current_polyhedron.get_diameter()
 
 		def value_of_point(x):
 			return numpy.mean([

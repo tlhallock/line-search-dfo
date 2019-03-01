@@ -68,25 +68,23 @@ def _minimize_error(
 
 
 def _minimize_other_polynomial(
-	objective_rule
+	objective_rule,
+	A,
+	b
 ):
 	model = ConcreteModel()
 	dimension = 2
 	model.dimension = range(dimension)
 	model.x = Var(model.dimension)
 	model.constraints = ConstraintList()
-	model.constraints.add(
-		model.x[0] <= 1
-	)
-	model.constraints.add(
-		model.x[0] >= -1
-	)
-	model.constraints.add(
-		model.x[1] <= 1
-	)
-	model.constraints.add(
-		model.x[1] >= -1
-	)
+	m = A.shape[0]
+	for i in range(m):
+		s = 0
+		for j in range(dimension):
+			s += A[i, j] * model.x[j]
+		model.constraints.add(
+			s <= b[i]
+		)
 
 	model.objective = Objective(rule=objective_rule, sense=minimize)
 	opt = SolverFactory(SOLVER_NAME, executable=SOLVER_PATH)

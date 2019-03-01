@@ -5,10 +5,8 @@ from trust_region.dfo.trust_region.circular_trust_region import CircularTrustReg
 
 
 def get_circular_trust_region_objective(context, x, hot_start, options):
-	a, b = context.get_polyhedron()
-	distance_to_closest_constraint = min(
-		numpy.divide(abs(numpy.dot(a, x) - b), numpy.linalg.norm(a, axis=1))
-	)
+	polyhedron = context.construct_polyhedron()
+	distance_to_closest_constraint = polyhedron.distance_to_closest_constraint(x)
 	distance_to_center = numpy.linalg.norm(x - context.model_center())
 
 	value = ObjectiveValue()

@@ -1,7 +1,7 @@
 import numpy
 
-from trust_region.optimization.maximize_ellipse import compute_maximal_ellipse
-from trust_region.optimization.maximize_ellipse import EllipseParams
+from trust_region.optimization.maximize_2d_ellipse import compute_maximal_ellipse
+from trust_region.optimization.maximize_2d_ellipse import EllipseParams
 from trust_region.util.plots import create_plot
 from trust_region.util.history import Bounds
 

@@ -3,13 +3,13 @@ import os
 import json
 import numpy
 
-from trust_region.optimization.maximize_ellipse import compute_maximal_ellipse
-from trust_region.optimization.maximize_ellipse import parse_params
-import trust_region.optimization.maximize_ellipse
+from trust_region.optimization.maximize_2d_ellipse import compute_maximal_ellipse
+from trust_region.optimization.maximize_2d_ellipse import parse_params
+import trust_region.optimization.maximize_2d_ellipse
 from trust_region.util.history import Bounds
 from trust_region.util.plots import create_plot
 
-trust_region.optimization.maximize_ellipse.LOG_ERRORS = False
+trust_region.optimization.maximize_2d_ellipse.LOG_ERRORS = False
 
 base = 'images/errors/'
 

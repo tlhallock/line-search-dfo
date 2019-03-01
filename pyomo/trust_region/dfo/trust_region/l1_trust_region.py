@@ -3,11 +3,19 @@ import numpy
 import itertools
 from trust_region.util.bounds import Bounds
 from trust_region.dfo.trust_region.circular_trust_region import CircularTrustRegion
+from trust_region.util.polyhedron import Polyhedron
 
 
 class L1TrustRegion(CircularTrustRegion):
 	def copy(self):
 		return L1TrustRegion(numpy.copy(self.center), self.radius)
+
+	def to_json(self):
+		return {
+			'type': 'L1',
+			'center': self.center,
+			'radius': self.radius
+		}
 
 	def add_to_plot(self, plot_object, detailed=True):
 		for i in range(len(self.center)):
@@ -42,19 +50,17 @@ class L1TrustRegion(CircularTrustRegion):
 				model.x[idx] >= self.center[idx] - self.radius
 			)
 
-	def get_a(self):
-		ret_val = numpy.zeros((2 * len(self.center), len(self.center)))
+	def get_polyhedron(self):
+		A = numpy.zeros((2 * len(self.center), len(self.center)))
 		for i in range(len(self.center)):
-			ret_val[2 * i + 0, i] = +1.0
-			ret_val[2 * i + 1, i] = -1.0
-		return ret_val
+			A[2 * i + 0, i] = +1.0
+			A[2 * i + 1, i] = -1.0
 
-	def get_b(self):
-		ret_val = numpy.zeros(2 * len(self.center))
+		b = numpy.zeros(2 * len(self.center))
 		for i in range(len(self.center)):
-			ret_val[2 * i + 0] = +self.center[i] + self.radius
-			ret_val[2 * i + 1] = -self.center[i] + self.radius
-		return ret_val
+			b[2 * i + 0] = +self.center[i] + self.radius
+			b[2 * i + 1] = -self.center[i] + self.radius
+		return Polyhedron(A, b)
 
 	def get_bounds(self):
 		bounds = Bounds()
@@ -92,9 +98,9 @@ class L1TrustRegion(CircularTrustRegion):
 		for x in itertools.product([self.radius, -self.radius], repeat=len(self.center)):
 			yield self.center + numpy.array(x)
 
-	def contained_in(self, A, b):
+	def contained_in(self, polyhedron):
 		for endpoint in self.endpoints():
-			if (numpy.dot(A, endpoint) > b).any():
+			if not polyhedron.contains(endpoint):
 				return False
 		return True
 
@@ -106,7 +112,3 @@ class L1TrustRegion(CircularTrustRegion):
 			if d > +self.radius:
 				return False
 		return True
-
-	# def shift_polyhedron(self, polyhedron):
-	#	 pass
-
