@@ -128,6 +128,9 @@ class Polyhedron:
 
 			yield x, indices
 
+	def get_feasible_point(self):
+		return numpy.mean(numpy.array([v[0] for v in self.enumerate_vertices()]), axis=0)
+
 	def get_diameter(self):
 		diam = -1
 		vertices = numpy.array([v for v in self.enumerate_vertices()])

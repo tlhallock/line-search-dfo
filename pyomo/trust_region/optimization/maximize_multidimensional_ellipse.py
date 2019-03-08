@@ -128,10 +128,11 @@ def construct_ellipse(p, l_inverse, volume, k, bbar, hot_start=None):
 	ellipse = Ellipse()
 	ellipse.center = p.center
 	if volume is not None:
+		# This is no longer accurate.
 		ellipse.volume = volume
 	ellipse.hot_start = hot_start
 
-	l_inverse *= .8
+	# l_inverse *= .8
 
 	ellipse.l_inverse = l_inverse
 	ellipse.l = numpy.linalg.inv(ellipse.l_inverse)
@@ -205,7 +206,12 @@ def compute_maximal_ellipse(p):
 	# 		raise Exception('this is not supported')
 
 	def objective_rule(m):
-		return determinant(q_matrix)
+		det = 1.0
+		for idx, coord in idx_to_coord.items():
+			if coord[0] != coord[1]:
+				continue
+			det = det * m.q[idx]
+		return det
 	model.objective = Objective(rule=objective_rule, sense=maximize)
 
 	maximum_l_inverse = None
@@ -281,3 +287,12 @@ def compute_maximal_ellipse_after_shift(params, l1):
 	ellipse2.volume = numpy.pi / numpy.sqrt(numpy.linalg.det(ellipse2.q))
 	return success2, ellipse2
 
+
+'''
+
+f(x + s) = f(x) + 
+	D_0 f(x) (
+
+
+
+'''

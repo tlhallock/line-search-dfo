@@ -90,7 +90,11 @@ class AlgorithmContext:
 		self.current_plot = create_plot(
 			title,
 			file_name,
-			self.outer_trust_region.get_bounds().expand(1.2)  # self.history.get_plot_bounds()
+			(
+				self.history.get_plot_bounds()
+				if len(self.params.plot_bounds) > 0
+				else self.outer_trust_region.get_bounds().expand(1.2)
+			)
 		)
 
 	def finish_current_plot(self, iteration_result):

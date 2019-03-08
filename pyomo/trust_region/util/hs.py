@@ -98,3 +98,6 @@ OBJECTIVES = [
 # for p in OBJECTIVES:
 # 	print(p['problem'])
 # 	print(p['objective'](p['x0']), p['f0'])
+
+
+# 21, 24, 25, 35, 36, 37, 44, 45, 76, 224, 231, 232, 250, 251

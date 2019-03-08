@@ -1,34 +1,36 @@
 
 import numpy as np
 import trust_region.util.presolver.expressions as exprs
+import sys
+from trust_region.util.utils import write_json
 from scipy.optimize import linprog
 
 
-class SqpState:
-	def __init__(self):
-		self.A = None
-		self.b = None
-
-		self.P = None
-		self.q = None
-		self.r = None
-
-		self.active_constraints = []
-
-	def active_equalities(self):
-		return (
-			np.array([self.A[i] for i in self.active_constraints]),
-			np.array([self.b[i] for i in self.active_constraints]),
-		)
-
-	def construct_kkt_system(self):
-		active_A, active_b = self.active_equalities()
-		m = active_A.shape[0]
-		n = active_A.shape[1]
-		return np.vstack([
-			np.hstack([self.Q, active_A.T]),
-			np.hstack([active_A, np.zeros((m, n))])
-		]), np.vstack([-self.q, active_b])
+# class SqpState:
+# 	def __init__(self):
+# 		self.A = None
+# 		self.b = None
+#
+# 		self.P = None
+# 		self.q = None
+# 		self.r = None
+#
+# 		self.active_constraints = []
+#
+# 	def active_equalities(self):
+# 		return (
+# 			np.array([self.A[i] for i in self.active_constraints]),
+# 			np.array([self.b[i] for i in self.active_constraints]),
+# 		)
+#
+# 	def construct_kkt_system(self):
+# 		active_A, active_b = self.active_equalities()
+# 		m = active_A.shape[0]
+# 		n = active_A.shape[1]
+# 		return np.vstack([
+# 			np.hstack([self.Q, active_A.T]),
+# 			np.hstack([active_A, np.zeros((m, n))])
+# 		]), np.vstack([-self.q, active_b])
 
 
 class ClassicModel:
@@ -42,9 +44,20 @@ class ClassicModel:
 		self.f = None
 		self.g = None
 
+	def to_json(self):
+		return {
+			'x': self.x,
+			'r': self.r,
+			'c': self.c,
+			'A': self.A,
+			'f': self.f,
+			'g': self.g
+		}
+
 
 class Params:
-	def __init__(self, variable, f, c, x0, r0):
+	def __init__(self, variable, f, c, x0, r0, tolerance=1e-12):
+		self.tolerance = tolerance
 		self.variable = variable
 		self.f_func = f
 		self.c_func = c
@@ -55,20 +68,11 @@ class Params:
 		self.A_func = exprs.simplify(c.jacobian(variable))
 		self.g_func = exprs.simplify(f.gradient(variable))
 
-		print(self.g_func.pretty_print())
-		print(self.A_func.pretty_print())
-
-		self.restoration_objective = exprs.SumExpression([
-			exprs.PowerExpression(exprs.PositivePart(component), exprs.ConstantExpression(2))
+		self.restoration_f = exprs.simplify(exprs.Sum([
+			exprs.Power(exprs.PositivePart(component), exprs.Constant(2))
 			for component in c.components
-		])
-
-
-class State:
-	def __init__(self, params):
-		self.params = params
-		self.radius = params.r0
-		self.center = params.x0
+		]))
+		self.restoration_g = exprs.simplify(self.restoration_f.gradient(variable))
 
 
 def construct_model(params, x, r):
@@ -83,81 +87,147 @@ def construct_model(params, x, r):
 	return model
 
 
-def is_critical(gradient, A, radius):
-	return False
+def construct_restoration_model(params, x, r):
+	model = ClassicModel()
+	model.x = x
+	model.r = r
+	variables = {'x': x}
+	model.c = np.zeros(0)
+	model.A = np.zeros((0, len(x)))
+	model.f = params.restoration_f.evaluate(variables)
+	model.g = params.restoration_g.evaluate(variables)
+	return model
 
 
 def solve_trust_region_subproblem(model, center, radius):
+	# print('==========================================')
+	# print('minimize', model.g)
+	# print('subject to')
+	# print(model.A)
+	# print([[c - radius,  c + radius] for c in center])
+	# print('==========================================')
 	result = linprog(
 		c=model.g,
 		A_ub=model.A,
 		b_ub=np.zeros(model.A.shape[0]),
 		bounds=[[c - radius,  c + radius] for c in center]
 	)
+	if not result.success and result.message == 'Optimization failed. Unable to find a feasible starting point.':
+		return {
+			'infeasible': True
+		}
+
 	return {
 		'trial-value': model.f + np.dot(model.g, result.x - center),
 		'trial-point': result.x,
-		'success': result.success # result.message == 'Optimization terminated successfully'
+		'success': result.success,  # result.message == 'Optimization terminated successfully'
+		'infeasible': False
 	}
 
 
-def run_iteration(state):
-	m_k = construct_model(state.params, state.center, state.radius)
-	print(m_k.x, m_k.r, m_k.f)
+def run_iteration(model, function, center, radius, tolerance):
+	solution = solve_trust_region_subproblem(model, center, radius)
 
-	if is_critical(m_k.g, m_k.A, state.radius):
-		return True
+	if solution['infeasible']:
+		return {
+			'status': 'infeasible',
+			'radius': radius,
+			'center': center
+		}
 
-	solution = solve_trust_region_subproblem(m_k, state.center, state.radius)
-	trial_objective = state.params.f_func.evaluate({'x': solution['trial-point']})
-	# print('f(s)', trial_objective)
+	dist = np.linalg.norm(solution['trial-point'] - model.x)
+	if dist < tolerance:
+		return {
+			'status': 'critical',
+			'radius': radius,
+			'center': center
+		}
 
-	rho = (m_k.f - trial_objective) / (m_k.f - solution['trial-value'])
-	print('rho', rho)
+	trial_objective = function.evaluate({'x': solution['trial-point']})
+	if abs(model.f - solution['trial-value']) < tolerance:
+		rho = 0.0
+	else:
+		rho = (model.f - trial_objective) / (model.f - solution['trial-value'])
+	print('-------------------------------------------')
+	print('\trho', rho)
+	print('\ttrial point', solution['trial-point'])
+	print('\tcurrent', model.f)
+	print('\tpredicted', solution['trial-value'])
+	print('\tactual', trial_objective)
+	print('-------------------------------------------')
+
+	if np.isnan(rho) or np.isinf(rho):
+		rho = 0.0
 
 	if rho < 0.1:
-		state.radius *= 0.5
-	else:
-		if rho > 0.8:
-			state.radius *= 1.2
-		state.center = solution['trial-point']
+		return {
+			'status': 'rejected',
+			'radius': radius * 0.1,
+			'center': center
+		}
+
+	return {
+		'status': 'accepted',
+		'radius': radius * (1.5 if rho > 0.8 else 1.0),
+		'center': solution['trial-point']
+	}
 
 
 def solve(params):
-	state = State(params)
+	center = params.x0
+	radius = params.r0
 	while True:
-		if run_iteration(state):
-			break
+		model = construct_model(params, center, radius)
+		print('==========================================')
+		print('center', center)
+		print('radius', radius)
+		print('objective', model.f)
+		print('constraints', model.c)
+		print('==========================================')
 
+		result = run_iteration(model, params.f_func, center, radius, params.tolerance)
+		if result['status'] == 'infeasible':
+			print('infeasible')
+			model = construct_restoration_model(params, center, radius)
+			result = run_iteration(model, params.restoration_f, center, radius, params.tolerance)
 
-	# construct model
-	#
-	pass
+		if result['status'] == 'critical':
+			return {
+				'success': True,
+				'minimizer': center,
+				'value': model.f
+			}
+
+		if result['status'] in ['rejected', 'accepted']:
+			center = result['center']
+			radius = result['radius']
 
 
 var = exprs.create_variable_array("x", 2)
 params = Params(
 	variable=var,
-	f=exprs.SumExpression([
-		exprs.PowerExpression(var.get(0), exprs.ConstantExpression(2)),
-		exprs.PowerExpression(
-			exprs.SumExpression([
+	f=exprs.Sum([
+		exprs.Power(var.get(0), exprs.Constant(2)),
+		exprs.Power(
+			exprs.Sum([
 				var.get(1),
-				exprs.ConstantExpression(-1.0)
+				exprs.Constant(-1.0)
 			]),
-			exprs.ConstantExpression(2)
+			exprs.Constant(2)
 		)
 	]),
-	c=exprs.VectorExpression([
-		exprs.NegateExpression(var.get(0)),
-		exprs.SumExpression([
+	c=exprs.Vector([
+		exprs.Negate(var.get(0)),
+		exprs.Sum([
 			var.get(1),
-			exprs.NegateExpression(var.get(0))
+			exprs.Negate(var.get(0))
 		])
 	]),
-	x0=np.array([10, 1]),
+	x0=np.array([1, 10]),
 	r0=1
 )
 
+print(params.restoration_f.pretty_print())
+print(params.restoration_g.pretty_print())
 
 solve(params)

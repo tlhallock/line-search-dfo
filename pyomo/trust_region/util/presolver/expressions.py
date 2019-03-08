@@ -5,39 +5,39 @@ import numpy as np
 def parse_json_expr_expression(json_expr):
 	expr_type = json_expr['type']
 	if expr_type == 'product':
-		return ProductExpression([
+		return Product([
 			parse_json_expr_expression(e)
 			for e in json_expr['factors']
 		])
 	elif expr_type == 'sum':
-		return SumExpression([
+		return Sum([
 			parse_json_expr_expression(e)
 			for e in json_expr['terms']
 		])
 	elif expr_type == 'power':
-		return PowerExpression(
+		return Power(
 			parse_json_expr_expression(json_expr['base']),
 			parse_json_expr_expression(json_expr['power'])
 		)
 	elif expr_type == 'negate':
-		return NegateExpression(
+		return Negate(
 			parse_json_expr_expression(json_expr['expression'])
 		)
 	elif expr_type == 'constant':
-		return ConstantExpression(
+		return Constant(
 			json_expr['value']
 		)
 	elif expr_type == 'variable':
-		return VariableExpression(
+		return Variable(
 			json_expr['name']
 		)
 	elif expr_type == 'vector':
-		return VariableExpression([
+		return Variable([
 			parse_json_expr_expression(c)
 			for c in json_expr['components']
 		])
 	elif expr_type == 'array':
-		return VariableExpression([
+		return Variable([
 			[
 				parse_json_expr_expression(c)
 				for c in row
@@ -49,19 +49,30 @@ def parse_json_expr_expression(json_expr):
 
 
 def _repeatedly_simplify(e):
+	old = e
 	simplified, e = e.simplify()
+	if simplified:
+		print('from', old.pretty_print())
+		print('to', e.pretty_print())
+		print("======================")
 	simplified_again = simplified
 	while simplified_again:
+		old = e
 		simplified_again, e = e.simplify()
+		if simplified_again:
+			print('from', old.pretty_print())
+			print('to', e.pretty_print())
+			print("======================")
 	return simplified, e
 
 
 def simplify(expression):
+	print('simplifying', expression.pretty_print())
 	return _repeatedly_simplify(expression)[1]
 
 
 def create_variable_array(name, dimension):
-	return VectorExpression([
+	return Vector([
 		IndexedVariable(name, i)
 		for i in range(dimension)
 	])
@@ -102,13 +113,13 @@ class Expression:
 		return False
 
 	def gradient(self, vector_variable):
-		return VectorExpression([
+		return Vector([
 			self.differentiate(comp.pretty_print())
 			for comp in vector_variable.components
 		])
 
 
-class ProductExpression(Expression):
+class Product(Expression):
 	def __init__(self, factors=[]):
 		self.factors = factors
 
@@ -118,7 +129,7 @@ class ProductExpression(Expression):
 		return ret
 
 	def expand(self):
-		other_terms = [ProductExpression([
+		other_terms = [Product([
 			factor.clone()
 			for factor in self.factors
 			if factor.get_type() != 'sum' or len(factor.terms) == 0
@@ -131,7 +142,7 @@ class ProductExpression(Expression):
 				for other_term in other_terms:
 					next_other_terms.append(other_term.times(term))
 			other_terms = next_other_terms
-		return SumExpression(other_terms)
+		return Sum(other_terms)
 
 	def get_type(self):
 		return 'product'
@@ -152,8 +163,8 @@ class ProductExpression(Expression):
 		return accum
 
 	def differentiate(self, variable):
-		return SumExpression([
-			ProductExpression([
+		return Sum([
+			Product([
 				self.factors[j].clone() if i != j else self.factors[j].differentiate(variable)
 				for j in range(len(self.factors))
 			])
@@ -207,19 +218,19 @@ class ProductExpression(Expression):
 				new_factors = [
 								  f for f in new_factors if f.get_type() != 'constant'
 							  ] + [
-								  ConstantExpression(ProductExpression(constants).evaluate(None))
+								  Constant(Product(constants).evaluate(None))
 							  ]
 				simplified = True
 				simplified_again = True
 				continue
 
-		return simplified, ProductExpression(new_factors)
+		return simplified, Product(new_factors)
 
 	def clone(self):
-		return ProductExpression([e.clone() for e in self.factors])
+		return Product([e.clone() for e in self.factors])
 
 
-class SumExpression(Expression):
+class Sum(Expression):
 	def __init__(self, terms=[]):
 		self.terms = terms
 
@@ -242,10 +253,10 @@ class SumExpression(Expression):
 		return accum
 
 	def clone(self):
-		return SumExpression([e.clone() for e in self.terms])
+		return Sum([e.clone() for e in self.terms])
 
 	def differentiate(self, variable):
-		return SumExpression([
+		return Sum([
 			term.differentiate(variable)
 			for term in self.terms
 		])
@@ -293,16 +304,16 @@ class SumExpression(Expression):
 				new_terms = [
 								f for f in new_terms if f.get_type() != 'constant'
 							] + [
-								ConstantExpression(SumExpression(constants).evaluate(None))
+								Constant(Sum(constants).evaluate(None))
 							]
 				simplified = True
 				simplified_again = True
 				continue
 
-		return simplified, SumExpression(new_terms)
+		return simplified, Sum(new_terms)
 
 
-class PowerExpression(Expression):
+class Power(Expression):
 	def __init__(self, base, power):
 		self.base = base
 		self.power = power
@@ -324,15 +335,15 @@ class PowerExpression(Expression):
 		return self.base.evaluate(values) ** self.power.evaluate(values)
 
 	def clone(self):
-		return PowerExpression(self.base.clone(), self.power.clone())
+		return Power(self.base.clone(), self.power.clone())
 
 	def differentiate(self, variable):
 		# assume that the power does not have the variable
-		return ProductExpression([
+		return Product([
 			self.power.clone(),
-			PowerExpression(
+			Power(
 				self.base.clone(),
-				SumExpression([self.power.clone(), NegateExpression(One())])
+				Sum([self.power.clone(), Negate(One())])
 			),
 			self.base.differentiate(variable)
 		])
@@ -348,7 +359,7 @@ class PowerExpression(Expression):
 			return True, Zero()
 		if new_base.is_one():
 			return True, One()
-		return simplified1 or simplified2, PowerExpression(new_base, new_power)
+		return simplified1 or simplified2, Power(new_base, new_power)
 
 
 class PositivePart(Expression):
@@ -374,13 +385,13 @@ class PositivePart(Expression):
 		return PositivePart(self.expr.clone())
 
 	def differentiate(self, variable):
-		return HeavySide(self.expr.differentiate(variable))
+		return Product([HeavySide(self.expr.clone()), self.expr.differentiate(variable)])
 
 	def simplify(self):
 		simplified, e = _repeatedly_simplify(self.expr)
 		if e.get_type() == 'constant':
-			return ConstantExpression(max(0, e.value)).simplify()
-		return simplified, e
+			return True, Constant(max(0, e.value)).simplify()[1]
+		return simplified, PositivePart(e)
 
 
 class HeavySide(Expression):
@@ -397,7 +408,7 @@ class HeavySide(Expression):
 		}
 
 	def pretty_print(self):
-		return "H_0(, " + self.expr.pretty_print() + ")"
+		return "H_0(" + self.expr.pretty_print() + ")"
 
 	def evaluate(self, variables):
 		return 1.0 if self.expr.evaluate(variables) >= 0 else 0.0
@@ -411,8 +422,8 @@ class HeavySide(Expression):
 	def simplify(self):
 		simplified, e = _repeatedly_simplify(self.expr)
 		if e.get_type() == 'constant':
-			return One() if e.value >= 0 else Zero()
-		return simplified, e
+			return True, One() if e.value >= 0 else Zero()
+		return simplified, HeavySide(e)
 
 
 class Nothing(Expression):
@@ -438,7 +449,7 @@ class Nothing(Expression):
 		return False, self.clone()
 
 
-class NegateExpression(Expression):
+class Negate(Expression):
 	def __init__(self, expr):
 		self.expr = expr
 
@@ -458,19 +469,19 @@ class NegateExpression(Expression):
 		return -self.expr.evaluate(values)
 
 	def clone(self):
-		return NegateExpression(self.expr.clone())
+		return Negate(self.expr.clone())
 
 	def differentiate(self, variable):
-		return NegateExpression(self.expr.differentiate(variable))
+		return Negate(self.expr.differentiate(variable))
 
 	def simplify(self):
 		simplified, e = _repeatedly_simplify(self.expr)
 		if e.get_type() == 'constant':
-			return ConstantExpression(-e.value).simplify()
-		return simplified, e
+			return True, Constant(-e.value).simplify()[1]
+		return simplified, Negate(e)
 
 
-class ConstantExpression(Expression):
+class Constant(Expression):
 	def __init__(self, value):
 		Expression.__init__(self)
 		self.value = value
@@ -497,7 +508,7 @@ class ConstantExpression(Expression):
 		return self.value
 
 	def clone(self):
-		return ConstantExpression(self.value)
+		return Constant(self.value)
 
 	def differentiate(self, variable):
 		return Zero()
@@ -510,7 +521,7 @@ class ConstantExpression(Expression):
 		return False, self.clone()
 
 
-class VariableExpression(Expression):
+class Variable(Expression):
 	def __init__(self, variable_name):
 		self.name = variable_name
 
@@ -530,7 +541,7 @@ class VariableExpression(Expression):
 		return values[self.name]
 
 	def clone(self):
-		return VariableExpression(self.name)
+		return Variable(self.name)
 
 	def differentiate(self, variable):
 		if self.name == variable:
@@ -542,7 +553,7 @@ class VariableExpression(Expression):
 		return False, self.clone()
 
 
-class VectorExpression(Expression):
+class Vector(Expression):
 	def __init__(self, components):
 		self.components = components
 
@@ -573,13 +584,13 @@ class VectorExpression(Expression):
 		])
 
 	def jacobian(self, vector_variable):
-		return ArrayExpression([
+		return Array([
 			comp.gradient(vector_variable).components
 			for comp in self.components
 		])
 
 	def clone(self):
-		return VectorExpression([e.clone() for e in self.components])
+		return Vector([e.clone() for e in self.components])
 
 	def simplify(self):
 		simplified = False
@@ -591,10 +602,10 @@ class VectorExpression(Expression):
 			while simplified_again:
 				simplified_again, c = c.simplify()
 			ret.append(c)
-		return simplified, VectorExpression(ret)
+		return simplified, Vector(ret)
 
 
-class ArrayExpression(Expression):
+class Array(Expression):
 	def __init__(self, components):
 		self.components = components
 
@@ -631,17 +642,17 @@ class ArrayExpression(Expression):
 		])
 
 	def clone(self):
-		return ArrayExpression([[e.clone() for e in row] for row in self.components])
+		return Array([[e.clone() for e in row] for row in self.components])
 
 	def simplify(self):
 		es = [[_repeatedly_simplify(e) for e in r] for r in self.components]
-		return any([x[0] for r in es for x in r]), ArrayExpression([[x[1] for x in r] for r in es])
+		return any([x[0] for r in es for x in r]), Array([[x[1] for x in r] for r in es])
 
 	def determinant(self):
 		pass
 
 
-class IndexedVariable(VariableExpression):
+class IndexedVariable(Variable):
 	def __init__(self, name, idx):
 		# VariableExpression.__init__(self, name + "[" + str(idx) + "]")
 		self.variable_name = name
@@ -663,10 +674,13 @@ class IndexedVariable(VariableExpression):
 		else:
 			return Zero()
 
+	def simplify(self):
+		return False, self.clone()
 
-class One(ConstantExpression):
+
+class One(Constant):
 	def __init__(self):
-		ConstantExpression.__init__(self, 1)
+		Constant.__init__(self, 1)
 
 	def clone(self):
 		return One()
@@ -678,9 +692,9 @@ class One(ConstantExpression):
 		return False, self.clone()
 
 
-class Zero(ConstantExpression):
+class Zero(Constant):
 	def __init__(self):
-		ConstantExpression.__init__(self, 0)
+		Constant.__init__(self, 0)
 
 	def clone(self):
 		return Zero()

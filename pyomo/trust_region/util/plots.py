@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib
 import numpy
-
+from .bounds import Bounds
 
 class NoPlot:
 	def save(self):
@@ -135,3 +135,11 @@ bounds = {
 	'ubY': 10,  # model.currentSet[0, 1] + 2 * model.modelRadius
 }
 '''
+
+
+def create_plot_on(filename, lb, ub):
+	bounds = Bounds()
+	bounds.extend(numpy.array([xi for xi in lb]))
+	bounds.extend(numpy.array([xi for xi in ub]))
+	return create_plot('a plot', filename, bounds)
+

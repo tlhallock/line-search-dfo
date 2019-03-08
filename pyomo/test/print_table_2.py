@@ -25,18 +25,3 @@ for directory_name in os.listdir(base):
 	print(last_log['number-of-evaluations'])
 	print(last_log['center'])
 
-
-converged
-images/hs_25_polyhedral/log.json:  "number-of-evaluations": 67,
-
-
-images/hs_76_ellipse/log.json:  "number-of-evaluations": 530,,
-images/hs_76_ellipse/log.json:  "new-function-value": -4.6838441301764195,
-
-
-images/hs_76_polyhedral/log.json:  "number-of-evaluations": 426,,
-    -4.681817540552573,
-
-
-
-

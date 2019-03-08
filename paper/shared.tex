@@ -718,12 +718,17 @@ In practice, this does not work well as the radius can become too small to allow
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=200px]{images/BAD_CIRCLE.png}
-    \caption{A bad trust region}
+    \includegraphics[width=200px]{images/small_circle.png}
+    \includegraphics[width=200px]{images/shifted_center.png}
+    \caption{When the current iterate is too close to a constraint, the circular trust region becomes too small. Shifting trust region center helps to remedy this. The star is the current iterate, the green is the outer trust region, and blue the inner.}
 \end{figure}
 
+There are two general strategies we have considered for addressing this issue.
+One option is to shift the center of the inner trust region as long as it remains within the outer trust region.
+Another is to elongate the trust region along the nearest constraint as discussed in the next section.
+Of course, both of these can be done at the same time.
 
-    
+
 \subsubsection{Ellipsoids}
 
 In order to address this issue we also considered using ellipsoidal trust regions.
@@ -732,7 +737,7 @@ In figure \ref{ellipse_adv}, we have this type of iterate, but by using an ellip
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.4]{images/advantage_of_ellipse_2.png}
-    \caption{a nice plot}
+    \caption{A nicer trust region}
     \label{ellipse_adv}
 \end{figure}
 
@@ -751,7 +756,7 @@ There are a number of issues to be solved to define this ellipse:
 \end{itemize}
 
 We have implemented a few ways of ensuring the current iterate is within the trust region, $\iteratek \in \ellipsek$.
-If we do not include the current iterate within the interior of $T_{k}$, we likely lose sufficient reduction.
+If we do not include the current iterate within the interior of $\innertrk$, we likely lose sufficient reduction.
 This can be done by either expanding the radius of the ellipse, or by including the original point as a constraint for the ellipse problem.
 
 %IMAGES GO HERE
@@ -826,10 +831,11 @@ so that
 \[
 E = \{ d \; | \; f(d) \le 1 \}.
 \]
+
 Also, let $d^{(i)} = \argmin_{d\| A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
-If the ellipse intersects the polyhedron at such a point $d^{(i)}$, the gradients of $f$ must be orthogonal to face $i$.
 Each face is defined by $A_i x \le \bar{b}_i$ for some $i$ where $A_i$ is the $i$th row of $A$ for $1\le i \le m$.
-This implies that if $d^{(i)}$ is such a point along a face, then
+If the ellipse intersects the polyhedron at such a point $d^{(i)}$, the gradients of $f$ must be orthogonal to face $i$.
+This implies that for some $\lambda_i \ge 0$,
 
 % SOME OF THESE LINES CAN BE REMOVED
 
@@ -837,8 +843,6 @@ This implies that if $d^{(i)}$ is such a point along a face, then
 \[
 \nabla f(d^{(i)}) = \lambda_i A_i \quad \forall 1\le i\le m
 \]
-for some $\lambda_i \ge 0$.
-This means
 \[
 Q d^{(i)} = \lambda_i A_i \quad \forall 1\le i\le m
 \]
@@ -847,43 +851,41 @@ d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall 1\le i\le m
 \]
 We also know that 
 \[
-A_i^T d^{(i)} = \bar{b} \quad \forall 1\le i\le m
+A_i^T d^{(i)} = \bar{b_i}
 \]
 \[
-A_i^T \lambda_i Q^{-1}A_i = \bar{b} \quad \forall 1\le i\le m
+A_i^T \lambda_i Q^{-1}A_i = \bar{b_i}
 \]
 \[
-\lambda_i = \frac {\bar{b}}{A_i^T  Q^{-1}A_i} \quad \forall 1\le i\le m
+\lambda_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}
 \]
 so that 
 \[
-d^{(i)} = \lambda_i Q^{-1}A_i \forall 1\le i\le m
-\]
-\[
-d^{(i)} = \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
+d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
 \]
 
-Finally, we need that for each $i$, $f(d^{(i)}) \le 1$:
+Finally, we know that $f(d^{(i)}) = 1$ when the ellipse touches face $i$, otherwise $f(d^{(i)}) > 1$.
+In general, $f(d^{(i)}) \ge 1$ for each $i$.
 \[
-\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \le 1
+\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1
 \]
 \[
-\frac 1 2 (\frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i)^{T} Q \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \le 1
+\frac 1 2 (\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1
 \]
 \[
-\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b}^T A_i^T Q^{-1} Q \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \le 1
+\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b_i} A_i^T Q^{-1} Q \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1
 \]
 \[
-\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b}^T \frac {\bar{b}}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \le 1
+\frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1
 \]
 \[
-\frac 1 2 \bar{b}^T \frac {\bar{b}}{A_i^T  Q^{-1}A_i} \le 1
+\frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1
 \]
 \[
-\frac 1 2 \bar{b}^T \bar{b}\le A_i^T  Q^{-1}A_i
+\frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i
 \]
 \[
-A_i^T  Q^{-1}A_i \ge \frac 1 2 \bar{b}^T \bar{b}
+A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2
 \]
 
 Thus, the maximal ellipse is defined by
@@ -892,7 +894,7 @@ Thus, the maximal ellipse is defined by
 \sup_{Q \succeq 0} \det(Q^{-1})
 \]
 \[
-s.t. \quad A_i^T Q^{-1} A_i \ge \frac 1 2 \bar{b}^T\bar{b}
+s.t. \quad A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
 \]
 
 
