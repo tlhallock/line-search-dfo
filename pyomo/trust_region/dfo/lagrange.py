@@ -92,8 +92,8 @@ def compute_lagrange_polynomials(
 	if not n_points == p:
 		raise Exception("currently, have to have all points")
 
-	log_object['shifted'] = cert.shifted
-	log_object['shifted-vandermode'] = basis.evaluate_to_matrix(cert.shifted)
+	# log_object['shifted'] = cert.shifted
+	# log_object['shifted-vandermode'] = basis.evaluate_to_matrix(cert.shifted)
 
 	v = numpy.bmat([
 		[basis.evaluate_to_matrix(cert.shifted)],
@@ -142,7 +142,7 @@ def compute_lagrange_polynomials(
 	cert.lmbda = v[n_points:h]
 	cert.poised = True
 
-	log_object['lambda'] = cert.lmbda
+	# log_object['lambda'] = cert.lmbda
 
 	_test_v(v, basis, cert.shifted)
 

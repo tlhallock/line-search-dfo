@@ -2,6 +2,7 @@
 import numpy
 import matplotlib.pyplot as plt
 from trust_region.util.directions import sample_search_directions
+from trust_region.util.polyhedron import Polyhedron
 
 from trust_region.dfo.trust_region.trust_region import TrustRegion
 
@@ -77,9 +78,9 @@ class CircularTrustRegion(TrustRegion):
 		return ret
 
 	def shift_polyhedron(self, polyhedron):
-		A = polyhedron[0]
-		b = polyhedron[1]
-		return (
+		A = polyhedron.A
+		b = polyhedron.b
+		return Polyhedron(
 			A * self.radius,
 			b - numpy.dot(A, self.center)
 		)

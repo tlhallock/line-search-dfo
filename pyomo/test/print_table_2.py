@@ -3,25 +3,49 @@
 import os
 import json
 import traceback
+import re
 
+# np.set_printoptions(linewidth=255)
 
-base = '/work/research/line-search-dfo/pyomo/test/images'
-for directory_name in os.listdir(base):
+print('algorithm', 'problem', 'message', 'n iterations', 'n evaluations', 'found min', 'true min', 'found minimizer', 'true minimizer')
+
+base = '/work/research/line-search-dfo/pyomo/images'
+
+missing = []
+done = []
+for directory_name in sorted(os.listdir(base)):
 	directory = os.path.join(base, directory_name)
 	if not os.path.isdir(directory):
 		continue
-	log_file = os.path.join(directory, 'log.json')
-	if not os.path.exists(log_file):
+	result_file = os.path.join(directory, 'result.json')
+	if not os.path.exists(result_file):
+		missing.append(directory)
 		continue
 	try:
-		with open(log_file, 'r') as infile:
-			logs = json.load(infile)
+		with open(result_file, 'r') as infile:
+			result = json.load(infile)
 	except:
 		traceback.print_exc()
 		continue
 
-	last_log = logs['iterations'][len(logs['iterations'])-1]
-	print(log_file)
-	print(last_log['number-of-evaluations'])
-	print(last_log['center'])
+	done.append(" & ".join([
+		str.center(str(re.sub('hs_[0-9]*_', '', directory_name).replace('_', ' ')), 25),
+		str.center(str(result['problem']['problem_number']), 5),
+		str.center(str(result['problem']['n']), 3),
+		str.center(str(result['result']['message']), 10),
+		str.center(str(result['result']['niter']), 5),
+		str.center(str(result['result']['neval']), 5),
+		str.center(str("%.3f" % result['result']['minimum']), 10),
+		str.center(str("%.3f" % result['problem']['minimum']), 10),
+		str.center(str("[" + ",".join(["%.2f" % xi for xi in result['result']['minimizer']]) + "]"), 5),
+		str.center(str("[" + ",".join(["%.2f" % xi for xi in result['problem']['minimizer']]) + "]"), 5),
+	]) + " \\\\")
+
+done.sort(key=lambda x: (x[1], x[0]))
+
+for text in done:
+	print(text)
+
+for m in missing:
+	print('kde-open ' + str(m))
 

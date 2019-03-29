@@ -35,6 +35,12 @@ class HsProblem:
 		self.x_star = np.array(test_nlp.l20.xex)[:self.n].copy()
 		self.f_star = float(test_nlp.l20.fex)
 
+		self.p_constraints = self._determine_constraints()
+
+	@property
+	def constraints(self):
+		return self.p_constraints.clone()
+
 	@property
 	def m(self):
 		return self.nili + self.ninl + self.neli + self.nenl
@@ -56,7 +62,7 @@ class HsProblem:
 		test_nlp.evaluate_constraints_gradient()
 		return np.array(test_nlp.l5.gg)[:self.m, :self.n].copy()
 
-	def determine_constraints(self):
+	def _determine_constraints(self):
 		A = -self.evaluate_constraints_gradient(np.zeros(self.n))
 		b = self.evaluate_constraints(np.zeros(self.n))
 
@@ -100,5 +106,6 @@ class HsProblem:
 			"lb": self.lb,
 			"ub":  self.ub,
 			"minimizer": self.x_star,
-			"minimum": self.f_star
+			"minimum": self.f_star,
+			"constraints": self.constraints.to_json()
 		}

@@ -33,7 +33,7 @@ def solve_trust_region_subproblem(
 
 	trust_region.add_shifted_pyomo_constraints(model)
 	if buffer is not None:
-		buffer.add_to_pyomo(model)
+		trust_region.shift_polyhedron(buffer).add_to_pyomo(model)
 
 	# Needs to be shifted first
 	def objective_rule(m):

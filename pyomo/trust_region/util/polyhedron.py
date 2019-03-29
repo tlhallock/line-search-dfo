@@ -128,8 +128,20 @@ class Polyhedron:
 
 			yield x, indices
 
-	def get_feasible_point(self):
-		return numpy.mean(numpy.array([v[0] for v in self.enumerate_vertices()]), axis=0)
+	def get_feasible_point(self, tolerance=1e-4):
+		vertices = numpy.array([v[0] for v in self.enumerate_vertices()])
+		central_point = numpy.mean(vertices, axis=0)
+		if vertices.shape[0] < vertices.shape[1] + 1:
+			directions = self.A[self.A@central_point > self.b - tolerance, :]
+			direction = numpy.mean(numpy.diag(-1/numpy.linalg.norm(directions, axis=1)) @ directions, axis=0)
+			direction /= numpy.linalg.norm(direction)
+			t = 1
+			while not self.contains(central_point + t * direction, tolerance):
+				t /= 2
+			if not self.contains(central_point + t * direction, tolerance):
+				raise Exception("this algorithm did not work")
+			return central_point + t * direction
+		return central_point
 
 	def get_diameter(self):
 		diam = -1

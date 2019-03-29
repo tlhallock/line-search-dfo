@@ -14,6 +14,7 @@ from trust_region.util.list_matrices import multiply
 from trust_region.util.list_matrices import determinant
 from trust_region.util.polyhedron import parse_polyhedron
 from trust_region.util.polyhedron import Polyhedron
+from trust_region.util.plots import create_plot_on
 
 from trust_region.util.utils import write_json
 
@@ -134,10 +135,10 @@ def construct_ellipse(p, l_inverse, volume, k, bbar, hot_start=None):
 
 	# l_inverse *= .8
 
-	ellipse.l_inverse = l_inverse
+	ellipse.l_inverse = l_inverse.T
 	ellipse.l = numpy.linalg.inv(ellipse.l_inverse)
 
-	ellipse.q_inverse = numpy.dot(ellipse.l_inverse.T, ellipse.l_inverse)
+	ellipse.q_inverse = numpy.dot(ellipse.l_inverse, ellipse.l_inverse.T)
 	ellipse.q = numpy.dot(ellipse.l.T, ellipse.l)
 
 	ellipse.q_inverse = ellipse.q_inverse / (k * k)
@@ -263,7 +264,14 @@ def compute_maximal_ellipse(p):
 	if maximum_l_inverse is None:
 		return False, False
 
-	return True, construct_ellipse(p, maximum_l_inverse, -maximum_volume, k, bbar, maximum_hotstart)
+	ellipse = construct_ellipse(p, maximum_l_inverse, -maximum_volume, k, bbar, maximum_hotstart)
+
+	# pl = create_plot_on('testing.png', [-1, -1], [1, 1])
+	# pl.add_polyhedron(p.polyhedron, label='the constraints')
+	# ellipse.add_to_plot(pl)
+	# pl.save()
+
+	return True, ellipse
 
 
 def compute_maximal_ellipse_after_shift(params, l1):

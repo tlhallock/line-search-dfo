@@ -3,6 +3,7 @@ import numpy
 
 from trust_region.dfo.trust_region.trust_region import TrustRegion
 from trust_region.util.directions import sample_search_directions
+from trust_region.util.polyhedron import Polyhedron
 
 
 def _shift_polyhedron(A, b, scale, l_inverse, center):
@@ -23,14 +24,14 @@ class Ellipse(TrustRegion):
 
 	def to_json(self):
 		return {
-			'center': [c for c in self.center],
+			'center': self.center,
 			'volume': self.volume,
-			'ds': [[di for di in d] for d in self.ds],
-			'lambdas': [l for l in self.lambdas],
-			'q': [[self.q[r, c] for c in range(self.q.shape[1])] for r in range(self.q.shape[0])],
-			'q^-1': [[self.q_inverse[r, c] for c in range(self.q_inverse.shape[1])] for r in range(self.q_inverse.shape[0])],
-			'l': [[self.l[r, c] for c in range(self.l.shape[1])] for r in range(self.l.shape[0])],
-			'l^-1': [[self.l_inverse[r, c] for c in range(self.l_inverse.shape[1])] for r in range(self.l_inverse.shape[0])],
+			'ds': self.ds,
+			'lambdas': self.lambdas,
+			'q': self.q.shape[0],
+			'q^-1': self.q_inverse,
+			'l': self.l,
+			'l^-1': self.l_inverse,
 		}
 
 	def evaluate(self, v):
@@ -74,9 +75,9 @@ class Ellipse(TrustRegion):
 		)
 		if not detailed or self.ds is None or len(self.ds) == 0:
 			return
-		approx_distance = max(numpy.linalg.norm(d - self.center) for d in self.ds)
-		for d in self.ds:
-			plot_object.add_arrow(self.center, self.center + d, color="c", width=approx_distance / 200)
+		#approx_distance = min(numpy.linalg.norm(d - self.center) for d in self.ds)
+		#for d in self.ds:
+		#	plot_object.add_arrow(self.center, self.center + d, color="c", width=approx_distance / 300)
 
 	def multiply_radius(self, factor):
 		raise Exception("Not implemented")
@@ -94,5 +95,7 @@ class Ellipse(TrustRegion):
 		return ret
 
 	def shift_polyhedron(self, polyhedron):
-		return _shift_polyhedron(polyhedron[0], polyhedron[1], 1.0, self.l_inverse, self.center)
+		A, b = _shift_polyhedron(polyhedron.A, polyhedron.b, 1.0, self.l_inverse, self.center)
+		return Polyhedron(A, b)
+
 

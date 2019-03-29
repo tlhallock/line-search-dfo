@@ -1,6 +1,6 @@
 
 import numpy
-import json
+import traceback
 
 from trust_region.algorithm.tr_search.trust_region_strategy import parse_tr_strategy
 from trust_region.dfo.lagrange import compute_lagrange_polynomials
@@ -14,6 +14,7 @@ from trust_region.algorithm.tr_search.shape.circle import get_circular_trust_reg
 from trust_region.algorithm.tr_search.searches.common import NoPlotDetails
 from trust_region.algorithm.tr_search.heuristics import Heuristics
 from trust_region.util.utils import write_json
+
 
 OUTPUT_DIRECTORY = 'images'
 
@@ -114,7 +115,7 @@ class AlgorithmContext:
 		self.plot_number += 1
 		plot = create_plot(title, file_name, self.history.get_plot_bounds())
 		self.history.add_to_plot(plot)
-		plot.add_polyhedron(self.params.constraints_A, self.params.constraints_b, 'constraints')
+		plot.add_polyhedron(self.params.constraints_polyhedron, 'constraints')
 		plot.save()
 
 	def plot_accuracy(self, trust_region):
@@ -151,8 +152,6 @@ class AlgorithmContext:
 			return None
 		return self.params.constraints_polyhedron.shrink(
 			self.model_center(), self.params.buffer_factor
-		).shift(
-			self.outer_trust_region.center, self.outer_trust_region.radius
 		)
 
 	def success(self):
@@ -161,7 +160,21 @@ class AlgorithmContext:
 			'success': True,
 			'message': 'converged',
 			'minimum': self.sample_values[min_idx],
-			'minimizer': self.sample_points[min_idx, :]
+			'minimizer': self.sample_points[min_idx, :],
+			'niter': self.iteration,
+			'neval': self.evaluation_count
+		}
+
+	def failure(self, message):
+		min_idx = numpy.argmin(self.sample_values)
+		return {
+			'success': False,
+			'message': 'failed',
+			'stack trace': message,
+			'minimum': self.sample_values[min_idx],
+			'minimizer': self.sample_points[min_idx, :],
+			'niter': self.iteration,
+			'neval': self.evaluation_count
 		}
 
 	def create_log_object(self):
@@ -257,6 +270,17 @@ def update_inner_trust_region(context, log_object):
 	if not certification.poised:
 		raise Exception('Not poised')
 
+	for point in certification.unshifted:
+		if not context.params.constraints_polyhedron.contains(point, tolerance=1e-3):
+			compute_lagrange_polynomials(
+				context.basis,
+				trust_region,
+				context.sample_points,
+				context.params.point_replacement_params,
+				log_object
+			)
+			raise Exception('not so', context.iteration)
+
 	context.sample_points = certification.unshifted
 	original_sample_values = numpy.copy(context.sample_values)
 
@@ -299,94 +323,101 @@ def write_log_object(log_file, log_object, needs_comma):
 
 def always_feasible_algorithm(params):
 	with open('{}/{}/log.json'.format(OUTPUT_DIRECTORY, params.directory), 'w') as log_file:
+		context = AlgorithmContext(params)
 		log_file.write('{\n\t"iterations": [')
 		needs_comma = False
-		context = AlgorithmContext(params)
-		while True:
-			context.iteration += 1
+		try:
+			while True:
+				context.iteration += 1
 
-			log_object = context.create_log_object()
-			context.start_current_plot()
-			context.current_plot.add_polyhedron(context.construct_polyhedron(), label='constraints')
-			context.outer_trust_region.add_to_plot(context.current_plot)
-			context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
+				log_object = context.create_log_object()
+				context.start_current_plot()
+				context.current_plot.add_polyhedron(context.construct_polyhedron(), label='constraints')
+				context.outer_trust_region.add_to_plot(context.current_plot)
+				context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
 
-			trust_region = update_inner_trust_region(context, log_object)
+				trust_region = update_inner_trust_region(context, log_object)
 
-			context.plot_accuracy(trust_region)
+				context.plot_accuracy(trust_region)
 
-			if check_criticality(context, trust_region, log_object):
-				if context.outer_trust_region.radius < context.params.tolerance:
-					log_object['converged'] = True
-					context.finish_current_plot('converged')
-					break
+				if check_criticality(context, trust_region, log_object):
+					if context.outer_trust_region.radius < context.params.tolerance:
+						log_object['converged'] = True
+						context.finish_current_plot('converged')
+						break
 
-				log_object['converged'] = False
-				log_object['iteration-result'] = 'critical, radius too large'
+					log_object['converged'] = False
+					log_object['iteration-result'] = 'critical, radius too large'
+					needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+					context.decrease_radius()
+					context.finish_current_plot(log_object['iteration-result'])
+					continue
+
+				buffer = context.construct_buffer()
+				solution = solve_trust_region_subproblem(
+					objective_basis=context.basis,
+					objective_coefficients=context.objective_coefficients,
+					model_center=context.model_center(),
+					trust_region=trust_region,
+					buffer=buffer
+				)
+
+				if buffer is not None:
+					context.current_plot.add_polyhedron(buffer, label='buffer', color='y')
+				context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m', width=0.05 * context.outer_trust_region.radius)
+
+				trial_objective_value = context.evaluate_original_objective(solution.trial_point)
+				trial_model_value = solution.predicted_objective_value
+				current_objective_value = context.current_objective_value
+				current_model_value = context.current_objective_value
+
+				rho = (
+					current_objective_value - trial_objective_value
+				) / (
+					current_model_value - trial_model_value
+				)
+
+				log_object['trial-point'] = [xi for xi in solution.trial_point]
+				log_object['new-function-value'] = trial_objective_value
+				log_object['rho'] = rho
+
+				context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
+
+				if rho < context.params.rho_lower:
+					context.decrease_radius()
+
+					log_object['iteration-result'] = 'poor model'
+					needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+					context.finish_current_plot(log_object['iteration-result'])
+					continue
+
+				delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
+				if delta < context.outer_trust_region.radius / 8:
+					context.decrease_radius()
+
+					log_object['iteration-result'] = 'step too small'
+					needs_comma = write_log_object(log_file, log_object, needs_comma)
+
+					context.finish_current_plot(log_object['iteration-result'])
+					continue
+
+				if rho > context.params.rho_lower:
+					context.increase_radius()
+
+				context.outer_trust_region.recenter(solution.trial_point)
+				context.current_objective_value = trial_objective_value
+
+				log_object['iteration-result'] = 'accepted'
 				needs_comma = write_log_object(log_file, log_object, needs_comma)
 
-				context.decrease_radius()
 				context.finish_current_plot(log_object['iteration-result'])
-				continue
 
-			solution = solve_trust_region_subproblem(
-				objective_basis=context.basis,
-				objective_coefficients=context.objective_coefficients,
-				model_center=context.model_center(),
-				trust_region=trust_region,
-				buffer=context.construct_buffer(),
-			)
+			context.plot_history()
 
-			context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m', width=0.05 * context.outer_trust_region.radius)
-
-			trial_objective_value = context.evaluate_original_objective(solution.trial_point)
-			trial_model_value = solution.predicted_objective_value
-			current_objective_value = context.current_objective_value
-			current_model_value = context.current_objective_value
-
-			rho = (
-				current_objective_value - trial_objective_value
-			) / (
-				current_model_value - trial_model_value
-			)
-
-			log_object['trial-point'] = [xi for xi in solution.trial_point]
-			log_object['new-function-value'] = trial_objective_value
-			log_object['rho'] = rho
-
-			context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
-
-			if rho < context.params.rho_lower:
-				context.decrease_radius()
-
-				log_object['iteration-result'] = 'poor model'
-				needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-				context.finish_current_plot(log_object['iteration-result'])
-				continue
-
-			delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
-			if delta < context.outer_trust_region.radius / 8:
-				context.decrease_radius()
-
-				log_object['iteration-result'] = 'step too small'
-				needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-				context.finish_current_plot(log_object['iteration-result'])
-				continue
-
-			if rho > context.params.rho_lower:
-				context.increase_radius()
-
-			context.outer_trust_region.recenter(solution.trial_point)
-			context.current_objective_value = trial_objective_value
-
-			log_object['iteration-result'] = 'accepted'
-			needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-			context.finish_current_plot(log_object['iteration-result'])
-
-		context.plot_history()
-
-		log_file.write('\n\t]\n}\n')
-		return context.success()
+			log_file.write('\n\t]\n}\n')
+			return context.success()
+		except:
+			log_file.write('\n\t]\n}\n')
+			return context.failure(traceback.format_exc())

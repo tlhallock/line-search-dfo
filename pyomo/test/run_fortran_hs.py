@@ -23,11 +23,14 @@ def run_on_objective(objective, tr_strategy):
 		problem = HsProblem(objective)
 		write_json(problem.to_json(), sys.stdout)
 
+		if tr_strategy['params']['search'] == 'segment' and problem.n < tr_strategy['params']['number_of_points']:
+			return
+
 		params = AlgorithmParams()
 		params.basis_type = 'quadratic'
 		params.buffer_factor = tr_strategy['buffer-factor']
 
-		params.constraints_polyhedron = problem.determine_constraints()
+		params.constraints_polyhedron = problem.constraints
 		for idx, lbi in enumerate(problem.lb):
 			if np.isinf(lbi):
 				continue
@@ -36,13 +39,6 @@ def run_on_objective(objective, tr_strategy):
 			if np.isinf(ubi):
 				continue
 			params.constraints_polyhedron = params.constraints_polyhedron.add_ub(idx, ubi)
-
-		p = create_plot_on('constraints', np.array([-100, -100]), np.array([100, 100]))
-		p.add_polyhedron(params.constraints_polyhedron, label='constraints')
-		p.add_points(np.array([v[0] for v in params.constraints_polyhedron.enumerate_vertices()]), label='vertices')
-		p.add_point(params.constraints_polyhedron.get_feasible_point(), label='feasible', color='g')
-		p.save()
-
 
 		feasibility = problem.get_initial_feasibility()
 		if feasibility == 'infeasible':
@@ -72,15 +68,13 @@ def run_on_objective(objective, tr_strategy):
 		if not os.path.exists('images/' + params.directory):
 			os.mkdir('images/' + params.directory)
 
-		if objective == 21:
-			params.plot_bounds.append(np.array([-5, -50]))
-			params.plot_bounds.append(np.array([50, 50]))
-
 		result = always_feasible_algorithm(params)
+		if not result['success']:
+			print(result['stack trace'])
 		with open(os.path.join('images', params.directory, 'result.json'), 'w') as results_out:
 			write_json(
 				{
-					'result': result.to_json(),
+					'result': result,
 					'problem': problem.to_json()
 				},
 				results_out
@@ -90,34 +84,99 @@ def run_on_objective(objective, tr_strategy):
 
 
 OBJECTIVES = [
-	21, 224, 231, 232,
-	24, 25, 35, 36, 37, 44, 45, 76, 250, 251
+	21,
+	224,
+	231,
+	232,
+	24,
+	25,
+	35,
+	36,
+	37,
+	44,
+	45,
+	76,
+	250,
+	251
 ]
 for objective in OBJECTIVES:
 	for tr_strategy in [{
-		'name': 'ellipse',
+		# 'name': 'ellipse',
+		# 'params': {
+		# 	'shape': 'ellipse',
+		# 	'search': 'none',
+		# },
+		# 'requires-interior-x0': True,
+		# 'buffer-factor': 0.75
+	# }, {
+	# 	'name': 'ellipse_everywhere',
+	# 	'params': {
+	# 		'shape': 'ellipse',
+	# 		'search': 'anywhere',
+	# 	},
+	# 	'requires-interior-x0': False,
+	# 	'buffer-factor': None
+	# }, {
+	# 	'name': 'ellipse_segment_1',
+	# 	'params': {
+	# 		'shape': 'ellipse',
+	# 		'search': 'segment',
+	# 		'number_of_points': 1,
+	# 	},
+	# 	'requires-interior-x0': False,
+	# 	'buffer-factor': None
+	# }, {
+		'name': 'ellipse_segment_2',
 		'params': {
 			'shape': 'ellipse',
-			'search': 'none',
+			'search': 'segment',
+			'number_of_points': 2,
 		},
-		'requires-interior-x0': True,
-		'buffer-factor': 0.5
+		'requires-interior-x0': False,
+		'buffer-factor': None
 	}, {
-		'name': 'ellipse_everywhere',
+		'name': 'ellipse_segment_3',
 		'params': {
 			'shape': 'ellipse',
-			'search': 'anywhere',
+			'search': 'segment',
+			'number_of_points': 3,
 		},
 		'requires-interior-x0': False,
-		'buffer-factor': 0
+		'buffer-factor': None
 	}, {
-		'name': 'polyhedral',
+		'name': 'ellipse_segment_4',
 		'params': {
-			'shape': 'polyhedral',
-			'search': 'anywhere',
+			'shape': 'ellipse',
+			'search': 'segment',
+			'number_of_points': 4,
 		},
 		'requires-interior-x0': False,
-		'buffer-factor': 0.5
+		'buffer-factor': None
+	}, {
+		'name': 'ellipse_segment_5',
+		'params': {
+			'shape': 'ellipse',
+			'search': 'segment',
+			'number_of_points': 5,
+		},
+		'requires-interior-x0': False,
+		'buffer-factor': None
+	# }, {
+		# 'name': 'polyhedral',
+		# 'params': {
+		# 	'shape': 'polyhedral',
+		# 	'search': 'anywhere',
+		# },
+		# 'requires-interior-x0': False,
+		# 'buffer-factor': None
+	# }, {
+	# 	'name': 'circumscribed_ellipse',
+	# 	'params': {
+	# 		'shape': 'circumscribed-ellipse',
+	# 		'search': 'none',
+	# 	},
+	# 	'requires-interior-x0': False,
+	# 	'buffer-factor': None
 	}]:
 		run_on_objective(objective, tr_strategy)
 

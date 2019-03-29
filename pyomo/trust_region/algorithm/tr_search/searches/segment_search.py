@@ -3,13 +3,13 @@ from trust_region.algorithm.tr_search.searches.segment_search_path import get_se
 
 
 def search_segment(context, objective, options):
-	A, b = context.get_polyhedron()
+	polyhedron = context.construct_polyhedron()
 	x0 = numpy.copy(context.model_center())
 	tolerance = context.params.subproblem_search_tolerance * context.outer_trust_region.radius
 	number_of_points = options['number_of_points']
 	num_trial_points = options['num_trial_points']
 
-	search_path = get_search_path(x0, A, b, number_of_points)
+	search_path = get_search_path(x0, polyhedron, number_of_points, 1e-12)
 	best_solution_so_far = objective(
 		context=context,
 		x=x0,
@@ -24,8 +24,9 @@ def search_segment(context, objective, options):
 	while delta > tolerance and len(search_path.points) > 1:
 		for t in numpy.linspace(center - delta, center + delta, num_trial_points):
 			other_point = search_path.get_point(t)
-			if (numpy.dot(A, other_point) > b).any():
-				raise Exception('search path includes infeasible points')
+			if not polyhedron.contains(other_point, 1e-6):
+				continue
+				# raise Exception('search path includes infeasible points')
 
 			other_solution = objective(
 					context=context,

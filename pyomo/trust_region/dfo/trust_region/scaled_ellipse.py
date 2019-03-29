@@ -7,11 +7,17 @@ from trust_region.dfo.trust_region.ellipse import _shift_polyhedron
 
 
 class ScaledEllipse(TrustRegion):
-	def __init__(self, ellipse, scale, A, b):
+	def __init__(self, ellipse, scale, polyhedron):
 		self.ellipse = ellipse
 		self.scale = scale
-		self.A = A
-		self.b = b
+		self.polyhedron = polyhedron
+
+	def to_json(self):
+		return {
+			'scale': self.scale,
+			'polyhedron': self.polyhedron.to_json(),
+			'ellipse': self.ellipse.to_json()
+		}
 
 	def evaluate(self, v, scale=1.0):
 		return 1 - 0.5 * numpy.dot(v - self.ellipse.center, numpy.dot(self.ellipse.q, v - self.ellipse.center)) / self.scale
@@ -29,7 +35,7 @@ class ScaledEllipse(TrustRegion):
 		return self.ellipse.center + numpy.sqrt(2) * numpy.dot(self.ellipse.l_inverse, points.T).T * numpy.sqrt(self.scale)
 
 	def get_shifted_polyhedron(self):
-		return _shift_polyhedron(self.A, self.b, self.scale, self.ellipse.l_inverse, self.ellipse.center)
+		return _shift_polyhedron(self.polyhedron.A, self.polyhedron.b, self.scale, self.ellipse.l_inverse, self.ellipse.center)
 
 	def add_shifted_pyomo_constraints(self, model):
 		model.constraints.add(sum(model.x[i] * model.x[i] for i in model.dimension) <= 1.0)

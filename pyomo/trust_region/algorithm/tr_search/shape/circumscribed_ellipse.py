@@ -11,7 +11,7 @@ def get_circumscribed_ellipse_trust_region_objective(context, x, hot_start, opti
 	ellipse = minimize_ellipse(vertices, 1e-4)
 	value = ObjectiveValue()
 	value.point = x
-	value.trust_region = ScaledEllipse(ellipse, 1.0, A, b)
+	value.trust_region = ScaledEllipse(ellipse, 1.0, polyhedron)
 	value.success = True
 	value.objective = ellipse.volume
 	return value
