@@ -61,11 +61,11 @@ def _get_distances(A, b, p):
 
 
 def get_search_path(x, polyhedron, num, tolerance):
-	print('=================================================')
-	print(x)
-	print(polyhedron.A)
-	print(polyhedron.b)
-	print('=================================================')
+	#print('=================================================')
+	#print(x)
+	#print(polyhedron.A)
+	#print(polyhedron.b)
+	#print('=================================================')
 	An = np.linalg.norm(polyhedron.A, axis=1)
 	remaining_b = polyhedron.b / An
 	remaining_faces = polyhedron.A / An[:, None]

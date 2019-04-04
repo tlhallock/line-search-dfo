@@ -49,25 +49,14 @@ def parse_json_expr_expression(json_expr):
 
 
 def _repeatedly_simplify(e):
-	old = e
 	simplified, e = e.simplify()
-	if simplified:
-		print('from', old.pretty_print())
-		print('to', e.pretty_print())
-		print("======================")
 	simplified_again = simplified
 	while simplified_again:
-		old = e
 		simplified_again, e = e.simplify()
-		if simplified_again:
-			print('from', old.pretty_print())
-			print('to', e.pretty_print())
-			print("======================")
 	return simplified, e
 
 
 def simplify(expression):
-	print('simplifying', expression.pretty_print())
 	return _repeatedly_simplify(expression)[1]
 
 
@@ -76,6 +65,22 @@ def create_variable_array(name, dimension):
 		IndexedVariable(name, i)
 		for i in range(dimension)
 	])
+
+
+def create_upper_triangular_matrix(name, dimension):
+	indices = {idxs: idx for idx, idxs in enumerate([(i, j) for i in range(dimension) for j in range(dimension) if i <= j])}
+	a = Array([
+		[
+			IndexedVariable(name, indices[(i, j)]) if (i, j) in indices else Zero()
+			for j in range(dimension)
+		]
+		for i in range(dimension)
+	])
+	return Vector([xij for xi in a.components for xij in xi if xij.get_type() == 'variable']), a
+
+
+def create_constant_array(array):
+	return Array([[Constant(xij) for xij in xi] for xi in array])
 
 
 class Expression:
@@ -531,7 +536,7 @@ class Variable(Expression):
 	def to_json_expr(self):
 		return {
 			'type': self.get_type(),
-			'name': name
+			'name': self.name
 		}
 
 	def pretty_print(self):
@@ -573,7 +578,7 @@ class Vector(Expression):
 		}
 
 	def pretty_print(self):
-		return 'np.array([' + ','.join([
+		return 'np.array([\n' + ',\n'.join([
 			component.pretty_print()
 			for component in self.components
 		]) + ']'
@@ -609,8 +614,18 @@ class Array(Expression):
 	def __init__(self, components):
 		self.components = components
 
+	def row(self, i):
+		return Array([[c.clone() for c in self.components[i]]])
+
 	def get_type(self):
 		return 'array'
+
+	def as_expression(self):
+		if len(self.components) != 1:
+			raise Exception('not a single expression')
+		if len(self.components[0]) != 1:
+			raise Exception('not a single expression')
+		return self.components[0][0].clone()
 
 	def to_json_expr(self):
 		return {
@@ -625,13 +640,13 @@ class Array(Expression):
 		}
 
 	def pretty_print(self):
-		return 'np.array([' + ','.join([
+		return 'np.array([\n' + ',\n'.join([
 			'[' + ','.join([
-				component.pretty_print()
+				str.center(component.pretty_print(), 8)
 				for component in row
 			]) + ']'
 			for row in self.components
-		]) + ']'
+		]) + '])'
 
 	def evaluate(self, values):
 		return np.array([
@@ -647,6 +662,30 @@ class Array(Expression):
 	def simplify(self):
 		es = [[_repeatedly_simplify(e) for e in r] for r in self.components]
 		return any([x[0] for r in es for x in r]), Array([[x[1] for x in r] for r in es])
+
+	def transpose(self):
+		return Array([
+			[x.clone() for x in r]
+			for r in list(map(list, zip(*self.components)))
+		])
+
+	def multiply(self, other):
+		k = len(self.components[0])
+		if k != len(other.components):
+			raise Exception('bad multiplication')
+		return Array([
+			[
+				Sum([
+					Product([self.components[i][ll].clone(), other.components[ll][j].clone()])
+					for ll in range(k)
+				])
+				for j in range(len(other.components[0]))
+			]
+			for i in range(len(self.components))
+		])
+
+	def multiply_diagonals(self):
+		return Product([c[i].clone() for i, c in enumerate(self.components)])
 
 	def determinant(self):
 		pass
@@ -667,6 +706,32 @@ class IndexedVariable(Variable):
 
 	def pretty_print(self):
 		return self.variable_name + "[" + str(self.idx) + "]"
+
+	def differentiate(self, variable):
+		if self.pretty_print() == variable:
+			return One()
+		else:
+			return Zero()
+
+	def simplify(self):
+		return False, self.clone()
+
+
+class TwiceIndexedVariable(Variable):
+	def __init__(self, name, idx1, idx2):
+		self.variable_name = name
+		self.idx1 = idx1
+		self.idx2 = idx2
+
+	def clone(self):
+		return TwiceIndexedVariable(self.variable_name, self.idx1, self.idx2)
+
+	def evaluate(self, variables):
+		v = variables[self.variable_name]
+		return v[self.idx1, self.idx2]
+
+	def pretty_print(self):
+		return self.variable_name + "[" + str(self.idx1) + "," + str(self.idx2) + "]"
 
 	def differentiate(self, variable):
 		if self.pretty_print() == variable:

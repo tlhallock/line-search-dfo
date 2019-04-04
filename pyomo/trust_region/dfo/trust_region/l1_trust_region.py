@@ -13,7 +13,7 @@ class L1TrustRegion(CircularTrustRegion):
 	def to_json(self):
 		return {
 			'type': 'L1',
-			'center': self.center,
+			'center': numpy.copy(self.center),
 			'radius': self.radius
 		}
 

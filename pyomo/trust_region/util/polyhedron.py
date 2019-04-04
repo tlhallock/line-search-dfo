@@ -164,12 +164,12 @@ class Polyhedron:
 			'b': self.b
 		}
 
-	def normalize(self):
-		A = self.A
-		b = self.b
+	def normalize(self, use_a=False):
+		A = self.A.copy()
+		b = self.b.copy()
 		for i in range(A.shape[0]):
 			row_scale = 1.0 / abs(b[i])
-			if numpy.isinf(row_scale) or numpy.isnan(row_scale) or row_scale < 1e-12:
+			if use_a or numpy.isinf(row_scale) or numpy.isnan(row_scale) or row_scale < 1e-12:
 				row_scale = 1.0 / numpy.linalg.norm(A[i])
 			A[i] *= row_scale
 			b[i] *= row_scale

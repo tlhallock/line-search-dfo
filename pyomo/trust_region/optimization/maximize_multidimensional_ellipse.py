@@ -16,6 +16,8 @@ from trust_region.util.polyhedron import parse_polyhedron
 from trust_region.util.polyhedron import Polyhedron
 from trust_region.util.plots import create_plot_on
 
+from trust_region.optimization.my_maximize import presolve_ellipse
+
 from trust_region.util.utils import write_json
 
 
@@ -92,7 +94,16 @@ def q_is_feasible(q, p):
 
 def find_feasible_starts(p):
 	n = p.A.shape[1]
-	q = numpy.zeros((n, n))
+	delta = 1
+	improved = False
+	while delta > 1e-12:
+		q = delta * numpy.eye(n)
+		if q_is_feasible(q, p):
+			improved = True
+			break
+		delta /= 2
+	if not improved:
+		raise Exception('no ellipse is feasible')
 	delta = 1
 	while delta > 1e-8:
 		improved = True
@@ -112,17 +123,17 @@ def find_feasible_starts(p):
 
 
 def get_starts(p, num_vars, idx_to_coord, bbar):
+	for starting_matrix in find_feasible_starts(Polyhedron(p.polyhedron.A, numpy.array([b*b/2 for b in bbar]))):
+		yield numpy.array([
+			starting_matrix[idx_to_coord[i][0], idx_to_coord[i][1]]
+			for i in range(num_vars)
+		])
 	if p.hot_start is not None:
 		yield p.hot_start
 	yield numpy.array([
 		1.0 if idx_to_coord[i][0] == idx_to_coord[i][1] else 0.0
 		for i in range(num_vars)
 	])
-	for starting_matrix in find_feasible_starts(Polyhedron(p.polyhedron.A, numpy.array([b*b/2 for b in bbar]))):
-		yield numpy.array([
-			starting_matrix[idx_to_coord[i][0], idx_to_coord[i][1]]
-			for i in range(num_vars)
-		])
 
 
 def construct_ellipse(p, l_inverse, volume, k, bbar, hot_start=None):
@@ -136,7 +147,13 @@ def construct_ellipse(p, l_inverse, volume, k, bbar, hot_start=None):
 	# l_inverse *= .8
 
 	ellipse.l_inverse = l_inverse.T
-	ellipse.l = numpy.linalg.inv(ellipse.l_inverse)
+	try:
+		ellipse.l = numpy.linalg.inv(ellipse.l_inverse)
+	except:
+		print(ellipse.l_inverse)
+		ellipse.l_inverse = l_inverse.T
+		ellipse.l = numpy.linalg.inv(numpy.array([[xij for xij in xi] for xi in ellipse.l_inverse]))
+		raise Exception('we hit it again')
 
 	ellipse.q_inverse = numpy.dot(ellipse.l_inverse, ellipse.l_inverse.T)
 	ellipse.q = numpy.dot(ellipse.l.T, ellipse.l)
@@ -220,6 +237,17 @@ def compute_maximal_ellipse(p):
 	maximum_hotstart = None
 
 	for start in get_starts(p, num_vars, idx_to_coord, bbar):
+		model.pprint()
+		presolved_solution = presolve_ellipse(p.polyhedron.A, bbar, start)
+		if maximum_volume is None or presolved_solution['volume'] > maximum_volume:
+			maximum_volume = presolved_solution['volume']
+			maximum_l_inverse = numpy.zeros((dimension, dimension))
+			for i in range(num_vars):
+				coord = idx_to_coord[i]
+				maximum_l_inverse[coord[0], coord[1]] = presolved_solution['minimizer'][i]
+			maximum_hotstart = presolved_solution['minimizer']
+			# [p.polyhedron.A[i]@construct_ellipse(p, maximum_l_inverse, maximum_volume, k, bbar, hot_start=None).q_inverse@p.polyhedron.A[i] - bbar[i] ** 2 / 2 for i in range(p.polyhedron.A.shape[0])]
+
 		solved = False
 		for tolerance in [1e-16, 1e-10, 1e-8]:
 			if solved:
@@ -259,8 +287,6 @@ def compute_maximal_ellipse(p):
 				coord = idx_to_coord[i]
 				maximum_l_inverse[coord[0], coord[1]] = model.q[i].value
 
-	# model.pprint()
-
 	if maximum_l_inverse is None:
 		return False, False
 
@@ -277,7 +303,7 @@ def compute_maximal_ellipse(p):
 def compute_maximal_ellipse_after_shift(params, l1):
 	params2 = EllipseParams()
 	params2.center = (params.center - l1.center) / l1.radius
-	params2.polyhedron = params.polyhedron.shift(l1.center, l1.radius).normalize()
+	params2.polyhedron = params.polyhedron.shift(l1.center, l1.radius).normalize(use_a=True)
 	# params2.include_point = (params.center - l1.center) / l1.radius if params.include_point is not None else None
 	params2.tolerance = params.tolerance
 

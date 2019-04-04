@@ -41,6 +41,29 @@ class AlgorithmParams:
 		self.plot_bounds = []
 
 
+def recover_context_from_log(log_object, params):
+	context = AlgorithmContext(params)
+	context.params = params
+	context.basis = parse_basis(params.basis_type, len(params.x0))
+	context.outer_trust_region = L1TrustRegion(center=numpy.array(log_object['center']), radius=log_object['radius'])
+	context.iteration = log_object['iteration']
+	context.history = History()
+	context.plot_number = 0
+	context.evaluation_count = log_object['number-of-evaluations']
+	context.current_objective_value = log_object['objective-value']
+	context.heuristics = Heuristics(context.basis)
+
+	context.current_plot = None
+	context.objective_coefficients = None
+
+	context.sample_points = numpy.array(log_object['previous-sample-points'])
+	context.sample_values = numpy.array(log_object['previous-sample-values'])
+
+	for p in params.plot_bounds:
+		context.history.bounds.extend(p)
+	return context
+
+
 class AlgorithmContext:
 	def __init__(self, params):
 		self.params = params
@@ -189,10 +212,12 @@ class AlgorithmContext:
 		return {
 			"iteration": self.iteration,
 			"number-of-evaluations": self.evaluation_count,
-			"previous-sample-points": self.sample_points,
-			"previous-sample-values": self.sample_values,
+			"previous-sample-points": numpy.copy(self.sample_points),
+			"previous-sample-values": numpy.copy(self.sample_values),
 			"outer-trust-region": self.outer_trust_region.to_json(),
-			"center": self.model_center()
+			"center": self.model_center(),
+			'objective-value': self.current_objective_value,
+			'radius': self.outer_trust_region.radius
 		}
 
 
@@ -271,7 +296,7 @@ def update_inner_trust_region(context, log_object):
 		raise Exception('Not poised')
 
 	for point in certification.unshifted:
-		if not context.params.constraints_polyhedron.contains(point, tolerance=1e-3):
+		if not context.params.constraints_polyhedron.contains(point, tolerance=1e-1):
 			compute_lagrange_polynomials(
 				context.basis,
 				trust_region,
@@ -291,10 +316,10 @@ def update_inner_trust_region(context, log_object):
 			)
 		else:
 			context.sample_values[idx] = original_sample_values[certification.indices[idx]]
-			if abs(
-				context.sample_values[idx] - context.params.objective_function.evaluate(certification.unshifted[idx])
-			) > 1e-4:
-				raise Exception('Error shifting values after pivoting in LU algorithm')
+		if abs(
+			context.sample_values[idx] - context.params.objective_function.evaluate(certification.unshifted[idx])
+		) > 1e-4:
+			raise Exception('Error shifting values after pivoting in LU algorithm')
 
 	context.objective_coefficients = numpy.asarray(
 		certification.lmbda * numpy.asmatrix(context.sample_values).T
@@ -313,7 +338,7 @@ def update_inner_trust_region(context, log_object):
 	return trust_region
 
 
-def write_log_object(log_file, log_object, needs_comma):
+def write_log_object(log_file, log_object, needs_comma=True):
 	if needs_comma:
 		log_file.write(',')
 	log_file.write('\n')
@@ -321,98 +346,100 @@ def write_log_object(log_file, log_object, needs_comma):
 	return True
 
 
-def always_feasible_algorithm(params):
+def always_feasible_iteration(log_file, context):
+	context.iteration += 1
+
+	log_object = context.create_log_object()
+	context.start_current_plot()
+	context.current_plot.add_polyhedron(context.construct_polyhedron(), label='constraints')
+	context.outer_trust_region.add_to_plot(context.current_plot)
+	context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
+
+	trust_region = update_inner_trust_region(context, log_object)
+
+	context.plot_accuracy(trust_region)
+
+	if check_criticality(context, trust_region, log_object):
+		if context.outer_trust_region.radius < context.params.tolerance:
+			log_object['converged'] = True
+			context.finish_current_plot('converged')
+			return True
+
+		log_object['converged'] = False
+		log_object['iteration-result'] = 'critical, radius too large'
+		write_log_object(log_file, log_object, context.iteration != 1)
+
+		context.decrease_radius()
+		context.finish_current_plot(log_object['iteration-result'])
+		return False
+
+	buffer = context.construct_buffer()
+	solution = solve_trust_region_subproblem(
+		objective_basis=context.basis,
+		objective_coefficients=context.objective_coefficients,
+		model_center=context.model_center(),
+		trust_region=trust_region,
+		buffer=buffer
+	)
+
+	if buffer is not None:
+		context.current_plot.add_polyhedron(buffer, label='buffer', color='y')
+	context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m', width=0.05 * context.outer_trust_region.radius)
+
+	trial_objective_value = context.evaluate_original_objective(solution.trial_point)
+	trial_model_value = solution.predicted_objective_value
+	current_objective_value = context.current_objective_value
+	current_model_value = context.current_objective_value
+
+	rho = (
+		current_objective_value - trial_objective_value
+	) / (
+		current_model_value - trial_model_value
+	)
+
+	log_object['trial-point'] = [xi for xi in solution.trial_point]
+	log_object['new-function-value'] = trial_objective_value
+	log_object['rho'] = rho
+
+	context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
+
+	if rho < context.params.rho_lower:
+		context.decrease_radius()
+
+		log_object['iteration-result'] = 'poor model'
+		write_log_object(log_file, log_object, True)
+
+		context.finish_current_plot(log_object['iteration-result'])
+		return False
+
+	delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
+	if delta < context.outer_trust_region.radius / 8:
+		context.decrease_radius()
+
+		log_object['iteration-result'] = 'step too small'
+		write_log_object(log_file, log_object)
+
+		context.finish_current_plot(log_object['iteration-result'])
+		return False
+
+	if rho > context.params.rho_lower:
+		context.increase_radius()
+
+	context.outer_trust_region.recenter(solution.trial_point)
+	context.current_objective_value = trial_objective_value
+
+	log_object['iteration-result'] = 'accepted'
+	write_log_object(log_file, log_object)
+
+	context.finish_current_plot(log_object['iteration-result'])
+
+
+def run_always_feasible_algorithm(params, context):
 	with open('{}/{}/log.json'.format(OUTPUT_DIRECTORY, params.directory), 'w') as log_file:
-		context = AlgorithmContext(params)
 		log_file.write('{\n\t"iterations": [')
-		needs_comma = False
 		try:
-			while True:
-				context.iteration += 1
-
-				log_object = context.create_log_object()
-				context.start_current_plot()
-				context.current_plot.add_polyhedron(context.construct_polyhedron(), label='constraints')
-				context.outer_trust_region.add_to_plot(context.current_plot)
-				context.current_plot.add_point(context.model_center(), label='center', color='y', marker='o', s=30)
-
-				trust_region = update_inner_trust_region(context, log_object)
-
-				context.plot_accuracy(trust_region)
-
-				if check_criticality(context, trust_region, log_object):
-					if context.outer_trust_region.radius < context.params.tolerance:
-						log_object['converged'] = True
-						context.finish_current_plot('converged')
-						break
-
-					log_object['converged'] = False
-					log_object['iteration-result'] = 'critical, radius too large'
-					needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-					context.decrease_radius()
-					context.finish_current_plot(log_object['iteration-result'])
-					continue
-
-				buffer = context.construct_buffer()
-				solution = solve_trust_region_subproblem(
-					objective_basis=context.basis,
-					objective_coefficients=context.objective_coefficients,
-					model_center=context.model_center(),
-					trust_region=trust_region,
-					buffer=buffer
-				)
-
-				if buffer is not None:
-					context.current_plot.add_polyhedron(buffer, label='buffer', color='y')
-				context.current_plot.add_arrow(context.model_center(), solution.trial_point, color='m', width=0.05 * context.outer_trust_region.radius)
-
-				trial_objective_value = context.evaluate_original_objective(solution.trial_point)
-				trial_model_value = solution.predicted_objective_value
-				current_objective_value = context.current_objective_value
-				current_model_value = context.current_objective_value
-
-				rho = (
-					current_objective_value - trial_objective_value
-				) / (
-					current_model_value - trial_model_value
-				)
-
-				log_object['trial-point'] = [xi for xi in solution.trial_point]
-				log_object['new-function-value'] = trial_objective_value
-				log_object['rho'] = rho
-
-				context.heuristics.update_error_heuristics(solution.trial_point, trial_model_value, trial_objective_value)
-
-				if rho < context.params.rho_lower:
-					context.decrease_radius()
-
-					log_object['iteration-result'] = 'poor model'
-					needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-					context.finish_current_plot(log_object['iteration-result'])
-					continue
-
-				delta = numpy.linalg.norm(context.model_center() - solution.trial_point)
-				if delta < context.outer_trust_region.radius / 8:
-					context.decrease_radius()
-
-					log_object['iteration-result'] = 'step too small'
-					needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-					context.finish_current_plot(log_object['iteration-result'])
-					continue
-
-				if rho > context.params.rho_lower:
-					context.increase_radius()
-
-				context.outer_trust_region.recenter(solution.trial_point)
-				context.current_objective_value = trial_objective_value
-
-				log_object['iteration-result'] = 'accepted'
-				needs_comma = write_log_object(log_file, log_object, needs_comma)
-
-				context.finish_current_plot(log_object['iteration-result'])
+			while not always_feasible_iteration(log_file, context):
+				pass
 
 			context.plot_history()
 
@@ -421,3 +448,11 @@ def always_feasible_algorithm(params):
 		except:
 			log_file.write('\n\t]\n}\n')
 			return context.failure(traceback.format_exc())
+
+
+def always_feasible_algorithm(params):
+	return run_always_feasible_algorithm(params, AlgorithmContext(params))
+
+
+def restart_always_feasible_algorithm(params, log_object):
+	return run_always_feasible_algorithm(params, recover_context_from_log(log_object, params))
