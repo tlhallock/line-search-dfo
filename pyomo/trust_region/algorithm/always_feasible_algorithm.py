@@ -30,7 +30,7 @@ class AlgorithmParams:
 		self.basis_type = None
 		self.buffer_factor = None
 
-		self.criticality_tolerance = 1e-2
+		self.criticality_tolerance = 1e-3
 		self.subproblem_constraint_tolerance = 1e-8
 		self.subproblem_search_tolerance = 1e-6
 		self.tolerance = 1e-7
