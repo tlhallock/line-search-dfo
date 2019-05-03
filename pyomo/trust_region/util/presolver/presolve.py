@@ -107,6 +107,7 @@ def solve_trust_region_subproblem(model, center, radius):
 	# print('minimize', model.g)
 	# print('subject to')
 	# print(model.A)
+	# print(-model.c)
 	# print([[-radius, + radius] for _ in center])
 	# print('==========================================')
 	try:
@@ -200,9 +201,12 @@ def solve(params):
 		print('==========================================')
 
 		result = run_iteration(model, params.f_func, center, radius, params.tolerance)
-		print(result)
+		# print(result)
+
+		# if (model.c <= 0).all() and result['status'] == 'infeasible':
+		# 	run_iteration(model, params.f_func, center, radius, params.tolerance)
+
 		if result['status'] == 'infeasible':
-			print('infeasible')
 			model = construct_restoration_model(params, center, radius)
 			result = run_iteration(model, params.restoration_f, center, radius, params.tolerance)
 

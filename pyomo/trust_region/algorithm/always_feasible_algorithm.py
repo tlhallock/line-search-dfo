@@ -30,11 +30,11 @@ class AlgorithmParams:
 		self.basis_type = None
 		self.buffer_factor = None
 
-		self.criticality_tolerance = 1e-8
+		self.criticality_tolerance = 1e-2
 		self.subproblem_constraint_tolerance = 1e-8
 		self.subproblem_search_tolerance = 1e-6
 		self.tolerance = 1e-7
-		self.radius_decrease_factor = 0.25
+		self.radius_decrease_factor = 0.5
 		self.radius_increase_factor = 1.5
 		self.rho_upper = 0.9
 		self.rho_lower = 0.1

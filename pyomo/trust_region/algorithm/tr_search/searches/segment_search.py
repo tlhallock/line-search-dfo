@@ -25,8 +25,7 @@ def search_segment(context, objective, options):
 		for t in numpy.linspace(center - delta, center + delta, num_trial_points):
 			other_point = search_path.get_point(t)
 			if not polyhedron.contains(other_point, 1e-6):
-				continue
-				# raise Exception('search path includes infeasible points')
+				raise Exception('search path includes infeasible points')
 
 			other_solution = objective(
 					context=context,

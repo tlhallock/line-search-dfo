@@ -101,12 +101,15 @@ def get_search_path(x, polyhedron, num, tolerance):
 		rA = np.array(equidistant_faces)
 		rb = np.array(equidistant_b)
 		if any([abs(xi) < tolerance for xi in distances]):
-			direction = rA.T@np.linalg.solve(rA@rA.T, -np.ones(len(x)))
+			direction = rA.T@np.linalg.solve(rA@rA.T, -np.ones(rA.shape[0]))
 		else:
 			try:
 				direction = rA.T@np.linalg.solve(rA@rA.T, rA@all_points[-1]-rb)
 			except np.linalg.linalg.LinAlgError:
-				raise Exception("Found parallel faces: [" + ";".join([",".join(r) for r in rA@rA.T]) + "]")
+				# orth = scipy.linalg.orth(rA.T)
+				# direction = rA.T @ np.linalg.solve(rA @ orth, rA@all_points[-1]-rb)
+				# raise Exception("Found parallel faces: [" + ";".join([",".join(str(r)) for r in rA@rA.T]) + "]")
+				break
 
 		direction /= np.linalg.norm(direction)
 

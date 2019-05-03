@@ -71,7 +71,7 @@ An algorithm that wishes to minimize this simulation is forced to account for th
 
 Additionally, an always feasible algorithm is also an \emph{any-time} algorithm.
 Anytime algorithms are a class of algorithms that can conveniently be run as long as desired and return the best solution found so far if interrupted.
-These algorithm are of practical importance when problems have encertain time complexity.
+These algorithm are of practical importance when problems have uncertain time complexity.
 
 
 \subsection{Notation}
@@ -112,7 +112,7 @@ Next, this model function is minimized over the trust region and the minimum arg
 The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
 If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
 Otherwise, the trust region is reduced to increase model accuracy.
-The algorithm terminates when both and a critcallity measure $\chik$ and the trust region radius $\Delta_k$ reach a sufficiently small thresholds.
+The algorithm terminates when both and a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach a sufficiently small thresholds.
 
 
 For unconstrained optimization, the algorithmic framework can be described in algorithm \cref{unconstrained_dfo}.
@@ -196,7 +196,7 @@ Our goal is to generalize this framework to handle constraints, where we must en
 \subsection{Recent Work}
 \paragraph{Applications}
 Recently, there has been a growth in applications of derivative free optimization.
-Such applications include photinjector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
+Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
 
 \paragraph{Constrained derivative free algorithms}
 To address the rise in these applications, new algorithms are being developed such as \cite{doi:10.1080/10556788.2015.1026968} which is an algorithm similar to the one presented here, but the sample points are not always feasible.
@@ -230,7 +230,7 @@ Another recent review can be found in \cite{DUMMY:review2}.
 % READ THIS
 
 
-\section{Algorithm Components}
+\subsection{Model Based Algorithms}
 
 \subsubsection{Sampling issues}
 
@@ -301,17 +301,17 @@ The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are set 
 l_i(y^j) = \delta_{i,j}
 \]
 where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\quad 1 \;\text{if} \; i = j $ is the Kronecker-delta function defined in \cref{tab:TableOfNotation}.
-For example, after this change of basis, note that the Vandermode matrix becomes the identity matrix.
+For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
 Thus, we can conveniently write
 \[
 \label{reg}
 \modelk(x) = \sum^p_{j=0}f(y^i)l_i(x).
 \]
-Note that this implies computing the change of basis to the Lagrange polynomials amounts to inverting this Vandermode matrix.
-This relationship allows us to use properties of the Vandermode matrix and these lagrange polynomials to find conditions on our sample points that ensure nice geometry.
+Note that this implies computing the change of basis to the Lagrange polynomials amounts to inverting this Vandermonde matrix.
+This relationship allows us to use properties of the Vandermonde matrix and these Lagrange polynomials to find conditions on our sample points that ensure nice geometry.
 
 In particular, we say that a set $Y$ is $\Lambda$-poised for a fixed constant $\Lambda$ with respect to a bases $\phi$ on the ball 
-$B_2(0, 1)$ (defined in \cref{tab:TableOfNotation}) if and only if for the lagrange polynomials $l_i$ associated with $Y$
+$B_2(0, 1)$ (defined in \cref{tab:TableOfNotation}) if and only if for the Lagrange polynomials $l_i$ associated with $Y$
 \begin{align}
 \Lambda \ge \max_{0\le i\le p}\max_{x\in B_2(0, 1)}|l_i(x)|
 \end{align}
@@ -338,7 +338,7 @@ $\kappa_{ef}, \kappa_{ef}$, and $\kappa_{ef}$ are constants depending only on th
 Problems become apparent when comparing the Lagrange polynomials associated with a poised set with those of an ill poised set.
 
 In figure \cref{pvip}, a set of quadratic polynomials used to interpolate the function $f(x) = 5 + x + y + (x + y) ^ 2 - \frac 1 {250} y ^ 4$.
-We can see that the difference between the model and $f$ are much larger when the points are chosen to be nearly colinear resulting in a much higher $\Lambda$.
+We can see that the difference between the model and $f$ are much larger when the points are chosen to be nearly collinear resulting in a much higher $\Lambda$.
 
 \begin{figure}[h]
     \centering
@@ -355,7 +355,7 @@ We can see that the difference between the model and $f$ are much larger when th
 
 A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure geometry is required for convergence analysis although it may come at the expense of function evaluations.
 
-\paragraph{Geometry Ensuring Algorihms}
+\paragraph{Geometry Ensuring Algorithms}
 
 In order to ensure that the sample points maintain good geometry, sample points are chosen .
 At any given time, the algorithm has evaluated 0 or more sample points.
@@ -363,9 +363,9 @@ These points should be reused when possible, but the algorithm may have to repla
 We call the algorithm that add adds points, replacing where necessary, the model improvement algorithm.
 One classic such algorithm is presented in \cite{DUMMY:intro_book}.
 
-The idea behind this algorithm is to perform an LU factorization with pivoting on the Vandermde matrix.
-As we have seen, this computes the basis for the lagrange polynomials corresponding to $Y$.
-However, when this LU factorization encounters a small pivot, the point corresponding to that row is replaced, improving the condition number of the Vandermode matrix.
+The idea behind this algorithm is to perform an LU factorization with pivoting on the Vandermonde matrix.
+As we have seen, this computes the basis for the Lagrange polynomials corresponding to $Y$.
+However, when this LU factorization encounters a small pivot, the point corresponding to that row is replaced, improving the condition number of the Vandermonde matrix.
 
 In practice, we first shift the sample set $Y$ by subtracting the current iterate and dividing by the trust region radius:
 \begin{align}
@@ -382,7 +382,7 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Initialize $i=1$.
             Given a non-empty set $Y$ of user provided points, if $Y$ does not contain $p+1$ points, repeat one of the other points. 
-            Construct the Vandermode matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$, initialize constant $\ximin > 0$.
+            Construct the Vandermonde matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$, initialize constant $\ximin > 0$.
         \item[\textbf{Step 1}] \textbf{(Pivot)} \\
             Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
         
@@ -459,47 +459,10 @@ The update policy frequently follows Step 4 within algorithm \cref{unconstrained
 % \end{algorithmic}
 
 
-
-
-\section{Algorithms}
-
-\subsection{Assumptions}
-% 
-% We assume the following properties.
-% 
-% \begin{itemize}
-% \item The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $L > 0$ for all $x \in \domain$.
-% \begin{equation}
-% \label{A1}
-% |f(x_1) - f(x_2)| \le L \|x_1 - x_2\| \quad \forall x_1, x_2 \in \domain
-% \end{equation}
-% \item \label{A2} The function $f$ is bounded below in $\domain$.
-% \begin{equation}
-% \label{A2}
-% f(x) \ge f_{\text{min}} \quad \forall x \in \domain
-% \end{equation}
-% 
-% \item The Hessians of each model function are uniformly bounded by a constant $\beta \ge 1$ :
-% \begin{equation}
-% \label{A3}
-% \|\nabla^2 \modelk(\iteratek)\| \le \beta - 1 \quad \forall k \ge 0
-% \end{equation}
-% 
-% \end{itemize}
-
-As a first step toward solving a general convex derivative free problem with partially-quantifiable constraints,
-we solve a simpler problem with $\domain = R^n$ and $c(x) = Ax-b$ for some $A$ and $b$.
-This means that we can let the feasible region be denoted $\feasible = \{x \in \mathbb R^n | \quad  Ax \le b \}$.
-
-\[ \begin{array}{ccl} \min_{x \in \mathbb R^n} & f(x) \\
-& Ax \le b & 
-\end{array}
-\]
-We assume that $A$ has full row rank, and that  $dim(A) = n$.
+\subsection{Algorithm Components}
 
 
 
-\subsection{Components}
 
 We will discuss several building blocks of the algorithm before going into the algorithm's detail.
 
@@ -540,7 +503,7 @@ where $\kappa_f$ as a constant independent of $k$.
 Our algorithm must ensure that this efficiency condition is satisfied.
 
 This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
-It can be shown that the \emph{generalized Cauchy point} satisifies this condition.
+It can be shown that the \emph{generalized Cauchy point} satisfies this condition.
 
 
 \subsubsection{Trust regions}
@@ -575,7 +538,7 @@ We have two choices for this trust region subproblem:
 \trialk = \min_{\trialk \in \outertrk \cap \feasiblek} \modelk(\iteratek + \trialk) \label{search_a_lot}
 \end{align}
 
-In either case, work to find a point satisfisfying \cref{efficiency} and 
+In either case, work to find a point satisfying \cref{efficiency} and 
 \begin{equation}
 \label{accuracy}
 \|\nabla \modelk(\iteratek) - \nabla f(\iteratek) \| \le \kappa_g \Delta_k
@@ -593,7 +556,7 @@ The classical methods for ensuring good geometry require an optimization call to
 This is no longer possible in the second strategy.
 However, the bounds produced over the entire trust region may also be stronger than required as the models will only be used on the feasible region.
 This may mean the geometric requirements can be reduced.
-Looking again at the ill-poised set, the set of nearly colinear sample points actually does appear to be accurate over a smaller trust region:
+Looking again at the ill-poised set, the set of nearly collinear sample points actually does appear to be accurate over a smaller trust region:
 
 
 \begin{figure}[h]
@@ -606,6 +569,44 @@ Looking again at the ill-poised set, the set of nearly colinear sample points ac
 
 Within our algorithm, when $ \outertrk \subseteq \feasiblek$ we can default the trust region to the ellipsoid sphere.
 This saves the computation of $\innertrk$ when it is not needed, as there are no nearby constraints.
+
+
+
+\section{Algorithms}
+
+\subsection{Assumptions}
+% 
+% We assume the following properties.
+% 
+% \begin{itemize}
+% \item The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $L > 0$ for all $x \in \domain$.
+% \begin{equation}
+% \label{A1}
+% |f(x_1) - f(x_2)| \le L \|x_1 - x_2\| \quad \forall x_1, x_2 \in \domain
+% \end{equation}
+% \item \label{A2} The function $f$ is bounded below in $\domain$.
+% \begin{equation}
+% \label{A2}
+% f(x) \ge f_{\text{min}} \quad \forall x \in \domain
+% \end{equation}
+% 
+% \item The Hessians of each model function are uniformly bounded by a constant $\beta \ge 1$ :
+% \begin{equation}
+% \label{A3}
+% \|\nabla^2 \modelk(\iteratek)\| \le \beta - 1 \quad \forall k \ge 0
+% \end{equation}
+% 
+% \end{itemize}
+
+As a first step toward solving a general convex derivative free problem with partially-quantifiable constraints,
+we solve a simpler problem with $\domain = R^n$ and $c(x) = Ax-b$ for some $A$ and $b$.
+This means that we can let the feasible region be denoted $\feasible = \{x \in \mathbb R^n | \quad  Ax \le b \}$.
+
+\[ \begin{array}{ccl} \min_{x \in \mathbb R^n} & f(x) \\
+& Ax \le b & 
+\end{array}
+\]
+We assume that $A$ has full row rank, and that  $dim(A) = n$.
 
 \subsection{Algorithm Template}
 
@@ -662,7 +663,7 @@ Although some details depend on the particular choice of $\innertrk$, we follow 
     \end{itemize}
 \end{algorithm}
 
-Much of the work is defered to the \emph{ConstructTrustRegion} subroutine.
+Much of the work is deferred to the \emph{ConstructTrustRegion} subroutine.
 We will describe several different approaches we have taken for this subroutine.
 For convergence analysis, \cref{accuracy} must be satisfied by the trust region choice in this method.
 Not all searches for an inner trust region must guarantee this: the algorithm is allowed to try a bounded number of trust regions as long as one is gauranteed to satisfy these conditions.
@@ -672,13 +673,13 @@ This may not involve constructing a model or function evaluations.
 
 
 \subsection{First Approach: Bumping $\xi$}
-One simple approach to handle partially-quantifiable constraints is to maintaining the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
+One simple approach to handle partially-quantifiable constraints is to maintain the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
 That is, we add the outer constraints to the model improvement algorithm to select new points, we constrain the new points to also lie within the current model of the trust region in algorithm \cref{model_improving_algorithm} line \cref{next_point}.
 We will let search space for this optimization problem be the feasible region intersect the trust region: $\outerfritr = \feasiblek \cap \outertrk $.
 
-The problem lies in finding suffiently poised sample points.
-The classical model algorithm uses a parameter $\xi$ as a lower bound of the pivot values of the Vandermode matrix.
-When requiring points to live within the $ \outerfritr $, it can happen that even after replacing a point, we still have not satisfied this bound.
+The problem lies in finding sufficiently poised sample points.
+The classical model based algorithm uses a parameter $\xi$ as a lower bound of the pivot values of the Vandermonde matrix.
+When requiring points to live within $ \outerfritr $, it can happen that even after replacing a point, we still have not satisfied this bound.
 In figure \cref{lspc}, for some values of $\xi$, there is point in $ \outerfritr $ that will leave a sufficiently large pivot.
 
 \begin{figure}[h]
@@ -694,7 +695,7 @@ One way to handle this is to simply allow $\xi$ to decrease. (Possibly, until a 
 If the new point does not improve the geometry of the set significantly, then there is no other point that would do better.
 In this case, we cannot do better and simply proceed with our current point.
 
-Alternatively, we can check how much the next point will improve the current pivot, and only replace the existing point if it provides sufficient improvement in the Vandermode matrix's condition number.
+Alternatively, we can check how much the next point will improve the current pivot, and only replace the existing point if it provides sufficient improvement in the Vandermonde matrix's condition number.
 
 
 
@@ -711,7 +712,7 @@ The new modified improvement algorithm is described in \cref{modified_model_impr
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Initialize $i=1$.
             If the current sample set does not have $p$ points, repeat one of the current points. 
-            Construct the vandermode matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$,
+            Construct the Vandermonde matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$,
             $0 < \ximin < \xi_{\text{desired}}$, $0 <\delta_{\text{improv}} < 1$,
             $  \xi_{\text{cur}} = \xi_{\text{desired}}$.
             
@@ -827,7 +828,7 @@ $$E_k = \{x \in \mathbb | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T Q (x - \mu^{k}) \
 However, this means that we do not ensure $E_k \subset F_k$ so that the trust region subproblem must contain constraints for both the ellipse and the feasible region: $\innertrk = \ellipsek \cap \domain$.
 
 The are several concerns to be considered while defining the ellipse.
-The major concern is that we can accidently define $\ellipsek$ in such a way that it limits travel along a decent direction.
+The major concern is that we can accidentally define $\ellipsek$ in such a way that it limits travel along a decent direction.
 %We also want consecutive ellipse to share volume, in order to avoid evaluating as many points as possible.
 (So far, we have been re-evaluating the set of trial points each iteration.)
 
@@ -882,7 +883,7 @@ so that
 E = \{ d \; | \; f(d) \le 1 \}.
 \]
 
-Because $Q$ is positive definite, $f$ has a unique minimum on each hyperplane $A_i d = b_i$.
+Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
 Let this minimum be $d^{(i)} = \argmin_{d\| A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
 By the first order optimality conditions,
 \[
@@ -968,8 +969,8 @@ In this case, our \emph{ConstructTrustRegion} subroutine searches over multiple 
 Given a huristic $H : \innertrk \to \Theta$, where $\Theta$ is a set of comparable elements, the \emph{ConstructTrustRegion} routine follows the following template:
 
 \begin{algorithm}[H]
-    \caption{Unconstrained Derivative Free Algorithm}
-    \label{unconstrained_dfo}
+    \caption{Heuristic Search}
+    \label{heuristic_search}
     \begin{itemize}
         \item[] \textbf{Initialization} Initialize $T_{\text{best}} = \emptyset$, $\theta_{\text{best}} = H(T_{\text{best}})$
             
@@ -1010,7 +1011,7 @@ One attempt to fix this problem is by limiting the search direction for the cent
 
 \subsubsection{Line searches}
 Although $\modelk$'s minimizer over $\outertrk$  can appear anywhere, there are some reasons for expecting it to be at a ``vertex."
-If it lies on the interiorer, there is little need for using constrained approaches once near the solution.
+If it lies on the interior, there is little need for using constrained approaches once near the solution.
 
 The ellipse with maximum volume, however, tends to lead $\innertrk$ away from vertices.
 One way of trying to ensure a feasible direction towards a vertex, while still allowing a larger volume ellipse, is by limiting the search for the new center to lie on line segments starting at the current iterate $\iteratek$.
@@ -1039,12 +1040,12 @@ This completes the first segment.
 It can also happen that at the starting point there are two (or even more) constraints that are both closer than all others, say there are some $1\le i,j\le m$ with $d(A_i, \iteratek) = d(A_j, \iteratek) \le d(A_k, \iteratek)  \forall 1\le k \le m$.
 In this case we simply follow a ray whose points are equidistant from both of these constraints: $\{x - t\frac 1 2 (A_i + A_j)| t \ge 0\}$.
 At the end of each segment, we construct a ray that is equidistant to all constraints previously encountered.
-We could then, in general, continue to follow line segments by always travelling away from the nearest constraints until we reach a point equidistant to $n+1$ constraints.
+We could then, in general, continue to follow line segments by always traveling away from the nearest constraints until we reach a point equidistant to $n+1$ constraints.
 However, after we include enough constraints, we will eventually once again head away from a vertex.
 
 This means that we can define a class of searches that each limit the number of line segments to search.
 In this paper, we consider searches with one and two line segments for $\mathbb R^2$.
-In figure \cref{line_can_run}, the red line shows the line segments maintaining equidistance to their closest constraints.
+In figure \cref{line_can_run}, the red line shows the line segments equidistant their closest constraints.
 Notice that with two line segments, the algorithm can already choose new centers further from the vertex.
 
 % TODO: REPLACE PICTURES

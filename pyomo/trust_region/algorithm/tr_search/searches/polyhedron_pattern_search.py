@@ -6,15 +6,21 @@ from trust_region.algorithm.tr_search.searches.common import ObjectiveValue
 
 def random_point(p, bounds):
 	point = bounds.sample()
+	count = 0
 	while not p.contains(point):
+		if count > 1000:
+			return None
 		point = bounds.sample()
+		count += 1
 	return point
 
 
 def get_starting_points(p, x0, bounds, n):
 	yield x0
 	for _ in range(n):
-		yield random_point(p, bounds)
+		starting_point = random_point(p, bounds)
+		if starting_point is not None:
+			yield starting_point
 
 
 plot_count = 0

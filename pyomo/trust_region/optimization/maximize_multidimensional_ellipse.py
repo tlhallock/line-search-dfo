@@ -103,12 +103,14 @@ def find_feasible_starts(p):
 			break
 		delta /= 2
 	if not improved:
-		raise Exception('no ellipse is feasible')
+		return
 	delta = 1
 	while delta > 1e-8:
 		improved = True
-		while improved:
+		count = 0
+		while improved and count < 10:
 			improved = False
+			count += 1
 			for i in range(n):
 				delta_mat = numpy.pad([[delta]], pad_width=[[i, n-i-1], [i, n-i-1]], mode='constant')
 				if not q_is_feasible(q + delta_mat, p):
@@ -123,6 +125,8 @@ def find_feasible_starts(p):
 
 
 def get_starts(p, num_vars, idx_to_coord, bbar):
+	# yield None
+
 	for starting_matrix in find_feasible_starts(Polyhedron(p.polyhedron.A, numpy.array([b*b/2 for b in bbar]))):
 		yield numpy.array([
 			starting_matrix[idx_to_coord[i][0], idx_to_coord[i][1]]
@@ -183,13 +187,13 @@ def construct_ellipse(p, l_inverse, volume, k, bbar, hot_start=None):
 
 def compute_maximal_ellipse(p):
 	bbar = p.polyhedron.b - numpy.dot(p.polyhedron.A, p.center)
-	k = 1.0 / min(abs(bbar))
+	k = max(.001, min(1000, 1.0 / min(abs(bbar))))
 	if k < 1e-10 or k > 1e8:
 		print("========================================================")
 		print("In maximize ellipse, scaling factor would be:")
 		print(k)
 		print("========================================================")
-		return False, None
+		k = 1.0
 	bbar = k * bbar
 
 	dimension = p.polyhedron.A.shape[1]
@@ -208,7 +212,7 @@ def compute_maximal_ellipse(p):
 	for i in range(p.polyhedron.A.shape[0]):
 		n = 1 / numpy.linalg.norm(numpy.array([xi for xi in p.polyhedron.A[i]] + [bbar[i]])) ** 2
 		Ai = vector_to_matrix(p.polyhedron.A[i])
-		if numpy.isnan(n):
+		if numpy.isnan(n) or abs(n) < 1e-12:
 			n = 1.0
 		model.constraints.add(
 			n * multiply(transpose(Ai), multiply(q_matrix, Ai))[0][0] <= bbar[i] * bbar[i] / 2 * n
@@ -237,27 +241,31 @@ def compute_maximal_ellipse(p):
 	maximum_hotstart = None
 
 	for start in get_starts(p, num_vars, idx_to_coord, bbar):
-		model.pprint()
-		presolved_solution = presolve_ellipse(p.polyhedron.A, bbar, start)
-		if maximum_volume is None or presolved_solution['volume'] > maximum_volume:
-			maximum_volume = presolved_solution['volume']
-			maximum_l_inverse = numpy.zeros((dimension, dimension))
-			for i in range(num_vars):
-				coord = idx_to_coord[i]
-				maximum_l_inverse[coord[0], coord[1]] = presolved_solution['minimizer'][i]
-			maximum_hotstart = presolved_solution['minimizer']
-			# [p.polyhedron.A[i]@construct_ellipse(p, maximum_l_inverse, maximum_volume, k, bbar, hot_start=None).q_inverse@p.polyhedron.A[i] - bbar[i] ** 2 / 2 for i in range(p.polyhedron.A.shape[0])]
+		# try:
+		# 	presolved_solution = presolve_ellipse(p.polyhedron.A, bbar, start)
+		# 	if maximum_volume is None or presolved_solution['volume'] > maximum_volume:
+		# 		maximum_volume = presolved_solution['volume']
+		# 		maximum_l_inverse = numpy.zeros((dimension, dimension))
+		# 		for i in range(num_vars):
+		# 			coord = idx_to_coord[i]
+		# 			maximum_l_inverse[coord[0], coord[1]] = presolved_solution['minimizer'][i]
+		# 		maximum_hotstart = presolved_solution['minimizer']
+		# except:
+		# 	pass
+		# 	# [p.polyhedron.A[i]@construct_ellipse(p, maximum_l_inverse, maximum_volume, k, bbar, hot_start=None).q_inverse@p.polyhedron.A[i] - bbar[i] ** 2 / 2 for i in range(p.polyhedron.A.shape[0])]
 
 		solved = False
 		for tolerance in [1e-16, 1e-10, 1e-8]:
 			if solved:
 				continue
-			for i in range(num_vars):
-				model.q[i].set_value(start[i])
+			if start is not None:
+				for i in range(num_vars):
+					model.q[i].set_value(start[i])
 
 			opt = SolverFactory(SOLVER_NAME, executable=SOLVER_PATH)
 			opt.options['tol'] = tolerance
-			opt.options['warm_start_init_point'] = 'yes'
+			# opt.options['max_iter'] = 100000
+			opt.options['warm_start_init_point'] = 'yes' if start is not None else 'no'
 			try:
 				result = opt.solve(model)
 			except Exception as e:
@@ -286,6 +294,8 @@ def compute_maximal_ellipse(p):
 			for i in range(num_vars):
 				coord = idx_to_coord[i]
 				maximum_l_inverse[coord[0], coord[1]] = model.q[i].value
+
+	model.pprint()
 
 	if maximum_l_inverse is None:
 		return False, False
