@@ -76,31 +76,29 @@ These algorithm are of practical importance when problems have uncertain time co
 
 \subsection{Notation}
 
- that depend on the iteration will be subscripted by $k$.
-For example, the $k$-th iterate is given by $\iteratek$, and the $\modelk$.
+Any variables that depend on the iteration will be super-scripted by $k$.
+For example, the $k$-th iterate is given by $\iteratek$, and the model of the objective is given by $\modelk$.
 The $i$ row of the matrix $A$ is denoted $A_i$, while the $i$-th column is denoted $A_{\bullet i}$.
-$\tau$ is used as a threshold.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts.
-Matrices are capital.
-Sets are capital italic.
-
+Matrices are capital, while sets are capital italic.
+We will use $e_i$ to denote is the unit vector.
 $\domain$ is the domain.
-$\modelk$ is a model function of the objective at iteration $k$.
-$e_i$ is the unit vector.
+$B_k(c; \Delta)$ is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm.
+Finally, $\delta_{i,j}$ is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$.
 
-$c_i$ are the constraints $\forall i \in \mathcal{I} \cup \mathcal{E} $.
+
 $\modelconstrainti$ is the model of constraint $i$ at iteration $k$.
 
+
+
+$\tau$ is used as a threshold.
+$c_i$ are the constraints $\forall i \in \mathcal{I} \cup \mathcal{E} $.
 $\mathcal{I}$ is the index set of the inequality constraints.
 $\mathcal{E}$ is the index set of the equality constraints.
-
 $Y$ is the set of sample points.
 $\trialk$ is the trial point in iteration $k$.
 $\chik$ is the criticality measure in iteration $k$.
 $\feasible$ is the feasible region.
-$B_k(c; \Delta)$ is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm.
-$\delta_{i,j}$ is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$.
-
 
 
 \subsection{Model-based Trust Region Methods}
@@ -1054,3 +1052,18 @@ Notice that with two line segments, the algorithm can already choose new centers
     \caption{Ellipse runs away from the optimizer}
     \label{line_can_run}
 \end{figure}
+
+
+
+
+\subsection{}
+We still experienced a problem with iterates coming too close to the boundary of the feasible region.
+Another way of dealing with this is to shift the constraints closer to the current iterate.
+Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
+Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A\iteratek$.
+Before doing this, the rows of $A$ are normalized.
+This produces the buffered segment searches withing the results.
+
+
+
+
