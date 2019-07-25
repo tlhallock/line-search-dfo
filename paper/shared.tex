@@ -186,13 +186,13 @@ Such applications include photo-injector optimization \cite{1742-6596-874-1-0120
 
 \paragraph{Constrained derivative free algorithms}
 To address the rise in these applications, new algorithms are being developed such as \cite{doi:10.1080/10556788.2015.1026968} which is an algorithm similar to the one presented here, but the sample points are not always feasible.
-\cite{Tröltzsch2016} presents another similar algorithm for equality based constraints.
+\cite{Troltzsch2016} presents another similar algorithm for equality based constraints.
 \cite{infeasiblestarting} presents an algorithm which accepts an infeasible starting point.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
 
 \paragraph{Subproblems}
 Some work has been done within trust region algorithms to improve the update policy \cite{Kamandi2017}.
-Also, \cite{Verdério2017} and \cite{doi:10.1080/10556780802409296} discuss geometric conditions of the sample points required for global convergence.
+Also, \cite{Verderio2017} and \cite{doi:10.1080/10556780802409296} discuss geometric conditions of the sample points required for global convergence.
 Finally, \cite{AMAIOUA201813} uses a mesh adaptive search to solve quadratic subproblems.
 
 
@@ -1053,17 +1053,18 @@ The algorithm then repeats the following process for $i$ from $1$ to $n_{\text{p
 First, compute the set of nearest constraints, where the distance from a point $x$ to a constraint $A_i$ is given by $d(A_i, x) = \frac {|A_i x - b|}{\|A_i\|}$.
 While finding the next point $s_{i+1}$, let  $A_E$ be a normalized array of the equidistant faces $\{\frac{A_i}{\|A_i\|} | d(A_i, s_i) = \min_j d(A_j, s_i), i = 1, 2, \ldots, m\}$ and $b_E$ be the rows' corresponding values of $b$.
 All other faces are called the remaining faces, and construct the matrix $A_R$ and vector $b_R$.
-It then finds a search direction $r{A_E}^T$ as a linear combination of the normal vectors to the equidistant faces.
-When the constraint violation of $s_i$ is non-zero, this search ray can be found by finding the point that doubles the current slack ${A_E}s_i-{b_E}$.
-This is given by $r{A_E}^T$ where $r$ solves the linear system ${A_E}(s_i + r{A_E}^T) - b_E = 2 ({A_E}n_i - b_E)$.
-If the current violation is zero, then the right hand side can be set to a vector of all ones to ensure that all slacks violations are the same: $A_E(s_i + r{A_E}^T) - b_E = 1$.
+It then finds a search direction $p  = r{A_E}^T$ as a linear combination of the normal vectors to the equidistant faces.
+%When the constraint violation of $s_i$ is non-zero, this search ray can be found by finding the point that doubles the current slack ${A_E}s_i-{b_E}$.
+%This is given by $r{A_E}^T$ where $r$ solves the linear system ${A_E}(s_i + r{A_E}^T) - b_E = 2 ({A_E}n_i - b_E)$.
+%If the current violation is zero, then the right hand side can be set to a vector of all ones to ensure that all slacks violations are the same: $A_E(s_i + r{A_E}^T) - b_E = 1$.
+This search ray can be found by setting the slack to each equidistant face to a vector of all ones: $A_E(s_i + r{A_E}^T) - b_E = 1$.
 We can travel along this ray until we reach a point that is the same distance to a remaining face.
 Specifically, we can travel by 
 \begin{align}
-t = \argmin_j {\frac{d({A_E}_0, s_i) - d({A_R}_j, s_i)}{ ({A_R}_j - d({A_E}_0) r{A_E}^T} | ({A_R}_j - d({A_E}_0) r{A_E}^T > 0 }. 
+t = \argmin_j {\frac{d({A_E}_0, s_i) - d({A_R}_j, s_i)}{ ({A_R}_j - d({A_E}_0) p} | ({A_R}_j - d({A_E}_0) p > 0 }. 
 \end{align}
 
-We can then set $s_{i+1} = s_{i} + tr{A_E}^T$.
+We can then set $s_{i+1} = s_{i} + t p$.
 
 Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order for this to be defined.
 Also, the algorithm must stop early if $A_E$ contains parallel faces.
