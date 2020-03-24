@@ -38,31 +38,112 @@ There exists an $\epsilon > 0$ such that $\alpha_1(x) > \epsilon$ for all $x \in
 \end{proof}
 
 
-\begin{theorem}
-Let $\dbuf \in (0, 1)$.
-If $\dk^3 \le \frac {1}{2\epsilon_f}\dbuf\alpha_1(\modelconstraint, \xk)$, then 
+During iteration $k$, define
 \begin{align*}
-B_{\infty}(\xk, \dk)\cap C\left(\xk, \hfeasdir(\xk), (1-\dbuf)\alpha_1(\modelconstraint, \xk)\right) \subseteq \feasible.
+u^{(k)} = \hfeasdir(\modelconstraint, \iteratekpone) \\
+\alpha_1^k = \alpha_1(\modelconstraint, \iteratekpone) \\
+\alpha_2^k = \alpha_2(\modelconstraint, \iteratekpone) \\
+\mathcal A_k = \mathcal A(\modelconstraint, \iteratekpone) \\
+C_k = C\left(\iteratekpone + \dbuf\dk u^{(k)}, u^{(k)}, \abuf\alpha_1^k\right). \\
 \end{align*}
+
+\begin{theorem}
+Let $\dbuf \in (0, 1), \abuf \in (0, 1)$.
+If
+\begin{align*}
+\dk \le \min\left\{
+\sqrt{\frac{(1 - \abuf) \alpha_1^k}{\epsilon_g(1 + \abuf\alpha_1^k)}},
+\sqrt{\alpha_1^k \left(\epsilon_g + \frac{\epsilon_f}{\dbuf}\right)^{-1}}
+\right\},
+\end{align*}
+then $B_{\infty}(\iteratekpone, \dk)\cap C_k \subseteq \feasible.$
 \end{theorem}
 
 \begin{proof}
-Let $y = \xk + t\hfeasdir(\xk) + s \in B_{\infty}(\xk, \dk)\cap C\left(\xk, \hfeasdir(\xk), (1-\dbuf)\alpha_1(\modelconstraint, \xk)\right)$ so that $\|s\| \le t(1-\dbuf)\alpha_1(\modelconstraint; \xk)$.
-Let $i \in \mathcal A (\modelconstraint, \xk)$ be arbitrary.
-We know that there exists a $v\in\mathbb R^n$ with $\|v_i\|=1$ such that
+
+
+Let $y \in B_{\infty}(\iteratekpone, \dk)\cap C_k$, so that
 \begin{align*}
-c_i(y) = m_{c_i}(y) + \epsilon_f \dk^3 v_i
+y = \iteratekpone + \dbuf\dk u^{(k)} + tu^{(k)} + s \\
+\|s\| \le t \abuf\alpha_1^k \\
+s^Tu^{(k)} = 0.
+\end{align*}
+Let $i \in \mathcal A_k$ be arbitrary.
+We know that there exist $\mu,\nu^i\in\mathbb R^n$ with $|\mu_j| \le 1\forall j, \|\nu^i\|\le 1$ such that
+\begin{align*}
+c_i(\iteratekpone) = m_{c_i}(\iteratekpone) + \epsilon_f \dk^3 \mu^i \\
+\nabla c_i(y) = \nabla m_{c_i}(y) + \epsilon_g \dk^2 \nu^i
 \end{align*}
 
 
+By the assumptions,
+\begin{align*}
+\dk \le \sqrt{\frac{(1 - \abuf) \alpha_1^k}{\epsilon_g(1 + \abuf\alpha_1^k)}}\\
+\dk^2  \le \frac{(1 - \abuf) \alpha_1^k}{\epsilon_g(1 + \abuf\alpha_1^k)}\\
+\epsilon_g \dk^2 (1 + \abuf\alpha_1^k) \le (1 - \abuf) \alpha_1^k\\
+-t(1 - \abuf) \alpha_1^k + \epsilon_g t\dk^2 (1 + \abuf\alpha_1^k) \le 0.
+\end{align*}
+
+From there,
+\begin{align*}
+\nabla \hat c_{i}^T(\iteratekpone)(tu^{(k)} + s) = 
+\nabla \hat {m_c}_{i}^T(tu^{(k)} + s) + \epsilon_g \dk^2 {\nu^i}^T(tu^{(k)} + s) \\
+=t\nabla \hat {m_c}_{i}^Tu^{(k)} + \nabla \hat {m_c}_{i}^Ts + \epsilon_g \dk^2 (t + \|s\|) \\
+\le -t \alpha_1^k + \|s\| + \epsilon_g \dk^2 (t + t \abuf\alpha_1^k) \\
+\le -t \alpha_1^k + t \abuf \alpha_1^k  + \epsilon_g t\dk^2 (1 + \abuf\alpha_1^k) \\
+\le -t(1 - \abuf) \alpha_1^k  + \epsilon_g t\dk^2 (1 + \abuf\alpha_1^k) \le 0.
+\end{align*}
+
+
+% \begin{align*}
+% \nabla m_{c_i}^T(\iteratekpone)u^{(k)} \le \max_i \nabla m_{c_i}^T(\iteratekpone)u^{(k)} \\
+% -\nabla m_{c_i}^T(\iteratekpone)u^{(k)} \ge -\max_i \nabla m_{c_i}^T(\iteratekpone)u^{(k)} \\
+% -\nabla m_{c_i}^T(\iteratekpone)u^{(k)} \ge \alpha_1^k \\
+% \alpha_1^k \le -\nabla m_{c_i}^T(\iteratekpone)u^{(k)}\label{aaaaaaaa_1}. \\
+% \end{align*}
+
+Also by the assumptions,
+\begin{align*}
+\dk \le \sqrt{\alpha_1^k \left(\epsilon_g + \frac{\epsilon_f}{\dbuf}\right)^{-1}} \\
+\dk^2 \le \alpha_1^k \left(\epsilon_g + \frac{\epsilon_f}{\dbuf}\right)^{-1} \\
+\dk^2(\epsilon_g + \frac{\epsilon_f}{\dbuf}) \le \alpha_1^k \le -\nabla m_{c_i}^T(\iteratekpone)u^{(k)}\\
+\nabla m_{c_i}^T(\iteratekpone)u^{(k)} + \dk^2(\epsilon_g + \frac{\epsilon_f}{\dbuf}) \le 0\\
+\dbuf\nabla m_{c_i}^T(\iteratekpone)u^{(k)} + \dk^2(\epsilon_g \dbuf + \epsilon_f) \le 0.
+\end{align*}
+
+From there,
+
 
 \begin{align*}
-\nabla \hat c_{\mathcal A(\xk)}^T(y - \xk) = \nabla \hat {m_c}_{\mathcal A(\modelconstraint, \xk)}^T(t\hfeasdir(\xk) + s) + \epsilon_f \dk^3 v^T(t\hfeasdir(\xk) + s) \\
-\le t \nabla \hat {m_c}_{\mathcal A(\modelconstraint, \xk)}^T\hfeasdir(\xk) + \nabla \hat {m_c}_{\mathcal A(\modelconstraint, \xk)}^T s + \epsilon_f \dk^3(t + \|s\|) \\
-\le \|s\| - t \alpha_1(\modelconstraint, \xk)+ 2\epsilon_f \dk^4\\
-\le t(1-\dbuf)\alpha_1(\modelconstraint, \xk) - t \alpha_1(\xk)+ 2\epsilon_f \dk^4\\
-\le -t\dbuf\alpha_1(\modelconstraint, \xk) + 2\epsilon_f \dk^4 \\
+\epsilon_f \dk^3 \mu_i + \nabla {c}^T_{i}(\iteratekpone)\dbuf\dk u^{(k)} = 
+\epsilon_f \dk^3 \mu_i + (\nabla m_{c_i}(\iteratekpone) + \epsilon_g \dk^2 \nu^i)^T\dbuf\dk u^{(k)} \\
+= \epsilon_f \dk^3 \mu_i + \dbuf\dk\nabla m_{c_i}^T(\iteratekpone)u^{(k)}  + \epsilon_g \dk^3 \dbuf {\nu^i}^Tu^{(k)} \\
+\le \dk\left(\dbuf\nabla m_{c_i}^T(\iteratekpone)u^{(k)} + \dk^2(\epsilon_g \dbuf + \epsilon_f)\right) \le 0.
 \end{align*}
+
+
+Finally,
+\begin{align*}
+c_{\mathcal A_k}(y) = c_{\mathcal A_k}(\iteratekpone) + \nabla {c}^T_{\mathcal A_k}(\iteratekpone)(y - \iteratekpone) + \xi \\
+= m_{c_{\mathcal A_k}}(\iteratekpone) + \epsilon_f \dk^3 \mu^{\mathcal A_k} + \nabla {c}^T_{\mathcal A_k}(\iteratekpone)(y - \iteratekpone) + \xi \\
+= \epsilon_f \dk^3 \mu^{\mathcal A_k} + \nabla {c}^T_{\mathcal A_k}(\iteratekpone)(y - \iteratekpone) + \xi \\
+= \epsilon_f \dk^3 \mu^{\mathcal A_k} + \nabla {c}^T_{\mathcal A_k}(\iteratekpone)\dbuf\dk u^{(k)} + 
+\|\nabla {c}^T_{\mathcal A_k}(\iteratekpone)\| \nabla \hat{c}^T_{\mathcal A_k}(\iteratekpone)(tu^{(k)} + s) + \xi  \\
+\le \xi.
+\end{align*}
+% \nabla \hat {c}_{\mathcal A_k}(\iteratekpone)^T(\dbuf\dk u^{(k)} + tu^{(k)} + s) = 
+
+% 
+% \begin{align*}
+% \nabla \hat c_{\mathcal A_k}^T(y - \iteratekpone) = 
+% \nabla \hat {m_c}_{\mathcal A_k}^T(\dbuf\dk u^{(k)} + tu^{(k)} + s) + \epsilon_f \dk^3 \nu^T(\dbuf\dk u^{(k)} + tu^{(k)} + s) \\
+% \le \nabla \hat {m_c}_{\mathcal A_k}^T(\dbuf\dk u^{(k)} + tu^{(k)} + s) + \epsilon_f \dk^3 \nu^T(\dbuf\dk u^{(k)} + tu^{(k)} + s) \\
+% \end{align*}
+
+% \le t \nabla \hat {m_c}_{\mathcal A(\modelconstraint, \xk)}^T\hfeasdir(\xk) + \nabla \hat {m_c}_{\mathcal A(\modelconstraint, \xk)}^T s + \epsilon_f \dk^3(t + \|s\|) \\
+% \le \|s\| - t \alpha_1(\modelconstraint, \xk)+ 2\epsilon_f \dk^4\\
+% \le t(1-\dbuf)\alpha_1(\modelconstraint, \xk) - t \alpha_1(\xk)+ 2\epsilon_f \dk^4\\
+% \le -t\dbuf\alpha_1(\modelconstraint, \xk) + 2\epsilon_f \dk^4 \\
 
 \end{proof}
 
