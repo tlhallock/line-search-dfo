@@ -346,41 +346,48 @@ c_i(y) - \frac 1 2 (y - \xk)^T\nabla^2c_i(\xi) (y - \xk) = c_i(\xk) + \nabla c_i
 
 
 \begin{align*}
-\dk^{1 - p} \le \frac{\alpha}{\sqrt{2}\epsilon_{g}}\|\nabla c_i(\xk)\|^2\\
-\dk^{2-p} \le \frac{\alpha}{\sqrt{2}\epsilon_{g}}\frac{\|\nabla m_{c_i}(\xk)\|}{|m_{c_i}(\xk)|}\|\nabla c_i(\xk)\|^2 
-\le \frac{\alpha}{\sqrt{2}\epsilon_{g}}\dk\|\nabla c_i(\xk)\|^2\\
+\dk^{\frac 1 2} \le \frac{\alpha+\delta}{\sqrt{2}\epsilon_{g}}\|\nabla c_i(\xk)\|^2\\
+\dk^{2} \le \dk^{\frac 1 2}\frac{\alpha+\delta}{\sqrt{2}\epsilon_{g}}\dk\|\nabla c_i(\xk)\|^2 \\
+\dk^{2} \le\dk^{\frac 1 2} \frac{(\alpha + \delta)}{\sqrt{2}\epsilon_{g}}\frac{\|\nabla m_{c_i}(\xk)\|}{|m_{c_i}(\xk)|}\|\nabla c_i(\xk)\|^2\\
 2\epsilon_{g}^2\dk^4
-\le \dk^{2p} \alpha^2\frac{\|\nabla m_{c_i}(\xk)\|^2}{|m_{c_i}(\xk)|^2}\|\nabla c_i(\xk)\|^4\\
+\le (\dk^{\frac 1 2}(\alpha + \delta))^2\frac{\|\nabla m_{c_i}(\xk)\|^2}{|m_{c_i}(\xk)|^2}\|\nabla c_i(\xk)\|^4\\
 \epsilon_{g}^2\dk^4
 +\left\|\|\nabla m_{c_i}(\xk)\|^2 - \|\nabla m_{c_i}(\xk)\|^2 + \epsilon_{g}\dk^2\|\nu \|^2 \right\|^2
-\le \dk^{2p} \alpha^2\frac{\|\nabla m_{c_i}(\xk)\|^2}{|m_{c_i}(\xk)|^2}\|\nabla c_i(\xk)\|^4\\
-\le \dk^{2p} \frac{\alpha^2}{|m_{c_i}(\xk)|^2}\|\nabla m_{c_i}(\xk)\|^4\|\nabla c_i(\xk)\|^4\\
+\le (\dk^{\frac 1 2}(\alpha + \delta))^2\frac{\|\nabla m_{c_i}(\xk)\|^2}{|m_{c_i}(\xk)|^2}\|\nabla c_i(\xk)\|^4\\
 \|\nabla m_{c_i}(\xk)\|^2\left\|\nabla c_i(\xk) - \nabla m_{c_i}(\xk)\right\|^2
 +\|\nabla m_{c_i}(\xk)\|^2\left|\|\nabla m_{c_i}(\xk)\|^2 - \|\nabla c_i(\xk)\|^2
 \right|^2\\
-\le \dk^{2p} \frac{\alpha^2}{|m_{c_i}(\xk)|^2}\|\nabla m_{c_i}(\xk)\|^4\|\nabla c_i(\xk)\|^4\\
+\le \frac{(\dk^{\frac 1 2}(\alpha + \delta))^2}{|m_{c_i}(\xk)|^2}\|\nabla m_{c_i}(\xk)\|^4\|\nabla c_i(\xk)\|^4\\
 \left\|\nabla c_i(\xk)\|\nabla m_{c_i}(\xk)\|^2 - \nabla m_{c_i}(\xk)\|\nabla m_{c_i}(\xk)\|^2\right\|^2
 +\left\|\nabla m_{c_i}(\xk)\|\nabla m_{c_i}(\xk)\|^2 - \nabla m_{c_i}(\xk)\|\nabla c_i(\xk)\|^2
 \right\|^2\\
-\le \dk^p \frac{\alpha}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
+\le \frac{\dk^{\frac 1 2}(\alpha + \delta)}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
 \left\|\nabla c_i(\xk)\|\nabla m_{c_i}(\xk)\|^2 - \nabla m_{c_i}(\xk)\|\nabla m_{c_i}(\xk)\|^2
 +\nabla m_{c_i}(\xk)\|\nabla m_{c_i}(\xk)\|^2 - \nabla m_{c_i}(\xk)\|\nabla c_i(\xk)\|^2
 \right\|\\
+\le  \frac{(\dk^{\frac 1 2}(\alpha + \delta))^2}{|m_{c_i}(\xk)|^2}\|\nabla m_{c_i}(\xk)\|^4\|\nabla c_i(\xk)\|^4\\
 \left\|\nabla c_i(\xk)\|\nabla m_{c_i}(\xk)\|^2 -
 \nabla m_{c_i}(\xk)\|\nabla c_i(\xk)\|^2
-\right\| \le \dk^p \frac{\alpha}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
+\right\| \le \frac{\dk^{\frac 1 2}(\alpha + \delta)}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
 \left\|\nabla c_i(\xk)\|\nabla m_{c_i}(\xk)\|^2 -
 \nabla m_{c_i}(\xk)\|\nabla c_i(\xk)\|^2
-\right\| \le \dk^p \frac{\alpha}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
+\right\| \le \frac{\dk^{\frac 1 2}(\alpha + \delta)}{|m_{c_i}(\xk)|}\|\nabla m_{c_i}(\xk)\|^2\|\nabla c_i(\xk)\|^2\\
 \left\|\frac{\nabla c_i(\xk)}{\|\nabla c_i(\xk)\|^2} -
 \frac{\nabla m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|^2}
-\right\| \le \dk^p \frac{\alpha}{|m_{c_i}(\xk)|}\\
+\right\| \le \frac{\dk^{\frac 1 2}(\alpha + \delta)}{|m_{c_i}(\xk)|}\\
 \|
 \xk - \frac{c_i(\xk)}{\|\nabla c_i(\xk)\|^2}\nabla c_i(\xk) -
 \xk + \frac{m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|^2}\nabla m_{c_i}(\xk)
-\| \le \alpha \dk^p \\
+\| \le \dk^{\frac 1 2}(\alpha + \delta)\\
 \end{align*}
 
+
+\begin{theorem}
+Let $c_i$ be a constraint that intersects $B_{\infty}(\xk, \dk)$.
+\end{theorem}
+
+\begin{proof}
+\end{proof}
 
 
 % \begin{align*}
