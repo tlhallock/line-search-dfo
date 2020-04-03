@@ -255,7 +255,71 @@ Thus, $B(\xk, \dk) \cap \fcko \subseteq B(\xk, \dk) \cap \left(\cap_i \fik \righ
 \end{proof}
 
 
-\color{red}
+
+
+
+\color{black}
+
+
+
+
+\begin{theorem}
+Let $r \le \delta$.
+Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
+\end{theorem}
+
+
+
+
+\begin{proof}
+Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
+First, note that
+\begin{align*}
+\Longrightarrow (e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
+\Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
+\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - \left((e_1^Tx)^2 - 2e_1^Tx\delta + \delta^2\right) \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2 \le (e_1^Tx)^2.
+\end{align*}
+
+We use this inequality to show:
+\begin{align*}
+f_e(\delta, r, \theta, x) \le 0 \\
+\Longrightarrow (x - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}R\bigg)(x - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}R\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 \\
+\Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
+\Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta
+\end{align*}
+\end{proof}
+
+
+Because $\fcko$ is feasible, and $\xk \in \fcko$ we know that $ \fcki $ is feasible.
+But then, for any $\delta > 0$, the set is also feasible:
+\begin{align*}
+B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk)) \le 0\}
+\end{align*}
+Choose $\delta$ so that this hits the edge of the trust region.
+
+
+
+
+
+
+
+
 \begin{theorem}
 \end{theorem}
 
@@ -385,71 +449,6 @@ Because $E \subset P$, we also know that $f(\bar x) \ge 1$ for each $i$. Thus,
 % \Longrightarrow \alpha_i ^2 n_i^{T} Q n_i + 2\alpha r_ i^{T} Q n_i + r_ i^TQr_ i \ge 2 \\
 
 \end{proof}
-
-
-
-
-
-
-
-
-\color{black}
-
-
-
-
-\begin{theorem}
-Let $r \le \delta$.
-Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
-\end{theorem}
-
-
-
-
-\begin{proof}
-Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
-First, note that
-\begin{align*}
-\Longrightarrow (e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
-\Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
-\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
-\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
-\Longrightarrow \frac 1 2 \delta^2 - \left((e_1^Tx)^2 - 2e_1^Tx\delta + \delta^2\right) \le (e_1^Tx)^2 \\
-\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2 \le (e_1^Tx)^2.
-\end{align*}
-
-We use this inequality to show:
-\begin{align*}
-f_e(\delta, r, \theta, x) \le 0 \\
-\Longrightarrow (x - \delta e_1)^T\bigg(\begin{bmatrix}
-1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}R\bigg)(x - \delta e_1) \le \frac 1 2 r^2 \\
-\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1)^T\bigg(\begin{bmatrix}
-1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}R\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1) \le \frac 1 2 r^2 \\
-\Longrightarrow
-(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 r^2 \\
-\Longrightarrow
-(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 \\
-\Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
-\Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
-\Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
-\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta
-\end{align*}
-\end{proof}
-
-
-Because $\fcko$ is feasible, and $\xk \in \fcko$ we know that $ \fcki $ is feasible.
-But then, for any $\delta > 0$, the set is also feasible:
-\begin{align*}
-B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk)) \le 0\}
-\end{align*}
-Choose $\delta$ so that this hits the edge of the trust region.
-
-
-
 
 
 
