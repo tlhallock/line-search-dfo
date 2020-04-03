@@ -3,12 +3,13 @@
 \newcommand{\hgik}{{{\hat g}^{(i, k)}}}
 \newcommand{\zik}{{z^{(i, k)}}}
 \newcommand{\fik}{{\mathcal F_{i, k}}}
-\newcommand{\iik}{{\mathcal I_{i, k}}}
+\newcommand{\iik}{{\mathcal I_{k}}}
 \newcommand{\uk}{{u^{(k)}}}
 \newcommand{\huk}{{{\hat u}^{(k)}}}
 \newcommand{\ask}{{\alpha^{(\star, k)}}}
 \newcommand{\bsk}{{\beta^{(\star, k)}}}
 \newcommand{\fcko}{{\mathcal {F}^{\text{outer}}_k}}
+\newcommand{\fcki}{{\mathcal {F}^{\text{inner}}_k}}
 \newcommand{\rn}{{\mathbb R^{n}}}
 \newcommand{\xsk}{{x^{(\star, k)}}}
 \newcommand{\bxk}{{\bar{x}^{(k)}}}
@@ -23,8 +24,8 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 \gik = \nabla m_{c_i}(\xk) \\ 
 \hgik = \frac{\gik}{\|\gik\|} \\
 \zik = \xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik \\
-\fik = \left\{x \in \rk | x = z^i - \alpha \dk^{\frac 1 2}\hgik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2\right\} \\
-\iik = \{1\le i \le m | \quad\color{red} |m_{c_i}(\xk)| \le \dk\|\nabla m_{c_i}(\xk)\|\color{black}\} \\
+\fik = \left\{x \in \rk | x = z^i - \alpha \dk^{\frac 3 2}\hgik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2\right\} \\
+\iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \\
 \uk = -\nabla \hat m_{c_{\mathcal I}}(\xk)^T\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} e\\
 \huk = \frac {\uk} {\| \uk\|}\\
 \theta^{\text{min}}_k = \min_{i \in \mathcal I} (-\hgik)^T \huk \\
@@ -33,7 +34,14 @@ m_{\mathcal I}(\xk) + \nabla m_{\mathcal I}(\xk)^T (\xsk - \xk) = 0 \\
 \ask = \frac{1 + \alpha}{\theta^{\text{min}}_k} \\
 \bsk = \beta\dk^2 \theta^{\text{max}}_k + \sqrt{(1 - \dk^4\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \\
 \fcko = \{x \in \rn | \quad x = \xsk + \ask\dk^{\frac 1 2}\huk + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \} \\
+\fcki = \{x \in \rn | \quad x = \xk + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \} \\
 \bxk = \xsk + (\huk)^T(\xk - \xsk)\huk\\
+g_{\text{low}} \le \|\gik\| \le g_{\text{hi}} \\
+f_e(\delta, r, \theta; x) = (x - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(x - \delta e_1) - \frac 1 2 r^2 \\
+R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I \\
 \end{align*}
 
 \subsection{Derivation of feasible ellipse}
@@ -95,18 +103,45 @@ This implies that $1 = \|\hat y\| = \|x^{\star} + v\| > \|x^{\star}\| = 1$.
 
 
 \begin{theorem}
-There exists an $\epsilon > 0$, such that if $\dk < \epsilon$ and \color{red}$|m_{c_i}(\xk)| \le \dk\|\nabla m_{c_i}(\xk)\|$ \color{black},
+There exists an $\epsilon > 0$, such that if $\dk < \epsilon$ and $z^{(i, k)} \in B_{\infty}(\xk, \dk))$,
 then $\fik \cap B_{\infty}(\xk, \dk) \subseteq \f$.
 
-(Should be $z^{(i, k)} \in B_{\infty}(\xk, \dk))$.)
 \end{theorem}
 
 \begin{proof}
-Let $y = z^i - \alpha \dk^{\frac 1 2}\hgik + t s \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
+Let $y = z^i - \alpha \dk^{\frac 3 2}\hgik + t s \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
 There exists a $\nu \in \rn$, $\|\nu\|=1$ such that 
 \begin{align*}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
 \end{align*}
+
+
+\begin{align*}
+\dk \le \sqrt{\frac{\sqrt{n}}{\epsilon_gg_{\text{hi}}}} \\
+\dk^2 \le \frac{\sqrt{n}}{\epsilon_g\|\gik\|} \\
+\epsilon_g\dk^2 \le \frac{2\sqrt{n}}{\|\gik\|} - \frac{\sqrt{n}}{\|\gik\|} \\
+\sqrt{n}\frac{1}{\|\gik\|} \le \frac{2\sqrt{n}}{\|\gik\|}  - \epsilon_g\dk^2 \\
+\sqrt{n}\frac{\dk}{\|\gik\|} \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk \|\gik\| - \epsilon_g\dk^3 \\
+|m_{c_i}(\xk)| \le \frac{2\sqrt{n}}{\|\gik\|^2} \|\gik\| - \epsilon_g\dk^3 \\
+|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2} \|\gik\|^2 + \epsilon_g\dk^3\nu^T\gik \\
+|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2} \dk(\gik + \epsilon_g\nu\dk^2)^T \gik\\
+|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk \nabla c_i(\xk) ^T \gik\\
+\|\xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik- \xk\| \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk  \le \frac{2\sqrt{n}}{g_{\text{low}}^2}\dk \\
+\end{align*}
+
+We also know that there is an $M$ such that
+\begin{align*}
+\left\|\xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik\right\| \le M\left\|\xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik- \xk\right\|^2
+\le \frac{4Mn}{g_{\text{low}}^4}\dk^2
+\end{align*}
+
+
+
+% |m_{c_i}(\xk)| \le \dk^2\left(\delta \|\gik\| + \epsilon_g\right) \\
+% \frac{|m_{c_i}(\xk)|}{\|\gik\|} \le \dk^2\left(\delta + \frac{\epsilon_g}{\|\gik\|}\right) \\
+% \sqrt{n}\dk \le \dk^2\left(\delta + \frac{\epsilon_g}{\|\gik\|}\right) \\
+% \sqrt{n} \le \dk\left(\delta + \frac{\epsilon_g}{\|\gik\|}\right) \\
+% \dk \ge\frac{\sqrt{n}}{\delta + \frac{\epsilon_g}{\|\gik\|}} \\
 
 \color{red}
 TODO, I should be able to prove it using the following two inequalities:
@@ -329,6 +364,11 @@ t_i = \frac{-\alpha \pm \sqrt{\alpha_i^2 - 4\alpha_i^2()}}{2\alpha_i^2} \\
 
 Plugging in,
 \begin{align*}
+f_e(x) = (x - x^{\star} - \|\bar x - x^{\star} \|\hat u)^T\bigg(R^T\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \alpha^{-2} \boldsymbol I \\
+\end{bmatrix}R\bigg)(x - x^{\star} - \|\bar x - x^{\star} \|\hat u) - \frac 1 2 r^2 \\
+E = \{x \in \mathbb R^n | f(x) \le 0\} \\
 t_in_i + r_i = \lambda_i \left[\alpha_i Q^{-1} n_i - Q^{-1}r_i \right] \quad \forall 1\le i\le m \\
 t_in_i + r_i = (\|r_i\|^2  + \alpha_i t_i)\frac{\alpha_i Q^{-1} n_i - Q^{-1}r_i}{\alpha^2 n_i^TQ^{-1} n_i - r_i^T Q^{-1}r_i} \quad \forall 1\le i\le m \\
 \frac{\bar x}{\|\bar x\|} = \frac{\alpha_i Q^{-1} n_i - Q^{-1}r_i}{\alpha^2 n_i^TQ^{-1} n_i - r_i^T Q^{-1}r_i} \quad \forall 1\le i\le m \\
@@ -377,3 +417,77 @@ Because $E \subset P$, we also know that $f(\bar x) \ge 1$ for each $i$. Thus,
 % \Longrightarrow \alpha_i ^2 n_i^{T} Q n_i + 2\alpha r_ i^{T} Q n_i + r_ i^TQr_ i \ge 2 \\
 
 \end{proof}
+
+
+
+
+
+
+
+
+\color{black}
+
+
+
+
+\begin{theorem}
+Let $r \le \delta$.
+Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
+\end{theorem}
+
+
+
+
+\begin{proof}
+Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
+First, note that
+\begin{align*}
+\Longrightarrow (e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
+\Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
+\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - \left((e_1^Tx)^2 - 2e_1^Tx\delta + \delta^2\right) \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2 \le (e_1^Tx)^2.
+\end{align*}
+
+We use this inequality to show:
+\begin{align*}
+f_e(\delta, r, \theta, x) \le 0 \\
+\Longrightarrow (x - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}R\bigg)(x - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}R\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 \\
+\Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
+\Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta
+\end{align*}
+\end{proof}
+
+
+Because $\fcko$ is feasible, and $\xk \in \fcko$ we know that $ \fcki $ is feasible.
+But then, for any $\delta > 0$, the set is also feasible:
+\begin{align*}
+B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk)) \le 0\}
+\end{align*}
+Choose $\delta$ so that this hits the edge of the trust region.
+
+
+
+
+
+
+
+
+
+
+
+
