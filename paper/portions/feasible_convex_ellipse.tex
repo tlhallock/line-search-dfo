@@ -61,26 +61,34 @@ We have $\theta^{\text{min}} > 0$ and $\theta^{\text{max}} < 1$.
 \end{theorem}
 
 \begin{proof}
-Because the constraints are uniformly linearly independent, we know that there is an $\epsilon > 0$ such that for all $1 \le i, j \le m$, $i\ne j$ we have 
+We give $\nabla m_{c_{\mathcal I} }(\xk)$ its singular value decomposition $\nabla \hat m_{c_{\mathcal I} }(\xk) = U\Sigma V^T$.
+Note that the singular values of $\nabla c(\xk)$ are bounded away from zero, and $ \nabla \hat m_{c_{\mathcal I} }(\xk) \to \nabla c(\xk)$ as $\dk\to 0$,
+so that for sufficiently large $k$, we have that $\Sigma > 0$.
+First, we compute
 \begin{align*}
-1 - (\hgik)^T \hat g^{(j, k)} \ge \epsilon \\
+\nabla \hat m_{c_{\mathcal I} }(\xk)^T \uk = -\nabla\hat m_{c_{\mathcal I} }(\xk)^T\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\\
+= -(U\Sigma V^T)^T((U\Sigma V^T)(U\Sigma V^T)^T)^{-1}(U\Sigma V^T)e \\
+= -V\Sigma U^TU\Sigma^{-2} U^TU\Sigma V^Te \\
+= -V\Sigma \Sigma^{-2} \Sigma V^Te \\
+= -V V^Te = -e
 \end{align*}
-\color{red}
-This (somehow) means that 
+and
 \begin{align*}
-\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} e \ge 0
+\|\uk\| = \|-\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\|\\
+=\|\left((U\Sigma V^T)(U\Sigma V^T)^T\right)^{-1}(U\Sigma V^T)e\| \\
+=\|U\Sigma^{-2} U^TU\Sigma V^Te \| \\
+=\|U\Sigma^{-1} V^Te\|  \\
+\le \frac 1 {\sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\right)}.
 \end{align*}
-and $\huk$ is written as a linear combination of the negative gradients.
+
+Then we can see that
 \begin{align*}
-1 - (\huk)^T (-\hat g^{(j, k)}) \ge \epsilon_2 \\
-\Longrightarrow (\huk)^T \hat g^{(j, k)} \le 1 - \epsilon
+(-\gik)^T\huk = -\frac{\|\gik\|}{\|\uk\|}(\hgik)^T\uk = \frac{\|\gik\|}{\|\uk\|} \ge g_{\text{low}} \sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\right). \\
 \end{align*}
-Need:
-\begin{align*}
-(-\hgik)^T \huk \ge \epsilon\\
-\theta^{\text{min}}_k \ge \epsilon \\
-\end{align*}
-\color{black}
+
+% -A^T(AA^T)^{-1}Ae = \\
+
+
 \end{proof}
 
 
@@ -537,7 +545,7 @@ B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk))
 Choose $\delta$ so that this hits the edge of the trust region.
 
 
-
+\color{black}
 
 
 \begin{theorem}
@@ -564,7 +572,8 @@ Let
 g_i(\bar x) = \frac 1 2 \beta_i^2\|\bar x - \bar c_i\|^2 - \frac 1 2 \left((\bar x - \bar c_i)^Tn_i\right)^2 \\
 g_i(\bar x) \le 0 
 \Longrightarrow \beta_i^2\|\bar x - \bar c_i\|^2 \le \left((\bar x - \bar c_i)^Tn_i\right)^2 \Longrightarrow n_i^T\frac{\bar x - \bar c_i}{\|\bar x - \bar c_i\|}\ge \beta_i \\
-\nabla g_i(\bar x) = \beta(\bar x - \bar c_i) - n_in_i^T(\bar x - \bar c_i) = (\beta I - n_i n_i^T) \bar x + (1 - \beta) \bar c_i
+\nabla g_i(\bar x) = \beta^2(\bar x - \bar c_i) - n_in_i^T(\bar x - \bar c_i) = (\beta^2 I - n_i n_i^T) \bar x + (n_in_i^T - I\beta^2) \bar c_i \\
+= \left(\beta^2I - n_in_i^T\right)(\bar x - \bar c_i)
 \end{align*}
 so that the set $P = \{\bar x | g_i(\bar x) \le 0\}$.
 Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu^{k} + E \subset P$.
@@ -583,26 +592,143 @@ Because $Q$ is positive definite, $f$ has a unique minimum on each cone
 C_i = \{ t, s | \bar c_i + tn_i + s_i, s_i^Tn_i = 0, t>0, \|s_i\| = \alpha_i t \}.
 \end{align*}
 \color{black}
-Let this minimum be $t_i s_i = d^{(i)} \in \argmin_{d \in C_i} f(d)$ for $i=1,\ldots,m$ where $\|s_i\| = 1$, $s_i^Tn_i \ge \beta$.
+Let this minimum be $\bar c_i + t_i s_i = d^{(i)} \in \argmin_{d \in C_i} f(d)$ for $i=1,\ldots,m$ where $\|s_i\| = 1$, $s_i^Tn_i \ge \beta$.
 By the first order optimality conditions, there exists a $\lambda \in \mathbb R^m$ such that
+
+
+
+
+
+
+
 \begin{align*}
-\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i \left[(\beta I - n_i n_i^T) d^{(i)} + (1 - \beta) \bar c_i \right]\quad \forall 1\le i\le m \\
-\end{align*}
-Dotting with $r_i$
-\begin{align*}
-r_i^T\left[I + \lambda_i Q^{-1}\right]r_i = \lambda_i\alpha_i r_i^TQ^{-1} n_i \quad \forall 1\le i\le m \\
-\|r_i\|^2 = - \lambda_ir_i Q^{-1}r_i + \lambda_i\alpha_i r_i^TQ^{-1} n_i \quad \forall 1\le i\le m \\
-\|r_i\|^2 = - \lambda_ir_i Q^{-1}\left[r_i + \alpha_i n_i\right] \quad \forall 1\le i\le m \\
-\|r_i\|^2 = \lambda_ir_i Q^{-1}\left[\alpha_i n_i - r_i\right] \quad \forall 1\le i\le m
+\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i \left(\beta^2I - n_in_i^T\right)(d^{(i)} - \bar c_i) \\
+\left[Q - \lambda_i (\beta^2 I - n_i n_i^T) \right]  d^{(i)} = \lambda_i \left(\beta^2I - n_in_i^T\right) \bar c_i \\
+d^{(i)} = \left[Q - \lambda_i (\beta^2 I - n_i n_i^T) \right]^{-1}\lambda_i \left(\beta^2I - n_in_i^T\right) \bar c_i \\
 \end{align*}
 
-and $n_i$
+
 \begin{align*}
-n_i^Tt_in_i + \left[n_i^T + \lambda_i n_i^TQ^{-1}\right]r_i = \lambda_i\alpha_i n_i^TQ^{-1} n_i \quad \forall 1\le i\le m \\
-t_i + \lambda_i n_i^TQ^{-1}r_i = \lambda_i\alpha_i n_i^TQ^{-1} n_i \quad \forall 1\le i\le m \\
-t_i = \lambda_i\alpha_i n_i^TQ^{-1} n_i - \lambda_i n_i^TQ^{-1}r_i \quad \forall 1\le i\le m \\
-t_i = \lambda_in_i^TQ^{-1}\left[\alpha_i n_i - r_i\right] \quad \forall 1\le i\le m \\
+\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i \left(\beta^2I - n_in_i^T\right)(d^{(i)} - \bar c_i) \\
+Q \bar c_i + Q s_i = \lambda_i \left(\beta^2I - n_in_i^T\right)s_i \\
+\bar c_i + s_i = \lambda_i Q^{-1} \left(\beta^2I - n_in_i^T\right)s_i \\
+\bar c_i =\left[ \lambda_i Q^{-1} \left(\beta^2I - n_in_i^T\right) - I \right]s_i \\
+\bar c_i =\left[ \lambda_i \left(\beta^2Q^{-1} - Q^{-1}n_in_i^T\right) - I \right]s_i \\
+s_i^T{\bar c_i} =\lambda_i \left(\beta^2s_i^TQ^{-1}s_i - s_i^TQ^{-1}n_in_i^Ts_i\right) + \|s_i\|^2 \\
+\frac{s_i^T{\bar c_i} - \|s_i\|^2}{\beta^2s_i^TQ^{-1}s_i - s_i^TQ^{-1}n_in_i^Ts_i} =\lambda_i \\
+\lambda_i = \frac{s_i^T{\bar c_i} - \|s_i\|^2}{\beta^2s_i^TQ^{-1}s_i - \beta s_i^TQ^{-1}n_i\|s_i\|} \\
 \end{align*}
+
+
+\begin{align*}
+\bar c_i + s_i = \lambda_i Q^{-1} \left(\beta^2I - n_in_i^T\right)s_i \\
+\bar c_i + s_i = \lambda_i \left(\beta^2Q^{-1}s_i - \beta Q^{-1}n_i\|s_i\|\right) \\
+\end{align*}
+
+
+\begin{align*}
+\bar c_i + s_i =  \frac{s_i^T{\bar c_i} - \|s_i\|^2}{\beta^2s_i^TQ^{-1}s_i - \beta s_i^TQ^{-1}n_i\|s_i\|}  Q^{-1} \left(\beta^2I - n_in_i^T\right)s_i \\
+\end{align*}
+
+
+We also know that
+\begin{align*}
+n_i^T\frac{d^{(i)} - \bar c_i}{\|d^{(i)} - \bar c_i\|} = \beta_i \\
+n_i^T\left((1 - \beta^2) \left[\frac 1 {\lambda_i} Q - \beta^2 I + n_i n_i^T \right]^{-1} \bar c_i\right) - n_i^T\bar c_i = \beta_i\left\|\left((1 - \beta^2) \left[\frac 1 {\lambda_i} Q - \beta^2 I + n_i n_i^T \right]^{-1} \bar c_i\right) - \bar c_i\right\| \\
+n_i^T\left(\left[\frac 1 {\lambda_i} Q - \beta^2 I + n_i n_i^T \right]^{-1} \bar c_i\right) - \frac{n_i^T\bar c_i}{1-\beta^2} = \beta_i\left\|\left(\left[\frac 1 {\lambda_i} Q - \beta^2 I + n_i n_i^T \right]^{-1} \bar c_i\right) - \bar c_i\right\| \\
+\end{align*}
+
+
+
+
+
+
+
+
+
+\vspace{10cm}
+
+
+
+
+
+\begin{align*}
+\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i \left[ \beta^2(d^{(i)} - \bar c_i) - n_in_i^T(d^{(i)} - \bar c_i) \right]\quad \forall 1\le i\le m \\
+Q \bar c_i + t_i Q s_i = t_i \lambda_i \left[ \beta^2s_i - n_in_i^Ts_i \right]\quad \forall 1\le i\le m \\
+Q \bar c_i + t_i Q s_i = t_i \lambda_i\beta^2s_i - t_i \lambda_i\beta n_i \quad \forall 1\le i\le m \\
+\left(t_i Q - t_i \lambda_i\beta^2I \right) s_i = - t_i \lambda_i\beta n_i - Q \bar c_i \quad \forall 1\le i\le m \\
+t_i\left(\lambda_i\beta^2I - Q \right) s_i = t_i \lambda_i\beta n_i + Q \bar c_i \quad \forall 1\le i\le m \\
+\left(\lambda_i\beta^2I - Q \right) s_i = \lambda_i\beta n_i + \frac 1 { t_i} Q \bar c_i \quad \forall 1\le i\le m \\
+s_i = \left(\lambda_i\beta^2I - Q \right)^{-1}\left(\lambda_i\beta n_i + \frac 1 { t_i} Q \bar c_i\right) \quad \forall 1\le i\le m \\
+s_i = \lambda_i\beta \left(\lambda_i\beta^2I - Q \right)^{-1}n_i + \frac 1 { t_i} \left(\lambda_i\beta^2I - Q \right)^{-1}Q \bar c_i \quad \forall 1\le i\le m \\
+\end{align*}
+
+Letting $\hat Q = \left(\lambda_i\beta^2I - Q \right)^{-1}$
+
+Dotting with $n_i^T$
+\begin{align*}
+\beta = \lambda_i\beta n_i^T\hat Q n_i + \frac 1 { t_i} n_i^T\hat Q Q \bar c_i\quad \forall 1\le i\le m \\
+\frac{\beta - \frac 1 { t_i} n_i^T\hat Q Q \bar c_i }{\beta n_i^T\hat Q n_i} = \lambda_i \quad \forall 1\le i\le m \\
+\lambda_i = \frac{t_i \beta - \frac 1 { t_i} n_i^T\hat Q Q \bar c_i }{\beta n_i^T\hat Q n_i} \quad \forall 1\le i\le m \\
+\end{align*}
+
+
+Dotting with $s_i^T$
+\begin{align*}
+1 = \lambda_i\beta s_i^T\hat Q n_i + \frac 1 { t_i} s_i^T\hat Q Q \bar c_i\quad \forall 1\le i\le m \\
+\end{align*}
+
+
+Dotting with $s_i^T$:
+\begin{align*}
+\lambda_i\beta^2 - s_i^T Q s_i = \lambda_i\beta^2 + \frac 1 { t_i}s_i^T Q \bar c_i \quad \forall 1\le i\le m \\
+t_i s_i^T Q s_i + s_i^T Q \bar c_i = 0 \quad \forall 1\le i\le m \\
+{\bar s_i}^T Q d^{(i)} = 0 \quad \forall 1\le i\le m \\
+t_i =- \frac{s_i^T Q \bar c_i}{s_i^T Q s_i} \quad \forall 1\le i\le m \\
+\end{align*}
+
+and $n_i^T$
+\begin{align*}
+\lambda_i\beta^3 - n_i^TQ s_i = \lambda_i\beta + \frac 1 { t_i} n_i^T Q \bar c_i \quad \forall 1\le i\le m \\
+t_i\lambda_i\beta^3 = t_i\lambda_i\beta + n_i^T Q \bar c_i + t_in_i^TQ s_i\quad \forall 1\le i\le m \\
+n_i^T Q \bar c_i + t_in_i^TQ s_i = t_i\lambda_i\beta^3 - t_i\lambda_i\beta \quad \forall 1\le i\le m \\
+n_i^T Q d^{(i)} = \beta t_i\lambda_i(\beta^2 - 1) \quad \forall 1\le i\le m \\
+\lambda_i = \frac{n_i^T Q d^{(i)}}{\beta t_i(\beta^2 - 1)} \quad \forall 1\le i\le m \\
+\lambda_i = \frac{n_i^T Q \left(\bar c_i - \frac{s_i^T Q \bar c_i}{s_i^T Q s_i} s_i\right)}{\beta \left(- \frac{s_i^T Q \bar c_i}{s_i^T Q s_i}\right)(\beta^2 - 1)} \quad \forall 1\le i\le m \\
+= \frac{n_i^T Q \left(\bar c_i s_i^T Q s_i - ({s_i^T Q \bar c_i}) s_i\right)}{\beta \left(-{s_i^T Q \bar c_i}\right)(\beta^2 - 1)} \\
+= \frac{(n_i^T Q \bar c_i)(s_i^T Q s_i) - (n_i^T Q s_i) ({s_i^T Q \bar c_i})}{\beta \left({s_i^T Q \bar c_i}\right)(1 - \beta^2)} \\
+\end{align*}
+and ${\bar c_i}^T$:
+
+\begin{align*}
+\lambda_i\beta^2{\bar c_i}^Ts_i - {\bar c_i}^TQ s_i = \lambda_i\beta {\bar c_i}^T n_i + \frac 1 { t_i} {\bar c_i}^TQ \bar c_i \quad \forall 1\le i\le m \\
+\lambda_i\beta\left[\beta{\bar c_i}^Ts_i - {\bar c_i}^T n_i \right]= {\bar c_i}^TQ s_i + \frac 1 { t_i} {\bar c_i}^TQ \bar c_i \quad \forall 1\le i\le m \\
+\frac{(n_i^T Q \bar c_i)(s_i^T Q s_i) - (n_i^T Q s_i) ({s_i^T Q \bar c_i})}{\beta \left({s_i^T Q \bar c_i}\right)(1 - \beta^2)} \beta\left[\beta{\bar c_i}^Ts_i - {\bar c_i}^T n_i \right]= {\bar c_i}^TQ s_i + \frac 1 { t_i} {\bar c_i}^TQ \bar c_i \quad \forall 1\le i\le m \\
+\frac{(n_i^T Q \bar c_i)(s_i^T Q s_i) - (n_i^T Q s_i) ({s_i^T Q \bar c_i})}{\left({s_i^T Q \bar c_i}\right)(1 - \beta^2)}\left[\beta{\bar c_i}^Ts_i - {\bar c_i}^T n_i \right]= {\bar c_i}^TQ s_i - \frac{s_i^T Q s_i}{s_i^T Q \bar c_i} {\bar c_i}^TQ \bar c_i \quad \forall 1\le i\le m \\
+\left[(n_i^T Q \bar c_i)(s_i^T Q s_i) - (n_i^T Q s_i) ({s_i^T Q \bar c_i})\right]\left[\beta{\bar c_i}^Ts_i - {\bar c_i}^T n_i \right]= (1 - \beta^2)\left({\bar c_i}^TQ s_i\right)^2 - (1 - \beta^2)(s_i^T Q s_i){\bar c_i}^TQ \bar c_i \quad \forall 1\le i\le m \\
+\end{align*}
+
+
+
+
+
+
+
+
+
+\begin{align*}
+{ d^{(i)}}^T Q d^{(i)} \ge 1 \\
+\left(\bar c_i + t_i s_i \right)^T Q \left(\bar c_i + t_i s_i\right) \ge 1 \\
+{\bar c_i}^TQ\bar c_i + 2 t_i {\bar c_i}^TQ s_i + t_i^2 s_i^TQs_i \ge 1 \\
+{\bar c_i}^TQ\bar c_i + 2 \left(- \frac{s_i^T Q \bar c_i}{s_i^T Q s_i}\right) {\bar c_i}^TQ s_i + \left(- \frac{s_i^T Q \bar c_i}{s_i^T Q s_i}\right)^2 s_i^TQs_i \ge 1 \\
+(s_i^T Q s_i){\bar c_i}^TQ\bar c_i - 2 \left({s_i^T Q \bar c_i}\right)^2  + \left({s_i^T Q \bar c_i}\right)^2  \ge s_i^T Q s_i \\
+(s_i^T Q s_i){\bar c_i}^TQ\bar c_i - \left({s_i^T Q \bar c_i}\right)^2  \ge s_i^T Q s_i \\
+(s_i^T Q s_i){\bar c_i}^TQ\bar c_i - \left({s_i^T Q \bar c_i}\right)^2  \ge s_i^T Q s_i \\
+\end{align*}
+
+
+
+
 
 and adding gives
 \begin{align*}
@@ -674,6 +800,56 @@ Because $E \subset P$, we also know that $f(\bar x) \ge 1$ for each $i$. Thus,
 
 
 
+
+
+\subsection{}
+
+
+We wish to find a $\uk$ such that $(-\gik)^T\uk$ is close to one.
+% Let $\uk$ be a linear combination of $\gik$: $\uk = A^Tz$
+\begin{align*}
+\min_{\uk} \sum_i (1 + (\uk)^T\gik)^2 = \min_z (e + Az)^T(e + Az) = n + \min_z 2e^TAz + z^T A^TA z = f(z) \\
+\nabla f(z) = 0 \\
+\Longrightarrow 2 A^Te+2A^TAz = 0 \\
+\Longrightarrow A^TAz = -A^Te \\
+\Longrightarrow z = -\left(A^TA\right)^{-1} A^Te \\
+\end{align*}
+
+We need $-A(A^TA)^{-1}A^Te$ to be bounded.
+
+
+\begin{align*}
+-A(A^TA)^{-1}A^Te = 
+-(U\Sigma V^T)((U\Sigma V)^T(U\Sigma V))^{-1}(U\Sigma V^T)^Te = 
+-U\Sigma V^T(V\Sigma^2 V^T)^{-1}V\Sigma U^Te = \\
+-U\Sigma V^TV\Sigma^{-2} V^TV\Sigma U^Te =
+-U\Sigma \Sigma^{-2} \Sigma U^Te =
+-U U^Te = -e
+\end{align*}
+
+
+\begin{align*}
+-A^T(AA^T)^{-1}Ae = \\
+-(U\Sigma V^T)^T((U\Sigma V^T)(U\Sigma V^T)^T)^{-1}(U\Sigma V^T)e = \\
+-V\Sigma U^TU\Sigma^{-2} U^TU\Sigma V^Te = \\
+-V\Sigma \Sigma^{-2} \Sigma V^Te = \\
+-V V^Te = -e\\
+\end{align*}
+
+
+
+
+
+Let $u = -A^Tz$ be a linear combination of the negative gradients.
+Then, 
+
+\begin{align*}
+\min_{\uk} \sum_i (1 - (-\gik)^Tu)^2 = \min_{\uk} \sum_i (1 - (\gik)^TA^Tz)^2 \\
+\min_z (e + AA^Tz)^T(e + AA^Tz) = n + \min_z 2e^TAA^Tz + z^T AA^TAA^T z = f(z) \\
+\nabla f(z) = 0 \\
+\Longrightarrow 2 AA^Te+2AA^TAA^Tz = 0 \\
+\Longrightarrow AA^TAA^Tz = -AA^Te \\
+\end{align*}
 
 
 
