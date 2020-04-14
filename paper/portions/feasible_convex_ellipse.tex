@@ -18,6 +18,10 @@
 
 \subsection{Notation}
 
+
+
+% Should the 
+
 Fix some $\alpha \in (0, 1)$, and $\beta \in (0, 1)$.
 Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
 \begin{align*}
@@ -27,7 +31,7 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 \zik = \xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik \\
 \fik = \left\{x \in \rn | x = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 3 2 }\right\} \\
 \iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \\
-\uk = -\nabla \hat m_{c_{\mathcal I}}(\xk)^T\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} e\\
+\uk = -\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\\
 \huk = \frac {\uk} {\| \uk\|}\\
 \theta^{\text{min}}_k = \min_{i \in \mathcal I} (-\hgik)^T \huk \\
 \theta^{\text{max}}_k = \max_{i \in \mathcal I} (-\hgik)^T \huk \\
@@ -43,8 +47,7 @@ f_e(\delta, r, \theta; x) = (x - \delta e_1)^T\bigg(\begin{bmatrix}
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
 \end{bmatrix}\bigg)(x - \delta e_1) - \frac 1 2 r^2 \\
 R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I \\
-t_k = \max_{\xk + t\huk \in B_{\infty}(\xk, \dk)} t \\
-E_k = \{x \in \rn | f_e\left(\frac 1 2 t_k, \frac 1 2 t_k, \bsk; R(x - \xk)\right) \le 0\}
+E_k = \{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\}
 \end{align*}
 
 
