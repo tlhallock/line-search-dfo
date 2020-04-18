@@ -19,9 +19,6 @@
 \subsection{Notation}
 
 
-
-% Should the 
-
 Fix some $\alpha \in (0, 1)$, and $\beta \in (0, 1)$.
 Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
 \begin{align*}
@@ -31,7 +28,7 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 \zik = \xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik \\
 \fik = \left\{x \in \rn | x = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 3 2 }\right\} \\
 \iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \\
-\uk = -\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\\
+\uk = -\nabla \hat m_{c_{\mathcal I}}(\xk)^{\dagger} e\\
 \huk = \frac {\uk} {\| \uk\|}\\
 \theta^{\text{min}}_k = \min_{i \in \mathcal I} (-\hgik)^T \huk \\
 \theta^{\text{max}}_k = \max_{i \in \mathcal I} (-\hgik)^T \huk \\
@@ -69,18 +66,13 @@ Note that the singular values of $\nabla c(\xk)$ are bounded away from zero, and
 so that for sufficiently large $k$, we have that $\Sigma > 0$.
 First, we compute
 \begin{align*}
-\nabla \hat m_{c_{\mathcal I} }(\xk)^T \uk = -\nabla\hat m_{c_{\mathcal I} }(\xk)^T\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\\
-= -(U\Sigma V^T)^T((U\Sigma V^T)(U\Sigma V^T)^T)^{-1}(U\Sigma V^T)e \\
-= -V\Sigma U^TU\Sigma^{-2} U^TU\Sigma V^Te \\
-= -V\Sigma \Sigma^{-2} \Sigma V^Te \\
-= -V V^Te = -e
+\nabla \hat m_{c_{\mathcal I} }(\xk) \uk = -\nabla\hat m_{c_{\mathcal I} }(\xk) \nabla\hat m_{c_{\mathcal I} }(\xk)^{\dagger} e
+= -(U\Sigma V^T)(V\Sigma^{\dagger} U^T)e
+= -e 
 \end{align*}
 and
 \begin{align*}
-\|\uk\| = \|-\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\nabla \hat m_{c_{\mathcal I}}(\xk)^T\right)^{-1} \nabla \hat m_{c_{\mathcal I}}(\xk) e\|\\
-=\|\left((U\Sigma V^T)(U\Sigma V^T)^T\right)^{-1}(U\Sigma V^T)e\| \\
-=\|U\Sigma^{-2} U^TU\Sigma V^Te \| \\
-=\|U\Sigma^{-1} V^Te\|  \\
+\|\uk\| = \|V\Sigma^{-1} U^Te\|  
 \le \frac 1 {\sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\right)}.
 \end{align*}
 
@@ -144,127 +136,105 @@ This implies that $1 = \|\hat y\| = \|x^{\star} + v\| > \|x^{\star}\| = 1$.
 
 \begin{theorem}
 There exists an $\epsilon > 0$, such that if $\dk < \epsilon$ and $z^{(i, k)} \in B_{\infty}(\xk, \dk))$,
-then $\fik \cap B_{\infty}(\xk, \dk) \subseteq \f$.
+\begin{align*}
+c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
+\end{align*}
 
 \end{theorem}
 
 \begin{proof}
-Let $y = z^i - \alpha \dk^{\frac 3 2}\hgik + t s \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
+
+Let $y = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) + ts \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
 There exists a $\nu \in \rn$, $\|\nu\|=1$ such that 
 \begin{align*}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
 \end{align*}
-We will let $z^{\star} = \xk + \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik$.
-Observe that
+
+We know that for all $t \in \rn$:
 \begin{align*}
-c_i(\xk) + \nabla c_i(\xk)^T (z^{\star} - \xk) = c_i(\xk) + \nabla c_i(\xk)^T\left( \xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik - \xk\right) \\
-= c_i(\xk) - \nabla c_i(\xk)^T\left(\frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik\right) = c_i(\xk) - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\nabla c_i(\xk)^T\gik = 0. \\
+c(\xk - t\gik) \le c_i(\xk) + \nabla c_i(\xk)^T\left(- t\gik\right) + Mt^2. \\
 \end{align*}
-We also know that,
+It is easy to see that
 \begin{align*}
-c_i(\xk) + \nabla c_i(\xk)^T (\xk - 0 \gik -\xk) \le 0
+c_i(\xk) \le 0 \\
+- 4 M c_i(\xk) \ge 0 \\
+\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk) \ge \left(\nabla c_i(\xk)^T\gik\right)^2 \\
+\sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \ge \nabla c_i(\xk)^T\gik \\
+\frac{1}{2M}\left(\nabla c_i(\xk)^T\gik - \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \le 0\\
 \end{align*}
-because $\xk$ is feasible.
-Thus, in order to show that 
+so that $c(\xk - t\gik) \le 0$ for all $t$ satisfying
+% Mt^2 - \nabla c_i(\xk)^T\hgik t + c_i(\xk) = 0 \\
 \begin{align*}
-c_i(\xk) + \nabla c_i(\xk)^T\left(\xk + \left(1 - \dk^{\frac 3 2 }\alpha\right)\left(\zik - \xk\right) - \xk\right) \le 0 \\
-c_i(\xk) + \nabla c_i(\xk)^T\left(\xk + \left(1 - \dk^{\frac 3 2 }\alpha\right)\left(\xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk\right) - \xk\right) \le 0 \\
-c_i(\xk) + \nabla c_i(\xk)^T\left(\xk - \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{m_{c_i}(\xk)}{\|\gik\|^2}\gik - \xk\right) \le 0
+0 \le t \le \frac{1}{2M}\left(\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right). \\
 \end{align*}
-we require
+
+For sufficiently small $\dk$, we know that
+
 \begin{align*}
-\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{-c_i(\xk)}{\nabla c_i(\xk) ^T \gik} \\
-\left(1 - \dk^{\frac 3 2 }\alpha\right)\nabla c_i(\xk) ^T \gik \le \|\gik\|^2  \\
-\dk^{\frac 3 2 }\alpha \nabla c_i(\xk) ^T \gik \ge \nabla c_i(\xk) ^T \gik - \|\gik\|^2 \\
-\dk^{\frac 3 2 }\alpha \left(\gik + \epsilon_{g}\dk^2\nu\right) ^T \gik \ge (\gik)^T\left(\nabla c_i(\xk) -\gik\right) \\
-\dk^{\frac 3 2 }\alpha \left(\|\gik\|^2 + \epsilon_{g}\dk^2\nu^T\gik\right)  \ge \epsilon_{g}\dk^2(\gik)^T\nu \\
-\alpha\|\gik\|^2 + \alpha\epsilon_{g}\dk^2\nu^T\gik  \ge \epsilon_{g}\dk^{\frac 1 2}(\gik)^T\nu \\
-\alpha\|\gik\|^2 \ge \epsilon_{g}(\gik)^T\nu\left(\dk^{\frac 1 2} - \alpha\dk^2\right)  \\
-\alpha\|\gik\| \ge \epsilon_{g}(\hgik)^T\nu\left(\dk^{\frac 1 2} - \alpha\dk^2\right)  \\
+\dk^2 \le \frac{1}{2\epsilon_g}\|\nabla c_i(\xk)\| \\
+\frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2
 \end{align*}
-This is true whenever $\dk$ is sufficiently small that
+and
 \begin{align*}
-\dk^{\frac 1 2} - \alpha\dk^2 \le \frac{\alpha\|g_{\text{low}} \|}{\epsilon_{g}} \le \frac{\alpha\|\gik\|}{\epsilon_{g}}. \\
+\dk + \frac{1}{2M}\epsilon_g \dk^2\|\nabla c_i(\xk)\|^2 \le \frac{1}{2M}\|\nabla c_i(\xk)\|^3 \\
+\dk \le \left(\|\nabla c_i(\xk)\| - \epsilon_g \dk^2\right) \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
+\dk \le \left\|\nabla c_i(\xk) - \epsilon_g \dk^2\nu\right\| \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
+\dk \frac{1}{\|\gik\|} \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2.
+\end{align*}
+
+Adding these, we find that
+\begin{align*}
+\dk \frac{1}{\|\gik\|} + \frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{M}\|\nabla c_i(\xk)\|^2 \\
+\dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\|\nabla c_i(\xk)\|^2 - \epsilon_g \dk^2\|\nabla c_i(\xk)\|\right) \\
+\dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\nabla c_i(\xk)^T(\nabla c_i(\xk) - \epsilon_g \dk^2 \nu)\right) \\
+\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{M}\left(\nabla c_i(\xk)^T\gik\right) \\
+\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{2M}\left(\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \\
 \end{align*}
 
 
-We have just shown that, 
+We can conclude that
 \begin{align*}
-\xk + \left(1 - \dk^{\frac 3 2 }\alpha\right)\left(\zik - \xk\right)
+c_i\left(\xk -\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\gik\right) \le 0 \\
+c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\xk + \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk\right)\right) \le 0 \\
+c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right)\right) \le 0.
 \end{align*}
-is feasible with respect to the linearized constraints for sufficiently small $\dk$.
+
+
 
 Also, if $-s^T \hgik \ge \beta \dk^{\frac 3 2}$ where $\|s\| = 1$, then for sufficiently small $\dk$:
 \begin{align*}
-\dk \le \frac{\beta^2\|g_{\text{low}}\|^2}{\epsilon_g^2} 
-\Longrightarrow \dk^{\frac 1 2 } \le \frac{\beta\|\gik\|}{\epsilon_g}
-\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|}
-\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|}
+\dk \le \frac{\beta^2\|g_{\text{low}}\|^2}{\epsilon_g^2}  \\
+\Longrightarrow \dk^{\frac 1 2 } \le \frac{\beta\|\gik\|}{\epsilon_g} \\
+\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|} \\
+\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|} \\
 \Longrightarrow \beta\dk^{\frac 3 2} \ge \frac{\epsilon_{g}\dk^2}{\|\gik\|} \\
-\Longrightarrow -s^T\hgik \ge \frac{\epsilon_{g}\dk^2}{\|\gik\|} 
-\Longrightarrow -s^T\gik \ge \epsilon_{g}\dk^2|\nu^T s|
+\Longrightarrow -s^T\hgik \ge \frac{\epsilon_{g}\dk^2}{\|\gik\|}  \\
+\Longrightarrow -s^T\gik \ge \epsilon_{g}\dk^2|\nu^T s| \\
 \Longrightarrow -s^T\gik \ge -\epsilon_{g}\dk^2\nu^T s \\
-\Longrightarrow -s^T\gik + \epsilon_{g}\dk^2\nu^T s \ge 0
-\Longrightarrow -\nabla c_i(\xk)^T s \ge 0.
+\Longrightarrow -s^T\gik - \epsilon_{g}\dk^2\nu^T s \ge \delta \\
+\Longrightarrow -\nabla c_i(\xk)^T s \ge \delta.
+\end{align*}
+
+
+
+\begin{align*}
+c_i(\zik + ts) \le c_i(\zik) + t\nabla c_i(\zik)^Ts + Mt^2 \\
+= c_i(\zik) + t\nabla c_i(\xk)^Ts + t\left (\nabla c_i(\zik) - \nabla c_i(\xk)\right)^Ts + Mt^2 \\
 \end{align*}
 
 Thus, the entire cone $\fik$ is feasible with respect to the linearization of the constraint $c_i$ for sufficiently small $\dk$.
 
+\end{proof}
 
 
 
-\color{red}
+\begin{theorem}
+We have that $\cap_{i \in \iik} \fik \cap B_{\infty}(\xk, \dk) \subseteq \f$ 
+\end{theorem}
 
-
-
-% \dk^2 \le \frac{\|\gik\| -\delta e } {2\epsilon_{g} + \beta \|\gik\|} \\
-% \left(2\epsilon_{g} + \beta \|g^i\|\right)\dk^2 - \|\gik\|\le -\delta e \\
-% 2\epsilon_{g}\dk^2 + \|\gik\|(\beta \dk^2 - 1)\le -\delta e \\
-% (\epsilon_{g}\dk^2\nu)^T (s - \hgik) + \|\gik\|({\hat g}^i)^T(s - \hgik)\le -\delta e \\
-% (\gik + \epsilon_{g}\dk^2\nu)^T (s - \hgik) \le -\delta e \\
-% -\nabla c_i(\xk)^T s \ge -\delta e
-
-
-Alternatively,
-\begin{align*}
-\dk \le \sqrt{\frac{\sqrt{n}}{\epsilon_gg_{\text{hi}}}} \\
-\dk^2 \le \frac{\sqrt{n}}{\epsilon_g\|\gik\|} \\
-\epsilon_g\dk^2 \le \frac{2\sqrt{n}}{\|\gik\|} - \frac{\sqrt{n}}{\|\gik\|} \\
-\sqrt{n}\frac{1}{\|\gik\|} \le \frac{2\sqrt{n}}{\|\gik\|}  - \epsilon_g\dk^2 \\
-\sqrt{n}\frac{\dk}{\|\gik\|} \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk \|\gik\| - \epsilon_g\dk^3 \\
-|m_{c_i}(\xk)| \le \frac{2\sqrt{n}}{\|\gik\|^2} \|\gik\| - \epsilon_g\dk^3 \\
-|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2} \|\gik\|^2 + \epsilon_g\dk^3\nu^T\gik \\
-|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2} \dk(\gik + \epsilon_g\nu\dk^2)^T \gik\\
-|m_{c_i}(\xk)|\|\gik\| \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk \nabla c_i(\xk) ^T \gik\\
-\|\xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik- \xk\| \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk  \le \frac{2\sqrt{n}}{g_{\text{low}}^2}\dk \\
-\|z^{\star} - \xk\| \le \frac{2\sqrt{n}}{\|\gik\|^2}\dk  \le \frac{2\sqrt{n}}{g_{\text{low}}^2}\dk \\
-\end{align*}
-
-We also know that
-\begin{align*}
-\left\|\xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk + \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik\right\| \le h_{\text{hi}}\left\|\xk - \frac{c_i(\xk)}{\nabla c_i(\xk) ^T \gik}\gik- \xk\right\|^2
-\le \frac{4h_{\text{hi}}n}{g_{\text{low}}^4}\dk^2 \\
-\|z^{\star} - \zik\| \le \|z^{\star} - \xk\|^2 \le \frac{4h_{\text{hi}}n}{g_{\text{low}}^4}\dk^2 \\
-\end{align*}
-
-
-However, 
-\begin{align*}
-\left\|\xk + \left(1 - \dk^{\frac 3 2 }\alpha\right)(\zik - \xk) - \zik\right\| \\
-=\left\|\left(1 - \dk^{\frac 3 2 }\alpha\right)(\zik - \xk) - (\zik - \xk)\right\| \\
-=\|\xk - \zik\|\left|\left(1 - \dk^{\frac 3 2 }\alpha\right) - 1\right| \\
-=\dk^{\frac 3 2 }\alpha\|\xk - \zik\| \\
-\end{align*}
-and
-\begin{align*}
-\left\|\xk + \left(1 -  \dk^{\frac 3 2 }\alpha\right)(\zik - \xk) - \xk\right\| = \left(1 - \alpha\dk^{\frac 3 2 }\right)\|\xk - \zik\|.\\
-\end{align*}
-
-
-% \le \sqrt{n} \dk^{\frac 3 2 }\alpha\dk \\
-
-
-\color{black}
+\begin{proof}
+This follows directly from $x \in \fik \cap B_{\infty}(\xk, \dk) \Longrightarrow c_i(x) \le 0$.
+\end{proof}
 
 
 
@@ -340,7 +310,6 @@ and
 % \nabla c_i(\xk)^T(- t\frac{\nabla m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|} + s) \le \delta t \\
 % \end{align*}
 
-\end{proof}
 
 \begin{theorem}
 For sufficiently small $\dk$, the set $\fcki \subseteq \fik$ for all $1\le i \le m$.
@@ -355,7 +324,8 @@ Letting $\dk \le 1$, we see that $\xk \in \fik$:
 \end{align*}
 where
 \begin{align*}
-\frac{\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)}{\left\|\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)\right\|}^T\hgik =\frac{-m_{c_i}(\xk)}{\|\gik\|}\frac{1}{\|\zik - \xk\|} = 1 \ge \beta\\
+\frac{\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)}{\left\|\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)\right\|}^T\hgik =
+\frac{m_{c_i}(\xk)}{\|\gik\|}\frac{1}{\|\zik - \xk\|} = 1 \ge \beta\\
 \end{align*}
 
 % = -\frac{m_{c_i}(\xk)}{\|\gik\|}\frac{\|\gik\|}{m_{c_i}(\xk)}
