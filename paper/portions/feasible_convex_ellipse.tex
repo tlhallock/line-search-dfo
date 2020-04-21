@@ -14,6 +14,7 @@
 \newcommand{\rn}{{\mathbb R^{n}}}
 \newcommand{\xsk}{{x^{(\star, k)}}}
 \newcommand{\bxk}{{\bar{x}^{(k)}}}
+\newcommand{\wik}{{w^{(i, k)}}}
 \newcommand{\f}{{\mathcal F}}
 
 \subsection{Notation}
@@ -26,7 +27,8 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 \gik = \nabla m_{c_i}(\xk) \\ 
 \hgik = \frac{\gik}{\|\gik\|} \\
 \zik = \xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik \\
-\fik = \left\{x \in \rn | x = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 3 2 }\right\} \\
+\wik = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) \\
+\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2 }\right\} \\
 \iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \\
 \uk = -\nabla \hat m_{c_{\mathcal I}}(\xk)^{\dagger} e\\
 \huk = \frac {\uk} {\| \uk\|}\\
@@ -135,7 +137,7 @@ This implies that $1 = \|\hat y\| = \|x^{\star} + v\| > \|x^{\star}\| = 1$.
 
 
 \begin{theorem}
-There exists an $\epsilon > 0$, such that if $\dk < \epsilon$ and $z^{(i, k)} \in B_{\infty}(\xk, \dk))$,
+If $\dk < \epsilon$ and $z^{(i, k)} \in B_{\infty}(\xk, \dk))$, then
 \begin{align*}
 c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
 \end{align*}
@@ -144,85 +146,190 @@ c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
 
 \begin{proof}
 
-Let $y = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) + ts \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^2$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
-There exists a $\nu \in \rn$, $\|\nu\|=1$ such that 
+Let $y = \wik + ts \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$, and let $M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x)$.
+There exists a $\nu \in \rn$, $\|\nu\|\le 1$ such that 
 \begin{align*}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
 \end{align*}
 
-We know that for all $t \in \rn$:
+% We know that for all $t \in \rn$:
+% \begin{align*}
+% c(\xk + t\gik) \le c_i(\xk) + \nabla c_i(\xk)^T\gik t + Mt^2. \\
+% \end{align*}
+% This quadratic has zeros at
+% \begin{align*}
+% \frac{1}{2M}\left(-\nabla c_i(\xk)^T\gik \pm \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right).
+% \end{align*}
+% because $c_i(\xk) \le 0$.
+% \color{red}For small enough $\dk$, we have that $\nabla c_i(\xk)^T\gik \ge 0 $, \color{black}so that
+% \begin{align*}
+% \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \ge -\nabla c_i(\xk)^T\gik \\
+% \frac{1}{2M}\left(-\nabla c_i(\xk)^T\gik - \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \le 0\\
+% \end{align*}
+% so that $c(\xk + t\gik) \le 0$ for all $t$ satisfying
+% % Mt^2 - \nabla c_i(\xk)^T\hgik t + c_i(\xk) = 0 \\
+% \begin{align*}
+% 0 \le t \le \frac{1}{2M}\left(-\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right). \\
+% \end{align*}
+% 
+% For sufficiently small $\dk$, we know that
+% 
+% \begin{align*}
+% \dk^2 \le \frac{1}{2\epsilon_g}\|\nabla c_i(\xk)\| \\
+% \frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2
+% \end{align*}
+% and
+% \begin{align*}
+% \dk + \frac{1}{2M}\epsilon_g \dk^2\|\nabla c_i(\xk)\|^2 \le \frac{1}{2M}\|\nabla c_i(\xk)\|^3 \\
+% \dk \le \left(\|\nabla c_i(\xk)\| - \epsilon_g \dk^2\right) \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
+% \dk \le \left\|\nabla c_i(\xk) - \epsilon_g \dk^2\nu\right\| \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
+% \dk \frac{1}{\|\gik\|} \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2.
+% \end{align*}
+% 
+% Adding these, we find that
+% \begin{align*}
+% \dk \frac{1}{\|\gik\|} + \frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{M}\|\nabla c_i(\xk)\|^2 \\
+% \dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\|\nabla c_i(\xk)\|^2 - \epsilon_g \dk^2\|\nabla c_i(\xk)\|\right) \\
+% \dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\nabla c_i(\xk)^T(\nabla c_i(\xk) - \epsilon_g \dk^2 \nu)\right) \\
+% \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{M}\left(\nabla c_i(\xk)^T\gik\right) \\
+% \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{2M}\left(-\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \frac{4M^2n}{\|\gik\|}\dk^2 + 4M\sqrt{n} \nabla c_i(\xk)^T\gik \dk \le - 4 M c_i(\xk)\|\gik\| \\
+% \frac{4M^2n}{\|\gik\|}\dk^2 + 4M\sqrt{n} \nabla c_i(\xk)^T\gik \dk \le - 4 M c_i(\xk)\|\gik\| \\
+% \left(\frac{2M\sqrt{n}}{\|\gik\|}\dk\right)^2 + \frac{4M\sqrt{n}}{\|\gik\|}\dk \nabla c_i(\xk)^T\gik\le - 4 M c_i(\xk) \\
+% % \left(\frac{2M\sqrt{n}}{\|\gik\|}\dk\right)^2 + 2 \frac{2M\sqrt{n}}{\|\gik\|}\dk \nabla c_i(\xk)^T\gik + \left(\nabla c_i(\xk)^T\gik\right)^2\le \left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk) \\
+% \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{2M\sqrt{n}}{\|\gik\|}\dk +\nabla c_i(\xk)^T\gik \le \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \\
+% % \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{2M}\left(-\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \\
+% \end{align*}
+
+
+% We can conclude that
+% \begin{align*}
+% c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right)\right) \le 0 \\
+% c_i\left(\xk +\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\gik\right) \le 0 \\
+% c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk\right)\right) \le 0 \\
+% \end{align*}
+
+% Redoing everything, we can just say
+% \begin{align*}\
+% c_i(\wik) = c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right)\right) \\
+%  = c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\xk - \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk\right)\right) \\
+% = c_i\left(\xk + \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\gik\right) \\
+% % \le c_i(\xk) + \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\nabla c_i(\xk)^T\gik + M\left[\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|}\right]^2 \\
+% % \le c_i(\xk)\left[1 - \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{\nabla c_i(\xk)^T\gik}{\|\gik\|^2} + \frac{c_i(\xk)M}{\|\gik\|^2}\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \right]\\
+% \end{align*}
+
+
+% \begin{align*}
+% 1 - \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{\nabla c_i(\xk)^T\gik}{\|\gik\|^2} + \frac{c_i(\xk)M}{\|\gik\|^2}\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \ge 0\\
+% \|\gik\|^2 - \left(1 - \dk^{\frac 3 2 }\alpha\right)\nabla c_i(\xk)^T\gik + c_i(\xk)M\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \ge 0\\
+% \left(1 - \dk^{\frac 3 2 }\alpha\right)\nabla c_i(\xk)^T\gik \le \|\gik\|^2 + c_i(\xk)M\left(1 - \dk^{\frac 3 2 }\alpha\right)^2\\
+% \end{align*}
+
+
+% 1 + \frac{c_i(\xk)M}{\|\gik\|^2}\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \ge \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{\nabla c_i(\xk)^T\gik}{\|\gik\|^2}\\
+% \|\gik\|^2 + {c_i(\xk)M}\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \ge \left(1 - \dk^{\frac 3 2 }\alpha\right){\nabla c_i(\xk)^T\gik}\\
+% \|\gik\|^2 + {c_i(\xk)M}\left(1 - \dk^{\frac 3 2 }\alpha\right)^2 \ge \left(1 - \dk^{\frac 3 2 }\alpha\right){\nabla c_i(\xk)^T\gik}\\
+
+% \begin{align*}
+% \nabla c_i(\xk)^T\gik + M\left[\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\right] \le 0 \\
+% % \left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\nabla c_i(\xk)^T\gik + M\left[\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\right]^2 \le 0 \\
+% \end{align*}
+
+First, we will show that $c(\wik) \le 0$.
+We can compute
 \begin{align*}
-c(\xk - t\gik) \le c_i(\xk) + \nabla c_i(\xk)^T\left(- t\gik\right) + Mt^2. \\
-\end{align*}
-It is easy to see that
-\begin{align*}
-c_i(\xk) \le 0 \\
-- 4 M c_i(\xk) \ge 0 \\
-\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk) \ge \left(\nabla c_i(\xk)^T\gik\right)^2 \\
-\sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \ge \nabla c_i(\xk)^T\gik \\
-\frac{1}{2M}\left(\nabla c_i(\xk)^T\gik - \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \le 0\\
-\end{align*}
-so that $c(\xk - t\gik) \le 0$ for all $t$ satisfying
-% Mt^2 - \nabla c_i(\xk)^T\hgik t + c_i(\xk) = 0 \\
-\begin{align*}
-0 \le t \le \frac{1}{2M}\left(\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right). \\
+\wik - \xk = \xk + \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(\zik - \xk\right) - \xk 
+= \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(\zik - \xk\right) \\
+= \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gik\|^2}\gik - \xk\right) 
+= \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|^2}\gik
 \end{align*}
 
-For sufficiently small $\dk$, we know that
 
-\begin{align*}
-\dk^2 \le \frac{1}{2\epsilon_g}\|\nabla c_i(\xk)\| \\
-\frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2
-\end{align*}
-and
-\begin{align*}
-\dk + \frac{1}{2M}\epsilon_g \dk^2\|\nabla c_i(\xk)\|^2 \le \frac{1}{2M}\|\nabla c_i(\xk)\|^3 \\
-\dk \le \left(\|\nabla c_i(\xk)\| - \epsilon_g \dk^2\right) \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
-\dk \le \left\|\nabla c_i(\xk) - \epsilon_g \dk^2\nu\right\| \frac{1}{2M}\|\nabla c_i(\xk)\|^2 \\
-\dk \frac{1}{\|\gik\|} \le \frac{1}{2M}\|\nabla c_i(\xk)\|^2.
-\end{align*}
+% \begin{align*}
+% c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk\right) = c_i(\xk) + \left(\gik +  \nu \epsilon_g \dk^2 \right)^T\left(\wik - \xk\right) \\
+% = c_i(\xk) + \left(\gik\right)^T\left(\wik - \xk\right) + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) \\
+% = \epsilon_g \dk^2 \nu^T\left(\wik - \xk\right) + c_i(\xk)\alpha \dk^{\frac 3 2} \\
+% \end{align*}
 
-Adding these, we find that
+so that
 \begin{align*}
-\dk \frac{1}{\|\gik\|} + \frac{1}{M}\epsilon_g \dk^2\|\nabla c_i(\xk)\| \le \frac{1}{M}\|\nabla c_i(\xk)\|^2 \\
-\dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\|\nabla c_i(\xk)\|^2 - \epsilon_g \dk^2\|\nabla c_i(\xk)\|\right) \\
-\dk \frac{1}{\|\gik\|} \le \frac{1}{M}\left(\nabla c_i(\xk)^T(\nabla c_i(\xk) - \epsilon_g \dk^2 \nu)\right) \\
-\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{M}\left(\nabla c_i(\xk)^T\gik\right) \\
-\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2} \le \frac{1}{2M}\left(\nabla c_i(\xk)^T\gik + \sqrt{\left(\nabla c_i(\xk)^T\gik\right)^2 - 4 M c_i(\xk)} \right) \\
+c_i(\wik)  \le c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \\
+= c_i(\xk) + \left(\gik\right)^T\left(\wik - \xk\right)+ M \left\|\wik - \xk\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) \\
+= c_i(\xk) + \left(\gik\right)^T\left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|^2}\gik + M \left\|\left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|^2}\gik\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) \\
+= c_i(\xk)\left[1 - \left(1 - \alpha \dk^{\frac 3 2 }\right)\right] + M \frac {c_i(\xk)^2}{\|\gik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) \\
+= \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|^2}\nu^T\gik \\
+\le \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|} \\
 \end{align*}
 
 
-We can conclude that
 \begin{align*}
-c_i\left(\xk -\left(1 - \dk^{\frac 3 2 }\alpha\right)\frac{-m_{c_i}(\xk)}{\|\gik\|^2}\gik\right) \le 0 \\
-c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\xk + \frac{m_{c_i}(\xk)}{\|\gik\|}\hgik - \xk\right)\right) \le 0 \\
-c_i\left(\xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right)\right) \le 0.
+\alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gik\|} \le 0\\
+\alpha \dk^{\frac 3 2 }\|\gik\| + M \frac {c_i(\xk)}{\|\gik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 - \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \ge 0\\
+\epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le \alpha \dk^{\frac 3 2 }\|\gik\| + M \frac {c_i(\xk)}{\|\gik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2\\
+\epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \dk \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 3 2 }\|\gik\|\\
+\epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 1 2 }\|\gik\|\\
+\epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - 2\alpha \dk^{\frac 3 2 } + \alpha^2 \dk^{3}\right) \le \alpha \dk^{\frac 1 2 }\|\gik\|\\
 \end{align*}
 
+
+% = \epsilon_g \dk^2 \nu^T\left(\wik - \xk\right) + c_i(\xk)\alpha \dk^{\frac 3 2} + M \left\|\wik - \xk\right\|^2 \\
+% \le \epsilon_g \dk^3 + c_i(\xk)\alpha \dk^{\frac 3 2} + M \dk^2 \\
+% = \dk^{\frac 3 2} \left(\epsilon_g \dk^{\frac 3 2} + c_i(\xk)\alpha + M \dk^{\frac 1 2}\right) \\
 
 
 Also, if $-s^T \hgik \ge \beta \dk^{\frac 3 2}$ where $\|s\| = 1$, then for sufficiently small $\dk$:
 \begin{align*}
-\dk \le \frac{\beta^2\|g_{\text{low}}\|^2}{\epsilon_g^2}  \\
-\Longrightarrow \dk^{\frac 1 2 } \le \frac{\beta\|\gik\|}{\epsilon_g} \\
-\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|} \\
-\Longrightarrow \beta \ge \frac{\epsilon_{g}\dk^{\frac 1 2}}{\|\gik\|} \\
-\Longrightarrow \beta\dk^{\frac 3 2} \ge \frac{\epsilon_{g}\dk^2}{\|\gik\|} \\
-\Longrightarrow -s^T\hgik \ge \frac{\epsilon_{g}\dk^2}{\|\gik\|}  \\
-\Longrightarrow -s^T\gik \ge \epsilon_{g}\dk^2|\nu^T s| \\
-\Longrightarrow -s^T\gik \ge -\epsilon_{g}\dk^2\nu^T s \\
-\Longrightarrow -s^T\left(\gik + \epsilon_{g}\dk^2\nu\right) \ge \delta \\
-\Longrightarrow -s^T\nabla c_i(\xk) \ge \delta.
+\dk \le \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3} \\
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}} \\
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right) \\
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(\|\gik\| - \frac 1 2 g_{\text{low}}\right) \\
+\Longrightarrow \|\gik\| \ge \frac 1 2 g_{\text{low}} + \frac{\epsilon_{g}}{\beta}\dk^{\frac 3 2} \\
+\Longrightarrow \|\gik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2 \\
+\Longrightarrow -\|\gik\|s^T\hgik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2 } + {\epsilon_{g}\dk^2}  \\
+\Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \\
+\Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
+\Longrightarrow -s^T\left(\gik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} \\
+\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}.
 \end{align*}
 
+% So that if $\xk + ts \in B_{\infty}(\xk, \dk)$, then 
 
-
+By choosing
 \begin{align*}
-c_i(\zik + ts) \le c_i(\zik) + t\nabla c_i(\zik)^Ts + Mt^2 \\
-= c_i(\zik) + t\nabla c_i(\xk)^Ts + t\left (\nabla c_i(\zik) - \nabla c_i(\xk)\right)^Ts + Mt^2 \\
+\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {L_g} M \right)} \right]^2 \\
+\dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {L_g} M \right)}  \\
+\sqrt{n}\left(1 + \frac {L_g} M \right) \dk^{\frac 1 2} \le \frac 1 {2M} g_{\text{low}} \beta \\
+\sqrt{n}\left(1 + \frac {L_g} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
+\sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk L_g + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
+\end{align*}
+we find that
+
+
+% t \le -\frac 1 M \left( \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts\right) \\
+\begin{align*}
+t 
+\le \sqrt{n} \dk 
+\le -\frac 1 M \sqrt{n}\dk L_g + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
+\le -\frac 1 M \sqrt{n}\dk L_g -\frac 1 M \nabla c_i(\xk)^Ts 
+\Longrightarrow \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts + M t \le 0
+\end{align*}
+so that
+\begin{align*}
+c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \\
+\le t \left(\nabla c_i(\wik)^Ts - \nabla c_i(\xk)^Ts + \nabla c_i(\xk)^Ts + M t\right) \\
+\le t \left(L_g\|\wik - \xk\| + \nabla c_i(\xk)^Ts + M t\right) \\
+\le t \left(\sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts + M t\right) \le 0.
 \end{align*}
 
-Thus, the entire cone $\fik$ is feasible with respect to the linearization of the constraint $c_i$ for sufficiently small $\dk$.
+% Thus, the entire cone $\fik$ is feasible with respect to the linearization of the constraint $c_i$ for sufficiently small $\dk$.
+% \begin{align*}
+% c_i(\xk + ts) \le c_i(\xk) + t\nabla c_i(\xk)^Ts + Mt^2 \le t(\nabla c_i(\xk)^Ts + Mt) \le 0.\\
+% \end{align*}
+
 
 \end{proof}
 
