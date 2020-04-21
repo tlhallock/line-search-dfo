@@ -39,7 +39,7 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 \theta^{\text{min}} = \liminf_{k\to\infty} \theta^{\text{min}}_k\\
 \theta^{\text{max}} = \limsup_{k\to\infty} \theta^{\text{max}}_k\\
 \bs = \sqrt{ 1 - (\theta^{\text{max}}_k)^2}\\
-\bsk = \beta\dk^{\frac 3 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk^3\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \\
+\bsk = \beta\dk^{\frac 1 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \\
 \fcki = \{x \in \rn | \quad x = \xk + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \} \\
 g_{\text{low}} \le \|\gik\| \le g_{\text{hi}} \\
 h_{\text{low}} \le \|\nabla^2m_{c_i}(x)\| \le h_{\text{hi}} \\
@@ -139,14 +139,18 @@ This implies that $1 = \|\hat y\| = \|x^{\star} + v\| > \|x^{\star}\| = 1$.
 
 
 \begin{theorem}
-If $z^{(i, k)} \in B_{\infty}(\xk, \dk))$ and
+If and
 \begin{align*}
+z^{(i, k)} \in B_{\infty}(\xk, \dk)) \\
+M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x) \\
 \dk \le \min\left\{
 1,
 \left(\frac{\alpha g_{\text{low}}}{M \sqrt{n} + \epsilon_g}\right)^2,
 \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3},
 \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2
-\right\},\end{align*} then
+\right\} \\
+,
+\end{align*} then
 \begin{align*}
 c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
 \end{align*}
@@ -347,8 +351,8 @@ which implies
 \begin{align*}
 t 
 \le \sqrt{n} \dk 
-\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
-\le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts 
+\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} 
+\le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \\
 \Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0.
 \end{align*}
 
@@ -462,38 +466,38 @@ For sufficiently small $\dk$, the set $\fcki \subseteq \fik$ for all $1\le i \le
 Fix some $1\le i \le m$.
 Letting $\dk \le 1$, we see that $\xk \in \fik$:
 \begin{align*}
-\xk = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk) - \left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk) \\
+\xk = \xk + \left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk) - \left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk) \\
 \end{align*}
 where
 \begin{align*}
-\frac{\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)}{\left\|\left(1 - \alpha\dk^{\frac 3 2}\right)(\zik - \xk)\right\|}^T\hgik =
-\frac{m_{c_i}(\xk)}{\|\gik\|}\frac{1}{\|\zik - \xk\|} = 1 \ge \beta\\
+\frac{-\left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta\\
 \end{align*}
 
 % = -\frac{m_{c_i}(\xk)}{\|\gik\|}\frac{\|\gik\|}{m_{c_i}(\xk)}
 
-Now, let $\dk$ be sufficiently small that $-(\huk)^T\hgik \ge \beta\dk^{\frac 3 2}$.
+Now, let $\dk$ be sufficiently small that $-(\huk)^T\hgik \ge \beta\dk^{\frac 1 2}$.
 This is possible, because $ -(\huk)^T\hgik \ge \theta^{\text{min}}_k \ge \theta^{\text{min}} > 0$.
 
 Then
 \begin{align*}
-\left\{s\quad | \quad s^T(-\hgik)\ge\dk^{\frac 3 2}\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
+\left\{s\quad | \quad s^T(-\hgik)\ge\dk^{\frac 1 2}\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
 \end{align*}
-by \cref{cone_subset_cone} with $u^1 \gets \hat u$, $u^2 \gets -\hgik$, $\beta \gets \beta \dk^{\frac 3 2 }$ because:
+by \cref{cone_subset_cone} with $u^1 \gets \hat u$, $u^2 \gets -\hgik$, $\beta \gets \beta \dk^{\frac 1 2 }$ because:
 \begin{align*}
-\left(-\beta\dk^{\frac 3 2}(\huk)^T\hgik + \sqrt{(1 - \dk^3\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
-\le \max_i \left(-\beta\dk^{\frac 3 2}(\huk)^T{\hgik} + \sqrt{(1 - \dk^3\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
-\le \beta\dk^{\frac 3 2} \max_i\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk^3\beta^2)\left(1 - \left((\max_i(-\hgik)^T\huk\right)^2\right)} \\
-= \beta\dk^{\frac 3 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk^3\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
+\left(-\beta\dk^{\frac 1 2}(\huk)^T\hgik + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
+\le \max_i \left(-\beta\dk^{\frac 1 2}(\huk)^T{\hgik} + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
+\le \beta\dk^{\frac 1 2} \max_i\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\max_i(-\hgik)^T\huk\right)^2\right)} \\
+= \beta\dk^{\frac 1 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
 \end{align*}
 Thus, $\fcki \subseteq \fik$.
 \end{proof}
 
 \begin{theorem}
-For sufficiently small $\dk$, $\fcki \ne \emptyset$, $\fcki \cap B_{\infty}(\xk, \dk) \subseteq \f$, and the cone contains one point on the boundary of $B_{\infty}(\xk, \dk)$.
+For sufficiently small $\dk$, $\fcki \ne \emptyset$.
 \end{theorem}
 \begin{proof}
-As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$. Also, the ray $\xk + t \huk$ is within this cone.
+As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
+% Also, the ray $\xk + t \huk$ is within this cone.
 \end{proof}
 
 
@@ -509,7 +513,7 @@ Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^
 Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
 First, note that
 \begin{align*}
-\Longrightarrow (e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
+(e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
 \Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
 \Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
 \Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
@@ -579,88 +583,88 @@ We have already shown that the cone $\fcki \cap B_{\infty}(\xk, \dk) \subset \f$
 By construction, the ellipse has been shifted to put $\xk$ at the origin and rotated by $R$ to put $\hat u$ along the x-axis.
 Thus, by \cref{ellipse_in_cone}, we know that $E_k \subseteq \fcki$.
 We know that $t_k > \dk$ because it measures the distance from $\xk$ to some point on the boundary of $B_{\infty}(\xk, \dk)$.
-Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 t_k$ along $\huk$.
-Finally, we know that it does not travel more than $\frac 1 2 t_k$, \color{red} which is well away from the boundary of $B_{\infty}(\xk, \dk)$ \color{black}.
+Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 \dk$ along $\huk$.
+Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $B_{\infty}(\xk, \dk)$.
 \end{proof}
 
 
 \color{red}
 
-\begin{theorem}
-Suppose that there exists an $M$ such that $\|\xsk - \xk\| \le M$, and a $\delta > 0$ such that $\theta^{\text{min}}_k \ge \delta$.
-Then, there exists an $\epsilon > 0$, such that when $\dk \le \epsilon$, we have $ \fcko \cap B_{\infty}(\xk, \dk) \subseteq \mathcal F$.
-\end{theorem}
-
-\begin{proof}
-Let
-\begin{align*}
-y = \xsk + \ask \hat u + ts \in \fcko \\
-s^{(i, k)} = \xsk + \ask\dk^{\frac 1 2}\huk - z^i + \alpha\dk^{\frac 1 2}\hgik\\
-\end{align*}
-
-We can choose a sufficiently small $\dk$ so that
-\begin{align*}
-\dk \le (2\beta M)^{-\frac 2 3} \Longrightarrow \frac 1 2 \dk^{\frac 1 2 } \ge \dk^2 M\beta \\
-\dk \le \sqrt{\frac 1 {2\beta} \frac{\delta}{1 + \alpha + \delta\alpha}} \Longrightarrow \frac 1 2 \dk^{\frac 1 2 } \ge \beta\dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}.
-\end{align*}
-
-Adding these together, we find that
-
-\begin{align*}
-\dk^{\frac 1 2 } \ge \beta \dk^2 M + \beta \dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}.
-\end{align*}
-
-But,
-\begin{align*}
--(\hgik)^T s^{(i, k)} = -(\gik)^T \left(\xsk - \zik\right) + \dk^{\frac 1 2}\left(-(\hgik)^T\huk\ask - \alpha\right)
-\ge 0 + \dk^{\frac 1 2}\left(\theta^{\text{min}}_k \frac{1 + \alpha}{\theta^{\text{min}}_k} - \alpha\right) = \dk^{\frac 1 2 }\\
-\end{align*}
-and
-\begin{align*}
-\beta\dk^2\|s^{(i, k)}\| = \beta\dk^2\|\xsk + \ask\dk^{\frac 1 2}\huk - \zik + \alpha\dk^{\frac 1 2}\hgik \| \\
-\le \beta\dk^2\left(\|\xsk - \zik \| + \dk^{\frac 1 2} (\ask + \alpha)\right) 
-\le \dk^2\beta M + \beta \dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}
-\end{align*}
-imply 
-\begin{align*}
-\xsk + \ask\dk^{\frac 1 2}\huk \in \fik.
-\end{align*}
-
-First, we note that
-\begin{align*}
-\left \{\xsk + \ask\dk^{\frac 1 2}\huk  + t s\quad | \quad \|s\| = 1, t> 0, -s^T(\hgik)\ge\dk^2\beta \right\} \\
-\subseteq \left \{\zik + \alpha\dk^{\frac 1 2}\huk + t s\quad | \quad \|s\| = 1, t> 0, -s^T(\hgik)\ge\dk^2\beta \right\}.  \\
-\end{align*}
-
-In addition,
-\begin{align*}
-\left\{s\quad | \quad s^T(-\hgik)\ge\dk^2\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
-\end{align*}
-by \cref{cone_subset_cone}: (\color{red}we only need $-(\huk)^T\hgik \ge \beta$\color{black})
-\begin{align*}
-\left(-\beta\dk^2(\huk)^T\hgik + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
-\le \max_j \left(-\beta\dk^2(\huk)^T{\hgik} + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
-\le \beta\dk^2 \max_j\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\max_k(-\hgik)^T\huk\right)^2\right)} \\
-= \beta\dk^2 \theta^{\text{max}}_k + \sqrt{(1 - \dk^4\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
-\end{align*}
-
-Thus, $B(\xk, \dk) \cap \fcko \subseteq B(\xk, \dk) \cap \left(\cap_i \fik \right)\subseteq \f$.
-\end{proof}
-
-
-
-
-\color{red}
-
-Because $\fcko$ is feasible, and $\xk \in \fcko$ we know that $ \fcki $ is feasible.
-But then, for any $\delta > 0$, the set is also feasible:
-\begin{align*}
-B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk)) \le 0\}
-\end{align*}
-Choose $\delta$ so that this hits the edge of the trust region.
-
-
-\color{black}
+% \begin{theorem}
+% Suppose that there exists an $M$ such that $\|\xsk - \xk\| \le M$, and a $\delta > 0$ such that $\theta^{\text{min}}_k \ge \delta$.
+% Then, there exists an $\epsilon > 0$, such that when $\dk \le \epsilon$, we have $ \fcko \cap B_{\infty}(\xk, \dk) \subseteq \mathcal F$.
+% \end{theorem}
+% 
+% \begin{proof}
+% Let
+% \begin{align*}
+% y = \xsk + \ask \hat u + ts \in \fcko \\
+% s^{(i, k)} = \xsk + \ask\dk^{\frac 1 2}\huk - z^i + \alpha\dk^{\frac 1 2}\hgik\\
+% \end{align*}
+% 
+% We can choose a sufficiently small $\dk$ so that
+% \begin{align*}
+% \dk \le (2\beta M)^{-\frac 2 3} \Longrightarrow \frac 1 2 \dk^{\frac 1 2 } \ge \dk^2 M\beta \\
+% \dk \le \sqrt{\frac 1 {2\beta} \frac{\delta}{1 + \alpha + \delta\alpha}} \Longrightarrow \frac 1 2 \dk^{\frac 1 2 } \ge \beta\dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}.
+% \end{align*}
+% 
+% Adding these together, we find that
+% 
+% \begin{align*}
+% \dk^{\frac 1 2 } \ge \beta \dk^2 M + \beta \dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}.
+% \end{align*}
+% 
+% But,
+% \begin{align*}
+% -(\hgik)^T s^{(i, k)} = -(\gik)^T \left(\xsk - \zik\right) + \dk^{\frac 1 2}\left(-(\hgik)^T\huk\ask - \alpha\right)
+% \ge 0 + \dk^{\frac 1 2}\left(\theta^{\text{min}}_k \frac{1 + \alpha}{\theta^{\text{min}}_k} - \alpha\right) = \dk^{\frac 1 2 }\\
+% \end{align*}
+% and
+% \begin{align*}
+% \beta\dk^2\|s^{(i, k)}\| = \beta\dk^2\|\xsk + \ask\dk^{\frac 1 2}\huk - \zik + \alpha\dk^{\frac 1 2}\hgik \| \\
+% \le \beta\dk^2\left(\|\xsk - \zik \| + \dk^{\frac 1 2} (\ask + \alpha)\right) 
+% \le \dk^2\beta M + \beta \dk^{\frac 5 2}\frac{1 + \alpha + \delta\alpha}{\delta}
+% \end{align*}
+% imply 
+% \begin{align*}
+% \xsk + \ask\dk^{\frac 1 2}\huk \in \fik.
+% \end{align*}
+% 
+% First, we note that
+% \begin{align*}
+% \left \{\xsk + \ask\dk^{\frac 1 2}\huk  + t s\quad | \quad \|s\| = 1, t> 0, -s^T(\hgik)\ge\dk^2\beta \right\} \\
+% \subseteq \left \{\zik + \alpha\dk^{\frac 1 2}\huk + t s\quad | \quad \|s\| = 1, t> 0, -s^T(\hgik)\ge\dk^2\beta \right\}.  \\
+% \end{align*}
+% 
+% In addition,
+% \begin{align*}
+% \left\{s\quad | \quad s^T(-\hgik)\ge\dk^2\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
+% \end{align*}
+% by \cref{cone_subset_cone}: (\color{red}we only need $-(\huk)^T\hgik \ge \beta$\color{black})
+% \begin{align*}
+% \left(-\beta\dk^2(\huk)^T\hgik + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
+% \le \max_j \left(-\beta\dk^2(\huk)^T{\hgik} + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
+% \le \beta\dk^2 \max_j\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk^4\beta^2)\left(1 - \left((\max_k(-\hgik)^T\huk\right)^2\right)} \\
+% = \beta\dk^2 \theta^{\text{max}}_k + \sqrt{(1 - \dk^4\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
+% \end{align*}
+% 
+% Thus, $B(\xk, \dk) \cap \fcko \subseteq B(\xk, \dk) \cap \left(\cap_i \fik \right)\subseteq \f$.
+% \end{proof}
+% 
+% 
+% 
+% 
+% \color{red}
+% 
+% Because $\fcko$ is feasible, and $\xk \in \fcko$ we know that $ \fcki $ is feasible.
+% But then, for any $\delta > 0$, the set is also feasible:
+% \begin{align*}
+% B_{\infty}(\xk, \dk) \cap \{x \in \rn | \quad f_e(\delta, r, \theta, R(x - \xk)) \le 0\}
+% \end{align*}
+% Choose $\delta$ so that this hits the edge of the trust region.
+% 
+% 
+% \color{black}
 
 
 \begin{theorem}
