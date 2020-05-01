@@ -49,6 +49,7 @@ f_e(\delta, r, \theta; x) = (x - \delta e_1)^T\bigg(\begin{bmatrix}
 R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I \label{def_rotation} \\
 E_k = \{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\} \label{def_ellipse_k} \\
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu \label{def_lambda_poised} \\
+\inf_{k}\min\{\sigma(\nabla c_{\mathcal I_k}(\xk)) \; | \; \sigma(\nabla c_{\mathcal I_k}(\xk)) > 0 \} \ge \epsilon_{\sigma} > 0\\
 \end{align}
 
 
@@ -69,24 +70,36 @@ Then $\theta^{\text{min}} > 0.$
 \end{theorem}
 
 \begin{proof}
-Give $\nabla m_{c_{\mathcal I_k} }(\xk)$ its singular value decomposition $\nabla \hat m_{c_{\mathcal I} }(\xk) = U\Sigma V^T$.
-Note that the singular values of $\nabla c(\xk)$ are bounded away from zero, and $ \nabla \hat m_{c_{\mathcal I} }(\xk) \to \nabla c(\xk)$ as $\dk\to 0$,
-so that for sufficiently large $k$, we have that $\Sigma > 0$.
+We assume that $\nabla c_{\mathcal I_k}(\xk)$ has full row and column rank.
+Let $n_k$ be the number of rows in $\nabla c_{\mathcal I_k}(\xk)$, and $d = \min \{ n, n_k \}$.
+Give $\nabla m_{c_{\mathcal I_k}}(\xk)$ and $\nabla c_{\mathcal I_k}(\xk)$ their singular value decompositions
+\begin{align*}
+\nabla m_{c_{\mathcal I_k}}(\xk) = U\Sigma V^T, \quad
+\nabla c_{\mathcal I_k}(\xk) = \hat U \hat \Sigma \hat V^T
+\end{align*}
+where $U, \hat U$ are orthonormal $n_k \times d$ matrices; $\Sigma, \hat \Sigma$ are diagonal $d \times d$ matrices; and $V, \hat V$ are orthonormal $d \times n$ matrices.
+Note that because of \cref{def_lambda_poised}, if $\|\cdot\|_{\mathcal F}$ is the Frebenious norm, then
+\begin{align*}
+\|\nabla c(\xk) - \nabla m_{c_{\mathcal I_k}}(\xk)\|_{\mathcal F}^2 \le n_k \left(\epsilon_g \dk^2\right)^2
+\Longrightarrow \|\nabla c(\xk) - \nabla m_{c_{\mathcal I_k}}(\xk)\|_{\mathcal F} \le \sqrt{n_k} \epsilon_g \dk^2.
+\end{align*}
+Each element $\hat \Sigma$ is greater than $\epsilon_{\sigma}$, so because $\dk \to 0$ we have that for sufficiently large $k$, each element of $s$ of $\Sigma$ satisfies $s > \frac 1 2 \epsilon_{\sigma}$.
+
 First, we compute
 \begin{align*}
-\nabla \hat m_{c_{\mathcal I} }(\xk) \uk = -\nabla\hat m_{c_{\mathcal I} }(\xk) \nabla\hat m_{c_{\mathcal I} }(\xk)^{\dagger} e
+\nabla \hat m_{c_{\mathcal I_k} }(\xk) \uk = -\nabla\hat m_{c_{\mathcal I_k} }(\xk) \nabla\hat m_{c_{\mathcal I_k} }(\xk)^{\dagger} e
 = -(U\Sigma V^T)(V\Sigma^{\dagger} U^T)e
 = -e 
 \end{align*}
 and
 \begin{align*}
-\|\uk\| = \|V\Sigma^{-1} U^Te\|  
-\le \frac 1 {\sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\right)}.
+\|\uk\| = \|V\Sigma^{\dagger} U^Te\|  
+\le \frac 1 {\sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I_k}}(\xk)\right)}.
 \end{align*}
 
 Then we can see that
 \begin{align*}
-(-\gik)^T\huk = -\frac{\|\gik\|}{\|\uk\|}(\hgik)^T\uk = \frac{\|\gik\|}{\|\uk\|} \ge g_{\text{low}} \sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I}}(\xk)\right). \\
+(-\gik)^T\huk = -\frac{\|\gik\|}{\|\uk\|}(\hgik)^T\uk = \frac{\|\gik\|}{\|\uk\|} \ge g_{\text{low}} \sigma_{\text{min}}\left(\nabla \hat m_{c_{\mathcal I_k}}(\xk)\right) \ge \frac 1 2 g_{\text{low}}\epsilon_{\sigma}. \\
 \end{align*}
 
 % -A^T(AA^T)^{-1}Ae = \\
@@ -140,10 +153,12 @@ From these two equations, we not only know that $\left(\hat y - x^{\star}\right)
 \left(\beta {\left(\hat y - x^{\star}\right)}^Tu^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \left({\left(\hat y - x^{\star}\right)}^Tu^1 - {u^2}^Tu^1 {\left(\hat y - x^{\star}\right)}^Tu^2 \right)\right) > 0
 \end{align*}
 as ${u^1}^Tu^2 \ge \beta \Longrightarrow {u^2}^Tu^1\sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \ge \beta$.
-This is a contradiction as
+However, this is a contradiction as
 \begin{align*}
-1 = \|\hat y\| = \|x^{\star} + \hat y - x^{\star}\| > \|x^{\star}\| = 1.
+1 = \|\hat y\| = \|x^{\star} + \hat y - x^{\star}\| > \|x^{\star}\| = 1
 \end{align*}
+and there is no such $y$.
+Thus, any $y \in\rn$ with $y \in S$ must also have $y \in B$.
 \end{proof}
 
 
@@ -171,8 +186,12 @@ c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
 
 \begin{proof}
 
-Let $y = \wik + ts \in \fik \cap B_{\infty}(\xk, \dk) $ with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$.
-By \cref{def_lambda_poised}, there exists a $\nu \in \rn$, $\|\nu\|\le 1$ such that 
+Let 
+\begin{align}
+y = \wik + ts \in \fik \cap B_{\infty}(\xk, \dk) \label{t_is_bounded}
+\end{align}
+with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$.
+Because the model $m_{c_i}$ is fully quadratic, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds:
 \begin{align*}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
 \end{align*}
@@ -180,9 +199,9 @@ By \cref{def_lambda_poised}, there exists a $\nu \in \rn$, $\|\nu\|\le 1$ such t
 First, we will show that $c(\wik) \le 0$.
 For simplicity, we use \cref{def_cg}, \cref{def_gk}, \cref{def_z}, and \cref{def_w} to compute
 \begin{align}
-\wik - \xk = \xk + \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) - \xk 
+\wik - \xk & = & \xk + \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) - \xk 
 = \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) \\
-= \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gik\|^2}\gik - \xk\right) 
+& = &  \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gik\|^2}\gik - \xk\right) 
 = \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gik\|^2}\gik. \label{simple_computation}
 \end{align}
 
@@ -190,11 +209,11 @@ Also, note by \cref{delta_is_small_enough}, \cref{def_alpha_beta} that both
 \begin{align*}
 \dk \le \left(\frac{\alpha \|\gik\|}{M \sqrt{n} + \epsilon_g}\right)^2 \Longrightarrow 
 M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} \le \alpha \|\gik\| \quad \text{and} \quad
-0 \le 1 - \alpha \dk^{\frac 3 2 } \le 1.
+0 < 1 - \alpha \dk^{\frac 3 2 } < 1.
 \end{align*}
 We can combine these and \cref{z_is_active} to find 
 \begin{align*}
-M \sqrt{n}\dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2  + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right) \le M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} & \le & \alpha \|\gik\| && \\
+M \sqrt{n}\dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2  + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right) \le M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} & \le & \alpha \|\gik\| \\
 \Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gik\| + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \sqrt{n}\dk+ \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) & \le &  0 \\
 \Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gik\|\left(-\frac{c_i(\xk)}{\|\gik\|}\right) + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \left(-\frac{c_i(\xk)}{\|\gik\|}\right)^2+ \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(-\frac{c_i(\xk)}{\|\gik\|}\right) & \le& 0.
 \end{align*}
@@ -238,43 +257,42 @@ However, we also know by \cref{m_bounds}, \cref{simple_computation} and the Mean
 % = \dk^{\frac 3 2} \left(\epsilon_g \dk^{\frac 3 2} + c_i(\xk)\alpha + M \dk^{\frac 1 2}\right) \\
 
 
-Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{\frac 1 2}$ where $\|s\| = 1$, and by our assumption \cref{delta_is_small_enough}, we know
-\begin{align*}
-\dk \le \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3} \\
-\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}} \\
-\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right) \\
-\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(\|\gik\| - \frac 1 2 g_{\text{low}}\right) \\
-\Longrightarrow \|\gik\| \ge \frac 1 2 g_{\text{low}} + \frac{\epsilon_{g}}{\beta}\dk^{\frac 3 2} \\
-\Longrightarrow \|\gik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2 \\
-\Longrightarrow -\|\gik\|s^T\hgik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2 } + {\epsilon_{g}\dk^2}  \\
-\Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \\
-\Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
-\Longrightarrow -s^T\left(\gik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} \\
-\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}.
-\end{align*}
+Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{\frac 1 2}$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_gk}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
+
+% \Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
+% \Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
+\begin{align}
+\dk \le \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3} 
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
+\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{\frac 3 2} \le \|\gik\| - \frac 1 2 g_{\text{low}} \nonumber \\
+\Longrightarrow -\|\gik\|s^T\hgik \ge \|\gik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2 
+\Longrightarrow -s^T\gik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
+\Longrightarrow -s^T\left(\gik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} 
+\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}. \label{nsc_pos}
+\end{align}
 
 % So that if $\xk + ts \in B_{\infty}(\xk, \dk)$, then 
 
 We also know by \cref{delta_is_small_enough} that
-\begin{align*}
-\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2 \\
-\dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}  \\
-\sqrt{n}\left(1 + \frac {\lgi} M \right) \dk^{\frac 1 2} \le \frac 1 {2M} g_{\text{low}} \beta \\
-\sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
-\sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \\
-\end{align*}
-which implies by \cref{def_g_bounds}
+% \Longrightarrow \dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}
+\begin{align}
+\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2 
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk^{\frac 1 2} \le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2}
+\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \label{eqn2}
+\end{align}
+which implies by \cref{def_g_bounds}, \cref{t_is_bounded}, \cref{nsc_pos}, \cref{eqn2}
 
 % t \le -\frac 1 M \left( \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts\right) \\
-\begin{align*}
+\begin{align}
 t 
 \le \sqrt{n} \dk 
 \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} 
-\le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \\
-\Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0.
-\end{align*}
+\le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \nonumber \\
+\Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0. \label{eqn3}
+\end{align}
 
-From there, we can conclude with \cref{def_lipshitz}, \cref{z_is_active}
+From there, we can conclude with \cref{def_lipshitz}, \cref{z_is_active}, \cref{eqn3}
 \begin{align*}
 c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \\
 \le t \left(\nabla c_i(\wik)^Ts - \nabla c_i(\xk)^Ts + \nabla c_i(\xk)^Ts + M t\right) \\
@@ -457,7 +475,7 @@ f_e(\delta, r, \theta, x) \le 0 \\
 \Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
 \Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
 \Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
-\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta
+\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta.
 \end{align*}
 \end{proof}
 
