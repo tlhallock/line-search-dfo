@@ -11,17 +11,40 @@
 \documentclass{beamer}
 
 
+\newcommand{\xk}{{{x}^{(k)}}}
+\newcommand{\dk}{{\Delta_k}}
+\newcommand{\mk}{{m_f}}
+\newcommand{\fk}{{f_k}}
+\newcommand{\fgk}{{g^{(k)}_f}}
+\newcommand{\fhk}{{H^{(k)}_f}}
+\newcommand{\ck}{{c^{(k)}_{i}(\xk)}}
+\newcommand{\cgk}{{g^{(k)}_{c_i}}}
+\newcommand{\mck}{{m_{c_i}}}
+\newcommand{\bk}{{B_{\infty}(\xk, \dk)}}
+
+
+
 \usepackage{color}
 
 
 \begin{document}
+
+
 \title{Dissertation Outline}   
 \author{Trever} 
 \date{\today} 
 
 \frame{\titlepage} 
 
-\frame{\frametitle{Table of contents}\tableofcontents} 
+\section{Introduction}
+
+\begin{frame}{Introduction}
+    \begin{itemize}
+        \item We develop an algorithm to find local optima of convex constrained problems
+        \item This algorithm is useful when function values are not provided for infeasible points
+        \item The focus is on narrow constraints
+    \end{itemize}
+\end{frame}
 
 \section{Derivative Free Background}
 
@@ -30,35 +53,48 @@
 \label{Problem}
 \begin{align*}
 \min_x & \quad f(x) \\
-  c_i(x) \le 0   & \quad \forall i \in \mathcal {I} \\
-  c_i(x)  = 0    & \quad \forall i \in \mathcal {E} 
+  c_i(x) \le 0   & \quad \forall \; 1 \le i \le m \\
 \end{align*}
 \end{center}
     \begin{itemize}
         \item All functions are black-box functions, meaning that we have no information about their derivatives
+        \item Function values may not be available outside of the feasible region, we call this partially-quantifiable
+        \item For example, optimization problems with where the objective or some constraints depend on an expensive simulation
 %        \item $S(x)$ is a black-box function, meaning that we have no information about its derivatives
 %        \item We assume that $f$ and $c$ are apriori functions
-        \item We assume the level sets of $f$ are bounded
-        \item We assume $f$, $c$ are continuously twice differentiable
-        \item The goal of my research is to develop algorithms for this problem
+%         \item We assume the level sets of $f$ are bounded
+%         \item We assume $f$, $c$ are continuously twice differentiable
+%         \item The goal of my research is to develop algorithms for this problem
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Main Idea}
     \begin{itemize}
-        \item Adapt classic trust region based, nonlinear constrained optimization algorithms to derivative free optimization
+        \item Adapt a classic trust region, nonlinear constrained optimization algorithm to derivative free optimization
         \item Replace derivatives with derivatives of model functions, and make any other changes required to avoid extra function calls and ensure convergence
+        \item Ensure that no infeasible points must be evaluated
         \item Focus is on nonlinear, constrained, local search algorithms
     \end{itemize}
 \end{frame}
+
+
+\frame{\frametitle{Table of contents}\tableofcontents} 
+
 
 
 \begin{frame}{Model Based Trust Region Methods}
     \begin{itemize}
         \setlength\itemsep{2em}
     	\item Approximate $f$ and $c$ in terms of model functions
-	    \item We will discuss the geometric issues this introduces
+    	\item We approximate using a second order model, meaning that we approximate:
+    	\begin{itemize}
+            \item $\fhk \approx \nabla ^2 f(\xk)$
+            \item $\fgk \approx \nabla f(\xk)$
+            \item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
+            \item $\cgk \approx c_i(\xk)$
+            \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(\xk)$
+    	\end{itemize}
 	    \item Choose next iterate by minimizing a model problem over a trust region
 	\end{itemize}
 \end{frame}
@@ -69,11 +105,14 @@
 \begin{frame}{Trust Region Subproblem}
     \begin{itemize}
         \item In each iteration, we attempt to solve the trust region subproblem to compute a step direction $s$
-\begin{align*}f^k + (g^k)^Ts + \frac 1 2 (s^k)^T H^ks^k  &\\
-     c_{{\mathcal{I}}}^k + A_{{\mathcal{I}}}^ks       &\le \; 0  \\
-s.t. \hspace{1cm} c_{{\mathcal{E}}}^k + A_{{\mathcal{E}}}^ks           &=\; 0 \\
-     \| s \|                      &\le \; \Delta_k.
-\end{align*}
+
+        \begin{displaymath}
+\begin{array}{lrcc}
+min_s & \mk(s)   &     &            \\
+s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
+      &  s & \in & \bk.  \\
+\end{array}
+        \end{displaymath}
     \end{itemize}
 \end{frame}
 
@@ -104,104 +143,151 @@ s.t. \hspace{1cm} c_{{\mathcal{E}}}^k + A_{{\mathcal{E}}}^ks           &=\; 0 \\
 \begin{frame}{Geometry}
     \begin{itemize}
         \item<1, 2, 3> Geometry refers to the shape of the set of sample points
-        \item<1, 2, 3> When the points are not well poised, the constructed model can be innacurate
-        \only<2>{\item \includegraphics[width=150px]{images/poised_bad.png} }
+        \item<1, 2, 3> When the points are not well poised, the constructed model can be innacurate \\
+        \only<2>{
+            \includegraphics[width=120px]{images/poised_good.png} \includegraphics[width=120px]{images/poised_bad.png}
+        }
         \item<3> The geometry can be measured by its $\Lambda$-poisedness
         \item<3> Constructing poised sets over ellipses is well known
         \item<3> Constraints limit what points are available for the sample set
+        \item<3> With narrow constraints, this means poised sets may not exist
     \end{itemize}
 \end{frame}
 
-\begin{frame}
 
-\end{frame}
-
-
-\section{Always Feasible Algorithm}
+\section{Convex Always Feasible Algorithm}
 
 
 \begin{frame}{Feasible Derivative Free Algorithm Part 1}
     \begin{itemize}
-        \item We experimented with several variations of an algorithm following the outline in ``Global convergence of trust region algorithms for convex constrained minimization without derivatives."
-        \item This algorithm was promising after bench-marking our algorithms on the Hott-Schittowski problem set.
-        \item The convergence analysis for this variant is promising
+        \item We followed an algorithmic template found in \cite{CONEJO2013324}
+        \item The template in this article assumes either linear or quadratic models
+        \item It describes an algorithm which requires
+            \begin{itemize}
+                \item An efficiency condition
+                \item An accuracy condition
+                \item A projection method onto the feasible set
+            \end{itemize}
+%         \item This algorithm was promising after bench-marking our algorithms on the Hott-Schittowski problem set.
     \end{itemize}
 \end{frame}
 
 
+
 \begin{frame}{Feasible Derivative Free Algorithm Part 2}
     \begin{itemize}
-        \item We define two trust regions:
-        \begin{itemize}
-            \item The inner trust region is used for constructing sample points
-            \item The outer trust region is used as the search space for computing the next iterate
-        \end{itemize}
-        \item The inner trust region is chosen by maximizing the volume of an ellipsoid within the outer trust region intersect the constraints
-        \item Even if the feasible region is narrow, the trust region is easy to optimize
+        \item The efficiency condition requires: $$m_f^{(k)}(x^{(k)}) - m_f^{(k)}(x^{(k+1)}) \ge c_1 \xi^{(k)} \min \{\frac{\xi^{(k)}}{1 + \|\nabla^2 m_f^{(k)}(x^{(k)})\|}, \Delta_k, 1\}$$
+        \item This can be satisfied using the Generalized Cauchy Point
+        \item The accuracy condition requires: $$\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k$$
+        \item To satisfy this, we require the ellipsoid we find to have bounded condition number
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Adoption Difficulties}
+
+\begin{itemize}
+    \item We had to modify the convergence analysis to account for projections onto only the linear approximation of the feasible set.
+    \item Another difficulty was that the original algorithm does not decrease the trust region when accepting the trial point.
+    \includegraphics[width=300px]{images/decrease_required.png}
+\end{itemize}
+
+
+\end{frame}
+
+
+\begin{frame}{Feasible Derivative Free Trust regions}
+    \begin{itemize}
+        \item We define two trust regions.
+        \item The inner trust region:
+            \begin{itemize}
+                \item Is used for constructing sample points]
+                \item Has an ellipsoidal shape
+                \item Is assumed to be feasible, with respect to true constraints
+            \end{itemize}
+        \item The outer trust region:
+            \begin{itemize}
+                \item is used as the search space for computing the next iterate
+                \item Is an $L_{\infty}$ ball
+                \item Can contain infeasible points, even for the linearization of the constraints
+            \end{itemize}
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}{}
-\includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+\begin{center}
+    \includegraphics[width=300px]{images/trust_regions.png}
+\end{center}
+% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
 
 
-\section{Convergence Analysis}
 
-\frame {
-\frametitle{Convergence Analysis}
-
-\begin{itemize}
-    \item Convergence relies on the results found in ``Global convergence of trust region algorithms for convex constrained minimization without derivatives."
-    
-    \item Two criteria must be satisfied:
+%         \item Use the previous iterations
+\begin{frame}{The algorithm}
     \begin{itemize}
-        \item Efficiency: $$m_f^{(k)}(x^{(k)}) - m_f^{(k)}(x^{(k+1)}) \ge c_1 \xi^{(k)} \min \{\frac{\xi^{(k)}}{1 + \|\nabla^2 m_f^{(k)}(x^{(k)})\|}, \Delta_k, 1\}$$
-        \item Accuracy: $$\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k$$
+        \item Begin with a feasible set of points
+        \item Construct the model functions by evaluating sample points
+            \begin{itemize}
+                \item Use the previous iteration's models to find a feasible inner trust region
+                \item If a point is found to be infeasible, decrease the radius
+            \end{itemize}
+        \item Solve the trust region subproblem
+            \begin{itemize}
+                \item Add linear constraints to remove infeasible points
+            \end{itemize}
+        \item Test for sufficient reduction
     \end{itemize}
-    \item The first of these can be satisfied using the Generalized Cauchy Point
-\end{itemize}
-}
-
-
+\end{frame}
 
 \frame {
-\frametitle{Linear Convergence Analysis}
-
+\frametitle{Extensions to the Algorithm}
 \begin{itemize}
-    \item In order to satisfy the accuracy condition, we must be able to show that we can always find a suitable ellipse.
-    \item The ellipse must be feasible and have a bounded condition number in order to satsify the accuracy condition.
-    \item We provide an algorithm for finding a feasible sphere, which is then used as input to a local search over ellipsoids to increase its volume
-    \item If the current iterate does not have two or more active consntraints, this is easily done for linear constraints.
-\end{itemize}
-}
-
-
-\frame {
-\frametitle{General Convex algorithm}
-
-\begin{itemize}
-    \item With convex constraints, we still model the feasible region with linear constraints.
-    \item We show that for a small enough trust region, we can still find a feasible ellipse.
-    \item The ellipse we find may be much smaller than what is possible.
+    \item The feasible ellipsoid calculation is much more conservative than needed.
+    \item We are defining the optimization problem of computing the maximum volume ellipse
+    \item There may be simple heuristics that find better ellipsoids
+    \item There are different strategies for dealing with infeasible trial points
 \end{itemize}
 
 }
 
 
 \frame {
-\frametitle{General Convex algorithm}
-
+\frametitle{Adding linear cuts to feasible region}
 \begin{itemize}
-    \item We also experiment with other methods for computing a feasible ellipse.
-    \item We also extend the problem of finding a maximal ellipsoid within a polyhedron, to the maximal ellispe within several special cones.
-    \item Alternatively, we can add linear constraints that cut off any point that is found to be infeasible.
-    \item We choose the linear constraint to remove the infeasible point to maximize the current lagrange polynomial within the resulting feasible region.
-    \item We also consider kriging models of the constraints, as this allows an arbitrary number of points to be added.
+    \item There is another strategy for computing the maximal linear shape to be feasible
+    \item It could also be convenient for solving the trust region subproblem
+    \item The algorithm is as follows:
+        \begin{itemize}
+            \item Start with a polynomial $p$, a tolerance $\epsilon$, a set of infeasible points $I = \emptyset$, and feasible points $F$.
+            \item Compute
+            \begin{displaymath}
+                \begin{array}{ccccc}
+                    max_{s, v^{(i)}, b^{(i)}} & p(s)       &       &                               & \\
+                               & v^T p      & \le   & 0                             & \forall n \in F, \quad \forall m \in F\\
+                               & v^T n      & \ge   & \epsilon \Delta_k             & \forall n \in I \\
+                               & \|v \|^2   & =     & 1                             & \forall n \in I \\
+                               & v^T n      & \ge   & \epsilon                      & \forall n \in I \\
+                               & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k) & \\
+                \end{array}
+            \end{displaymath}
+        \end{itemize}
 \end{itemize}
 
 }
+
+\frame {
+    \frametitle{Questions?}
+}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{References}
+    \bibliographystyle{apalike}
+    \bibliography{presentation.bib}
+\end{frame}
+
+
 
 \section{Future Work}
 
@@ -236,43 +322,6 @@ s.t. \hspace{1cm} c_{{\mathcal{E}}}^k + A_{{\mathcal{E}}}^ks           &=\; 0 \\
         
     \end{itemize}
 }
-
-\frame {
-\frametitle{Undetermined Coefficients}
-    \begin{itemize}
-        \item In [J. Belly, P.E. Belley, A.G.R. Day,. 2013], the authors develop an algorithm for approximating a subset of all partial derivatives
-%         ``Multivariate polynomial interpolation and meshfree differentation via undetermined coefficients"
-
-        \item For one dimensional problems, they provide a recursive formula for approximating the $\alpha$ derivative on a set of points $\sigma$:
-\begin{math}
-    L_f^{\alpha}(p; \sigma) = L_f^{\alpha}(p; \sigma \setminus p_m) + \big(f(p_m) - L_f(p_m; \sigma \setminus p_m)\big) l_m^{(\alpha)}(p; \sigma)
-\end{math}
-        
-        \item In general, they use a method of undetermined coefficients to compute arbitrary partial derivatives in $n$-dimensions.
-    \end{itemize}
-}
-
-
-
-\frame {
-\frametitle{Including Function Values}
-    \begin{itemize}
-        \item There may be feasible directions where the constraints are not narrow, but the function does not change quickly.
-        
-        \item The error bounds in this paper as well as function values already computed may provide a way to choose a subset of points that reduces the error over the feasible region.
-
-        \item This method uses not only the constraints, but existing function values to choose the next iterate.
-    \end{itemize}
-}
-
-\color{red}
-\frame {
-\frametitle{Low hanging fruit}
-    \begin{itemize}
-        \item the current iterate need not be evaluated.
-    \end{itemize}
-}
-\color{black}
 
 
 
