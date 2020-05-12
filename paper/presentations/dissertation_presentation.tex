@@ -30,7 +30,7 @@
 \begin{document}
 
 
-\title{Dissertation Outline}   
+\title{Master's Presentation}   
 \author{Trever} 
 \date{\today} 
 
@@ -41,8 +41,8 @@
 \begin{frame}{Introduction}
     \begin{itemize}
         \item We develop an algorithm to find local optima of convex constrained problems
-        \item This algorithm is useful when function values are not provided for infeasible points
-        \item The focus is on narrow constraints
+        \item This algorithm is useful for problems where function values are not provided for infeasible points
+        \item The focus is on narrow feasible regions
     \end{itemize}
 \end{frame}
 
@@ -58,8 +58,8 @@
 \end{center}
     \begin{itemize}
         \item All functions are black-box functions, meaning that we have no information about their derivatives
-        \item Function values may not be available outside of the feasible region, we call this partially-quantifiable
-        \item For example, optimization problems with where the objective or some constraints depend on an expensive simulation
+        \item For example, optimization problems where the objective or some of the constraints depend on an expensive simulation
+        \item Function values may not be available outside of the feasible region, we call this \emph{partially-quantifiable}
 %        \item $S(x)$ is a black-box function, meaning that we have no information about its derivatives
 %        \item We assume that $f$ and $c$ are apriori functions
 %         \item We assume the level sets of $f$ are bounded
@@ -69,17 +69,16 @@
 \end{frame}
 
 
-\begin{frame}{Main Idea}
+\begin{frame}{Strategy}
     \begin{itemize}
-        \item Adapt a classic trust region, nonlinear constrained optimization algorithm to derivative free optimization
-        \item Replace derivatives with derivatives of model functions, and make any other changes required to avoid extra function calls and ensure convergence
+        \item Extend our current algorithm for solving linear partially-quantifiable constraints to convex constraints
+        \item Account for uncertainty in constraint boundaries
         \item Ensure that no infeasible points must be evaluated
-        \item Focus is on nonlinear, constrained, local search algorithms
     \end{itemize}
 \end{frame}
 
 
-\frame{\frametitle{Table of contents}\tableofcontents} 
+\frame{\frametitle{Table of Contents}\tableofcontents} 
 
 
 
@@ -201,15 +200,15 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
         \item We define two trust regions.
         \item The inner trust region:
             \begin{itemize}
-                \item Is used for constructing sample points]
                 \item Has an ellipsoidal shape
                 \item Is assumed to be feasible, with respect to true constraints
+                \item Is used for constructing sample points
             \end{itemize}
         \item The outer trust region:
             \begin{itemize}
-                \item is used as the search space for computing the next iterate
                 \item Is an $L_{\infty}$ ball
                 \item Can contain infeasible points, even for the linearization of the constraints
+                \item Is used as the search space for computing the next iterate, along with models of the constraints
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -231,7 +230,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
         \item Construct the model functions by evaluating sample points
             \begin{itemize}
                 \item Use the previous iteration's models to find a feasible inner trust region
-                \item If a point is found to be infeasible, decrease the radius
+                \item If a point in this ellipsoid is found to be infeasible, decrease the radius
             \end{itemize}
         \item Solve the trust region subproblem
             \begin{itemize}
@@ -255,22 +254,22 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 
 \frame {
-\frametitle{Adding linear cuts to feasible region}
+\frametitle{Adding Linear Cuts to Feasible Region}
 \begin{itemize}
     \item There is another strategy for computing the maximal linear shape to be feasible
     \item It could also be convenient for solving the trust region subproblem
     \item The algorithm is as follows:
         \begin{itemize}
-            \item Start with a polynomial $p$, a tolerance $\epsilon$, a set of infeasible points $I = \emptyset$, and feasible points $F$.
+            \item Start with a polynomial $p$, a tolerance $\epsilon$, an array of $n_i$ infeasible points $I$, and a set of feasible points $F$.
             \item Compute
             \begin{displaymath}
                 \begin{array}{ccccc}
-                    max_{s, v^{(i)}, b^{(i)}} & p(s)       &       &                               & \\
-                               & v^T p      & \le   & 0                             & \forall n \in F, \quad \forall m \in F\\
-                               & v^T n      & \ge   & \epsilon \Delta_k             & \forall n \in I \\
-                               & \|v \|^2   & =     & 1                             & \forall n \in I \\
-                               & v^T n      & \ge   & \epsilon                      & \forall n \in I \\
-                               & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k) & \\
+    max_{s, v^{(i)}, b^{(i)}}   & p(s)            &       &                               & \\
+                                & p^T v^{(i)}     & \le   & b^{(i)}                       & \forall n \in F, \quad \forall 1 \le i \le m \in n_i\\
+                                & I[i]^T v^{(i)}      & \ge   & \epsilon \Delta_k       & \forall 1 \le i \le n_i \\
+                                & \|v^{(i)}\|^2   & =     & 1                           & \forall 1 \le i \le n_i \\
+                                & I[i]^T v^{(i)}      & \ge   & \epsilon                & \forall 1 \le i \le n_i \\
+                                & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    & \\
                 \end{array}
             \end{displaymath}
         \end{itemize}
