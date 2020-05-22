@@ -31,7 +31,7 @@
 
 
 \title{Master's Presentation}   
-\author{Trever} 
+\author{Trever Hallock} 
 \date{\today} 
 
 \frame{\titlepage} 
@@ -85,19 +85,32 @@
 \begin{frame}{Model Based Trust Region Methods}
     \begin{itemize}
         \setlength\itemsep{2em}
-    	\item Approximate $f$ and $c$ in terms of model functions
+    	\item Approximate derivatives of $f$ and $c$ with model functions created from a sample set
     	\item We approximate using a second order model, meaning that we approximate:
     	\begin{itemize}
             \item $\fhk \approx \nabla ^2 f(\xk)$
             \item $\fgk \approx \nabla f(\xk)$
             \item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
             \item $\cgk \approx c_i(\xk)$
-            \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(\xk)$
+            \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(x)$
     	\end{itemize}
 	    \item Choose next iterate by minimizing a model problem over a trust region
 	\end{itemize}
 \end{frame}
 
+
+\begin{frame}{Model Fitting}
+	\begin{align*}
+		l_1(x) = -(x-1)(x+1), \;
+		l_2(x) = \frac 1 2 x(x+1), \;
+		l_3(x) = \frac 1 2 x(x-1) \\
+		f(x) = 3 + \sin(x) \quad
+		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
+	\end{align*}
+	\begin{center}
+		\includegraphics[width=250px]{images/lagrange_polynomials.png}
+	\end{center}
+\end{frame}
 
 
 % 12
@@ -146,58 +159,90 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
         \only<2>{
             \includegraphics[width=120px]{images/poised_good.png} \includegraphics[width=120px]{images/poised_bad.png}
         }
-        \item<3> The geometry can be measured by its $\Lambda$-poisedness
         \item<3> Constructing poised sets over ellipses is well known
         \item<3> Constraints limit what points are available for the sample set
         \item<3> With narrow constraints, this means poised sets may not exist
+        \only<3>{
+			\begin{center}
+				\includegraphics[width=180px]{images/impossible_poised.png}
+			\end{center}
+        }
     \end{itemize}
 \end{frame}
 
 
+\begin{frame}{Problem with choice of Poised points}
+\begin{center}
+\includegraphics[width=120px]{images/nearly_poised.png} \includegraphics[width=120px]{images/nearly_poised_for_subset.png}  
+\end{center}
+\end{frame}
+
+
+%         \item<3> The geometry can be measured by its $\Lambda$-poisedness
+
 \section{Convex Always Feasible Algorithm}
 
 
-\begin{frame}{Feasible Derivative Free Algorithm Part 1}
+\begin{frame}{Feasible Derivative Free Algorithm}
     \begin{itemize}
-        \item We followed an algorithmic template found in \cite{CONEJO2013324}
-        \item The template in this article assumes either linear or quadratic models
-        \item It describes an algorithm which requires
+        \item Our algorithm is an instance of a general algorithmic framework analyzed by \cite{CONEJO2013324}
+        \item This paper provides convergence analysis, without depending on implementation details
+        \item This framework assumes the following properties
             \begin{itemize}
-                \item An efficiency condition
-                \item An accuracy condition
-                \item A projection method onto the feasible set
+				\item Quadratic or linear model functions
+                \item Ability to satisfy an efficiency condition
+                \item Ability to satisfy an accuracy condition
+                \item A method for projecting points onto the feasible set
             \end{itemize}
 %         \item This algorithm was promising after bench-marking our algorithms on the Hott-Schittowski problem set.
     \end{itemize}
 \end{frame}
 
 
-
-\begin{frame}{Feasible Derivative Free Algorithm Part 2}
-    \begin{itemize}
-        \item The efficiency condition requires: $$m_f^{(k)}(x^{(k)}) - m_f^{(k)}(x^{(k+1)}) \ge c_1 \xi^{(k)} \min \{\frac{\xi^{(k)}}{1 + \|\nabla^2 m_f^{(k)}(x^{(k)})\|}, \Delta_k, 1\}$$
-        \item This can be satisfied using the Generalized Cauchy Point
-        \item The accuracy condition requires: $$\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k$$
-        \item To satisfy this, we require the ellipsoid we find to have bounded condition number
-    \end{itemize}
+\begin{frame}{Algorithm Details}
+	\begin{itemize}
+		\item Algorithm assumes known constraints
+		\item
+			\begin{itemize}
+				\item Construct a model for the current point
+				\item Check criticality
+				\item Compute step
+				\item Check reduction
+			\end{itemize}
+	\end{itemize}
 \end{frame}
+
+% 
+% \begin{frame}{Feasible Derivative Free Algorithm Part 2}
+%     \begin{itemize}
+%         \item The efficiency condition requires: $$m_f^{(k)}(x^{(k)}) - m_f^{(k)}(x^{(k+1)}) \ge c_1 \xi^{(k)} \min \{\frac{\xi^{(k)}}{1 + \|\nabla^2 m_f^{(k)}(x^{(k)})\|}, \Delta_k, 1\}$$
+%         \item This can be satisfied using the Generalized Cauchy Point
+%         \item The accuracy condition requires: $$\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k$$
+%         \item To satisfy this, we require the ellipsoid we find to have bounded condition number
+%     \end{itemize}
+% \end{frame}
 
 
 \begin{frame}{Adoption Difficulties}
 
 \begin{itemize}
-    \item We had to modify the convergence analysis to account for projections onto only the linear approximation of the feasible set.
-    \item Another difficulty was that the original algorithm does not decrease the trust region radius when accepting the trial point.
+    \item We had to modify the convergence analysis to account for projections onto only the linear approximation of the feasible set
+    \item Another difficulty was that the original algorithm does not decrease the trust region radius when accepting the trial point
     \includegraphics[width=300px]{images/decrease_required.png}
 \end{itemize}
+\end{frame}
 
 
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/feasible_direction.png}
+	\end{center}
 \end{frame}
 
 
 \begin{frame}{Feasible Derivative Free Trust regions}
     \begin{itemize}
-        \item We define two trust regions.
+        \item We define two trust regions
         \item The inner trust region:
             \begin{itemize}
                 \item Has an ellipsoidal shape
@@ -214,9 +259,43 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
-\begin{frame}{}
+\begin{frame}{Example trust region}
 \begin{center}
     \includegraphics[width=300px]{images/trust_regions.png}
+\end{center}
+% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+\end{frame}
+
+
+\frame {
+\frametitle{Adding Linear Cuts to Feasible Region}
+\begin{itemize}
+    \item It is possible that the trial point found by the trust region subproblem is infeasible
+    \item If so, we add a constraint that removes this infeasible sample point
+    \item The algorithm is as follows:
+        \begin{itemize}
+            \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
+            \item Compute
+            \begin{displaymath}
+                \begin{array}{ccccc}
+    \min_{s, v^{(j)}, b^{(j)}}   & p(s)            &       &                            \\
+                                & \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     \\
+                                & \left(u_{\text{infe}}^{(j)}\right)^T v^{(i)}      & \ge   & b^{(j)} + \epsilon \Delta_k       \\
+                                & \|v^{(i)}\|^2   & =     & 1                           \\
+                                & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    \\
+                \end{array}
+            \end{displaymath}
+        \end{itemize}
+\end{itemize}
+}
+
+
+%                                 & I[i]^T v^{(i)}      & \ge   & \epsilon                \\
+
+
+\begin{frame}{Visualizing Linear Cuts}
+\begin{center}
+    \includegraphics[width=300px]{images/cut_infeasible_points.png}
 \end{center}
 % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
@@ -241,6 +320,24 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
+\begin{frame}{Results}
+	\begin{itemize}
+		\item depends on good heuristic for ellipsoid
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Contributions}
+	\begin{itemize}
+		\item Showing that the projection onto the linear approximation is bounded
+		\item Finding the feasible ellipsoid
+		\item Solving the trust region subproblem is possible
+	\end{itemize}
+\end{frame}
+
+\section{Future Work}
+
+
 \frame {
 \frametitle{Extensions to the Algorithm}
 \begin{itemize}
@@ -254,39 +351,6 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 
 \frame {
-\frametitle{Adding Linear Cuts to Feasible Region}
-\begin{itemize}
-    \item There is another strategy for computing the maximal linear shape to be feasible
-    \item It could also be convenient for solving the trust region subproblem
-    \item The algorithm is as follows:
-        \begin{itemize}
-            \item Start with a polynomial $p$, a tolerance $\epsilon$, an array of $n_i$ infeasible points $I$, and a set of feasible points $F$.
-            \item Compute
-            \begin{displaymath}
-                \begin{array}{ccccc}
-    max_{s, v^{(i)}, b^{(i)}}   & p(s)            &       &                               & \\
-                                & p^T v^{(i)}     & \le   & b^{(i)}                       & \forall n \in F, \quad \forall 1 \le i \le m \in n_i\\
-                                & I[i]^T v^{(i)}      & \ge   & \epsilon \Delta_k       & \forall 1 \le i \le n_i \\
-                                & \|v^{(i)}\|^2   & =     & 1                           & \forall 1 \le i \le n_i \\
-                                & I[i]^T v^{(i)}      & \ge   & \epsilon                & \forall 1 \le i \le n_i \\
-                                & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    & \\
-                \end{array}
-            \end{displaymath}
-        \end{itemize}
-\end{itemize}
-
-}
-
-
-\begin{frame}{}
-\begin{center}
-    \includegraphics[width=300px]{images/cut_infeasible_points.png}
-\end{center}
-% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
-\end{frame}
-
-
-\frame {
     \frametitle{Questions?}
 }
 
@@ -297,41 +361,40 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
-
-\section{Future Work}
-
-\frame{
-\frametitle{Using Fewer Sample Points}
-    \begin{itemize}
-        \item With general convex constraints, sufficiently poised sets within the feasible region may not exist.
-        \item To illustrate, consider finding a fully quadratic model in 2-dimensions.
-        \item As the constraints become more thin,
-            \begin{itemize}
-                \item The model becomes less poised
-                \item There is less need for requiring the model to be quadratic in $y$.
-            \end{itemize}
-        \item We would prefer to use a subset of all quadratics, with fewer points to approximate them.
-    \end{itemize}
-}
-
-\frame {
-\frametitle{2D Illustration}
-    \includegraphics[width=150px]{images/2_2_4_68.png}
-    \includegraphics[width=150px]{images/2_3_5_1.png}
-}
-
-\frame {
-\frametitle{Full pivoting}
-    \begin{itemize}
-        \item One approach is to use full pivoting within the LU factorization used compute the Lagrange polynomials.
-
-        \item When there are no more pivots greater than a threshold, the LU factorization terminates, and only uses the points and polynomials already computed after zeroing the remaining entries.
-        
-        \item This method will provide the next point to use as well as the next polynomial to include.
-        
-    \end{itemize}
-}
-
+% 
+% 
+% \frame{
+% \frametitle{Using Fewer Sample Points}
+%     \begin{itemize}
+%         \item With general convex constraints, sufficiently poised sets within the feasible region may not exist.
+%         \item To illustrate, consider finding a fully quadratic model in 2-dimensions.
+%         \item As the constraints become more thin,
+%             \begin{itemize}
+%                 \item The model becomes less poised
+%                 \item There is less need for requiring the model to be quadratic in $y$.
+%             \end{itemize}
+%         \item We would prefer to use a subset of all quadratics, with fewer points to approximate them.
+%     \end{itemize}
+% }
+% 
+% \frame {
+% \frametitle{2D Illustration}
+%     \includegraphics[width=150px]{images/2_2_4_68.png}
+%     \includegraphics[width=150px]{images/2_3_5_1.png}
+% }
+% 
+% \frame {
+% \frametitle{Full pivoting}
+%     \begin{itemize}
+%         \item One approach is to use full pivoting within the LU factorization used compute the Lagrange polynomials.
+% 
+%         \item When there are no more pivots greater than a threshold, the LU factorization terminates, and only uses the points and polynomials already computed after zeroing the remaining entries.
+%         
+%         \item This method will provide the next point to use as well as the next polynomial to include.
+%         
+%     \end{itemize}
+% }
+% 
 
 
 
