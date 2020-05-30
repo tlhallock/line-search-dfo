@@ -100,13 +100,13 @@
 
 
 \begin{frame}{Model Fitting}
-	\begin{align*}
-		l_1(x) = -(x-1)(x+1), \;
-		l_2(x) = \frac 1 2 x(x+1), \;
-		l_3(x) = \frac 1 2 x(x-1) \\
-		f(x) = 3 + \sin(x) \quad
-		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
-	\end{align*}
+% 	\begin{align*}
+% 		l_1(x) = -(x-1)(x+1), \;
+% 		l_2(x) = \frac 1 2 x(x+1), \;
+% 		l_3(x) = \frac 1 2 x(x-1) \\
+% 		f(x) = 3 + \sin(x) \quad
+% 		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
+% 	\end{align*}
 	\begin{center}
 		\includegraphics[width=250px]{images/lagrange_polynomials.png}
 	\end{center}
@@ -171,11 +171,11 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
-\begin{frame}{Problem with choice of Poised points}
-\begin{center}
-\includegraphics[width=120px]{images/nearly_poised.png} \includegraphics[width=120px]{images/nearly_poised_for_subset.png}  
-\end{center}
-\end{frame}
+% \begin{frame}{Problem with choice of Poised points}
+% \begin{center}
+% \includegraphics[width=120px]{images/nearly_poised.png} \includegraphics[width=120px]{images/nearly_poised_for_subset.png}  
+% \end{center}
+% \end{frame}
 
 
 %         \item<3> The geometry can be measured by its $\Lambda$-poisedness
@@ -187,6 +187,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
     \begin{itemize}
         \item Our algorithm is an instance of a general algorithmic framework analyzed by \cite{CONEJO2013324}
         \item This paper provides convergence analysis, without depending on implementation details
+		\item Algorithm assumes known constraints
         \item This framework assumes the following properties
             \begin{itemize}
 				\item Quadratic or linear model functions
@@ -199,16 +200,13 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
-\begin{frame}{Algorithm Details}
+\begin{frame}{Algorithm outline}
 	\begin{itemize}
-		\item Algorithm assumes known constraints
-		\item
-			\begin{itemize}
-				\item Construct a model for the current point
-				\item Check criticality
-				\item Compute step
-				\item Check reduction
-			\end{itemize}
+		\item Construct a model for the current point
+		\item Check criticality
+		\item Compute step
+		\item Comput reduction
+		\item Either accept or decrease radius
 	\end{itemize}
 \end{frame}
 
@@ -223,10 +221,21 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 % \end{frame}
 
 
-\begin{frame}{Adoption Difficulties}
+\begin{frame}{Criticality Measure}
+	\begin{itemize}
+		\item We had to modify the convergence analysis in a few significant ways
+		\item The algorithms criticality measure used the projection operator onto the true constraints
+		\item We only use the projection onto the linearization of the true constraints
+	\end{itemize}
+
+	\begin{center}
+		\includegraphics[width=150px]{images/criticality_measure.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Shrinking Trust Regions}
 
 \begin{itemize}
-    \item We had to modify the convergence analysis to account for projections onto only the linear approximation of the feasible set
     \item Another difficulty was that the original algorithm does not decrease the trust region radius when accepting the trial point
     \includegraphics[width=300px]{images/decrease_required.png}
 \end{itemize}
@@ -234,8 +243,13 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 
 \begin{frame}{Feasible Ellipsoid}
+	\begin{itemize}
+		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
+		\item This usually not an issue, as any poised poised can be added to the sample set to replace ill-poised points
+		\item We had to show that we can still find a ``large" enough region to choose sample points
+	\end{itemize}
 	\begin{center}
-		\includegraphics[width=300px]{images/feasible_direction.png}
+		\includegraphics[width=150px]{images/feasible_direction.png}
 	\end{center}
 \end{frame}
 
@@ -248,12 +262,12 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
                 \item Has an ellipsoidal shape
                 \item Is assumed to be feasible, with respect to true constraints
                 \item Is used for constructing sample points
+                \item Is used as the search space for computing the next iterate
             \end{itemize}
         \item The outer trust region:
             \begin{itemize}
                 \item Is an $L_{\infty}$ ball
                 \item Can contain infeasible points, even for the linearization of the constraints
-                \item Is used as the search space for computing the next iterate, along with models of the constraints
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -270,11 +284,12 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \frame {
 \frametitle{Adding Linear Cuts to Feasible Region}
 \begin{itemize}
-    \item It is possible that the trial point found by the trust region subproblem is infeasible
+    \item For efficiency, we do not limit the trial point to the inner trust region
+    \item It is then possible that the trial point found by the trust region subproblem is infeasible
     \item If so, we add a constraint that removes this infeasible sample point
     \item The algorithm is as follows:
-        \begin{itemize}
-            \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
+%         \begin{itemize}
+%             \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
             \item Compute
             \begin{displaymath}
                 \begin{array}{ccccc}
@@ -285,7 +300,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
                                 & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    \\
                 \end{array}
             \end{displaymath}
-        \end{itemize}
+%         \end{itemize}
 \end{itemize}
 }
 
@@ -322,6 +337,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 \begin{frame}{Results}
 	\begin{itemize}
+		\item coming soon
 		\item depends on good heuristic for ellipsoid
 	\end{itemize}
 \end{frame}
