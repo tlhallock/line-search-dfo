@@ -94,7 +94,7 @@
             \item $\cgk \approx c_i(\xk)$
             \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(x)$
     	\end{itemize}
-	    \item Choose next iterate by minimizing a model problem over a trust region
+	    \item Choose next iterate by minimizing a model over a trust region
 	\end{itemize}
 \end{frame}
 
@@ -125,6 +125,8 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
       &  s & \in & \bk.  \\
 \end{array}
         \end{displaymath}
+        \item Replaced true functions with model functions
+        \item Added trust region constraint
     \end{itemize}
 \end{frame}
 
@@ -205,7 +207,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 		\item Construct a model for the current point
 		\item Check criticality
 		\item Compute step
-		\item Comput reduction
+		\item Check reduction
 		\item Either accept or decrease radius
 	\end{itemize}
 \end{frame}
@@ -242,6 +244,20 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
+
+\begin{frame}{Feasible set}
+\begin{itemize}
+	\item Given a single feasible point, in general, it can be implossible to find even a second feasible point.
+	\item This means that we must assume a feasible starting set.
+	\begin{center}
+		\includegraphics[width=300px]{images/only_one_feasible_point.png}
+	\end{center}
+\end{itemize}
+\end{frame}
+
+
+
+
 \begin{frame}{Feasible Ellipsoid}
 	\begin{itemize}
 		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
@@ -251,6 +267,23 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 	\begin{center}
 		\includegraphics[width=150px]{images/feasible_direction.png}
 	\end{center}
+\end{frame}
+
+
+\begin{frame}{Feasible Circle}
+
+\begin{itemize}
+	\item Ideally, we would not have to choose the ellipsoid within such a small cone.
+	\item It would be better to choose the ellipsoid that maximizes the volume within all constraints.
+	\item However, we are still formulating the optimization problem for this.
+	\item A simpler problem is to choose the center of the maximum volume sphere.
+	\item We have formulated a program to find this sphere
+		\begin{align*}
+\max_{r \ge 0, c, t^j}	& r & \\
+					&  e_1^T t^j - \left\|t^j - e_1^T t^j\right\| \ge r			& \quad 1 \le j \le m \\
+		\end{align*}
+\end{itemize}
+
 \end{frame}
 
 
@@ -335,6 +368,19 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{frame}
 
 
+\begin{frame}{Orders of models}
+	\begin{itemize}
+		\item Our algorithm assumes linear models for constraints, and a quadratic model for the objective
+		\item This is not required, but does introduce the question of how to choose points poised for different orders of models
+		\item We could select separate points for each different order
+		\item We could create points for for a quadratic model, and only add points for a linear model if required
+		\item We could choose points that are best for both models
+		\item We currently use quadratic models for both
+	\end{itemize}
+\end{frame}
+
+
+
 \begin{frame}{Results}
 	\begin{itemize}
 		\item coming soon
@@ -350,6 +396,8 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 		\item Solving the trust region subproblem is possible
 	\end{itemize}
 \end{frame}
+
+
 
 \section{Future Work}
 
@@ -411,6 +459,9 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 %     \end{itemize}
 % }
 % 
+
+
+% Circle
 
 
 
