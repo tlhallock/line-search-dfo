@@ -247,7 +247,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 \begin{frame}{Feasible set}
 \begin{itemize}
-	\item Given a single feasible point, in general, it can be implossible to find even a second feasible point.
+	\item Given a single feasible point, in general, it can be impossible to find even a second feasible point.
 	\item This means that we must assume a feasible starting set.
 	\begin{center}
 		\includegraphics[width=300px]{images/only_one_feasible_point.png}
@@ -277,13 +277,21 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 	\item It would be better to choose the ellipsoid that maximizes the volume within all constraints.
 	\item However, we are still formulating the optimization problem for this.
 	\item A simpler problem is to choose the center of the maximum volume sphere.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Feasible Circle}
+\begin{itemize}
 	\item We have formulated a program to find this sphere
 		\begin{align*}
 \max_{r \ge 0, c, t^j}	& r & \\
 					&  e_1^T t^j - \left\|t^j - e_1^T t^j\right\| \ge r			& \quad 1 \le j \le m \\
 		\end{align*}
+	\item This is a non-convex problem
 \end{itemize}
-
+\begin{center}
+\includegraphics[width=150px]{images/feasible_sphere.png}
+\end{center}
 \end{frame}
 
 
@@ -320,7 +328,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
     \item For efficiency, we do not limit the trial point to the inner trust region
     \item It is then possible that the trial point found by the trust region subproblem is infeasible
     \item If so, we add a constraint that removes this infeasible sample point
-    \item The algorithm is as follows:
+    \item The program is:
 %         \begin{itemize}
 %             \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
             \item Compute
@@ -361,7 +369,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
             \end{itemize}
         \item Solve the trust region subproblem
             \begin{itemize}
-                \item Add linear constraints to remove infeasible points
+                \item Add linear cuts to remove infeasible points
             \end{itemize}
         \item Test for sufficient reduction
     \end{itemize}
@@ -393,7 +401,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 	\begin{itemize}
 		\item Showing that the projection onto the linear approximation is bounded
 		\item Finding the feasible ellipsoid
-		\item Solving the trust region subproblem is possible
+		\item Solving the trust region subproblem with linear cuts
 	\end{itemize}
 \end{frame}
 
