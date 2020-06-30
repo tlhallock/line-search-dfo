@@ -127,6 +127,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
         \end{displaymath}
         \item Replaced true functions with model functions
         \item Added trust region constraint
+        \item The solution is then used as a trial point for the next iterate
     \end{itemize}
 \end{frame}
 
@@ -163,7 +164,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
         }
         \item<3> Constructing poised sets over ellipses is well known
         \item<3> Constraints limit what points are available for the sample set
-        \item<3> With narrow constraints, this means poised sets may not exist
+        \item<3> With narrow constraints, this means well poised sets may not exist
         \only<3>{
 			\begin{center}
 				\includegraphics[width=180px]{images/impossible_poised.png}
@@ -226,10 +227,23 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \begin{frame}{Criticality Measure}
 	\begin{itemize}
 		\item We had to modify the convergence analysis in a few significant ways
-		\item The algorithms criticality measure used the projection operator onto the true constraints
+		\item One of these was within the criticality measure
+		\item $\xi(x)$ measures how close to being ``critical" a point $x$ is
+		\item If $x$ satisfies first order optimality conditions, $\xi(x) = 0$
+		\item $\xi(x)$ is large if there it is possible to move far along a feasible descent direction
+	\end{itemize}
+	\begin{center}
+		\includegraphics[width=150px]{images/criticality.png}
+	\end{center}
+\end{frame}
+
+
+
+\begin{frame}{Criticality Measure}
+	\begin{itemize}
+		\item The algorithm's criticality measure used the projection operator onto the true constraints
 		\item We only use the projection onto the linearization of the true constraints
 	\end{itemize}
-
 	\begin{center}
 		\includegraphics[width=150px]{images/criticality_measure.png}
 	\end{center}
@@ -238,7 +252,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \begin{frame}{Shrinking Trust Regions}
 
 \begin{itemize}
-    \item Another difficulty was that the original algorithm does not decrease the trust region radius when accepting the trial point
+    \item Another difficulty is that the original algorithm does not decrease the trust region radius when accepting the trial point
     \includegraphics[width=300px]{images/decrease_required.png}
 \end{itemize}
 \end{frame}
@@ -247,7 +261,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 \begin{frame}{Feasible set}
 \begin{itemize}
-	\item Given a single feasible point, in general, it can be impossible to find even a second feasible point.
+	\item Given a single feasible point, in general, it can be difficult to find even a second feasible point.
 	\item This means that we must assume a feasible starting set.
 	\begin{center}
 		\includegraphics[width=300px]{images/only_one_feasible_point.png}
@@ -261,16 +275,58 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \begin{frame}{Feasible Ellipsoid}
 	\begin{itemize}
 		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
-		\item This usually not an issue, as any poised poised can be added to the sample set to replace ill-poised points
+		\[\|\nabla m_f(x) - \nabla f(x)\| \le \epsilon_g \dk \]
+		\item This usually not an issue, as any point can be added to the sample set to replace ill-poised points
+		\begin{center}
+			\includegraphics[width=120px]{images/impossible_poised.png}
+		\end{center}
 		\item We had to show that we can still find a ``large" enough region to choose sample points
 	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Feasible Ellipsoid}
 	\begin{center}
-		\includegraphics[width=150px]{images/feasible_direction.png}
+		\includegraphics[width=300px]{images/explanation_1.png}
 	\end{center}
 \end{frame}
 
 
-\begin{frame}{Feasible Circle}
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/explanation_2.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/explanation_3.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/completed_1.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/completed_2.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Feasible Ellipsoid}
+	\begin{center}
+		\includegraphics[width=300px]{images/feasible_direction.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Feasible Sphere}
 
 \begin{itemize}
 	\item Ideally, we would not have to choose the ellipsoid within such a small cone.
@@ -280,7 +336,7 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Feasible Circle}
+\begin{frame}{Feasible Sphere}
 \begin{itemize}
 	\item We have formulated a program to find this sphere
 		\begin{align*}
@@ -303,12 +359,12 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
                 \item Has an ellipsoidal shape
                 \item Is assumed to be feasible, with respect to true constraints
                 \item Is used for constructing sample points
-                \item Is used as the search space for computing the next iterate
             \end{itemize}
         \item The outer trust region:
             \begin{itemize}
                 \item Is an $L_{\infty}$ ball
                 \item Can contain infeasible points, even for the linearization of the constraints
+                \item Is used as the search space for computing the next iterate
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -317,41 +373,6 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \begin{frame}{Example trust region}
 \begin{center}
     \includegraphics[width=300px]{images/trust_regions.png}
-\end{center}
-% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
-\end{frame}
-
-
-\frame {
-\frametitle{Adding Linear Cuts to Feasible Region}
-\begin{itemize}
-    \item For efficiency, we do not limit the trial point to the inner trust region
-    \item It is then possible that the trial point found by the trust region subproblem is infeasible
-    \item If so, we add a constraint that removes this infeasible sample point
-    \item The program is:
-%         \begin{itemize}
-%             \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
-            \item Compute
-            \begin{displaymath}
-                \begin{array}{ccccc}
-    \min_{s, v^{(j)}, b^{(j)}}   & p(s)            &       &                            \\
-                                & \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     \\
-                                & \left(u_{\text{infe}}^{(j)}\right)^T v^{(i)}      & \ge   & b^{(j)} + \epsilon \Delta_k       \\
-                                & \|v^{(i)}\|^2   & =     & 1                           \\
-                                & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    \\
-                \end{array}
-            \end{displaymath}
-%         \end{itemize}
-\end{itemize}
-}
-
-
-%                                 & I[i]^T v^{(i)}      & \ge   & \epsilon                \\
-
-
-\begin{frame}{Visualizing Linear Cuts}
-\begin{center}
-    \includegraphics[width=300px]{images/cut_infeasible_points.png}
 \end{center}
 % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
@@ -373,18 +394,6 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
             \end{itemize}
         \item Test for sufficient reduction
     \end{itemize}
-\end{frame}
-
-
-\begin{frame}{Orders of models}
-	\begin{itemize}
-		\item Our algorithm assumes linear models for constraints, and a quadratic model for the objective
-		\item This is not required, but does introduce the question of how to choose points poised for different orders of models
-		\item We could select separate points for each different order
-		\item We could create points for for a quadratic model, and only add points for a linear model if required
-		\item We could choose points that are best for both models
-		\item We currently use quadratic models for both
-	\end{itemize}
 \end{frame}
 
 
@@ -432,6 +441,41 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
     \bibliography{presentation}
 \end{frame}
 
+% 
+% \frame {
+% \frametitle{Adding Linear Cuts to Feasible Region}
+% \begin{itemize}
+%     \item For efficiency, we do not limit the trial point to the inner trust region
+%     \item It is then possible that the trial point found by the trust region subproblem is infeasible
+%     \item If so, we add a constraint that removes this infeasible sample point
+%     \item The program is:
+% %         \begin{itemize}
+% %             \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
+%             \item Compute
+%             \begin{displaymath}
+%                 \begin{array}{ccccc}
+%     \min_{s, v^{(j)}, b^{(j)}}   & p(s)            &       &                            \\
+%                                 & \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     \\
+%                                 & \left(u_{\text{infe}}^{(j)}\right)^T v^{(i)}      & \ge   & b^{(j)} + \epsilon \Delta_k       \\
+%                                 & \|v^{(i)}\|^2   & =     & 1                           \\
+%                                 & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    \\
+%                 \end{array}
+%             \end{displaymath}
+% %         \end{itemize}
+% \end{itemize}
+% }
+% 
+% 
+% %                                 & I[i]^T v^{(i)}      & \ge   & \epsilon                \\
+% 
+% 
+% \begin{frame}{Visualizing Linear Cuts}
+% \begin{center}
+%     \includegraphics[width=300px]{images/cut_infeasible_points.png}
+% \end{center}
+% % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+% \end{frame}
+
 
 % 
 % 
@@ -471,6 +515,20 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 % Circle
 
+
+
+
+
+% \begin{frame}{Orders of models}
+% 	\begin{itemize}
+% 		\item Our algorithm assumes linear models for constraints, and a quadratic model for the objective
+% 		\item This is not required, but does introduce the question of how to choose points poised for different orders of models
+% 		\item We could select separate points for each different order
+% 		\item We could create points for for a quadratic model, and only add points for a linear model if required
+% 		\item We could choose points that are best for both models
+% 		\item We currently use quadratic models for both
+% 	\end{itemize}
+% \end{frame}
 
 
 \end{document}
