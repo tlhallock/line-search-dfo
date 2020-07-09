@@ -619,10 +619,10 @@ We can compute $\chik$ as follows:
 
 Each iteration that evaluates a trial point must also test the accuracy of the model functions.
 To test the accuracy, we calculate a quantity
-\begin{equation}
+\begin{align}
 \label{rho}
 \rho_k = \frac{f(\iteratek) - f(\iteratek+\trialk)}{\modelk(\iteratek) - \modelk(\iteratek+\trialk)}
-\end{equation}
+\end{align}
 which measures the actual improvement over the predicted improvement.
 A small $\rho_k$ implies the model functions are not sufficiently accurate.
 Values of $\rho_k$ close to $1$ imply that the model accurately predicted the new objective value.
