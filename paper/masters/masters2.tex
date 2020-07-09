@@ -855,26 +855,17 @@ s^{(k)} = \argmin_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &
 
 
 
-This algorithm terminates in a finite number of steps.
-By construction, all points added to $D$ must have distance $\Delta  \tau_{\Delta}$ from other points within $D$.
-There can be at most $\tau_{\Delta}^n$ such points in the outer trust region.
+Note that this algorithm terminates in a finite number of steps.
+By construction, all points added to $H_{\text{inf}}$ must have distance $\Delta  \epsilon_{\Delta}$ from other points within $H_{\text{inf}}$,
+and there can be at most $\epsilon_{\Delta}^n$ such points in the outer trust region.
 
+Also, note that the minimum value found by this algorithm is smaller than the minimum value atleast a distance $\epsilon \Delta_k$ from an infeasible point.
 
-Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
-
-
-
-
-\color{black}
-
-
-
-
-
-First, we will describe the buffering cones.
 
 
 \subsection{Buffering Cones}
+
+First, we will describe the buffering cones.
 To ease the definition of these cones, we will use the following notation.
 
 
