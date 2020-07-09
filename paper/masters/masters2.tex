@@ -849,7 +849,7 @@ We add a linear constraint that ensures we do not attempt the same evaluation.
             
 \begin{displaymath}
 \begin{array}{cccccc}
-\min_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
+\argmin_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
 							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     		& \quad \forall \; u_{\text{fe}}^{(i)} \in H_{\text{feas}}	\\
 							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k   & \quad \forall \; u_{\text{infe}}^{(j)} \in H_{\text{inf}}  \\
 							& \|v^{(i)}\|^2   & =     & 1                           									& \quad \forall \; 1 \le i \le |  H_{\text{inf}} | \\
@@ -857,7 +857,7 @@ We add a linear constraint that ensures we do not attempt the same evaluation.
 \end{array}
 \end{displaymath}
            
-        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+        \item[\textbf{Step 2}] \textbf{(Evaluate new sample point )} \\
             Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
                 \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\iteratek$ as the solution.
                 \item[] Otherwise, if $\dk > \alpha \chik$ then 
