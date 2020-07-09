@@ -156,7 +156,7 @@
 
 
 
-\newcommand{\infeasiblesacred}{\emph{Infeasible Sacred Region Routine}}
+\newcommand{\infeasiblesacred}{\Call{InfeasibleTrustRegion}}
 
 
 
@@ -693,7 +693,7 @@ The different versions are described in the remainder of this section.
             Ensure that the sample points are poised with respect to $ \sampletrk $ for \cref{accuracy} by calling \cref{model_improving_algorithm}.
             Construct $\modelk$ as described in \cref{reg} to construct $\modelk(x)$.
             
-            If any point within $ \sampletrk $ is found to be infeasible, enter \infeasiblesacred.
+            If any point within $ \sampletrk $ is found to be infeasible, call \infeasiblesacred
             
             $ {T_{\text{interp}}^{(k+1)}} \gets $ \Call{ConstructTrustRegion}{$\Delta_k, x^{(k)}$}.
         
@@ -707,8 +707,7 @@ The different versions are described in the remainder of this section.
             \end{itemize}
         
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\trialk = \min_{s \in \searchtrk} \modelk(\iteratek + \trialk)$.
-            % \item[] This can also be $\trialk = \min_{s \in \outertrk \cap \feasiblek} \modelk(\iteratek + \trialk)$ depending on the choice made in \cref{which_trust_region}.
+			Compute the next trial point using \cref{linear_cut_trust_region}.
             
         \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
             Evaluate $f(\iteratek + \trialk)$ and evaluate $\rho_k$ as in \cref{rho} \begin{itemize}
@@ -827,8 +826,8 @@ When the trial point is infeasible, we modify the trust region subproblem.
 We add a linear constraint that ensures we do not attempt the same evaluation.
 
 \begin{algorithm}[H]
-    \caption{Trust Region subproblem}
-    \label{constrained_dfo}
+    \caption{Trust Region Subproblem}
+    \label{linear_cut_trust_region}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
 			Iteration counter $k = 0$ \\
