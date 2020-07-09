@@ -842,26 +842,20 @@ We add a linear constraint that ensures we do not attempt the same evaluation.
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             A set of infeasible evaluations $H_{\text{inf}} = \emptyset$.
+            A set of feasible evaluations $H_{\text{feas}}$ of previous points that can be reused.
             
-        \item[\textbf{Step 1}] \textbf{(Minimize of modelled constraints)} \\
+        \item[\textbf{Step 1}] \textbf{(Minimize Modelled Constraints)} \\
             Compute
             
 \begin{displaymath}
-\begin{array}{ccccc}
-\min_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            					\\
-							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     			\\
-							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k       \\
-							& \|v^{(i)}\|^2   & =     & 1                           										\\
-							& s          & \in   & \innertrk    										\\
+\begin{array}{cccccc}
+\min_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
+							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     		& \quad \forall u_{\text{fe}}^{(i)} \in H_{\text{feas}}	\\
+							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k   & \quad \forall u_{\text{infe}}^{(j)} \in H_{\text{inf}}  \\
+							& \|v^{(i)}\|^2   & =     & 1                           									& \quad \forall 1 \le i \le |  H_{\text{inf}} | \\
+							& s          & \in   & \sampletrk    														&	\\
 \end{array}
 \end{displaymath}
-
-
-
-            \begin{align*}
-				\trialk & = &  \min \quad&			&	\\
-						&	&			&	s \in \searchtrk	&	\\
-            \end{align*}
            
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
             Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
