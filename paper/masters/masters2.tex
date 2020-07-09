@@ -850,9 +850,9 @@ We add a linear constraint that ensures we do not attempt the same evaluation.
 \begin{displaymath}
 \begin{array}{cccccc}
 \min_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
-							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     		& \quad \; \forall u_{\text{fe}}^{(i)} \in H_{\text{feas}}	\\
-							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k   & \quad \; \forall u_{\text{infe}}^{(j)} \in H_{\text{inf}}  \\
-							& \|v^{(i)}\|^2   & =     & 1                           									& \quad \; \forall 1 \le i \le |  H_{\text{inf}} | \\
+							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     		& \quad \forall \; u_{\text{fe}}^{(i)} \in H_{\text{feas}}	\\
+							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k   & \quad \forall \; u_{\text{infe}}^{(j)} \in H_{\text{inf}}  \\
+							& \|v^{(i)}\|^2   & =     & 1                           									& \quad \forall \; 1 \le i \le |  H_{\text{inf}} | \\
 							& s          & \in   & \sampletrk    														&	\\
 \end{array}
 \end{displaymath}
