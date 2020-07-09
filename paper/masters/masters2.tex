@@ -821,35 +821,21 @@ We show that this step must only happen a finite number of times, because as the
 When the trial point is infeasible, we modify the trust region subproblem.
 We add a linear constraint that ensures we do not attempt the same evaluation.
 
-
-
-
-
-\color{red}
-\begin{itemize}
-\item Set $D$ of infeasible points
-\item Check if the ellipsoid remains feasible with respect to $D$
-\item If so, choose the mimumum over the linear cut region
-\item If not, choose the minimum point within the ellipsoid
-\item Evaluate, if it is feasible, return the point
-\item If it is not feasible, return 
-\end{itemize}
-
-
 \begin{algorithm}[H]
     \caption{Trust Region subproblem}
     \label{constrained_dfo}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            A set of infeasible evaluations $H_{\text{inf}} = \emptyset$.
-            A set of feasible evaluations $H_{\text{feas}}$ of previous points that can be reused.
+			Iteration counter $k = 0$ \\
+            A set of infeasible evaluations $H_{\text{inf}} = \emptyset$ \\
+            A set of feasible evaluations $H_{\text{feas}}$ of previous points that can be reused \\
+			A samll tolerance $\epsilon \in (0, 1)$
             
         \item[\textbf{Step 1}] \textbf{(Minimize Modelled Constraints)} \\
             Compute
-            
 \begin{displaymath}
 \begin{array}{cccccc}
-\argmin_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
+s^{(k)} = \argmin_{s, v^{(j)}, b^{(j)}}	& \modelk(s) 	                         &       &                            				& 	\\
 							& \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     		& \quad \forall \; u_{\text{fe}}^{(i)} \in H_{\text{feas}}	\\
 							& \left(u_{\text{infe}}^{(j)}\right)^T v^{(j)}      & \ge   & b^{(j)} + \epsilon \Delta_k   & \quad \forall \; u_{\text{infe}}^{(j)} \in H_{\text{inf}}  \\
 							& \|v^{(i)}\|^2   & =     & 1                           									& \quad \forall \; 1 \le i \le |  H_{\text{inf}} | \\
@@ -857,21 +843,13 @@ We add a linear constraint that ensures we do not attempt the same evaluation.
 \end{array}
 \end{displaymath}
            
-        \item[\textbf{Step 2}] \textbf{(Evaluate new sample point )} \\
-            Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
-                \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\iteratek$ as the solution.
-                \item[] Otherwise, if $\dk > \alpha \chik$ then 
-                $\Delta_{k+1} \gets \omegadec \Delta_{k}$, 
-                $x^{(k+1)} \gets \iteratek$,
-                $k \gets k+1$ and go to Step 1.
-            \end{itemize}
-        
-        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\trialk = \min_{s \in \searchtrk} \modelk(\iteratek + \trialk)$.
-            % \item[] This can also be $\trialk = \min_{s \in \outertrk \cap \feasiblek} \modelk(\iteratek + \trialk)$ depending on the choice made in \cref{which_trust_region}.
-            
-        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
-            $k \gets k+1$ and go to Step 1.
+        \item[\textbf{Step 2}] \textbf{(Evaluate trial point)} \\
+			\begin{itemize}
+				\item[] If $s^{(k)}$ is defined and feasible, return $s^{(k)}$
+				\item[] If $ s^{(k)} $ is not defined or $ s^{(k)} \in \sampletrk$, \textbf{fail}.
+				\item[] Else $ s^{(k)} $ is defined and infeasible:
+					$H_{\text{inf}} \gets H_{\text{inf}} \cup \{ s^{(k)} \} $, $k \gets k + 1$, Go to Step 1
+			\end{itemize}
     \end{itemize}
 \end{algorithm}
 
