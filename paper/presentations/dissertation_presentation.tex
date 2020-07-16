@@ -30,7 +30,7 @@
 \begin{document}
 
 
-\title{Master's Presentation}   
+\title{Convex Always Feasile Derivative Free Optimization}   
 \author{Trever Hallock} 
 \date{\today} 
 
@@ -41,6 +41,7 @@
 \begin{frame}{Introduction}
     \begin{itemize}
         \item We develop an algorithm to find local optima of convex constrained problems
+        \item Derivatives not available, only function values
         \item This algorithm is useful for problems where function values are not provided for infeasible points
         \item The focus is on narrow feasible regions
     \end{itemize}
@@ -73,7 +74,8 @@
     \begin{itemize}
         \item Extend our current algorithm for solving linear partially-quantifiable constraints to convex constraints
         \item Account for uncertainty in constraint boundaries
-        \item Ensure that no infeasible points must be evaluated
+        \item Ensure convergence does not require evaluation at infeasible points
+        \item Avoid evaluating functions at infeasible points
     \end{itemize}
 \end{frame}
 
@@ -85,12 +87,12 @@
 \begin{frame}{Model Based Trust Region Methods}
     \begin{itemize}
         \setlength\itemsep{2em}
-    	\item Approximate derivatives of $f$ and $c$ with model functions created from a sample set
-    	\item We approximate using a second order model, meaning that we approximate:
+    	\item Approximate derivatives of $f$ and $c$ using model functions created from a sample set
+    	\item We approximate $f$ using a second order model, meaning that we approximate:
     	\begin{itemize}
+            \item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
             \item $\fhk \approx \nabla ^2 f(\xk)$
             \item $\fgk \approx \nabla f(\xk)$
-            \item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
             \item $\cgk \approx c_i(\xk)$
             \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(x)$
     	\end{itemize}
@@ -120,9 +122,9 @@
 
         \begin{displaymath}
 \begin{array}{lrcc}
-min_s & \mk(s)   &     &            \\
-s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
-      &  s & \in & \bk.  \\
+min_s & \mk(\xk + s)   &     &            \\
+s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m       \\
+      &  s & \in & B_{\infty}(0, \dk).  \\
 \end{array}
         \end{displaymath}
         \item Replaced true functions with model functions
@@ -155,16 +157,16 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 %\end{frame}
 
 
-\begin{frame}{Geometry}
+\begin{frame}{Geometry of the Sample Set}
     \begin{itemize}
-        \item<1, 2, 3> Geometry refers to the shape of the set of sample points
-        \item<1, 2, 3> When the points are not well poised, the constructed model can be innacurate \\
+        \item<1, 2, 3> Geometry refers to the relative positions of the sample set of sample points
+        \item<1, 2, 3> When the points are not ``well poised", the constructed model can be innacurate \\
         \only<2>{
             \includegraphics[width=120px]{images/poised_good.png} \includegraphics[width=120px]{images/poised_bad.png}
         }
         \item<3> Constructing poised sets over ellipses is well known
         \item<3> Constraints limit what points are available for the sample set
-        \item<3> With narrow constraints, this means well poised sets may not exist
+        \item<3> With narrow constraints, this means ``well poised" sets may not exist
         \only<3>{
 			\begin{center}
 				\includegraphics[width=180px]{images/impossible_poised.png}
@@ -188,9 +190,9 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 
 \begin{frame}{Feasible Derivative Free Algorithm}
     \begin{itemize}
-        \item Our algorithm is an instance of a general algorithmic framework analyzed by \cite{CONEJO2013324}
+        \item Our algorithm is based on a general algorithmic framework proposed by \cite{CONEJO2013324}
         \item This paper provides convergence analysis, without depending on implementation details
-		\item Algorithm assumes known constraints
+		\item Algorithm assumes known constraints for a projection operator
         \item This framework assumes the following properties
             \begin{itemize}
 				\item Quadratic or linear model functions
@@ -206,10 +208,10 @@ s.t.  &  \mck(x) & \le & 0   \quad \forall \; 1 \le i \le m       \\
 \begin{frame}{Algorithm outline}
 	\begin{itemize}
 		\item Construct a model for the current point
-		\item Check criticality
+		\item Check optimality
 		\item Compute step
-		\item Check reduction
-		\item Either accept or decrease radius
+		\item Evaluate trial
+		\item Check reduction and update radius
 	\end{itemize}
 \end{frame}
 
