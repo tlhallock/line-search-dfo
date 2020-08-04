@@ -38,7 +38,7 @@ Conceptually, the model functions are ``trusted'' only within a distance $\Delta
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
 
-We are specifically interested in applications were some of the black box functions cannot be evaluated outside the feasible region.
+We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
 As in \cite{DUMMY:typesofconstraints}, quantifiable means that the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
 We assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
 In this case, the constraints are called {\em partially quantifiable}.   
@@ -226,7 +226,7 @@ Another recent review can be found in \cite{DUMMY:review2} and \cite{Larson_2019
 \subsubsection{Interpolation}
 \label{interpolation}
 
-Derivative free trust region methods construct model functions from a family of functions spanned by a set of $p \in \mathbb N$ basis functions  $\{\phi_0, \phi_2, \ldots, \phi_p\}$.
+Derivative free trust region methods construct model functions from a family of functions spanned by a set of $p + 1 \in \mathbb N$ basis functions  $\{\phi_0, \phi_1, \ldots, \phi_p\}$.
 Each member of this family has the from $\modelk(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
 In our method, we use interpolation to choose the coefficients so that $\modelk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ for which the functions have been evaluated.
@@ -364,7 +364,7 @@ A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296},
 
 \subsubsection{Geometry Ensuring Algorithms}
 
-Sample points are chosen by a geometry ensuring algorithm.
+Sample points are chosen by a geometry ensuring algorithm from \cite{DUMMY:intro_book}.
 At any given time, the algorithm has evaluated 1 or more sample points.
 Initially, only the starting point $x_0$ is evaluated, so that points must be added to the sample set.
 Evaluated points within the trust region should be reused when possible, but the algorithm may have to replace some points to ensure a well poised set on the new trust region.
@@ -409,6 +409,10 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
             If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
     \end{itemize}
 \end{algorithm}
+
+
+At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
+This algorithm can also be used to create a poised set over an ellipsoidal shape. This is discussed further in \cref{ellipsoidal_lambda}.
 % 
 % \paragraph{Proximity}
 % 
