@@ -359,6 +359,7 @@ Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$ ball 
 % \cref{fully_quadratic}
 
 \begin{theorem}
+\label{shifted_ellipsoid}
 Let $T$ and $\delta$ be as defined above, and let $\hat m_f(u)$ be a model of the shifted objective $\hat f(u) = f(T^{-1}(u))$ in the $\delta$ ball such that
 there exist constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$ such that for all $\{u \in R^n | \;\|u\| \le \delta \}$, we have
 % for all $u \in B(0 ; \delta)$ we have the following error bounds:
@@ -700,29 +701,84 @@ Notice that with two line segments, the algorithm can already choose new centers
 \section{Convergence Discussion}
 \label{convergence_discussion}
 
-If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, the algorithm presented here is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
-Thus, five hypothesis are required for the convergence analysis:
+Here we show convergence for one such variation.
+We will be setting $\searchtrk = \outertrk \cap \feasible$ as discussed in \cref{search_a_lot}.
+We will also be letting $\sampletrk$ have an ellipsoidal shape as discussed within \cref{bluepill}. 
 
+If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, the algorithm presented here is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
+This means we only need to satisfy the requirements detailed in their convergence analysis.
+
+
+One of these is the efficiency condition \cref{efficiency} which is satisfied by using the Generalized Cauchy Point \cite{Conn:2000:TM:357813} within the trust region subproblem.
+
+The other four hypothesis are:
 \begin{itemize}
-\item[H0] The trial point during each iterate satisfies the efficiency condition \cref{efficiency}.
-\item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous over $\domain$.
+\item[H1] The function $f$ is diferentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
 \item[H2] The function $f$ is bounded below over $\domain$.
-\item[H3] The Hessian's of $f$ are uniformly bounded at each iterate.
-\item[H4] The accuracy condition \cref{accuracy}.
+\item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|H_k\| \le \beta - 1$ for all $k \ge 0$.
+\item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
 \end{itemize}
 
-Hypothesis H1, H2, and H3 are kept as assumptions within our algorithm.
-Hypothesis 0 is satisfied by the Generalized Cauchy Point \cite{Conn:2000:TM:357813} if we set $\searchtrk = \outertrk \cap \feasible$ as discussed in \cref{search_a_lot}.
-As discussed in \cref{ellipsoidal_lambda}, Hypothesis H4 is satisfied by letting $\sampletrk$ have an ellipsoidal shape as discussed within \cref{bluepill} as long as the condition number of $\qk$ is bounded.
 
-However, we must ensure that we are always able to find a feasible ellipsoid.
+Hypothesis H1, H2 are kept as assumptions within our algorithm.
+However, our implementation allows us we can replace H3 with a straightforward hypothesis:
+
+\begin{itemize}
+\item[H3'] The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$.
+\end{itemize}
+
+This is because of the following lemma:
+
+\begin{lemma}
+H3' implies H3
+\end{lemma}
+
+\begin{proof}
+Because we are using quadratic models, we see that for each $k \ge 0$
+\begin{align*}
+\| \nabla^2 f(x) - \nabla^2 m_f(x)\| \le \kappa_{h} \dk \le \kappa_{h} \Delta_{\text{max}} \\
+\end{align*}
+\end{proof}
+
+
+% \begin{itemize}
+% \item[H0] The trial point during each iterate satisfies the efficiency condition \cref{efficiency}.
+% \item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous over $\domain$.
+% \item[H2] The function $f$ is bounded below over $\domain$.
+% \item[H4] The accuracy condition \cref{accuracy}.
+% \end{itemize}
+
+Also, we add an assumption of our own:
+\begin{itemize}
+\item[H5] The linear constraints are independent.
+\end{itemize}
+
+
+This only leaves the accuracy condition \cref{accuracy}.
+
+As discussed in \cref{ellipsoidal_lambda}, we know that if the condition number of $\qk$ is bounded, we will have a well poised model.
+
+However, we must also ensure that we are always able to find a feasible ellipsoid.
 Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
 we can find a feasible ellipse that needs only be scaled by a constant to do so.
-It is shown in \cite{Billups_Larson_2013} that a lambda poised set over a sphere remains lambda poised over a larger sphere (with a larger lambda).
+% It is shown in \cite{Billups_Larson_2013} that a lambda poised set over a sphere remains lambda poised over a larger sphere (with a larger lambda).
+We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7:
+\begin{lemma}
+\label{change_radius}
+Let $Y$ be a poised set of points, and let $R = \max_{i}\|y^i - y^0\|$ and suppose that $\|E_i\| \le \epsilon$ for $0 \le i \le p$.
+If $f$ is a Lipschitz continuous function with Lipschitz constant $L$, and $m_f(x)$ is a quadratic model of $f$.
+\begin{align*}
+\|\nabla f(x) - \nabla m(x)\| \le \Lambda'' \sqrt{p_1}\left(4LR^2 + \epsilon/R\right)
+\end{align*}
+\end{lemma}
 
-The following proof shows that such a feasible ellipse exists, and provides the required equations for constructing the ellipse.
 
-\begin{theorem}
+
+
+The following proof shows that such a feasible ellipse exists, and provides the required equations for constructing the ellipsoid.
+
+\begin{lemma}
+\label{ellipsoid_exists}
 Given a polyhedron $P = \{x | Ax \le b \}$, where the rows of $A$ are linearly independent, and a point $\xk \in P$,
 there exists an ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ within the polyhedron $E \subset P$,
 such that $(\xk - c)^TQ(\xk - c) \le \epsilon$.
@@ -732,8 +788,7 @@ Furthermore, letting $\mathcal A(x) = \{1\le i\le n | A_ix = b_i\}$, $
 \begin{align*}
 \sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}.
 \end{align*}
-
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
 Assume without loss of generality that $A$ and $b$ have been normalized so that $\|A_i\| = 1$.
@@ -827,6 +882,25 @@ as the condition number is not affected by rotations.
 % The value of $\alpha$ only depends on the polyhedron, and is therefore bounded given a problem.
 
 
+\end{proof}
+
+
+
+\begin{lemma}
+The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
+\end{lemma}
+
+\begin{proof}
+For each iteration, we construct the ellipsoid $E$ given by \cref{ellipsoid_exists}.
+After mapping this points to the unit ball as described in \cref{shifted_ellipsoid},
+we choose sample points that ensure our model is $\Lambda$ poised for some constant $\Lambda$ by using \cref{model_improving_algorithm}.
+This in turn implies that the model is $\Lambda'$ poised over the ellipsoid where $\Lambda' = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda$.
+Because the constraints are linear and independent, we know that $\alpha$ is bounded.
+Finally, using \cref{change_radius} we know that the model is poised with a constant of $\Lambda''$ at $\xk$ as we only double the radius.
+
+\color{red}
+Need to show that the condition number is bounded.
+\color{black}
 \end{proof}
 
 
