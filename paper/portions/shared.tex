@@ -772,7 +772,7 @@ We extend the following Mangasarian-Fromovitz style constraint qualification:
 \paragraph{version 1}
 \color{red}
 \begin{itemize}
-\item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) \le 0, \forall i \in \mathcal A(x^{\star})$.
+\item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
 \end{itemize}
 \color{black}
 \paragraph{version 2}
@@ -959,15 +959,6 @@ we can use  \cref{shifted_ellipsoid} to conclude that for all $x_1 \in E$ and al
 \left\|\nabla f\left(x_2 \right) - \nabla m_f\left(x_2\right)\right\| \le \Lambda_2 \dk.
 \end{align*}
 
-
-
-Because the constraints are linear and independent, we know that $\alpha$ is bounded.
-
-Finally, using \cref{change_radius} we know that the model is poised with a constant of $\Lambda_2$ over $\xk$ as we only double the radius.
-
-\color{red}
-Need to show that the condition number is bounded.
-\color{black}
 \end{proof}
 
 
