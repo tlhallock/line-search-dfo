@@ -701,6 +701,14 @@ Notice that with two line segments, the algorithm can already choose new centers
 \section{Convergence Discussion}
 \label{convergence_discussion}
 
+\color{red}
+\begin{itemize}
+\item Define $\epsilon$ in the lemma.
+\item Remove the unnecessary versions of the constraint qualification.
+\item Fix a variable either being $u$ or $x$ in the mapping back to the unit ball.
+\end{itemize}
+\color{black}
+
 Here we show convergence for one such variation.
 We will be setting $\searchtrk = \outertrk \cap \feasible$ as discussed in \cref{search_a_lot}.
 We will also be letting $\sampletrk$ have an ellipsoidal shape as discussed within \cref{bluepill}. 
@@ -715,13 +723,13 @@ The other four hypothesis are:
 \begin{itemize}
 \item[H1] The function $f$ is diferentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
 \item[H2] The function $f$ is bounded below over $\domain$.
-\item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|H_k\| \le \beta - 1$ for all $k \ge 0$.
+\item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \modelk\| \le \beta - 1$ for all $k \ge 0$.
 \item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
 \end{itemize}
 
 
 Hypothesis H1, H2 are kept as assumptions within our algorithm.
-However, our implementation allows us we can replace H3 with a straightforward hypothesis:
+However, our implementation allows us we can replace H3 with a more straightforward hypothesis:
 
 \begin{itemize}
 \item[H3'] The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$.
@@ -730,14 +738,24 @@ However, our implementation allows us we can replace H3 with a straightforward h
 This is because of the following lemma:
 
 \begin{lemma}
-H3' implies H3
+If $\dk \to 0$ as $k \to \infty$, then H3' implies H3.
 \end{lemma}
 
 \begin{proof}
-Because we are using quadratic models, we see that for each $k \ge 0$
+Let $\beta_1 \ge 1$ be such that for all $k \ge 0$:
 \begin{align*}
-\| \nabla^2 f(x) - \nabla^2 m_f(x)\| \le \kappa_{h} \dk \le \kappa_{h} \Delta_{\text{max}} \\
+\|\nabla^2 f(\xk) \| \le \beta_1 - 1
 \end{align*}
+We assume an implementation with a $\Delta_{\text{max}}$ such that $\dk \le \Delta_{\text{max}}$ for all $k \ge 0$.
+Because we construct fully quadratic models during each iteration, we know that
+\begin{align*}
+\|\nabla^2 f(\xk) - \nabla^2 m_f(\xk) \| \le \kappa_{h} \dk \le \kappa_{h} \Delta_{\text{max}}
+\end{align*}
+Defining $\beta_2 = \kappa_{h} \Delta_{\text{max}} + \beta_1 \ge 1$, we see that
+\begin{align*}
+\|\nabla^2 m_{f}(\xk) \| \le \|\nabla^2 m_{f}(\xk) - \nabla^2 f(\xk)  \| + \|\nabla^2 f(\xk) \|  \le \beta_2 - 1 .
+\end{align*}
+
 \end{proof}
 
 
@@ -748,9 +766,33 @@ Because we are using quadratic models, we see that for each $k \ge 0$
 % \item[H4] The accuracy condition \cref{accuracy}.
 % \end{itemize}
 
-Also, we add an assumption of our own:
+Also, we add an assumption of our own.
+We again let $\mathcal A(x) = \{1 \le i \le m | c_i(x) = 0 \}$.
+We extend the following Mangasarian-Fromovitz style constraint qualification:
+\paragraph{version 1}
+\color{red}
 \begin{itemize}
-\item[H5] The linear constraints are independent.
+\item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) \le 0, \forall i \in \mathcal A(x^{\star})$.
+\end{itemize}
+\color{black}
+\paragraph{version 2}
+\begin{itemize}
+\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that
+$d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+\end{itemize}
+\paragraph{version 3}
+Our assumption reads
+\begin{itemize}
+\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
+$d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
+${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+\end{itemize}
+\paragraph{version 4}
+Our assumption reads
+\begin{itemize}
+\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
+$d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
+${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
 \end{itemize}
 
 
@@ -762,13 +804,17 @@ However, we must also ensure that we are always able to find a feasible ellipsoi
 Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
 we can find a feasible ellipse that needs only be scaled by a constant to do so.
 % It is shown in \cite{Billups_Larson_2013} that a lambda poised set over a sphere remains lambda poised over a larger sphere (with a larger lambda).
-We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7:
+We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
+We restart the theorem here, with the simplication that $f$ is deterministic function:
 \begin{lemma}
 \label{change_radius}
-Let $Y$ be a poised set of points, and let $R = \max_{i}\|y^i - y^0\|$ and suppose that $\|E_i\| \le \epsilon$ for $0 \le i \le p$.
+Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 If $f$ is a Lipschitz continuous function with Lipschitz constant $L$, and $m_f(x)$ is a quadratic model of $f$.
+Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
 \begin{align*}
-\|\nabla f(x) - \nabla m(x)\| \le \Lambda'' \sqrt{p_1}\left(4LR^2 + \epsilon/R\right)
+\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
+\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
+\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
 \end{align*}
 \end{lemma}
 
@@ -880,8 +926,6 @@ for sufficiently small $\delta$, that can be scaled by $2$ to include $\xk$.
 Note that the condition number of this matrix is $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}$,
 as the condition number is not affected by rotations.
 % The value of $\alpha$ only depends on the polyhedron, and is therefore bounded given a problem.
-
-
 \end{proof}
 
 
@@ -892,11 +936,34 @@ The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
 
 \begin{proof}
 For each iteration, we construct the ellipsoid $E$ given by \cref{ellipsoid_exists}.
-After mapping this points to the unit ball as described in \cref{shifted_ellipsoid},
-we choose sample points that ensure our model is $\Lambda$ poised for some constant $\Lambda$ by using \cref{model_improving_algorithm}.
-This in turn implies that the model is $\Lambda'$ poised over the ellipsoid where $\Lambda' = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda$.
+We then map this ellipsoid to the unit ball with an affine mapping $T$ described in \cref{shifted_ellipsoid} and create shifted functions
+$\hat {m}_f(u) = m_f(T^{-1}(u))$ and
+$\hat f (u) = f(T^{-1}(u))$.
+After choose sample points that ensure our shifted model $\hat m _f$ is $\Lambda$ poised for some constant $\Lambda$ by using \cref{model_improving_algorithm},
+we know that for all $u \in B(0, 1)$,
+\begin{align*}
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \Lambda.
+\end{align*}
+Then, by using \cref{change_radius}, we know that there is a constant $\Lambda'$ such that for all $u \in B(0, 2)$:
+\begin{align*}
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda'.
+\end{align*}
+Finally, after defining 
+\begin{align*}
+\Lambda_1 = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda, \quad
+\Lambda_2 = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda' \\
+\end{align*}
+we can use  \cref{shifted_ellipsoid} to conclude that for all $x_1 \in E$ and all $x_2 \in \{x\in\mathbb R^n | (x - c)^TQ(x-c) \le \epsilon \}$:
+\begin{align*}
+\left\|\nabla f\left(x_1 \right) - \nabla m_f\left(x_1\right)\right\| \le \Lambda_1 \dk, \quad
+\left\|\nabla f\left(x_2 \right) - \nabla m_f\left(x_2\right)\right\| \le \Lambda_2 \dk.
+\end{align*}
+
+
+
 Because the constraints are linear and independent, we know that $\alpha$ is bounded.
-Finally, using \cref{change_radius} we know that the model is poised with a constant of $\Lambda''$ at $\xk$ as we only double the radius.
+
+Finally, using \cref{change_radius} we know that the model is poised with a constant of $\Lambda_2$ over $\xk$ as we only double the radius.
 
 \color{red}
 Need to show that the condition number is bounded.
