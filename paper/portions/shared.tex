@@ -701,11 +701,13 @@ Notice that with two line segments, the algorithm can already choose new centers
 \section{Convergence Discussion}
 \label{convergence_discussion}
 
+\subsection{Hypothesis}
+
 \color{red}
 \begin{itemize}
-\item Define $\epsilon$ in the lemma.
-\item Remove the unnecessary versions of the constraint qualification.
-\item Fix a variable either being $u$ or $x$ in the mapping back to the unit ball.
+\item Fix the $\frac{1}{\delta^2}$.
+\item Add the trust region constraints.
+% \item What are the necessary conditions for the lemma.
 \end{itemize}
 \color{black}
 
@@ -718,19 +720,16 @@ This means we only need to satisfy the requirements detailed in their convergenc
 
 
 One of these is the efficiency condition \cref{efficiency} which is satisfied by using the Generalized Cauchy Point \cite{Conn:2000:TM:357813} within the trust region subproblem.
-
 The other four hypothesis are:
 \begin{itemize}
-\item[H1] The function $f$ is diferentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
+\item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
 \item[H2] The function $f$ is bounded below over $\domain$.
 \item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \modelk\| \le \beta - 1$ for all $k \ge 0$.
-\item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
+\item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$. (This is the accuracy condition \cref{accuracy})
 \end{itemize}
 
-
 Hypothesis H1, H2 are kept as assumptions within our algorithm.
-However, our implementation allows us we can replace H3 with a more straightforward hypothesis:
-
+However, our implementation allows us to replace H3 with a more straightforward hypothesis:
 \begin{itemize}
 \item[H3'] The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$.
 \end{itemize}
@@ -738,7 +737,7 @@ However, our implementation allows us we can replace H3 with a more straightforw
 This is because of the following lemma:
 
 \begin{lemma}
-If $\dk \to 0$ as $k \to \infty$, then H3' implies H3.
+H3' implies H3.
 \end{lemma}
 
 \begin{proof}
@@ -759,98 +758,118 @@ Defining $\beta_2 = \kappa_{h} \Delta_{\text{max}} + \beta_1 \ge 1$, we see that
 \end{proof}
 
 
-% \begin{itemize}
-% \item[H0] The trial point during each iterate satisfies the efficiency condition \cref{efficiency}.
-% \item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous over $\domain$.
-% \item[H2] The function $f$ is bounded below over $\domain$.
-% \item[H4] The accuracy condition \cref{accuracy}.
-% \end{itemize}
 
-Also, we add an assumption of our own.
-We again let $\mathcal A(x) = \{1 \le i \le m | c_i(x) = 0 \}$.
-We extend the following Mangasarian-Fromovitz style constraint qualification:
-\paragraph{version 1}
-\color{red}
+Also, we add an assumption of our own:
 \begin{itemize}
-\item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
+\item[H5] There exists a point $\bar x$ within the interior of the feasible region: $A\bar x < b$.
 \end{itemize}
-\color{black}
-\paragraph{version 2}
-\begin{itemize}
-\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that
-$d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
-\end{itemize}
-\paragraph{version 3}
-Our assumption reads
-\begin{itemize}
-\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-$d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
-${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
-\end{itemize}
-\paragraph{version 4}
-Our assumption reads
-\begin{itemize}
-\item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-$d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
-${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
-\end{itemize}
+% For any $x \in \feasible$, we have that the set of gradients of active constraints is linearly independent. That is, the vectors $\{\nabla c_i(x) |  \forall i \in \mathcal A(x)\}$ is linearly independent.
 
 
-This only leaves the accuracy condition \cref{accuracy}.
+\subsection{Satisfying the accuracy condition}
+We still must satisfy H4.
 
 As discussed in \cref{ellipsoidal_lambda}, we know that if the condition number of $\qk$ is bounded, we will have a well poised model.
-
 However, we must also ensure that we are always able to find a feasible ellipsoid.
 Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
-we can find a feasible ellipse that needs only be scaled by a constant to do so.
+we can find a feasible ellipse that only needs to be scaled by a constant to do so.
 % It is shown in \cite{Billups_Larson_2013} that a lambda poised set over a sphere remains lambda poised over a larger sphere (with a larger lambda).
-We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
-We restart the theorem here, with the simplication that $f$ is deterministic function:
+
+
+% \mathcal A_k = \mathcal A(\xk) \\
+
+We define
+\begin{align}
+\mathcal A(x) = \{1 \le i \le m | c_i(x) = 0 \} \label{active_indices} \\
+u^{(k)} \in \argmax_{\|u\|^2 = 1} \min_{i \in \mathcal A(\xk)} - u^T \nabla c_i(\xk) \label{define_feasible_direction}\\
+\alpha_k = \min_{i \in \mathcal A(x)} -u^{(k)}\nabla c_i(\xk) \\
+P^{(k)} = \{x \in \mathbb R^n | \nabla c(\xk)^T x \le c(\xk) \} \\
+F^{(k)} = P^{(k)} \cap B_{\infty}(\xk, \dk) \\
+\end{align}
+
+
 \begin{lemma}
-\label{change_radius}
-Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
-If $f$ is a Lipschitz continuous function with Lipschitz constant $L$, and $m_f(x)$ is a quadratic model of $f$.
-Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
-\begin{align*}
-\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
-\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
-\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
-\end{align*}
+\label{alphas_are_bounded}
+Assume H5. Then we know that there exists an  $\epsilon_{\alpha} > 0$ such that $\epsilon_{\alpha} \le \alpha_k$ for all $k \in \mathbb N$.
 \end{lemma}
+\begin{proof}
+% $u(x) = \frac{\bar{x} - x}{\|\bar{x} - x\|}$.
+Suppose that $x_0 \in \feasible$.
+For each $i \in \mathcal A(x_0)$, subtract the two equations:
+\begin{align*}
+\nabla c_i(x_0)^T \bar x < c_i(x_0), \quad
+\nabla c_i(x_0)^T  x = c_i(x_0)
+\end{align*}
+to find
+\begin{align*}
+\nabla c_i(x_0)^T \left(\bar x - x_0 \right) < 0 \Longrightarrow -\nabla c_i(x_0)^T \frac {\bar x - x_0}{\|\bar x - x_0\|} > 0 
+\Longrightarrow \min_{i \in \mathcal A(x_0)} - \nabla c_i(x_0)\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0
+\end{align*}
+By definition \cref{define_feasible_direction},
+\begin{align*}
+\min_{i \in \mathcal A(x_0)} - {u^{(k)}}^T \nabla c_i(x_0) \ge \min_{i \in \mathcal A(x_0)} - \nabla c_i(x_0)\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0
+\end{align*}
+Thus, if we define $\alpha(x) =  \max_{\|u\|^2 = 1} \min_{i \in \mathcal A(x)} - u^T \nabla c_i(x) $, we see that $\alpha(x) > 0 \forall x \in \feasible$.
+% We know that for each  $x \in \feasible$, the set of gradients $\nabla c_i(x) \forall i \in \mathcal A(x)$ of active constraints $\mathcal A(x)$ is linearly independent.
+% For any $x \in \feasible$, we know that $\alpha(x) \ge \min_{i \in \mathcal A(x)} - u(x)^T \nabla c_i(x)$
+% If $\alpha(x) = 0$, then \color{red}contradiction\color{black}, so that $\alpha(x) > 0$ for all $x \in \feasible$.
+However, because there are only $m$ constraints, each $\mathcal A(x)$ is one of the only $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$,
+and $\alpha(x)$ can only take on at most $2^m$ values.
+Choose $\epsilon_{\alpha}$ to be the smallest of these values.
+\end{proof}
+
+
+% The following proof shows that such a feasible ellipse exists, and provides the required equations for constructing the ellipsoid.
 
 
 
 
-The following proof shows that such a feasible ellipse exists, and provides the required equations for constructing the ellipsoid.
+% For each $k \in \mathbb N$, there exists an $\epsilon > 0$, $c \in \mathbb R^n$  and a positive definite, symmetric matrix $Q$, 
+% such that all of the following are satisfied:
+
+
+
+% \alpha = \max_{x \in P, i \in \mathcal A(x)} -A_i\frac{A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e}{\|A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e\|}
 
 \begin{lemma}
 \label{ellipsoid_exists}
-Given a polyhedron $P = \{x | Ax \le b \}$, where the rows of $A$ are linearly independent, and a point $\xk \in P$,
-there exists an ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ within the polyhedron $E \subset P$,
-such that $(\xk - c)^TQ(\xk - c) \le \epsilon$.
-Furthermore, letting $\mathcal A(x) = \{1\le i\le n | A_ix = b_i\}$, $
-\alpha = \max_{x \in P, i \in \mathcal A(x)} -A_i\frac{A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e}{\|A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e\|}$ we have that
-
-\begin{align*}
-\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}.
-\end{align*}
+Let  $A$ be an $m \times n$ matrix and $b \in \mathbb R^m$ be provided so that $P = \{x \in \mathbb R^n | Ax \le b \}$ be a non-empty polyhedron.
+Also, let $x_0 \in P$ be arbitrary.
+Define
+\begin{align}
+\mathcal A = \{1 \le i \le m | A_i x_0 = b \} \label{active_polyhedron_constraints} \\
+u^{\star} \in \argmax_{\|u\|^2 = 1} \min_{i \in \mathcal A} - u^T A_i \label{polyhedrons_u} \\
+\alpha = \min_{i \in \mathcal A(x)} -u^{\star}A_i \label{polyhedrons_alpha}
+\end{align}
+If $\alpha > 0$, then there exists an $\epsilon > 0$, $c \in \mathbb R^n$  and a positive definite, symmetric matrix $Q$, 
+such that all of the following are satisfied:
+\begin{itemize}
+\item The ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ satisfies $E \subset P$.
+\item The ellipsoid $\hat E = \{x | (x - c)^TQ(x - c) \le  \epsilon \}$ satisfies $x_0 \in \hat E$.
+\item $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}$.
+\end{itemize}
 \end{lemma}
 
 \begin{proof}
-Assume without loss of generality that $A$ and $b$ have been normalized so that $\|A_i\| = 1$.
-Let $\mathcal A$ be the set of active constraints at $\xk$: $\mathcal A = \mathcal A(\xk) = \{ i | A_i\xk = b_i\}$.
-If $\mathcal A = \emptyset$, then we are free to select $c = \xk, Q = I$, and $ \epsilon $ sufficiently small.
-Otherwise, compute $u = -A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e$, $\hat u = \frac {u} {\| u\|} $, $\alpha = -\max_{i \in \mathcal A} A_i \hat u$, and define the cones
+
+Without loss of generality, assume that the rows of $A$ and elements of $b$ have been normalized so that $\|A_i\| = 1 \forall 1 \le i \le m$.
+
+If $\mathcal A = \emptyset$, then we are free to select $c = x_0, Q = I$, and $ \epsilon$ smaller than the distance to the nearest constraint:
+$\epsilon \le  \min_{1 \le i \le m} b_i - A_i^Tx_0$.
+
+Otherwise, compute $u^{\star}$ and $\alpha$ as in \cref{polyhedrons_u} and \cref{polyhedrons_alpha} and define the cones
+
+% = -A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e$, $\hat u = \frac {u} {\| u\|} $, $\alpha = -\max_{i \in \mathcal A} A_i \hat u$, and define the cones
 \begin{align}
-C_1 = \{x \in \mathbb R^n | \quad x = \xk + t\hat u + s, s^T\hat u = 0, t > 0, \|s\| \le \alpha t\} \label{s_less_t} \\
-C_2 = \{x = (t, s)^T \in \mathbb R^n, t \in \mathbb R, s \in \mathbb R^{n-1} |\quad \|s\| \le a t \}.
+C_1 = \{x \in \mathbb R^n | \quad x = \xk + t u^{\star}+ s, s^Tu^{\star} = 0, t > 0, \|s\| \le \alpha t\} \label{s_less_t} \\
+C_2 = \{x = (t, s)^T \in \mathbb R^n, t \in \mathbb R^{\ge 0}, s \in \mathbb R^{n-1} |\quad \|s\| \le a t \}.
 \end{align}
 
-First, we show that $C_1$ is feasible with respect to the active constraints at $\xk$,
-by letting $y = \xk + t\hat u + s\in C_1$ as in \ref{s_less_t} and $i \in \mathcal A$ be arbitrary.
+First, we show that $C_1$ is feasible with respect to the active constraints at $x$
+by letting $y = \xk + tu^{\star} + s\in C_1$ as in \ref{s_less_t} and $i \in \mathcal A$ be arbitrary.
 With these definitions, the active constraints are satisified at $y$:
 \begin{align*}
-A_{i}y - b_{i} = A_{i}(t\hat u + s) = A_{i}s + t A_{i}n \le \|s\| - \alpha t \le 0.
+A_{i}^Ty - b_{i} = A_{i}^T(tu^{\star} + s) = A_{i}^Ts + t A_{i}^Tu^{\star} \le \|s\| - \alpha t \le 0.
 \end{align*}
 
 Now, for an arbitrary $\delta > 0$, let 
@@ -900,14 +919,14 @@ includes the origin:
 \end{bmatrix}(0 - \delta e_1) = \delta^2 \le \delta^2.
 \end{align*}
 
-All that remains is to translate this ellipsoid by $\xk$ and rotate $\hat u$ into $e_1$ with the rotation matrix $R \in SO(n)$:
+All that remains is to translate this ellipsoid by $x$ and rotate $u^{\star}$ into $e_1$ with the rotation matrix $R \in SO(n)$:
 \begin{align*}
-R = 2\frac{(e_1 + \hat u)(e_1 + \hat u)^T}{(e_1 + \hat u)^T(e_1 + \hat u)} - \boldsymbol I
+R = 2\frac{(e_1 + u^{\star})(e_1 +u^{\star})^T}{(e_1 +u^{\star})^T(e_1 +u^{\star})} - \boldsymbol I
 \end{align*}
 which satisfies
 \begin{align*}
-Re_1 = \hat u, \quad
-R\hat u = e_1, \quad
+Re_1 = u^{\star}, \quad
+Ru^{\star} = e_1, \quad
 \det(R) = 1.
 \end{align*}
 
@@ -915,51 +934,94 @@ R\hat u = e_1, \quad
 Thus, with $Q = R^T\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \alpha^{-2} \boldsymbol I \\
-\end{bmatrix}R$, $c = \xk - \delta \hat u$, $\epsilon = \delta^2$ we have constructed a feasible ellipse
+\end{bmatrix}R$, $c = x_0 - \delta u^{\star}$, $\epsilon = \delta^2$ we have constructed a feasible ellipse
 \begin{align*}
-E_2 = \bigg \{x \bigg | (x - \xk - \delta \hat u)^T\bigg(R^T\begin{bmatrix}
+E_2 = \bigg \{x \bigg | (x - x_0 - \delta u^{\star})^T\bigg(R^T\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \alpha^{-2} \boldsymbol I \\
-\end{bmatrix}R\bigg)(x - \xk - \delta \hat u) \le \frac 1 2 \delta^2 \bigg\},
+\end{bmatrix}R\bigg)(x - x_0 - \delta u^{\star}) \le \frac 1 2 \delta^2 \bigg\},
 \end{align*}
-for sufficiently small $\delta$, that can be scaled by $2$ to include $\xk$.
+for sufficiently small $\delta$, that can be scaled by $2$ to include $x_0$.
 Note that the condition number of this matrix is $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}$,
 as the condition number is not affected by rotations.
 % The value of $\alpha$ only depends on the polyhedron, and is therefore bounded given a problem.
+
+Also, note that although this ellipse is only feasible with respect to the active constraints at $x_0$.
+Let $L$ be the shortest distance to any point on another constraint, and define $\alpha' = \sqrt{\left(1 + \alpha^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right)}$.
+We see that if $x = (t, s)^T \in E_1$ for some $s \in \mathbb R^{n-1}$:
+\begin{align*}
+(x - \delta e_1)^T\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \alpha^{-2} \boldsymbol I \\
+\end{bmatrix}(x - \delta e_1) \le \frac 1 2 \delta^2 \\
+\Longrightarrow (t - \delta)^2 + \frac {1} {\alpha^2} \|s\|^2 \le \frac 1 2 \delta^2
+\Longrightarrow (t - \delta)^2 \le \frac 1 2 \delta^2
+\Longrightarrow t \le \left(1 + \frac 1 {\sqrt{2}}\right) \delta
+\end{align*}
+so that $\|x\|^2 = t^2 + \|s\|^2 \le \left(1 + \alpha^2 \right) t^2 \le \left(1 + \alpha^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right) \delta^2 = {\alpha'}^2 \delta^2 \Longrightarrow \|x\| \le \alpha' \delta$.
+We can let $\epsilon \le \delta = \frac 1 {\alpha'} L \Longrightarrow \|x\| \le \alpha' \delta \le L$ so that all points within $E_1$ are closer than the nearest point on another constraint.
+This means that the ellipsoid $E \subset P$.
 \end{proof}
+
+We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
+We restate the theorem here, with the simplication that $f$ is deterministic function:
+\begin{lemma}
+\label{change_radius}
+Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+If $f$ is a Lipschitz continuous function with Lipschitz constant $L$, and $m_f(x)$ is a quadratic model of $f$.
+Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
+\begin{align*}
+\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
+\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
+\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
+\end{align*}
+\end{lemma}
+
+
 
 
 
 \begin{lemma}
-The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
+Assuming H1 and H5, the accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
+Namely, there exists a $\kappa_{g}$ such that $\|\nabla m_f(\xk) - \nabla f(\xk)\| \le \kappa_g \dk$.
 \end{lemma}
 
 \begin{proof}
-For each iteration, we construct the ellipsoid $E$ given by \cref{ellipsoid_exists}.
-We then map this ellipsoid to the unit ball with an affine mapping $T$ described in \cref{shifted_ellipsoid} and create shifted functions
+For each iteration $k$, we use \cref{alphas_are_bounded} to satisify the conditions of \cref{ellipsoid_exists} by letting 
+$P = \{x \in \mathbb R^n |  \nabla c(\xk)^T x \le c(\xk), \xk - \dk \le x \le \xk + \dk \}$.
+Note that adding the trust region constraint cannot remove all feasible interior points, as $\xk \in \feasible$.
+This provides us with two ellipsoids:
+\begin{itemize}
+\item $E^{(k)} = \{x \in \mathbb R^n | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \}$, $E^{(k)} \subset P$.
+\item $\hat E^{(k)} = \{x \in \mathbb R^n | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le {\delta_k}^2 \}$, $\xk \in \hat E^{(k)}$.
+\end{itemize}
+As in \cref{shifted_ellipsoid}, we can give $Q^{(k)} = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in E^{(k)}} \|x - \mu^{(k)}\|$, 
+so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the $\delta$ ball.
+As also described in \cref{shifted_ellipsoid}, we  create shifted functions
 $\hat {m}_f(u) = m_f(T^{-1}(u))$ and
 $\hat f (u) = f(T^{-1}(u))$.
-After choose sample points that ensure our shifted model $\hat m _f$ is $\Lambda$ poised for some constant $\Lambda$ by using \cref{model_improving_algorithm},
-we know that for all $u \in B(0, 1)$,
+After using \cref{model_improving_algorithm} to choose sample points, we know that ${\hat m }_f$ is a quadratic model of $\hat f$.
+That is, there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
 \begin{align*}
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \Lambda.
+\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta \\
 \end{align*}
-Then, by using \cref{change_radius}, we know that there is a constant $\Lambda'$ such that for all $u \in B(0, 2)$:
+We can then use \cref{change_radius} to conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
 \begin{align*}
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda'.
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2
 \end{align*}
-Finally, after defining 
+where $\kappa_{g}' = 16 \Lambda_2 L \sqrt{p+1}$.
+Finally, after defining $\kappa''_{g} =  \frac 2 {\delta_k} \kappa'_g \sqrt{Q^{(k)}} =  \frac 2 {\delta_k}\kappa'_g \sqrt{\frac{\max\{1, \alpha_k^{-2}\}}{\min\{1, \alpha_k^{-2}\}}}$
+we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \hat E^{(k)}$:
 \begin{align*}
-\Lambda_1 = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda, \quad
-\Lambda_2 = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} \Lambda' \\
+\left\|\nabla f\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le \kappa''_{g} \dk^2 \le \left(\kappa''_g \Delta_{\text{max}}\right) \dk.
 \end{align*}
-we can use  \cref{shifted_ellipsoid} to conclude that for all $x_1 \in E$ and all $x_2 \in \{x\in\mathbb R^n | (x - c)^TQ(x-c) \le \epsilon \}$:
-\begin{align*}
-\left\|\nabla f\left(x_1 \right) - \nabla m_f\left(x_1\right)\right\| \le \Lambda_1 \dk, \quad
-\left\|\nabla f\left(x_2 \right) - \nabla m_f\left(x_2\right)\right\| \le \Lambda_2 \dk.
-\end{align*}
+In particular, $\xk \in \hat E^{(k)}$.
+Notice that \cref{alphas_are_bounded} ensures a bound on $\kappa''_g$.
 
 \end{proof}
+
 
 
 % \paragraph{}
@@ -979,6 +1041,98 @@ we can use  \cref{shifted_ellipsoid} to conclude that for all $x_1 \in E$ and al
 % An argument for this might be as follows:
 % Maybe, by increasing the outer trust region radius, we can only increase the condition number of $\qk$.
 % \color{black}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% \begin{itemize}
+% \item[H0] The trial point during each iterate satisfies the efficiency condition \cref{efficiency}.
+% \item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous over $\domain$.
+% \item[H2] The function $f$ is bounded below over $\domain$.
+% \item[H4] The accuracy condition \cref{accuracy}.
+% \end{itemize}
+
+% We extend the following Mangasarian-Fromovitz style constraint qualification:
+% \paragraph{version 1}
+% \color{red}
+% \begin{itemize}
+% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
+% \end{itemize}
+% \color{black}
+% \paragraph{version 2}
+% \begin{itemize}
+% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that
+% $d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% \end{itemize}
+% \paragraph{version 3}
+% Our assumption reads
+% \begin{itemize}
+% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
+% $d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
+% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% \end{itemize}
+% \paragraph{version 4}
+% Our assumption reads
+% \begin{itemize}
+% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
+% $d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
+% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% \end{itemize}
+
 
 
 
