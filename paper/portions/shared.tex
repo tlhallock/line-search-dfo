@@ -703,14 +703,6 @@ Notice that with two line segments, the algorithm can already choose new centers
 
 \subsection{Hypothesis}
 
-\color{red}
-\begin{itemize}
-\item Fix the $\frac{1}{\delta^2}$.
-\item Add the trust region constraints.
-% \item What are the necessary conditions for the lemma.
-\end{itemize}
-\color{black}
-
 Here we show convergence for one such variation.
 We will be setting $\searchtrk = \outertrk \cap \feasible$ as discussed in \cref{search_a_lot}.
 We will also be letting $\sampletrk$ have an ellipsoidal shape as discussed within \cref{bluepill}. 
@@ -846,7 +838,7 @@ such that all of the following are satisfied:
 \begin{itemize}
 \item The ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ satisfies $E \subset P$.
 \item The ellipsoid $\hat E = \{x | (x - c)^TQ(x - c) \le  \epsilon \}$ satisfies $x_0 \in \hat E$.
-\item $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}$.
+\item $\sigma(Q) = \alpha^{-2}$.
 \end{itemize}
 \end{lemma}
 
@@ -942,7 +934,7 @@ E_2 = \bigg \{x \bigg | (x - x_0 - \delta u^{\star})^T\bigg(R^T\begin{bmatrix}
 \end{bmatrix}R\bigg)(x - x_0 - \delta u^{\star}) \le \frac 1 2 \delta^2 \bigg\},
 \end{align*}
 for sufficiently small $\delta$, that can be scaled by $2$ to include $x_0$.
-Note that the condition number of this matrix is $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}}$,
+Note that the condition number of this matrix is $\sigma(Q) = \frac{\max\{1, \alpha^{-2}\}}{\min\{1, \alpha^{-2}\}} = \alpha^{-2}$,
 as the condition number is not affected by rotations.
 % The value of $\alpha$ only depends on the polyhedron, and is therefore bounded given a problem.
 
@@ -1012,16 +1004,14 @@ We can then use \cref{change_radius} to conclude that there is another constant 
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2
 \end{align*}
 where $\kappa_{g}' = 16 \Lambda_2 L \sqrt{p+1}$.
-Finally, after defining $\kappa''_{g} =  \frac 2 {\delta_k} \kappa'_g \sqrt{Q^{(k)}} =  \frac 2 {\delta_k}\kappa'_g \sqrt{\frac{\max\{1, \alpha_k^{-2}\}}{\min\{1, \alpha_k^{-2}\}}}$
+Finally, after using  \cref{alphas_are_bounded} to construct an $\epsilon_{\alpha} > 0$ and defining $\kappa''_{g} =  \frac{\kappa'_g}{\epsilon_{\alpha}}$, we see that
 we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \hat E^{(k)}$:
 \begin{align*}
-\left\|\nabla f\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le \kappa''_{g} \dk^2 \le \left(\kappa''_g \Delta_{\text{max}}\right) \dk.
+\left\|\nabla f\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le 
+\kappa'_g \sqrt{\frac 2 {\delta_k} Q^{(k)}} \dk^2 =  \kappa'_g \sqrt{\alpha_k^{-2}}\dk^2 = \frac{\kappa'_g}{\alpha_k} \le \kappa''_g\dk^2 \le \left(\kappa''_g \Delta_{\text{max}}\right) \dk.
 \end{align*}
 In particular, $\xk \in \hat E^{(k)}$.
-Notice that \cref{alphas_are_bounded} ensures a bound on $\kappa''_g$.
-
 \end{proof}
-
 
 
 % \paragraph{}
