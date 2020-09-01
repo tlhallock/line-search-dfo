@@ -21,20 +21,20 @@
 % \item The Hessians of each model function are uniformly bounded by a constant $\beta \ge 1$ :
 % \begin{equation}
 % \label{A3}
-% \|\nabla^2 \modelk(\xk)\| \le \beta - 1 \quad \forall k \ge 0
+% \|\nabla^2 \mfk(\xk)\| \le \beta - 1 \quad \forall k \ge 0
 % \end{equation}
 % 
 % \end{itemize}
 
 
 As a first step toward solving a general derivative free problem with partially-quantifiable constraints,
-we solve a simpler problem with $\domain = R^n$ and $c(x) = Ax-b$ for some $m\times n$ matrix $A$ and a vector $b\in \mathbb R^m$:
+we solve a simpler problem with $\domain = R^n$ and $c(x) = Ax-b$ for some $m\times n$ matrix $A$ and a vector $b\in \Rm$:
 
-\[ \begin{array}{ccl} \min_{x \in \mathbb R^n} & f(x) \\
+\[ \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & Ax \le b & 
 \end{array}
 \]
-This means that we can let the feasible region be denoted by $\feasible = \{x \in \mathbb R^n | \quad  Ax \le b \}$.
+This means that we can let the feasible region be denoted by $\feasible = \{x \in \Rn | \quad  Ax \le b \}$.
 We assume that $A$ has full row rank, and that  $dim(A) = n$.
 
 \subsection{Algorithm Template}
@@ -60,35 +60,35 @@ The different versions are described in the remainder of this section.
             $0 < \omegadec < 1 \le \omegainc$,
             $0 < \gammasm < \gammabi \le 1$,
             $\alpha > 0$,
-            $0 < \Delta_0 < \Delta_{\text{max}} < \frac 1 2 diam(\domain)$,
+            $0 < \Delta_0 < \dmax < \frac 1 2 diam(\domain)$,
             $k \gets 1$,
             $0 < \omegadec < 1 \le \omegainc$,
             $0 < \gammasm < \gammabi < 1$.
             
         \item[\textbf{Step 1}] \textbf{(Construct the model)} \\
-            $ \sampletrk \gets $ \Call{ConstructTrustRegion}{$\Delta_k, x^{(k)}$}.
+            $ \sampletrk \gets $ \Call{ConstructTrustRegion}{$\dk, \xk$}.
             Ensure that the sample points are poised with respect to $ \sampletrk $ for \cref{accuracy} by calling \cref{model_improving_algorithm}.
-            Construct $\modelk$ as described in \cref{reg} to construct $\modelk(x)$.
+            Construct $\mfk$ as described in \cref{reg} to construct $\mfk(x)$.
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
             Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
                 \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
                 \item[] Otherwise, if $\dk > \alpha \chik$ then 
-                $\Delta_{k+1} \gets \omegadec\Delta_{k}$, 
+                $\Delta_{k+1} \gets \omegadec\dk$, 
                 $x^{(k+1)} \gets \xk$,
                 $k \gets k+1$ and go to Step 1.
             \end{itemize}
         
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\trialk = \min_{s \in \searchtrk} \modelk(\xk + \trialk)$.
-            % \item[] This can also be $\trialk = \min_{s \in \outertrk \cap \feasiblek} \modelk(\xk + \trialk)$ depending on the choice made in \cref{which_trust_region}.
+            Compute $\trialk = \min_{s \in \searchtrk} \mfk(\xk + \trialk)$.
+            % \item[] This can also be $\trialk = \min_{s \in \outertrk \cap \feasiblek} \mfk(\xk + \trialk)$ depending on the choice made in \cref{which_trust_region}.
             
         \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
             Evaluate $f(\xk + \trialk)$ and evaluate $\rho_k$ as in \cref{rho} \begin{itemize}
-                \item[] If $\rho_k < \gammasm$ then $\xkpo=\xk$ (reject) and $\Delta_{k+1} = \omegadec\Delta_{k}$
-                \item[] If $\rho_k \ge \gammasm$ and $\rho < \gammabi$ then $\xkpo=\xk+\trialk$ (accept), $\Delta_{k+1} = \omegadec\Delta_{k}$
-                \item[] If $\rho_k > \gammabi$ then $\xkpo=\xk+\trialk$ (accept), $\Delta_{k+1} = \omegainc\Delta_{k}$
-                % and either increase the radius or decrease if $\nabla \modelk(\xk)$ is small
+                \item[] If $\rho_k < \gammasm$ then $\xkpo=\xk$ (reject) and $\Delta_{k+1} = \omegadec\dk$
+                \item[] If $\rho_k \ge \gammasm$ and $\rho < \gammabi$ then $\xkpo=\xk+\trialk$ (accept), $\Delta_{k+1} = \omegadec\dk$
+                \item[] If $\rho_k > \gammabi$ then $\xkpo=\xk+\trialk$ (accept), $\Delta_{k+1} = \omegainc\dk$
+                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
             \end{itemize}
             $k \gets k+1$ and go to Step 1.
     \end{itemize}
@@ -108,7 +108,7 @@ We will describe several different approaches for this subroutine.
 
 \subsection{Polyhedral Trust Region Approach}
 One simple approach to handle partially-quantifiable constraints is to maintain the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
-That is, we add the constraints $\modelconstrainti(x) \le 0 \forall i \in \mathcal{I}$ and $\modelconstrainti(x) = 0 \forall i \in \mathcal{E}$ to the model improvement algorithm while selecting new points.
+That is, we add the constraints $\mcik(x) \le 0 \forall i \in \mathcal{I}$ and $\mcik(x) = 0 \forall i \in \mathcal{E}$ to the model improvement algorithm while selecting new points.
 This constrains the new points to also lie within the current model of the trust region in \cref{model_improving_algorithm}, Step 2.
 The search space for this optimization problem will be the feasible region intersect the trust region: $\feasiblek \cap \outertrk $.
 
@@ -180,19 +180,19 @@ As is usual, we may also wish to remove points larger than a certain radius from
 
 If we adopt the ellipsoidal trust region approach to maintain a feasible inner trust region with a ``nice" shape we ensure of a stronger version of \cref{accuracy}.
 Namely, we know from \cref{ellipsoidal_lambda} that 
-\[
-    \|\modelk(x) - \nabla f(x) \| \le \kappa_g \Delta_{k} \quad \forall x \in \innertrk.
-\]
-If we also choose our trial point with \cref{search_a_little}, we have no guarantee of satisfying the efficiency condition \cref{efficiency} because $\Delta_k$ is the outer trust region radius.
+\begin{align*}
+    \|\mfk(x) - \nabla f(x) \| \le \kappa_g \Delta_{k} \quad \forall x \in \innertrk.
+\end{align*}
+If we also choose our trial point with \cref{search_a_little}, we have no guarantee of satisfying the efficiency condition \cref{efficiency} because $\dk$ is the outer trust region radius.
 However, the model will likely be more accurate over this region.
 
 %If bounds can be shown relating the model error of the inner trust region to the outer trust region, then we will satisfy \cref{accuracy}.
-%In this case, classical methods ensure that $\|\nabla f(x^{(k)}) - \nabla m_f(x^{(k)})\| < \Delta_{inner} \le \Delta_k$.
+%In this case, classical methods ensure that $\|\nabla f(x^{(k)}) - \nabla m_f(x^{(k)})\| < \Delta_{inner} \le \dk$.
 
 \subsubsection{Circular Trust Region}
 The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
 Within the \emph{ConstructTrustRegion} subroutine, this method sets the trust region radius to the distance to the closest constraint:
-$\outertrk = B_2(\xk, \min\{\Delta_k, \min_{i}\frac{|A_i\xk - b_i|}{\|A_i\|} \})$.
+$\outertrk = B_2(\xk, \min\{\dk, \min_{i}\frac{|A_i\xk - b_i|}{\|A_i\|} \})$.
 In practice, this does not work well as the radius can become too small to allow adequate progress.
 
 Two general strategies were considered for addressing this issue as illustrated in \cref{options_basis}.
@@ -223,9 +223,7 @@ In figure \cref{ellipse_adv}, we have this type of iterate, but by using an elli
 
 
 More specifically, at iteration $k$, we choose a scaling factor $\pi^k$ and solve for an ellipsoid center $\mu^k$ and positive definite matrix $\qk$ to define an ellipsoid
-$ \ellipsek = \{x \in \mathbb R^n \| \pi^k - \frac 1 2 (x - \mu^{k})^T\qk(x - \mu^{k}) \ge 0 \}$.
-% We then map this back to the origin with the affine transformation $T : \mathbb R^n \to R$, $T(x) = \frac {\sqrt{2}}{\pi^k} L^k(x-\mu^k)$ where $L = cholesky(Q)$.
-% This allows us to construct a $\Lambda$-poised set within narrow trust regions.
+$ \ellipsek = \{x \in \Rn \| \pi^k - \frac 1 2 (x - \mu^{k})^T\qk(x - \mu^{k}) \ge 0 \}$.
 Of course, the simplest approach is to not change the center of the ellipsoid, but instead let $\mu^k = x^k$.
 
 
@@ -265,7 +263,7 @@ E = \{ d \; | \; f(d) \le 1 \}.
 
 Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
 Let this minimum be $d^{(i)} = \argmin_{d\| A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
-By the first order optimality conditions, there exists a $\lambda \in \mathbb R^m$ such that
+By the first order optimality conditions, there exists a $\lambda \in \Rm$ such that
 \[
 \nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i \quad \forall 1\le i\le m
 \]
@@ -336,24 +334,16 @@ After shifting the center to $\mu^{k}$, this problem takes the form:
 \end{center}
 
 
-%  & \pi^k - \frac 1 2 (x^k - \mu^{k})^TQ^{k}(x^k - \mu^{k}) \ge 0
-
-%if we wish to include the original point explicitly.
-%This gives rise to the trust region sub problem of
-%
-%$$\innertrk = \{x \in \mathbb | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T Q (x - \mu^{k}) \ge 0\} $$
-%$$ \pi^k = \max \{1, \frac 1 {2} (\xk - \mu^{k})^T Q^k (\xk - \mu^{k})^T \}$$
-
 \subsubsection{Poisedness over Ellipsoidal Trust Regions}
 \label{ellipsoidal_lambda}
 
 % TODO: Find a better reference
 It is possible to show $\Lambda$-poisedness for an ellipsoidal region with a change of variables to the ball centered around the origin.
 We wish to construct a model for $f(x)$ in the ellipsoidal region
-$\ellipsek = \{x \in \mathbb R^n | (x - c)^T\qk(x - c) \le 1\}$ for some symmetric, positive definite
-$\qk \in \mathbb R^{n\times n}$ and some center $c \in \mathbb R^n$.
+$\ellipsek = \{x \in \Rn | (x - c)^T\qk(x - c) \le 1\}$ for some symmetric, positive definite
+$\qk \in \mathbb R^{n\times n}$ and some center $c \in \Rn$.
 We can give $\qk$ its eigen-decomposition $\qk = L D^2 L^T$, where $L^TL = I$ and $D$ is a diagonal matrix with nonnegative entries.
-If we let $\delta = \max_{x\in \ellipsek}\|x-c\|$, then the transformation $T(x) = \delta DL^T(x - c)$ maps $ \ellipsek $ to the $\delta$ ball $\{u = T(x) \in \mathbb R^n \; | \; \|u\| \le \delta\}$.
+If we let $\delta = \max_{x\in \ellipsek}\|x-c\|$, then the transformation $T(x) = \delta DL^T(x - c)$ maps $ \ellipsek $ to the $\delta$ ball $\{u = T(x) \in \Rn \; | \; \|u\| \le \delta\}$.
 Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$ ball to the ellipsoidal region $ \ellipsek $.
 
 % \cref{fully_quadratic}
@@ -543,7 +533,7 @@ We use the scaling factor $\pi^k$ defined by
 $$\pi^{(k)} = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T \qk (x^{k} - \mu^{k})^T \}$$
 
 and let the ellipsoid be:
-$$\ellipsek = \{x \in \mathbb | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T \qk (x - \mu^{k}) \ge 0\} $$
+$$\ellipsek = \{x \in \Rn | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T \qk (x - \mu^{k}) \ge 0\} $$
 However, this means that in general $\ellipsek \not \subset \feasiblek$ so that the trust region subproblem must contain constraints for both the ellipsoid and the feasible region: $\searchtrk = \ellipsek \cap \domain$.
 
 To help mitigate the second issue, we maximize the volume of the ellipsoid.
@@ -631,7 +621,7 @@ One attempt to fix this problem is by limiting the search direction for the cent
 
 
 \subsubsection{Line Searches}
-Although $\modelk$'s minimizer over $\outertrk$  can appear anywhere, there are some reasons for expecting it to be at a ``vertex."
+Although $\mfk$'s minimizer over $\outertrk$  can appear anywhere, there are some reasons for expecting it to be at a ``vertex."
 If it lies in the interior, there is little need for using constrained approaches once near the solution.
 
 %The ellipsoid with maximum volume, however, tends to lead $ \sampletrk $ away from vertices.
@@ -742,7 +732,7 @@ We replace the third assumption with a straightforward, modified hypothesis.
 Originally, the authors assumed:
 \begin{assumption}
 \label{uniformly_bounded_hessians}
-The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \modelk\| \le \beta - 1$ for all $k \ge 0$.
+The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
 \end{assumption}
 In \cref{replacing_h3}, we replace \cref{uniformly_bounded_hessians} with the following:
 \begin{assumption}
@@ -780,7 +770,7 @@ From here on, we will assume that the iterates $\xk$ are chosen according to \cr
 Because the constraints are linear, we will let $G$ be the $m \times n$ normalized gradient of the constraints $g$ be the scaled constraint values at $0$, so that
 \begin{align}
 \|G_i\| = 1\;\forall 1\le i\le m \\
-\feasible = \{x \in \mathbb R^n | c(x) \le 0 \Leftrightarrow G x \le g \} \label{define_g}
+\feasible = \{x \in \Rn | c(x) \le 0 \Leftrightarrow G x \le g \} \label{define_g}
 \end{align}
 
 \subsubsection{Satisfying \cref{uniformly_bounded_hessians}}
@@ -844,7 +834,7 @@ u^{(k)} \in
 \alpha_1(\xk) & \text{if} \; \mathcal A(\xk) \ne \emptyset \\
 \{0\} & \text{if} \; \mathcal A(\xk) = \emptyset
 \end{cases} \\
-% P^{(k)} = \{x \in \mathbb R^n | \nabla c(\xk)^T x \le c(\xk) \}
+% P^{(k)} = \{x \in \Rn | \nabla c(\xk)^T x \le c(\xk) \}
 \end{align}
 % F^{(k)} = P^{(k)} \cap B_{\infty}(\xk, \dk) \\
 
@@ -892,7 +882,7 @@ Cauchy-Schwartz
 
 \begin{lemma}
 \label{alphas_are_bounded}
-If \cref{interior_point} is satisfied, then there exists an  $\epsilon_{\alpha} > 0$ such that $\alpha_k \ge \epsilon_{\alpha} \; \forall \; k \in \mathbb N$.
+If \cref{interior_point} is satisfied, then there exists an  $\epsilon_{\alpha} > 0$ such that $\alpha_k \ge \epsilon_{\alpha} \; \forall \; k \in \naturals$.
 \end{lemma}
 \begin{proof}
 Because there are only $m$ constraints, each $\mathcal A(x)$ is one of the only $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$.
@@ -901,22 +891,9 @@ By \cref{alphas_are_positive}, we know that each of these values must be positiv
 Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these values.
 \end{proof}
 
-
-% The following proof shows that such a feasible ellipse exists, and provides the required equations for constructing the ellipsoid.
-
-
-
-
-% For each $k \in \mathbb N$, there exists an $\epsilon > 0$, $c \in \mathbb R^n$  and a positive definite, symmetric matrix $Q$, 
-% such that all of the following are satisfied:
-
-
-
-% \alpha = \max_{x \in P, i \in \mathcal A(x)} -A_i\frac{A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e}{\|A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e\|}
-
 \begin{lemma}
 \label{ellipsoid_exists}
-Let  $A$ be an $m \times n$ matrix and $b \in \mathbb R^m$ be provided so that $P = \{x \in \mathbb R^n | Ax \le b \}$ is a non-empty polyhedron.
+Let  $A$ be an $m \times n$ matrix and $b \in \Rm$ be provided so that $P = \{x \in \Rn | Ax \le b \}$ is a non-empty polyhedron.
 Also, let $x_0 \in P$ be arbitrary.
 Define
 \begin{align}
@@ -924,7 +901,7 @@ Define
 u^{\star} \in \argmax_{\|u\|^2 = 1} \min_{i \in \mathcal A} - u^T A_i \label{polyhedrons_u} \\
 \alpha = \min_{i \in \mathcal A} -u^{\star}A_i \label{polyhedrons_alpha}
 \end{align}
-If $\mathcal A = \emptyset$ or $\alpha > 0$, then there exists an $\epsilon > 0$, $c \in \mathbb R^n$  and a positive definite, symmetric matrix $Q$, 
+If $\mathcal A = \emptyset$ or $\alpha > 0$, then there exists an $\epsilon > 0$, $c \in \Rn$  and a positive definite, symmetric matrix $Q$, 
 such that:
 \begin{itemize}
 \item[1.] The ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ satisfies $E \subset P$.
@@ -945,8 +922,8 @@ Otherwise, compute $u^{\star}$ and $\alpha$ as in \cref{polyhedrons_u} and \cref
 
 % = -A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e$, $\hat u = \frac {u} {\| u\|} $, $\alpha = -\max_{i \in \mathcal A} A_i \hat u$, and define the cones
 \begin{align}
-C_1 = \{x \in \mathbb R^n | \quad x = \xk + t u^{\star}+ s, s^Tu^{\star} = 0, t > 0, \|s\| \le \alpha t\} \label{s_less_t} \\
-C_2 = \{x = (t, s)^T \in \mathbb R^n, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} |\quad \|s\| \le \alpha t \}.
+C_1 = \{x \in \Rn | \quad x = \xk + t u^{\star}+ s, s^Tu^{\star} = 0, t > 0, \|s\| \le \alpha t\} \label{s_less_t} \\
+C_2 = \{x = (t, s)^T \in \Rn, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} |\quad \|s\| \le \alpha t \}.
 \end{align}
 
 First, we show that $C_1$ is feasible with respect to the active constraints at $x$
@@ -959,7 +936,7 @@ so the active constraints are satisfied at $y$ and hence any point within $C_1$.
 
 We will first define the ellipsoid and show some of its properties within the transformed space $C_2$ before mapping it to $C_1$.
 To this end, fix an arbitrary $\delta > 0$ and let 
-$f_{e}(x): \mathbb R^n \to \mathbb R$ be defined by 
+$f_{e}(x): \Rn \to \reals $ be defined by 
 \begin{align*}
 f_{e}(x) = (x - \delta e_1)^T\begin{bmatrix}
 1 & \boldsymbol0^T \\
@@ -1016,7 +993,7 @@ Note further that $RR^T = R^TR = I$, so that $\det(R) = 1$.
 We choose this mapping because if $x = x_0 + t u^{\star} + s \in C_1$,
 then $\|s\|\le \alpha t \Leftrightarrow \|Rs\| \le \alpha t$ and $0 = s^Tu^{\star} = s^T R^T R u^{\star} = (Rs)^T e_1$ imply that 
 $R(x - x_0 - \delta u^{\star}) = t Ru^{\star} + Rs = t e_1 + Rs \in C_2$.
-Thus, the affine mapping $T : \mathbb R^n \to \mathbb R^n$ defined by $T(x) = R(x - x_0 - \delta u^{\star})$ maps $C_1$ to $C_2$.
+Thus, the affine mapping $T : \Rn \to \Rn$ defined by $T(x) = R(x - x_0 - \delta u^{\star})$ maps $C_1$ to $C_2$.
 Conversely, the same arguments show that $T^{-1}(x) = R^Tx + x_0 + \delta u^{\star}$ maps $C_2$ to $C_1$.
 
 %  \in SO(n)
@@ -1098,12 +1075,12 @@ Namely, there exists a $\kappa_{g}$ such that $\|\nabla m_f(\xk) - \nabla f(\xk)
 
 \begin{proof}
 For each iteration $k$, we use \cref{alphas_are_bounded} to satisify the conditions of \cref{ellipsoid_exists} by letting 
-$P = \{x \in \mathbb R^n |  \nabla c(\xk)^T x \le c(\xk), \xk - \dk \le x \le \xk + \dk \}$.
+$P = \{x \in \Rn |  \nabla c(\xk)^T x \le c(\xk), \xk - \dk \le x \le \xk + \dk \}$.
 Note that adding the trust region constraint cannot remove all feasible interior points, as $\xk \in \feasible$.
 This provides us with two ellipsoids:
 \begin{itemize}
-\item $E^{(k)} = \{x \in \mathbb R^n | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \}$, $E^{(k)} \subset P$.
-\item $\hat E^{(k)} = \{x \in \mathbb R^n | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le {\delta_k}^2 \}$, $\xk \in \hat E^{(k)}$.
+\item $E^{(k)} = \{x \in \Rn | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \}$, $E^{(k)} \subset P$.
+\item $\hat E^{(k)} = \{x \in \Rn | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le {\delta_k}^2 \}$, $\xk \in \hat E^{(k)}$.
 \end{itemize}
 As in \cref{shifted_ellipsoid}, we can give $Q^{(k)} = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in E^{(k)}} \|x - \mu^{(k)}\|$, 
 so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the $\delta$ ball.
@@ -1218,12 +1195,12 @@ In particular, $\xk \in \hat E^{(k)}$.
 % \paragraph{version 1}
 % \color{red}
 % \begin{itemize}
-% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
+% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \Rn$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
 % \end{itemize}
 % \color{black}
 % \paragraph{version 2}
 % \begin{itemize}
-% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \mathbb R^n$ such that
+% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \Rn$ such that
 % $d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
 % \end{itemize}
 % \paragraph{version 3}
