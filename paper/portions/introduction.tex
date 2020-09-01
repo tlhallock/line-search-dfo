@@ -412,6 +412,38 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
 
 
 At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
+
+
+\begin{assumption}
+\label{fully_quadratic_assumption}
+Suppose that a set $S$ and a radius $\Delta_{\text{max}}$ are given.
+Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\Delta_{\text{max}}$ neighborhood
+$\cup_{x \in S} B(x; \Delta_{\text{max}})$ of the set $S$.
+\end{assumption}
+
+\begin{definition}
+\label{fully_quadratic_definition}
+Let $f$ be a function that satisfies \cref{fully_quadratic_assumption}.
+A model function $m : \mathbb R^n \to \mathbb R, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
+$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that for any $\Delta \in (0, \Delta_{\text{max}})$ and $x \in S$:
+\begin{align}
+\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(x; \Delta) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(x; \Delta) \label{error_in_gradient} \\
+|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(x; \Delta). \label{error_in_function} 
+\end{align}
+\end{definition}
+
+\begin{theorem}
+\label{set_is_fully_quadratic}
+For any $\epsilon \in (0, \frac 1 4)$, and $p+1 = \frac {(n+1)(n+2)}{2}$, \cref{model_improving_algorithm} produces a set of $p+1$ points in the unit ball $B(0; 1)$ such that the Lagrange-interpolating model is fully quadratic.
+\end{theorem}
+
+\color{red}
+Algorithm 6.3
+Algorithm 6.5
+Combine this with previous definition
+\color{black}
+
 This algorithm can also be used to create a poised set over an ellipsoidal shape. This is discussed further in \cref{ellipsoidal_lambda}.
 % 
 % \paragraph{Proximity}
@@ -538,12 +570,18 @@ $\sampletrk \subset \outertrk \cap \feasiblek$ and $\iteratek \in \sampletrk $.
 However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
 This means we introduce another trust region $ \searchtrk $ that also satisfies $ \searchtrk \subset \outertrk \cap \feasiblek$ and $\iteratek \in \searchtrk $ for the trust region subproblem.
 
-
+\paragraph{The Sample Region}
+\label{sample_region_choices}
 We consider general strategies for constructing $ \sampletrk $ and $ \searchtrk $.
 \begin{itemize}
-\item[1.] Take $\label{redpill} \sampletrk = \searchtrk = \outertrk \cap \feasiblek $. This results in a polyhedral trust region, so we refer to this approach as the \emph{Polyhedral Trust Region Approach}.
+\item[1.] Take 
+\begin{align}
+\label{redpill} \sampletrk = \searchtrk = \outertrk \cap \feasiblek.
+\end{align} This results in a polyhedral trust region, so we refer to this approach as the \emph{Polyhedral Trust Region Approach}.
 % \item[2.] Let $\label{hybrid} \sampletrk \subseteq \searchtrk = \outertrk \cap \feasiblek $ where $\sampletrk$ has an ellipsoidal shape. This is referred to as the \emph{Hyrbid Trust Region Approach}
-\item[2.] Force $\label{bluepill} \sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasiblek $ where $\sampletrk$ has an ellipsoidal shape. This is referred to as the \emph{Ellipsoidal Trust Region Approach}
+\item[2.] Force 
+\begin{align}\label{bluepill} \sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasiblek
+\end{align} where $\sampletrk$ has an ellipsoidal shape. This is referred to as the \emph{Ellipsoidal Trust Region Approach}
 \end{itemize}
 
 The advantage of the ellipsoidal trust region approach \cref{bluepill} is that we can reuse classical methods for ensuring good geometry.
@@ -554,7 +592,8 @@ The search trust region is used while selecting the next iterate:
 \trialk = \argmin_{\trialk \in \searchtrk} \modelk(\iteratek + \trialk)
 \end{align*}
 
-\label{which_trust_region}
+\paragraph{The Search Region}
+\label{search_region_choices}
 When using the ellipsoidal trust region approach, we have two choices for this trust region:
 \begin{align}
 \searchtrk = \sampletrk \label{search_a_little}
