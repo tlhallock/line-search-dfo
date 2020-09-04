@@ -417,7 +417,7 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
             Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
         
         \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
-                \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y = \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
+                \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y \in \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
                 \item[] Replace row $i$ with $V_{i, j} \gets \phi_j(\hat y)$.
             \end{itemize}
         
