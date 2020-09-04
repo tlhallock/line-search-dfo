@@ -3,32 +3,9 @@
 \section{Algorithms}
 
 \subsection{Assumptions}
-% 
-% We assume the following properties.
-% 
-% \begin{itemize}
-% \item The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $L > 0$ for all $x \in \domain$.
-% \begin{equation}
-% \label{A1}
-% |f(x_1) - f(x_2)| \le L \|x_1 - x_2\| \quad \forall x_1, x_2 \in \domain
-% \end{equation}
-% \item \label{A2} The function $f$ is bounded below in $\domain$.
-% \begin{equation}
-% \label{A2}
-% f(x) \ge f_{\text{min}} \quad \forall x \in \domain
-% \end{equation}
-% 
-% \item The Hessians of each model function are uniformly bounded by a constant $\beta \ge 1$ :
-% \begin{equation}
-% \label{A3}
-% \|\nabla^2 \mfk(\xk)\| \le \beta - 1 \quad \forall k \ge 0
-% \end{equation}
-% 
-% \end{itemize}
-
 
 As a first step toward solving a general derivative free problem with partially-quantifiable constraints,
-we solve a simpler problem with $\domain = R^n$ and $c(x) = Ax-b$ for some $m\times n$ matrix $A$ and a vector $b\in \Rm$:
+we solve a simpler problem with $\domain = R^n$ and $c(x) = Gx-g$ for some $m\times n$ matrix $A$ and a vector $b\in \Rm$:
 
 \[ \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & Ax \le b & 
@@ -52,8 +29,8 @@ The different versions are described in the remainder of this section.
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Initialize tolerance constants 
-            $\tau_{\xi} \ge 0$,
-            $\tau_{\Delta} \ge 0$,
+            $\tolcrit \ge 0$,
+            $\tolrad \ge 0$,
             starting point $x^{(0)} \in \domain$,
             initial radius $\Delta_0 > 0$,
             iteration counter $k=0$,
@@ -93,18 +70,10 @@ The different versions are described in the remainder of this section.
             $k \gets k+1$ and go to Step 1.
     \end{itemize}
 \end{algorithm}
-
  
 
 Much of the work is deferred to the \emph{ConstructTrustRegion} subroutine.
 We will describe several different approaches for this subroutine.
-
-% For convergence analysis, \cref{accuracy} must be satisfied by the trust region choice in this method.
-%Not all searches for an inner trust region must guarantee this: the algorithm is allowed to try a bounded number of trust regions as long as one is gauranteed to satisfy these conditions.
-% In some cases, multiple inner trust regions may be considered before returning the best trust region found.
-% An efficient algorithm may first heuristically search for a good trust region if the guaranteed method is expensive.
-% This may not involve constructing a model or function evaluations.
-
 
 \subsection{Polyhedral Trust Region Approach}
 One simple approach to handle partially-quantifiable constraints is to maintain the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
@@ -237,101 +206,71 @@ Later we perform a search over different centers of the ellipsoid.
 We adopt a method similar to that described in \cite{Khachiyan1993}.
 For now, we also let $\pi^k = 1$.
 
-Given a polyhedron $P$ defined by an $m \times n$ matrix $A$,
-\[
-P = \{ x \; | \;  Ax \le b \},
-\]
-we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu^{k}$ within this polyhedron.
+Given a polyhedron $P$ defined by an $m \times n$ matrix $A$, $P = \{ x \in \Rn\; | \;  Ax \le b \}$.
+we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
 
-Let $\bar{b} = b - A\mu^{k}$ and $d = x - \mu^{k}$ so that the polyhedron becomes
-\[
-P = \{ \mu^k + d \; | \;  Ad \le \bar{b} \}
-\]
-The ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
-\[
-E = \{ d \; | \; \frac 1 2 d^T Q d \le 1 \}.
-\]
-Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu^{k} + E \subset P$.
-Define the auxiliary function 
-\[
-f(d) = \frac 1 2 d^T Q d
-\]
-so that 
-\[
-E = \{ d \; | \; f(d) \le 1 \}.
-\]
+Let $\bar{b} = b - A\mu$ and $d = x - \mu$ so that the polyhedron becomes
+\begin{align*}
+P = \{ \mu + d \in \Rn \; | \;  Ad \le \bar{b} \}
+\end{align*}
+Then, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
+\begin{align*}
+E = \{ d \in \Rn \; | \; \frac 1 2 d^T Q d \le 1 \}.
+\end{align*}
+Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu + E \subset P$.
+Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
 
 Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
-Let this minimum be $d^{(i)} = \argmin_{d\| A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
+Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
 By the first order optimality conditions, there exists a $\lambda \in \Rm$ such that
-\[
-\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i \quad \forall 1\le i\le m
-\]
-\[
+\begin{align*}
+\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i 
 \Longrightarrow d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall 1\le i\le m
-\]
-We also know that 
-\[
-A_i^T d^{(i)} = \bar{b_i}
-\]
-\[
-A_i^T \lambda_i Q^{-1}A_i = \bar{b_i}
-\]
-\[
+\end{align*}
+We also know that
+\begin{align*}
+A_i^T d^{(i)} = \bar{b_i} \Longrightarrow
+A_i^T \lambda_i Q^{-1}A_i = \bar{b_i} \Longrightarrow
 \lambda_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}
-\]
-so that 
-\[
+\end{align*}
+so that
+\begin{align*}
 d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
-\]
+\end{align*}
 
 Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
-\[
-\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1
-\]
-\[
-\Longrightarrow \frac 1 2 \bigg(\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i\bigg)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1
-\]
-\[
-\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b_i} A_i^T Q^{-1} Q \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1
-\]
-\[
-\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1
-\]
-\[
-\Longrightarrow \frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1
-\]
-\[
-\Longrightarrow \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i
-\]
-\[
+\begin{align*}
+\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1 \\
+\Longrightarrow \frac 1 2 \bigg(\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i\bigg)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b_i} A_i^T Q^{-1} Q \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1 \\
+\Longrightarrow \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i \\
 \Longrightarrow A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2
-\]
+\end{align*}
 
 Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1}$, the maximal ellipsoid is defined by
 
-\[
-\qk = V(\mu^k) = \sup_{Q \succeq 0} \det(Q^{-1})
-\]
-\[
+\begin{align*}
+Q = V(\mu) = \sup_{Q \succeq 0} \det(Q^{-1}) \\
 s.t. \quad A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
-\]
+\end{align*}
 
 
-%This problem includes a maximization of a determinant.
-%In order to ensure that the trust region goes to zero, we must also ensure that the maximum eigenvalue of the matrix is bounded.
-%Thus, for some bound $M^k$ we define $Q^k$ as
+% This problem includes a maximization of a determinant.
+% In order to ensure that the trust region goes to zero, we must also ensure that the maximum eigenvalue of the matrix is bounded.
+% Thus, for some bound $M^k$ we define $Q^k$ as
 %  & eig(Q)_i \le M^k & \forall i \in \mathcal I \cup \mathcal E \\
-
-After shifting the center to $\mu^{k}$, this problem takes the form:
-
-\begin{center}
-\begin{align}
-\label{ellipse_1}
-\qk = V(\mu^k) = \sup_{Q \succ 0} & \det(Q^{-1}) & \\
-  & {A^k}_i^T Q^{-1} {A^k}_i \ge \frac 1 2 (b^k - A^k\mu^{k})^T(b^k - A^k \mu^{k}) & \nonumber
-\end{align}
-\end{center}
+% 
+% After shifting the center to $\mu$, this problem takes the form:
+% 
+% \begin{center}
+% \begin{align}
+% \label{ellipse_1}
+% \qk = V(\mu^k) = \sup_{Q \succ 0} & \det(Q^{-1}) & \\
+%   & {A^k}_i^T Q^{-1} {A^k}_i \ge \frac 1 2 (b^k - A^k\mu^{k})^T(b^k - A^k \mu^{k}) & \nonumber
+% \end{align}
+% \end{center}
 
 
 \subsubsection{Poisedness over Ellipsoidal Trust Regions}
@@ -1069,7 +1008,7 @@ Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R
 
 
 \begin{lemma}
-Assuming H1 and H5, the accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
+Suppose that \cref{interior_point}, \cref{fully_quadratic_assumption} hold. The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
 Namely, there exists a $\kappa_{g}$ such that $\|\nabla m_f(\xk) - \nabla f(\xk)\| \le \kappa_g \dk$.
 \end{lemma}
 
@@ -1087,7 +1026,7 @@ so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the
 As also described in \cref{shifted_ellipsoid}, we  create shifted functions
 $\hat {m}_f(u) = m_f(T^{-1}(u))$ and
 $\hat f (u) = f(T^{-1}(u))$.
-After using \cref{model_improving_algorithm} to choose sample points, we know that ${\hat m }_f$ is a quadratic model of $\hat f$.
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_fully_quadratic} that ${\hat m }_f$ is a quadratic model of $\hat f$.
 That is, there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
 \begin{align*}
 \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 \\

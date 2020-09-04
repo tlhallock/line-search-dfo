@@ -292,16 +292,16 @@ Algorithms must be careful to avoid choices of sample points $Y$ that cause the 
 In the case of polynomial model functions, a careful analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
 Let the space of polynomials with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
 The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
-\[
+\begin{align}
 l_i(y^j) = \delta_{i,j}
-\]
+\end{align}
 where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\quad 1 \;\text{if} \; i = j \}$ is the Kronecker-delta function.
 %For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
 Thus, we can conveniently write
-\[
+\begin{align}
 \label{reg}
 \mfk(x) = \sum^p_{j=0}f(y^i)l_i(x).
-\]
+\end{align}
 %This implies computing the change of basis to the Lagrange polynomials amounts to inverting this Vandermonde matrix.
 %This relationship allows us to use properties of the Vandermonde matrix and these Lagrange polynomials to find conditions on our sample points that ensure nice geometry.
 
@@ -319,15 +319,36 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 % \end{align}
 
 % This can ensure that the Vandermonde matrix is well conditioned.
-This is useful because of the following results \cite{DUMMY:intro_book}:
-Assuming that $f$ is twice continuously differentiable in an open domain containing $B_2(y^0, \Delta)$ and has a Lipschitz continuous Hessian, using quadratic interpolation there exist constants $\kappa_{ef}, \kappa_{eg}$, and $\kappa_{eh}$ depending only on the dimension and Lipschitz constant of $\nabla^2 f$ such that for any $y \in B_2(y^0, \Delta)$ :
+This is useful because of the following results found in \cite{DUMMY:intro_book}.
+
+
+
+\begin{assumption}
+\label{fully_quadratic_assumption}
+Suppose that a set $S$ and a radius $\dmax$ are given.
+Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
+$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
+\end{assumption}
+
+\begin{definition}
+\label{fully_quadratic_definition}
+Let $f$ be a function that satisfies \cref{fully_quadratic_assumption}.
+A model function $m : \Rn \to\reals, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
+$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that for any $\Delta \in (0, \dmax)$ and $x \in S$:
 \begin{align}
- \label{fully_quadratic}
- \|f(y) - \mfk(y)\| \le \kappa_{ef} \Lambda \Delta^3 \\
- \|\nabla f(y) - \nabla \mfk(y)\| \le \kappa_{eg} \Lambda \Delta^2 \\
- \|\nabla^2 f(y) - \nabla^2 \mfk(y)\| \le \kappa_{eh}\Lambda \Delta .\\
+\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(x; \Delta) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(x; \Delta) \label{error_in_gradient} \\
+|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(x; \Delta). \label{error_in_function} 
 \end{align}
-\cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
+\end{definition}
+
+% Assuming that $f$ is twice continuously differentiable in an open domain containing $B_2(y^0, \Delta)$ and has a Lipschitz continuous Hessian, using quadratic interpolation there exist constants $\kappa_{ef}, \kappa_{eg}$, and $\kappa_{eh}$ depending only on the dimension and Lipschitz constant of $\nabla^2 f$ such that for any $y \in B_2(y^0, \Delta)$ :
+% \begin{align}
+%  \|f(y) - \mfk(y)\| \le \kappa_{ef} \Lambda \Delta^3 \\
+%  \|\nabla f(y) - \nabla \mfk(y)\| \le \kappa_{eg} \Lambda \Delta^2 \\
+%  \|\nabla^2 f(y) - \nabla^2 \mfk(y)\| \le \kappa_{eh}\Lambda \Delta .\\
+% \end{align}
+Also, \cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
 
 In particular, these bounds ensure that the following accuracy condition is satisfied, which is used by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
 \begin{equation}
@@ -410,37 +431,12 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
 
 
 At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
-
-
-\begin{assumption}
-\label{fully_quadratic_assumption}
-Suppose that a set $S$ and a radius $\dmax$ are given.
-Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
-$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
-\end{assumption}
-
-\begin{definition}
-\label{fully_quadratic_definition}
-Let $f$ be a function that satisfies \cref{fully_quadratic_assumption}.
-A model function $m : \Rn \to\reals, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
-$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that for any $\Delta \in (0, \dmax)$ and $x \in S$:
-\begin{align}
-\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(x; \Delta) \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(x; \Delta) \label{error_in_gradient} \\
-|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(x; \Delta). \label{error_in_function} 
-\end{align}
-\end{definition}
-
+The following result is shown in \cite{DUMMY:intro_book}.
 \begin{theorem}
 \label{set_is_fully_quadratic}
-For any $\epsilon \in (0, \frac 1 4)$, and $p+1 = \frac {(n+1)(n+2)}{2}$, \cref{model_improving_algorithm} produces a set of $p+1$ points in the unit ball $B(0; 1)$ such that the Lagrange-interpolating model is fully quadratic.
+Let $f$ satisfy \cref{fully_quadratic_assumption}.
+For any $\epsilon \in (0, \frac 1 4)$, and $p+1 = \frac {(n+1)(n+2)}{2}$, \cref{model_improving_algorithm} produces a set of $p+1$ points in the unit ball $B(0; 1)$ such that if $m_f$ is the Lagrange-interpolating model of $f$ given by \cref{reg}, then the $m_f$ is fully a quadratic model.
 \end{theorem}
-
-\color{red}
-Algorithm 6.3
-Algorithm 6.5
-Combine this with previous definition
-\color{black}
 
 This algorithm can also be used to create a poised set over an ellipsoidal shape. This is discussed further in \cref{ellipsoidal_lambda}.
 % 
