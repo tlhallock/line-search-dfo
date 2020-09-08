@@ -628,53 +628,53 @@ Notice that with two line segments, the algorithm can already choose new centers
 
 
 \section{Convergence Discussion}
+
+
+
 \color{red}
 \begin{itemize}
-\item I want to remove the domain $\domain$.
 \item Add assumptions for creating quadratic models
 \item delta max
 \item cauchy schwartz
 \item replace all the $x_0$ with $y$
+\item work with the definition of fully quadratic
 \end{itemize}
 \color{black}
 
 
-\label{convergence_discussion}
 
 Here, we show convergence for one version of \cref{constrained_dfo}.
 Namely, we choose to satisfy \cref{bluepill} and let $\sampletrk$ have an ellipsoidal shape as described in \cref{sample_region_choices}. 
 Also, we will select \cref{search_a_lot} as discussed in \cref{search_region_choices}: namely, $\searchtrk = \outertrk \cap \feasible$.
+To do this, we require the following assumptions.
 
-If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, the algorithm presented here is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
-This means we only need to satisfy the requirements detailed in their convergence analysis.
-
-
-\subsection{Algorithm Assumptions}
-For your convenience, we duplicate the assumptions found in \cite{doi:10.1080/10556788.2015.1026968}.
-Firstly, they assume that the algorithm satisfies an efficiency condition \cref{efficiency}.
-This is satisfied within our algorithm by selecting the Generalized Cauchy Point \cite{Conn:2000:TM:357813} to solve the trust region subproblem.
-
-The next two are kept as assumptions within our own algorithm.
 \begin{assumption}
-\label{lipschitz}
 The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
+\begin{align}
+\label{lipschitz}
+\|\nabla f(x) - \nabla f(y)\| \le \|x - y\| \quad \forall x, y \in \domain
+\end{align}
 \end{assumption}
-In fact, we assume the stronger assumption \cref{fully_quadratic_assumption} letting $S = \domain$.
-
 
 \begin{assumption}
-\label{lower_bound}
+\label{for_fully_quadratic}
+The function $f$ has Lipschitz continuous hessian with constant $L_h > 0$ in $\domain$.
+\begin{align}
+\label{lipschitz_hessian}
+\|\nabla^2 f(x) - \nabla^2 f(y)\| \le \|x - y\| \quad \forall x, y \in \domain
+\end{align}
+\end{assumption}
+Notice that this assumption allows us to create fully quadratic models in $\domain$.
+
+\begin{assumption}
 The function $f$ is bounded below over $\domain$.
+\begin{align}
+\label{lower_bound}
+f(x) \ge \fmin \quad \forall x \in \domain
+\end{align}
 \end{assumption}
 
 
-We replace the third assumption with a straightforward, modified hypothesis.
-Originally, the authors assumed:
-\begin{assumption}
-\label{uniformly_bounded_hessians}
-The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
-\end{assumption}
-In \cref{replacing_h3}, we replace \cref{uniformly_bounded_hessians} with the following:
 \begin{assumption}
 \label{other_uniformly_bounded_hessians}
 The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$
@@ -704,22 +704,47 @@ There exists a $\Delta_{\text{max}} > 0$ such that $\dk \le \Delta_{\text{max}}$
 
 
 
-\subsection{Satisfying these assumptions}
+\label{convergence_discussion}
 
+If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, the algorithm presented here is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
+This means we only need to satisfy the requirements detailed in their convergence analysis.
+
+
+\subsection{Algorithm Assumptions}
+For your convenience, we duplicate the assumptions found in \cite{doi:10.1080/10556788.2015.1026968}.
+Firstly, they assume that the algorithm satisfies an efficiency condition \cref{efficiency}.
+
+\begin{itemize}
+\item[H0] The efficiency condition \cref{efficiency} is satisfied.
+\item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
+\item[H2] The function $f$ is bounded below over $\domain$.
+\item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
+\item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
+\end{itemize}
+
+H0 can be satisfied within our algorithm by selecting the Generalized Cauchy Point \cite{Conn:2000:TM:357813} to solve the trust region subproblem.
+Notice that H1 and H2 are kept as hypothesis within our algorithm.
+We have replaced H3 with the straightforward hypothesis  \cref{uniformly_bounded_hessians} based on our implementation.
+
+The only assumption not yet dealth with is H4, which is the topic of \cref{satisfying_accuracy}.
+
+\subsection{Satisfying these assumptions}
 From here on, we will assume that the iterates $\xk$ are chosen according to \cref{constrained_dfo}.
+This implies that each of the sample points used to construct $\mfk$ are output of \cref{model_improving_algorithm}, and therefore $\mfk$ is a fully quadratic model over $B_{\infty}(\xk, \dk)$.
 Because the constraints are linear, we will let $G$ be the $m \times n$ normalized gradient of the constraints $g$ be the scaled constraint values at $0$, so that
 \begin{align}
 \|G_i\| = 1\;\forall 1\le i\le m \\
-\feasible = \{x \in \Rn | c(x) \le 0 \Leftrightarrow G x \le g \} \label{define_g}
+\feasiblek = \feasible = \{x \in \Rn | c(x) \le 0 \Leftrightarrow G x \le g \} \label{define_g}
 \end{align}
+Remember that $\feasible \subset \domain$.
 
 \subsubsection{Satisfying \cref{uniformly_bounded_hessians}}
-\label{replacing_h3}
 First, we show that \cref{other_uniformly_bounded_hessians} can be used instead of \cref{uniformly_bounded_hessians}.
 This is the result of the following lemma:
 
 \begin{lemma}
-Assume that \cref{other_uniformly_bounded_hessians} is satisfied.
+\label{replacing_h3}
+Assume that \cref{other_uniformly_bounded_hessians} is satisfied, and for each $k \in \naturals$, $\mfk$ is a fully quadratic model of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{fully_quadratic_definition}.
 Then \cref{uniformly_bounded_hessians} is also satisfied.
 \end{lemma}
 
@@ -728,8 +753,9 @@ Let $\beta_1 \ge 1$ be such that for all $k \ge 0$:
 \begin{align*}
 \|\nabla^2 f(\xk) \| \le \beta_1 - 1
 \end{align*}
-Because the sample points are chosen using \cref{model_improving_algorithm}, we know by \cref{set_is_fully_quadratic} that $m_f$ is a fully quadratic model as defined in \cref{fully_quadratic_definition}.
-Combining \cref{error_in_hessian} and \cref{delta_max} we see that
+% \cref{model_improving_algorithm},
+Because $\mfk$ are fully quadratic, we know that \cref{error_in_hessian} is satisfied.
+Combining this with \cref{delta_max} we see that
 \begin{align*}
 \|\nabla^2 f(\xk) - \nabla^2 m_f(\xk) \| \le \kappa_{h} \dk \le \kappa_{h} \Delta_{\text{max}}
 \end{align*}
@@ -739,7 +765,7 @@ Defining $\beta_2 = \kappa_{h} \Delta_{\text{max}} + \beta_1 \ge 1$, we see that
 \end{align*}
 \end{proof}
 
-% For any $x \in \feasible$, we have that the set of gradients of active constraints is linearly independent. That is, the vectors $\{\nabla c_i(x) |  \forall i \in \mathcal A(x)\}$ is linearly independent.
+% For any $x \in \feasible$, we have that the set of gradients of active constraints is linearly independent. That is, the vectors $\{\nabla c_i(x) |  \forall i \in \activei(x)\}$ is linearly independent.
 
 
 \subsubsection{Satisfying \cref{accuracy_assumption}}
@@ -749,47 +775,46 @@ The only remaining assumption is the accuracy condition \cref{accuracy_assumptio
 As discussed in \cref{ellipsoidal_lambda}, we know that if the condition number of $\qk$ is bounded, we will have a well poised model.
 However, we must also ensure that we are always able to find a feasible ellipsoid.
 Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
-we can find a feasible ellipse that only needs to be scaled by a constant to do so.
+we can find a feasible ellipsoid that only needs to be scaled by a constant to do so.
 % It is shown in \cite{Billups_Larson_2013} that a lambda poised set over a sphere remains lambda poised over a larger sphere (with a larger lambda).
 
 
-% \mathcal A_k = \mathcal A(\xk) \\
+% \activei_k = \activei(\xk) \\
+
+
+\new
 
 Let $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
 We define
 \begin{align}
-\mathcal A(x) = \{1 \le i \le m | c_i(x) = 0 \Leftrightarrow Gx = g \} \label{active_indices} \\
-\alpha_1(\mathcal S) = \begin{cases}
+\activei(x) = \{1 \le i \le m | c_i(x) = 0 \Leftrightarrow Gx = g \} \label{active_indices} \\
+\alphaone (\mathcal S) = \begin{cases}
 \argmax_{\|u\|^2 = 1} \min_{i \in \mathcal S} -u^TG_i & \text{if} \; \mathcal S \ne \emptyset \\
 \emptyset & \text{if} \; \mathcal S = \emptyset
 \end{cases} \label{define_alpha_one} \\
-\alpha_2(\mathcal S) = \begin{cases}
--u^TG_i  & \text{if} \; u \in \alpha_1(\mathcal S)  \\
-1 & \text{if} \; \alpha_1(\mathcal S) = \emptyset
-\end{cases}\label{define_alpha_two}\\
-\alpha_3(x) = \alpha_2(\mathcal A(x)) \label{define_alpha_three} \\
-\alpha_k =  \alpha_3(\xk) \label{define_alpha_k} \\
-u^{(k)} \in 
- \begin{cases}
-\alpha_1(\xk) & \text{if} \; \mathcal A(\xk) \ne \emptyset \\
-\{0\} & \text{if} \; \mathcal A(\xk) = \emptyset
-\end{cases} \\
-% P^{(k)} = \{x \in \Rn | \nabla c(\xk)^T x \le c(\xk) \}
+\alphatwo(\mathcal S) = \begin{cases}
+\max_{\|u\|^2 = 1} \min_{i \in \mathcal S} -u^TG_i & \text{if} \; \mathcal S \ne \emptyset \\
+1 & \text{if} \; \mathcal S = \emptyset
+\end{cases} \label{define_alpha_two}\\
+\alphathree(x) = \alphatwo\left(\activei(x)\right) \label{define_alpha_three} \\
+\alpha_k =  \alphathree\left(\xk\right) \label{define_alpha_k} \\
+\uk \in  \alphaone\left(\activei(\xk)\right) \label{define_alpha_k}
 \end{align}
 % F^{(k)} = P^{(k)} \cap B_{\infty}(\xk, \dk) \\
+% P^{(k)} = \{x \in \Rn | \nabla c(\xk)^T x \le c(\xk) \}
 
 
 \begin{lemma}
 \label{alphas_are_positive}
 Assume that \cref{interior_point} is satisfied and $x_0 \in \feasible$.
-Then $1 \ge \alpha_3(x_0) > 0$. 
+Then $1 \ge \alphathree(x_0) > 0$. 
 \end{lemma}
 
 \begin{proof}
 Let $x_0 \in \feasible$.
-If $\mathcal A(x_0) = \emptyset$, then $\alpha_k = 1 > 0$.
-Otherwise, let $i \in \mathcal A(x_0)$, so that $c_i(x_0) = 0$.
-% We know that for each $i \in \mathcal A(x_0)$ both $c_i(x_0) = 0$ and $c_i(\bar x) < 0$.
+If $\activei(x_0) = \emptyset$, then $\alpha_k = 1 > 0$.
+Otherwise, let $i \in \activei(x_0)$, so that $c_i(x_0) = 0$.
+% We know that for each $i \in \activei(x_0)$ both $c_i(x_0) = 0$ and $c_i(\bar x) < 0$.
 % subtract the equations: $G_i^T \bar x < g_i$ and $G_i^T  x_0 = g_i$ to find
 Because $c_i$ is convex, we know
 \begin{align*}
@@ -799,24 +824,22 @@ c_i(\bar x) \ge c_i(x_0) + \nabla c_i(x_0)^T(\bar x - x_0)
 Using \cref{define_g}, we can write this as
 % G_i^T \left(\bar x - x_0 \right) < 0 \Longrightarrow -G^T_i\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0 
 \begin{align*}
--G^T_i\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0  \Longrightarrow \min_{i \in \mathcal A(x_0)} -G_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
+-G^T_i\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0  \Longrightarrow \min_{i \in \activei(x_0)} -G_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
 \end{align*}
 Using this along with definitions \cref{define_alpha_one}, \cref{define_alpha_two}, and \cref{define_alpha_three} we see
 \begin{align*}
-\alpha_3(x_0) = \alpha_2\left(\mathcal A(x_0)\right) = \max_{\|u\|^2 = 1} \min_{i \in \mathcal A(x_0)} -G_i^Tu
-\ge \min_{i \in \mathcal A(x_0)} - G_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
+\alphathree(x_0) = \alphatwo\left(\activei(x_0)\right) = \max_{\|u\|^2 = 1} \min_{i \in \activei(x_0)} -G_i^Tu
+\ge \min_{i \in \activei(x_0)} - G_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
 \end{align*}
 
-We know that $\alpha_3(x_0) \le 1$ because it is the dot product of two vectors of length one.
-\color{red}
-Cauchy-Schwartz
-\color{black}
+We know that $\alphathree(x_0) \le 1$ because it is the dot product of two vectors of length one:
+if $\|u\| = 1$, then $\left|u^T G_i\right|^2 \le \|u\|\|G_i\| = 1$ by Cauchy–Schwarz.
 
 % $u(x) = \frac{\bar{x} - x}{\|\bar{x} - x\|}$.
-% We know that for each $i \in \mathcal A(x_0)$ both $c_i(x_0) = 0$ and $c_i(\bar x) < 0$.
+% We know that for each $i \in \activei(x_0)$ both $c_i(x_0) = 0$ and $c_i(\bar x) < 0$.
 % subtract the equations: $G_i^T \bar x < g_i$ and $G_i^T  x_0 = g_i$ to find
-% We know that for each  $x \in \feasible$, the set of gradients $\nabla c_i(x) \forall i \in \mathcal A(x)$ of active constraints $\mathcal A(x)$ is linearly independent.
-% For any $x \in \feasible$, we know that $\alpha(x) \ge \min_{i \in \mathcal A(x)} - u(x)^T \nabla c_i(x)$
+% We know that for each  $x \in \feasible$, the set of gradients $\nabla c_i(x) \forall i \in \activei(x)$ of active constraints $\activei(x)$ is linearly independent.
+% For any $x \in \feasible$, we know that $\alpha(x) \ge \min_{i \in \activei(x)} - u(x)^T \nabla c_i(x)$
 % If $\alpha(x) = 0$, then \color{red}contradiction\color{black}, so that $\alpha(x) > 0$ for all $x \in \feasible$.
 \end{proof}
 
@@ -825,8 +848,8 @@ Cauchy-Schwartz
 If \cref{interior_point} is satisfied, then there exists an  $\epsilon_{\alpha} > 0$ such that $\alpha_k \ge \epsilon_{\alpha} \; \forall \; k \in \naturals$.
 \end{lemma}
 \begin{proof}
-Because there are only $m$ constraints, each $\mathcal A(x)$ is one of the only $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$.
-This means that $\alpha_1$, $\alpha_3$, and $\alpha_k$ can only take on at most $1 + 2^m$ values.
+Because there are only $m$ constraints, each $\activei(x)$ is one of the only $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$.
+This means that $\alphaone$, $\alphatwo$, and $\alpha_k$ can only take on at most $1 + 2^m$ values.
 By \cref{alphas_are_positive}, we know that each of these values must be positive.
 Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these values.
 \end{proof}
@@ -837,11 +860,11 @@ Let  $A$ be an $m \times n$ matrix and $b \in \Rm$ be provided so that $P = \{x 
 Also, let $x_0 \in P$ be arbitrary.
 Define
 \begin{align}
-\mathcal A = \{1 \le i \le m | A_i x_0 = b \} \label{active_polyhedron_constraints} \\
-u^{\star} \in \argmax_{\|u\|^2 = 1} \min_{i \in \mathcal A} - u^T A_i \label{polyhedrons_u} \\
-\alpha = \min_{i \in \mathcal A} -u^{\star}A_i \label{polyhedrons_alpha}
+\activei = \{1 \le i \le m | A_i x_0 = b \} \label{active_polyhedron_constraints} \\
+u^{\star} \in \argmax_{\|u\|^2 = 1} \min_{i \in \activei} - u^T A_i \label{polyhedrons_u} \\
+\alpha = \min_{i \in \activei} -u^{\star}A_i \label{polyhedrons_alpha}
 \end{align}
-If $\mathcal A = \emptyset$ or $\alpha > 0$, then there exists an $\epsilon > 0$, $c \in \Rn$  and a positive definite, symmetric matrix $Q$, 
+If $\activei = \emptyset$ or $\alpha > 0$, then there exists an $\epsilon > 0$, $c \in \Rn$  and a positive definite, symmetric matrix $Q$, 
 such that:
 \begin{itemize}
 \item[1.] The ellipsoid $E = \{x | (x - c)^TQ(x - c) \le \frac 1 2 \epsilon \}$ satisfies $E \subset P$.
@@ -854,20 +877,20 @@ such that:
 
 Without loss of generality, assume that the rows of $A$ and elements of $b$ have been normalized so that $\|A_i\| = 1 \forall 1 \le i \le m$.
 
-If $\mathcal A = \emptyset$, then we are free to select $c = x_0, Q = I$, and $ \epsilon$ smaller than the distance to the nearest constraint:
+If $\activei = \emptyset$, then we are free to select $c = x_0, Q = I$, and $ \epsilon$ smaller than the distance to the nearest constraint:
 $\epsilon \le  \min_{1 \le i \le m} b_i - A_i^Tx_0$. Because $E$ is a sphere with radius less than the distance to the nearest constraint, $E \subseteq P$.
 Because the sphere $\hat E$ is centered at $x_0$, $x_0 \in \hat E$. Also, $\sigma(Q) = 1$.
 
 Otherwise, compute $u^{\star}$ and $\alpha$ as in \cref{polyhedrons_u} and \cref{polyhedrons_alpha} and define the cones
 
-% = -A_{\mathcal A}^T(A_{\mathcal A}A_{\mathcal A}^T)^{-1} e$, $\hat u = \frac {u} {\| u\|} $, $\alpha = -\max_{i \in \mathcal A} A_i \hat u$, and define the cones
+% = -A_{\activei}^T(A_{\activei}A_{\activei}^T)^{-1} e$, $\hat u = \frac {u} {\| u\|} $, $\alpha = -\max_{i \in \activei} A_i \hat u$, and define the cones
 \begin{align}
 C_1 = \{x \in \Rn | \quad x = \xk + t u^{\star}+ s, s^Tu^{\star} = 0, t > 0, \|s\| \le \alpha t\} \label{s_less_t} \\
 C_2 = \{x = (t, s)^T \in \Rn, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} |\quad \|s\| \le \alpha t \}.
 \end{align}
 
 First, we show that $C_1$ is feasible with respect to the active constraints at $x$
-by letting $y = \xk + tu^{\star} + s\in C_1$ as in \ref{s_less_t} and $i \in \mathcal A$ be arbitrary.
+by letting $y = \xk + tu^{\star} + s\in C_1$ as in \ref{s_less_t} and $i \in \activei$ be arbitrary.
 Then,
 \begin{align*}
 A_{i}^Ty - b_{i} = A_{i}^T(tu^{\star} + s) = A_{i}^Ts + t A_{i}^Tu^{\star} \le \|s\| - \alpha t \le 0
@@ -1135,27 +1158,27 @@ In particular, $\xk \in \hat E^{(k)}$.
 % \paragraph{version 1}
 % \color{red}
 % \begin{itemize}
-% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \Rn$ such that $d^T\nabla c_i(x) < 0, \forall i \in \mathcal A(x^{\star})$.
+% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \Rn$ such that $d^T\nabla c_i(x) < 0, \forall i \in \activei(x^{\star})$.
 % \end{itemize}
 % \color{black}
 % \paragraph{version 2}
 % \begin{itemize}
 % \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \Rn$ such that
-% $d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% $d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
 % \end{itemize}
 % \paragraph{version 3}
 % Our assumption reads
 % \begin{itemize}
 % \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-% $d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
-% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% $d  = \nabla c_{\activei(x)}^T(\nabla c_{\activei(x)}\nabla c_{\activei(x)}^T)^{-1} e$ satisfies
+% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
 % \end{itemize}
 % \paragraph{version 4}
 % Our assumption reads
 % \begin{itemize}
 % \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-% $d  = \nabla c_{\mathcal A(x)}^T(\nabla c_{\mathcal A(x)}\nabla c_{\mathcal A(x)}^T)^{-1} e$ satisfies
-% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \mathcal A(x^{\star})$.
+% $d  = \nabla c_{\activei(x)}^T(\nabla c_{\activei(x)}\nabla c_{\activei(x)}^T)^{-1} e$ satisfies
+% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
 % \end{itemize}
 
 

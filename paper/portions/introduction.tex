@@ -12,6 +12,7 @@ This work is ultimately aimed at developing algorithms to solve constrained opti
 \end{array}
 \]
 where $\domain$ is a subset of $\Rn$, and $f$ and $c_i, 1 \le i \le m$ are real-valued functions on $X$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+We assume throughout this paper that $\feasible = \{x \in \Rn | c_i(x) \le 0 \quad \forall 1 \le i \le m \} \subseteq \domain$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We consider two variations of this problem.
@@ -25,14 +26,14 @@ The model functions are determined by fitting previously evaluated function valu
 In trust-region methods, the model-functions are used to define a trust-region subproblem whose solution determines the next iterate.
 For example, the trust-region subproblem might have the form
 
-\[ \begin{array}{ccl} \min_{\norm{s} \le \Delta_k}
+\[ \begin{array}{ccl} \min_{\norm{s} \le \dk}
  & \mfk (\xk+s) \\
 \mbox{subject to} & \mcik(\xk + s) \le 0 & 1 \le i \le m,
 \end{array}
 \]
-where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$,  and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall i \in \mathcal{I} \union \mathcal{E}$, and $\Delta_k$ is the radius of the trust-region.
+where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$,  and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
 The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
-Conceptually, the model functions are ``trusted'' only within a distance $\Delta_k$ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\Delta_k$.
+Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
 
@@ -333,8 +334,8 @@ $\cup_{x \in S} B(x; \dmax)$ of the set $S$.
 \begin{definition}
 \label{fully_quadratic_definition}
 Let $f$ be a function that satisfies \cref{fully_quadratic_assumption}.
-A model function $m : \Rn \to\reals, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
-$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that for any $\Delta \in (0, \dmax)$ and $x \in S$:
+For any $\Delta \in (0, \dmax)$ and $x \in S$, a model function $m : \Rn \to\reals, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
+$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that:
 \begin{align}
 \|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(x; \Delta) \label{error_in_hessian}\\
 \|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(x; \Delta) \label{error_in_gradient} \\
@@ -466,7 +467,7 @@ For now, our algorithm is designed to work with convex constraints, so we employ
 \chik = \|\xk - \text{Proj}_{\feasiblek}(\xk- \nabla \mfk(\xk))\|
 \end{align*}
 
-where $\feasiblek$ denotes the feasible region: $\feasiblek = \{x \in X | \mcik(x) \le 0 \quad \forall i \in \mathcal I \wedge c_i(x) = 0 \quad \forall i \in \mathcal E \}$.
+where $\feasiblek$ denotes the feasible region: $\feasiblek = \{x \in X | \mcik(x) \le 0 \quad \forall 1 \le i \le m \}$.
 This criticality measure measures how far the current is from satisfying the first order optimality conditions for $\xk$ to be a constrained minimum of $\mfk$.
 When $ \lim_{k\to\infty} \chik = 0$, $\lim_{k\to\infty}\Delta_k = 0$, and $\lim_{k\to\infty}\xk = x^{\star}$, then we have that $x^{\star}$ also satisfies the first order optimality conditions of being a constrained minimum of $f$.
 
