@@ -186,6 +186,7 @@ Our goal is to generalize this framework to handle constraints, where we must en
 
 \subsection{Recent Work}
 \paragraph{Applications}
+
 Recently, there has been a growth in applications of derivative free optimization.
 Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
 
@@ -195,6 +196,7 @@ To address the rise in these applications, new algorithms are being developed su
 \cite{infeasiblestarting} presents an algorithm which accepts an infeasible starting point.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
 
+\ifnum\longreferences=1
 \paragraph{Subproblems}
 Some work has been done within trust region algorithms to improve the update policy \cite{Kamandi2017}.
 Also, \cite{Verderio2017} and \cite{doi:10.1080/10556780802409296} discuss geometric conditions of the sample points required for global convergence.
@@ -206,8 +208,11 @@ Finally, \cite{AMAIOUA201813} uses a mesh adaptive search to solve quadratic sub
 A derivation is found in \cite{doi:10.1137/151005683} which shows that to driver the norm of the gradient less than $\epsilon$, the number of function evaluations can be bounded by $O(\epsilon^{-2})$ 
 %and $O(n^2\epsilon^{-2})$ 
 function evaluations for derivative free model based approaches. Also, cubic over estimation with finite differences can acheive $O(\epsilon^{-1.5})$. \cite{doi:10.1093/imanum/drx043} is another recent paper presenting complexity analysis using probabilistic methods.
-
-
+\else
+\color{red}
+delete this
+\color{black}
+\fi
 \paragraph{Reviews}
 Within \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
 This is the first text book devoted to derivative free optimization.
@@ -216,9 +221,6 @@ It contains a good explanation of ensuring geometry of the current set with pois
 A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
 This compares several software libraries, and reviews the development of derivative free optimization since it started.
 Another recent review can be found in \cite{DUMMY:review2} and \cite{Larson_2019}.
-
-% TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-% READ THIS
 
 
 \subsection{Sample Set Geometry}
@@ -320,35 +322,27 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 % \end{align}
 
 % This can ensure that the Vandermonde matrix is well conditioned.
-This is useful because of the following results found in \cite{DUMMY:intro_book}.
-
-
+This is useful because of \cref{quadratic_errors}, which is shown in \cite{DUMMY:intro_book}.
 
 \begin{assumption}
-\label{fully_quadratic_assumption}
-Suppose that a set $S$ and a radius $\dmax$ are given.
-Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
-$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
+\label{introduction_3_1}
+We assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$ poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radias $\Delta_Y = \max_{1\le i \le p} \|y^0 - y^i\|$.
+
+Further, assume that the function $f$ is twice continuously differentiable in an open domain $\Sigma$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$ is Lipschitz continuous in $\Omega$ with constant $L_h > 0$.
 \end{assumption}
 
-\begin{definition}
-\label{fully_quadratic_definition}
-Let $f$ be a function that satisfies \cref{fully_quadratic_assumption}.
-For any $\Delta \in (0, \dmax)$ and $x \in S$, a model function $m : \Rn \to\reals, m \in C^2$ with Lipschitz continuous Hessian with corresponding Lipschitz constant bounded by $\nu_2$  is called a fully quadratic if there exist positive constants
-$\kappa_f$, $\kappa_g$, and $\kappa_h$ such that:
-\begin{align}
-\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(x; \Delta) \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(x; \Delta) \label{error_in_gradient} \\
-|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(x; \Delta). \label{error_in_function} 
-\end{align}
-\end{definition}
 
-% Assuming that $f$ is twice continuously differentiable in an open domain containing $B_2(y^0, \Delta)$ and has a Lipschitz continuous Hessian, using quadratic interpolation there exist constants $\kappa_{ef}, \kappa_{eg}$, and $\kappa_{eh}$ depending only on the dimension and Lipschitz constant of $\nabla^2 f$ such that for any $y \in B_2(y^0, \Delta)$ :
-% \begin{align}
-%  \|f(y) - \mfk(y)\| \le \kappa_{ef} \Lambda \Delta^3 \\
-%  \|\nabla f(y) - \nabla \mfk(y)\| \le \kappa_{eg} \Lambda \Delta^2 \\
-%  \|\nabla^2 f(y) - \nabla^2 \mfk(y)\| \le \kappa_{eh}\Lambda \Delta .\\
-% \end{align}
+\begin{theorem}
+\label{quadratic_errors}
+Let \cref{introduction_3_1} be satisfied and $m$ is a quadratic model function constructed as in \cref{reg}. Then there exist constants $\kappa_f$, $\kappa_g$, $\kappa_h$ dependent only on $p$, $L_h$, and $\Lambda$ such that:
+\begin{align}
+\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_gradient} \\
+|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta_Y). \label{error_in_function} 
+\end{align}
+\end{theorem}
+
+
 Also, \cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
 
 In particular, these bounds ensure that the following accuracy condition is satisfied, which is used by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
@@ -360,9 +354,8 @@ In particular, these bounds ensure that the following accuracy condition is sati
 We will extend these results for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
  
 
-%used to find the coefficients $\lambda$ to express the model function in terms of a basis of Lagrange polynomials $l_i$
+\ifnum\explanationfigures=1
 The following example illustrates how interpolating with an ill-poised set can produce an inaccurate model.
-% Problems become apparent when comparing the Lagrange polynomials associated with a poised set with those of an ill poised set.
 In \cref{pvip}, a set of quadratic polynomials is used to interpolate the function $f(x) = 5 + x + y + (x + y) ^ 2 - \frac 1 {250} y ^ 4$.
 We can see that the difference between the model and $f$ are much larger when the points are chosen to be nearly collinear.
 This results in a much higher $\Lambda$.
@@ -378,6 +371,8 @@ This results in a much higher $\Lambda$.
 	}
     \label{pvip}
 \end{figure}
+\else
+\fi
 
 
 A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure good geometry is required for convergence analysis although it may come at the expense of adding more function evaluations.
@@ -420,37 +415,27 @@ We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorit
         \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
                 \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y \in \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
                 \item[] Replace row $i$ with $V_{i, j} \gets \phi_j(\hat y)$.
+                \item[] $Y \gets Y \cup \{\hat y \}\\ \{y^i\}$
             \end{itemize}
         
         \item[\textbf{Step 3}] \textbf{(LU)} \begin{itemize}
-                \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
-                \item[] Set $V_{\bullet j} \gets V_{\bullet j} - V_{i,j} V_{\bullet j} \forall j=i \ldots p$
+%                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
+                \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
             \end{itemize}
             If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
     \end{itemize}
 \end{algorithm}
 
 
-At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
-The following result is shown in \cite{DUMMY:intro_book}.
+% At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
+The following result is shown in \cite{DUMMY:intro_book} through Theorem 6.5, Theorem 3.14, and 6.7 Exercise 3.
 \begin{theorem}
-\label{set_is_fully_quadratic}
-Let $f$ satisfy \cref{fully_quadratic_assumption}.
-For any $\epsilon \in (0, \frac 1 4)$, and $p+1 = \frac {(n+1)(n+2)}{2}$, \cref{model_improving_algorithm} produces a set of $p+1$ points in the unit ball $B(0; 1)$ such that if $m_f$ is the Lagrange-interpolating model of $f$ given by \cref{reg}, then the $m_f$ is fully a quadratic model.
+\label{set_is_poised}
+After running \cref{model_improving_algorithm}, the resulting set $Y$ is Lambda poised for some $\Lambda > 0$ that depends on $\xi_{\text{min}}$.
 \end{theorem}
 
-This algorithm can also be used to create a poised set over an ellipsoidal shape. This is discussed further in \cref{ellipsoidal_lambda}.
-% 
-% \paragraph{Proximity}
-% 
-% Proximity refers to the trust region radius.
-% The trust region must go to zero if we are to be sure we have reached a critical point.
-% In general, the smaller the trust region, the closer to linear or quadratic the original function will look.
-% This is because the model's error term is proportional to the trust region radius.
-% 
-% In classical trust region algorithms, there is no need for the trust region radius to go to zero.
-% Therefore, extra care must be taken to ensure this while modifying such algorithms.
-
+This algorithm can also be used to create a poised set over an ellipsoidal shape.
+This is discussed further in \cref{ellipsoidal_lambda}.
 
 \subsection{Algorithm Components}
 
@@ -585,8 +570,8 @@ The classical methods for ensuring good geometry require an optimization call to
 This is no longer possible in the polyhedral trust region approach.
 However, the bounds produced over the entire trust region may also be stronger than required as the models will only be used on the feasible region.
 This may mean the geometric requirements can be reduced.
+\ifnum\explanationfigures=1
 Looking again at the ill-poised set in \cref{aoip}, the set of nearly collinear sample points actually does appear to be accurate over a smaller trust region.
-
 
 \begin{figure}[h]
     \centering
@@ -594,7 +579,8 @@ Looking again at the ill-poised set in \cref{aoip}, the set of nearly collinear 
     \caption{Accurate model over thin trust region from illpoised set}
     \label{aoip}
 \end{figure}
-
+\else
+\fi
 
 Within our algorithm, if $ \outertrk \subseteq \feasiblek$ we can set $ \sampletrk $ to be a sphere.
 This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.

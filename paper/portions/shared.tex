@@ -37,7 +37,6 @@ The different versions are described in the remainder of this section.
             $0 < \omegadec < 1 \le \omegainc$,
             $0 < \gammasm < \gammabi \le 1$,
             $\alpha > 0$,
-            $0 < \Delta_0 < \dmax < \frac 1 2 diam(\domain)$,
             $k \gets 1$,
             $0 < \omegadec < 1 \le \omegainc$,
             $0 < \gammasm < \gammabi < 1$.
@@ -477,30 +476,31 @@ However, this means that in general $\ellipsek \not \subset \feasiblek$ so that 
 
 To help mitigate the second issue, we maximize the volume of the ellipsoid.
 However, the choice of ellipsoid center can still limit travel along a decent direction.
-Choosing the best center is the topic of the next section.
+Choosing the best center is the topic of the next section.\
 
-\paragraph{One theoretical concern}
-
-%The are some other concerns to be considered while defining the ellipsoid.
-% While choosing $\ellipsek$, 
-
-%We also want consecutive ellipsoid to share volume, in order to avoid evaluating as many points as possible.
-%(So far, we have been re-evaluating the set of trial points each iteration.)
-
-
-Lastly, when $\ellipsek \subset \feasiblek$, we may not be able find a second order solution.
-This is becase the ellipsoid can only be tangent to the constraint, and some decent paths may be missed.
-In \cref{fbns}, the red line represents a path in the feasible region that is always decreasing.
-However, if the trust regions decrease without intersecting this path, the algorithm will not be aware of this descent path.
-However, scaling the trust region to the outer green radius may allow the algorithm to ensure global convergence to second order critical points.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=200px]{images/second_order_critical_point.png}
-    \caption{Potential issue with a second order critical point.}
-    \label{fbns}
-\end{figure}
-
+% 
+% \paragraph{One theoretical concern}
+% 
+% %The are some other concerns to be considered while defining the ellipsoid.
+% % While choosing $\ellipsek$, 
+% 
+% %We also want consecutive ellipsoid to share volume, in order to avoid evaluating as many points as possible.
+% %(So far, we have been re-evaluating the set of trial points each iteration.)
+% 
+% 
+% Lastly, when $\ellipsek \subset \feasiblek$, we may not be able find a second order solution.
+% This is becase the ellipsoid can only be tangent to the constraint, and some decent paths may be missed.
+% In \cref{fbns}, the red line represents a path in the feasible region that is always decreasing.
+% However, if the trust regions decrease without intersecting this path, the algorithm will not be aware of this descent path.
+% However, scaling the trust region to the outer green radius may allow the algorithm to ensure global convergence to second order critical points.
+% 
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=200px]{images/second_order_critical_point.png}
+%     \caption{Potential issue with a second order critical point.}
+%     \label{fbns}
+% \end{figure}
+% 
 
 
 % Finally, we have the problem of computing the ellipsoid once given a suitable definition.
@@ -629,30 +629,16 @@ Notice that with two line segments, the algorithm can already choose new centers
 
 \section{Convergence Discussion}
 
-
-
-\color{red}
-\begin{itemize}
-\item Add assumptions for creating quadratic models
-\item delta max
-\item cauchy schwartz
-\item replace all the $x_0$ with $y$
-\item work with the definition of fully quadratic
-\end{itemize}
-\color{black}
-
-
-
 Here, we show convergence for one version of \cref{constrained_dfo}.
 Namely, we choose to satisfy \cref{bluepill} and let $\sampletrk$ have an ellipsoidal shape as described in \cref{sample_region_choices}. 
 Also, we will select \cref{search_a_lot} as discussed in \cref{search_region_choices}: namely, $\searchtrk = \outertrk \cap \feasible$.
 To do this, we require the following assumptions.
 
 \begin{assumption}
-The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
+The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L_{g} > 0$ in $\domain$.
 \begin{align}
 \label{lipschitz}
-\|\nabla f(x) - \nabla f(y)\| \le \|x - y\| \quad \forall x, y \in \domain
+\|\nabla f(x) - \nabla f(y)\| \le L \|x - y\| \quad \forall x, y \in \domain
 \end{align}
 \end{assumption}
 
@@ -661,10 +647,9 @@ The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz conti
 The function $f$ has Lipschitz continuous hessian with constant $L_h > 0$ in $\domain$.
 \begin{align}
 \label{lipschitz_hessian}
-\|\nabla^2 f(x) - \nabla^2 f(y)\| \le \|x - y\| \quad \forall x, y \in \domain
+\|\nabla^2 f(x) - \nabla^2 f(y)\| \le L_h \|x - y\| \quad \forall x, y \in \domain
 \end{align}
 \end{assumption}
-Notice that this assumption allows us to create fully quadratic models in $\domain$.
 
 \begin{assumption}
 The function $f$ is bounded below over $\domain$.
@@ -676,8 +661,8 @@ f(x) \ge \fmin \quad \forall x \in \domain
 
 
 \begin{assumption}
-\label{other_uniformly_bounded_hessians}
-The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$
+\label{uniformly_bounded_hessians_of_mf}
+The Hessian's of $\mfk$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk(\xk)\| \le \beta - 1$ for all $k \ge 0$
 \end{assumption}
 
 Lastly, the accuracy condition \cref{accuracy} must be satisfied.
@@ -694,16 +679,6 @@ Also, we add some assumptions of our own.
 There exists a point $\bar x$ within the interior of the feasible region: $A\bar x < b$.
 \end{assumption}
 
-
-\color{red}
-\begin{lemma}
-\label{delta_max}
-There exists a $\Delta_{\text{max}} > 0$ such that $\dk \le \Delta_{\text{max}}$ for all $k \ge 0$.
-\end{lemma}
-\color{black}
-
-
-
 \label{convergence_discussion}
 
 If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, the algorithm presented here is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
@@ -715,22 +690,32 @@ For your convenience, we duplicate the assumptions found in \cite{doi:10.1080/10
 Firstly, they assume that the algorithm satisfies an efficiency condition \cref{efficiency}.
 
 \begin{itemize}
-\item[H0] The efficiency condition \cref{efficiency} is satisfied.
-\item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
-\item[H2] The function $f$ is bounded below over $\domain$.
-\item[H3] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
-\item[H4] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
+\item[$H_0$] The efficiency condition \cref{efficiency} is satisfied.
+\item[$H_1$] The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
+\item[$H_2$] The function $f$ is bounded below over $\domain$.
+\item[$H_3$] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
+\item[$H_4$] There exists a constant $\delta_g$ such that $\|\nabla m_k(\xk) - \nabla f(\xk)\| \le \delta_g \dk$ for all $k \ge 0$.
 \end{itemize}
 
-H0 can be satisfied within our algorithm by selecting the Generalized Cauchy Point \cite{Conn:2000:TM:357813} to solve the trust region subproblem.
-Notice that H1 and H2 are kept as hypothesis within our algorithm.
-We have replaced H3 with the straightforward hypothesis  \cref{uniformly_bounded_hessians} based on our implementation.
+$H_0$ can be satisfied within our algorithm by selecting the Generalized Cauchy Point \cite{Conn:2000:TM:357813} to solve the trust region subproblem.
+Notice that $H_1$, $H_2$, and $H_3$  are kept as hypothesis within our algorithm.
 
-The only assumption not yet dealth with is H4, which is the topic of \cref{satisfying_accuracy}.
+The only assumption not yet dealth with is $H_4$, which is the topic of \cref{satisfying_accuracy}.
+However, first we show a way of using a more straightforward version of $H_3$ in \cref{simpler_h3}.
 
 \subsection{Satisfying these assumptions}
 From here on, we will assume that the iterates $\xk$ are chosen according to \cref{constrained_dfo}.
-This implies that each of the sample points used to construct $\mfk$ are output of \cref{model_improving_algorithm}, and therefore $\mfk$ is a fully quadratic model over $B_{\infty}(\xk, \dk)$.
+This implies that each of the sample points used to construct $\mfk$ are output of \cref{model_improving_algorithm}.
+
+
+XXXX
+Because of \cref{lipschitz_hessian} and \cref{lipschitz_gradient}, $f$ satisfies \cref{introduction_3_1} and hence the assumptions for \cref{quadratic_errors}.
+Notice that because $\kappa_f$, $\kappa_g$, $\kappa_h$ only depend on $p$, $L_h$, and $\Lambda$, these values do not depend on the iteration $k$:
+using the same tolerance $\xi_{\text{min}}$ is used within \cref{model_improving_algorithm} implies a bound on $\Lambda$.
+XXXX
+ 
+, and therefore $\mfk$ satisfies the requirements for \cref{quadratic_errors}.
+is a fully quadratic model over $B_{\infty}(\xk, \dk)$.
 Because the constraints are linear, we will let $G$ be the $m \times n$ normalized gradient of the constraints $g$ be the scaled constraint values at $0$, so that
 \begin{align}
 \|G_i\| = 1\;\forall 1\le i\le m \\
@@ -738,14 +723,28 @@ Because the constraints are linear, we will let $G$ be the $m \times n$ normaliz
 \end{align}
 Remember that $\feasible \subset \domain$.
 
-\subsubsection{Satisfying \cref{uniformly_bounded_hessians}}
-First, we show that \cref{other_uniformly_bounded_hessians} can be used instead of \cref{uniformly_bounded_hessians}.
-This is the result of the following lemma:
+\subsubsection{More simple $H_3$}
+\label{simpler_h3}
+First, we show that \cref{uniformly_bounded_hessians_of_f} can be used instead of \cref{uniformly_bounded_hessians_of_mf} under some restrictions.
+Namely, for this to be true, we also first assume:
+\begin{assumption}
+\label{delta_max}
+There exists a $\Delta_{\text{max}} > 0$ such that $\dk \le \Delta_{\text{max}}$ for all $k \ge 0$.
+\end{assumption}
 
+With this modest assumption, we can make the assumptions more straightforward by replacing \cref{uniformly_bounded_hessians_of_mf} with \cref{uniformly_bounded_hessians_of_f}:
+
+\begin{assumption}
+\label{uniformly_bounded_hessians_of_f}
+The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 f\| \le \beta - 1$ for all $k \ge 0$
+\end{assumption}
+
+
+This is the result of the following lemma:
 \begin{lemma}
 \label{replacing_h3}
-Assume that \cref{other_uniformly_bounded_hessians} is satisfied, and for each $k \in \naturals$, $\mfk$ is a fully quadratic model of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{fully_quadratic_definition}.
-Then \cref{uniformly_bounded_hessians} is also satisfied.
+Assume that \cref{uniformly_bounded_hessians_of_f},  \cref{lipschitz_hessian}, \cref{delta_max} are satisfied and that each $k \in \naturals$, $\mfk$ satisfies of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{quadratic_errors}.
+Then \cref{uniformly_bounded_hessians_of_mf} is also satisfied.
 \end{lemma}
 
 \begin{proof}
@@ -1015,10 +1014,19 @@ as the condition number is not affected by rotations.
 
 We use the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
 We restate the theorem here, with the simplication that $f$ is deterministic function:
+
+\begin{assumption}
+\label{fully_quadratic_assumption}
+Suppose that a set $S$ and a radius $\dmax$ are given.
+Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
+$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
+\end{assumption}
+
 \begin{lemma}
-\label{change_radius}
+\label{change_radius} 
 Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
-If $f$ is a Lipschitz continuous function with Lipschitz constant $L$, and $m_f(x)$ is a quadratic model of $f$.
+Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
+If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
 Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
 \begin{align*}
 \|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
@@ -1031,16 +1039,16 @@ Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R
 
 
 
-\begin{lemma}
+\begin{theorem}
 Suppose that \cref{interior_point}, \cref{fully_quadratic_assumption} hold. The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
 Namely, there exists a $\kappa_{g}$ such that $\|\nabla m_f(\xk) - \nabla f(\xk)\| \le \kappa_g \dk$.
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
 For each iteration $k$, we use \cref{alphas_are_bounded} to satisify the conditions of \cref{ellipsoid_exists} by letting 
 $P = \{x \in \Rn |  \nabla c(\xk)^T x \le c(\xk), \xk - \dk \le x \le \xk + \dk \}$.
 Note that adding the trust region constraint cannot remove all feasible interior points, as $\xk \in \feasible$.
-This provides us with two ellipsoids:
+This provides two ellipsoids:
 \begin{itemize}
 \item $E^{(k)} = \{x \in \Rn | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \}$, $E^{(k)} \subset P$.
 \item $\hat E^{(k)} = \{x \in \Rn | \left(x - \mu^{(k)}\right)^T Q^{(k)} \left(x - \mu^{(k)}\right) \le {\delta_k}^2 \}$, $\xk \in \hat E^{(k)}$.
@@ -1050,12 +1058,11 @@ so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the
 As also described in \cref{shifted_ellipsoid}, we  create shifted functions
 $\hat {m}_f(u) = m_f(T^{-1}(u))$ and
 $\hat f (u) = f(T^{-1}(u))$.
-After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_fully_quadratic} that ${\hat m }_f$ is a quadratic model of $\hat f$.
-That is, there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
 \begin{align*}
 \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 \\
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta
 \end{align*}
 We can then use \cref{change_radius} to conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
 \begin{align*}
@@ -1070,117 +1077,4 @@ we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \hat E^{(
 \end{align*}
 In particular, $\xk \in \hat E^{(k)}$.
 \end{proof}
-
-
-% \paragraph{}
-% While including a center search and only using a sphere for $\sampletrk$ ensures that this will be the case as long as there is an interior point to the feasible region.
-% However, for more complicated ellipsoid searches must be able to find an ellipse.
-% One strategy that ensures the ellipse can be constructed for all of our ellipse searches is to find an ball containing the current iterate and running a local search optimization routine with this initial ball as input.
-
-
-% 
-% \paragraph{}
-% Another strategy is to add a check within the \emph{ConstructTrustRegion} routine that decreases the trust region radius whenever a suitable ellipse is not found.
-% The presented convergence analysis will still hold as $S$ can contain only finitely many terms not in $\bar S$.
-
-% \paragraph{}
-% \color{red}
-% For convex constraints, there will exist a bound on the condition numer of $\qk$ as long as $\outertrk$ is bounded.
-% An argument for this might be as follows:
-% Maybe, by increasing the outer trust region radius, we can only increase the condition number of $\qk$.
-% \color{black}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-% \begin{itemize}
-% \item[H0] The trial point during each iterate satisfies the efficiency condition \cref{efficiency}.
-% \item[H1] The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous over $\domain$.
-% \item[H2] The function $f$ is bounded below over $\domain$.
-% \item[H4] The accuracy condition \cref{accuracy}.
-% \end{itemize}
-
-% We extend the following Mangasarian-Fromovitz style constraint qualification:
-% \paragraph{version 1}
-% \color{red}
-% \begin{itemize}
-% \item[H5] For any critical point $x^{\star} \in \feasible$, we have that there exists a $d \in \Rn$ such that $d^T\nabla c_i(x) < 0, \forall i \in \activei(x^{\star})$.
-% \end{itemize}
-% \color{black}
-% \paragraph{version 2}
-% \begin{itemize}
-% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, we have that there exists a $d \in \Rn$ such that
-% $d^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
-% \end{itemize}
-% \paragraph{version 3}
-% Our assumption reads
-% \begin{itemize}
-% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-% $d  = \nabla c_{\activei(x)}^T(\nabla c_{\activei(x)}\nabla c_{\activei(x)}^T)^{-1} e$ satisfies
-% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
-% \end{itemize}
-% \paragraph{version 4}
-% Our assumption reads
-% \begin{itemize}
-% \item[H5] There exists an $\epsilon_X > 0$ such that for each $x \in \feasible$, the vector $\hat d = \frac d {\|d\|}$ where 
-% $d  = \nabla c_{\activei(x)}^T(\nabla c_{\activei(x)}\nabla c_{\activei(x)}^T)^{-1} e$ satisfies
-% ${\hat d}^T\nabla c_i(x) \le -\epsilon_X, \forall i \in \activei(x^{\star})$.
-% \end{itemize}
-
-
-
 
