@@ -236,7 +236,7 @@ We conjecture that this may not hold with modelled, nonlinear constraints.
 We still experienced a problem with iterates coming too close to the boundary of the feasible region.
 Another way of dealing with this is to shift the constraints closer to the current iterate.
 Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
-Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A\iteratek$.
+Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
 Before doing this, the rows of $A$ are normalized.
 This produces the buffered segment searches withing the results.
 

@@ -1,17 +1,18 @@
 
 \section{Table of Notation}
 \begin{longtable}{| p{.20\textwidth} | p{.80\textwidth} |}
+$\xk$ & is the current iterate in iteration $k$\\
+$\mfk$ & is the model of the objective $f$ during iteration $k$\\
+$\mcik$ & is the model of the $i$-th constraint $c_i$ during iteration $k$\\
+$\mck$ & is the model of the constraint $c$ during iteration $k$\\
+$\dk$ & is the outer trust region radius in iteration $k$ \\
+This & is some filler....... \\
 $\domain$ & is the domain \\
 $\real$ & is the real numbers \\
 $f$ & is the objective function \\
 $f_{\text{min}}$ & is a lower bound on the objective function \\
 $\beta$ & is a bound on the hessian of the model functions \\
-$\modelk$ & is a model function of the objective at iteration $k$ \\
 $c_i$ & are the constraints $\forall i \in \mathcal{I} \cup \mathcal{E} $ \\
-$\modelconstrainti$ & is the model of constraint $i$ at iteration $k$ \\
-$\modelconstraint$ & is the model of the vector valued constraint function at iterate $k$ \\
-$\mathcal{I}$ & is the index set of the inequality constraints \\
-$\mathcal{E}$ & is the index set of the equality constraints \\
 $e_i$ & is the unit vector \\
 $\phi_i$ & is a basis vector \\
 $Y$ & is the set of sample points \\
@@ -27,7 +28,6 @@ $\Lambda$ & is a constant bounding the poisedness of a sample set \\
 $\kappa_{ef},\kappa_{eg},\kappa_{eh}$ & are constants used to bound the model's error \\
 $\kappa_{f}$ & is a constant in the efficiency condition \\
 $\kappa_{g}$ & is a constant in the accuracy condition \\
-$\iteratek$ & is the current iterate in iteration $k$\\
 $\trialk$ & is the trial point in iteration $k$ \\
 $\chik$ & is the criticality measure in iteration $k$ \\
 $\outertrk$ & is the outer trust region in iteration $k$ \\
@@ -40,7 +40,6 @@ $s$ & is the decision variable within the trust region subproblem \\
 $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
 & $B_k(c;\Delta) = \{ x \in \mathbb{R}^n : \| x - c\|_k \le \Delta \}$ \\
 $\Delta$ & is the trust region radius \\
-$\Delta_k$ & is the outer trust region radius in iteration $k$ \\
 $\rho$ & measures actual improvement over the predicted improvement \\
 $\gamma_1, \gamma_2$ &  are bounds on $\rho$ \\
 $\omega_{\text{dec}}, \omega_{\text{inc}}$ & are scalars used to manipulate the trust region radius \\

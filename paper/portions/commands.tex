@@ -37,6 +37,8 @@
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{definition}{Definition}[theorem]
+\newtheorem{assumption}{Assumption}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
 \theoremstyle{case}
@@ -74,21 +76,60 @@
 
 
 \newcommand{\domain}{X}
-\newcommand{\real}{\mathbb R}
 \newcommand{\norm}[1]{\| #1 \|}
 \newcommand{\union}{\cup}
 \newcommand{\intersect}{\cap}
 
 
-% Added for consistency
 
-\newcommand{\modelk}{{{m}_f}^{(k)}}
-\newcommand{\modelkmone}{{{m}_f}^{(k-1)}}
-\newcommand{\modelconstrainti}{{{m}_{c_i}}^{(k)}}
-\newcommand{\modelconstraint}{{{m}_{c}}^{(k)}}
-\newcommand{\iteratek}{{x}^{(k)}}
+
+
+
+
+% Added for consistency
+\newcommand{\xk}{{x^{(k)}}}
+\newcommand{\xkpo}{{{x}^{(k+1)}}}
+\newcommand{\Rn}{\mathbb R^n}
+\newcommand{\Rm}{\mathbb R^m}
+\newcommand{\naturals}{\mathbb N}
+\newcommand{\reals}{\mathbb R}
+\newcommand{\dk}{\Delta_k}
+\newcommand{\fmin}{f_{\text{min}}}
+
+
+
+\newcommand{\mfk}{{{m}_f}^{(k)}}
+\newcommand{\mfkmo}{{{m}_f}^{(k-1)}}
+\newcommand{\mcik}{{{m}_{c_i}}^{(k)}}
+\newcommand{\mck}{{{m}_{c}}^{(k)}}
+\newcommand{\grk}{{g^{(k)}}}
+
+
+
+\newcommand{\tolcrit}{\tau_{\xi}}
+\newcommand{\tolrad}{\tau_{\Delta}}
+
+
+\newcommand{\dmax}{\Delta_{\text{max}}}
+
+
+
+
+\newcommand{\qk}{{Q^{(k)}}}
+
+
+
+% Maximal ellipsoid
+% \newcommand{
+
+
+
+
+
+
+
+
 \newcommand{\trialk}{{{s}^{(k)}}}
-\newcommand{\iteratekpone}{{x}^{(k+1)}}
 \newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
 \newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
 \newcommand{\sampletrk}{{T_{\text{interp}}^{(k)}}}
@@ -110,7 +151,6 @@
 \newcommand{\sgck}{{{s}^{(k)}}_{GC}}
 \newcommand{\xj}{{{x}^{(k)}}_{j}}
 \newcommand{\sj}{{{s}^{(k)}}_{j}}
-\newcommand{\qk}{{Q^{(k)}}}
 
 
 \newcommand{\innerfritr}{D_{\text{in}}}
@@ -125,15 +165,14 @@
 % Added for the proof of convergence.
 % Should remove these.
 
-\newcommand{\ints}{\mathbb N}
-\newcommand{\dk}{\Delta_k}
+\newcommand{\ints}{\mathbb N} % Not accurate....
 \newcommand{\rk}{\rho_k}
 \newcommand{\gk}{{\nabla m_f^{(k)}(x^{(k)})}}
 \newcommand{\oalpha}{\tau_{\Delta}}
 \newcommand{\hk}{{\nabla^2m_f^{(k)}(x^{(k)})}}
+\newcommand{\uk}{{u^{(k)}}}
 
 \newcommand{\grad}{\nabla f}
-\newcommand{\xkpo}{{{x}^{(k+1)}}}
 \newcommand{\dkpo}{\Delta_{k+1}}
 
 
@@ -142,7 +181,6 @@
 
 
 % From find ellipse
-\newcommand{\xk}{{x^{(k)}}}
 \newcommand{\ak}{{A^{(k)}}}
 \newcommand{\bk}{{b^{(k)}}}
 \newcommand{\pik}{{\pi^{(k)}}}
@@ -156,6 +194,12 @@
 
 
 \newcommand{\xo}{{{\bar x}}}
+
+\newcommand{\alphaone}{{\alpha_{\text{miners}}}}
+\newcommand{\alphatwo}{{\alpha_{\text{min}}}}
+\newcommand{\alphathree}{{\alpha_{\text{func}}}}
+\newcommand{\activei}{{\mathcal A}}
+
 
 
 
