@@ -1,0 +1,2798 @@
+\documentclass{article}
+
+
+
+
+\usepackage[fleqn]{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{cite}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsfonts}
+\usepackage{array,multirow}
+\usepackage{amssymb,amsthm}
+\usepackage[]{algorithmicx}
+\usepackage{algpseudocode} 
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage[capitalise,nameinlink,noabbrev]{cleveref}
+\usepackage{float}
+\usepackage{mathtools}
+\floatstyle{ruled}
+\newfloat{algorithm}{thp}{lop}
+\floatname{algorithm}{Algorithm}
+
+\newcounter{assumptioncounter}
+\newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
+\textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+
+\usepackage{framed}
+\newenvironment{comment}
+  {\par\medskip
+   \color{red}%
+   \begin{framed}
+   \textbf{Comment: }\ignorespaces}
+ {\end{framed}
+  \medskip}
+  
+  
+
+\crefname{assumptioncounter}{Assumption}{assumption}
+\crefname{equation}{}{equations}
+
+%============================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{definition}{Definition}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+\theoremstyle{case}
+\newtheorem{case}{Case}
+
+\newcommand{\domain}{{\mathcal X}}
+
+
+\newcommand{\xk}{{x^{(k)}}}
+\newcommand{\xkpo}{{{x}^{(k+1)}}}
+\newcommand{\Rn}{\mathbb R^n}
+\newcommand{\Rm}{\mathbb R^m}
+\newcommand{\naturals}{\mathbb N}
+\newcommand{\reals}{\mathbb R}
+\newcommand{\dk}{\Delta_k}
+\newcommand{\fmin}{f_{\text{min}}}
+
+
+\newcommand{\mfk}{{{m}_f}^{(k)}}
+\newcommand{\mfkmo}{{{m}_f}^{(k-1)}}
+\newcommand{\mcik}{{{m}_{c_i}}^{(k)}}
+\newcommand{\mck}{{{m}_{c}}^{(k)}}
+\newcommand{\grk}{{g^{(k)}}}
+
+
+\newcommand{\tolcrit}{\tau_{\xi}}
+\newcommand{\tolrad}{\tau_{\Delta}}
+\newcommand{\dmax}{\Delta_{\text{max}}}
+
+
+\newcommand{\qk}{{Q^{(k)}}}
+\newcommand{\sk}{{{s}^{(k)}}}
+\newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
+\newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
+\newcommand{\sampletrk}{{T_{\text{interp}}^{(k)}}}
+\newcommand{\feasible}{{\mathcal F}}
+\newcommand{\feasiblek}{{\mathcal F^{(k)}}}
+\newcommand{\ellipsek}{{E^{(k)}}}
+\newcommand{\chik}{{\chi^{(k)}}}
+\newcommand{\xik}{{\xi^{(k)}}}
+\newcommand{\gradmodelk}{\nabla{{m}_f}^{(k)}}
+
+
+\newcommand{\ptx}{p(t,\xk)}
+\newcommand{\Px}{P_X}
+\newcommand{\ptjxk}{p(t_j, \xk)}
+\newcommand{\tj}{t_j}
+\newcommand{\tgc}{{{t}^{(k)}}_{GC}}
+\newcommand{\gck}{{{x}^{(k)}}_{GC}}
+\newcommand{\sgck}{{{s}^{(k)}}_{GC}}
+\newcommand{\xj}{{{x}^{(k)}}_{j}}
+\newcommand{\sj}{{{s}^{(k)}}_{j}}
+
+
+\newcommand{\innerfritr}{D_{\text{in}}}
+\newcommand{\outerfritr}{D_{\text{out}}}
+\newcommand{\omegainc}{\omega_{\text{inc}}}
+\newcommand{\omegadec}{\omega_{\text{dec}}}
+\newcommand{\gammasm}{\gamma_{\text{min}}}
+\newcommand{\gammabi}{\gamma_{\text{sufficient}}}
+\newcommand{\ximin}{\xi_{\text{min}}}
+\newcommand{\polydn}{\mathcal{P}^d_n}
+
+
+\newcommand{\ints}{\mathbb N} % Not accurate....
+\newcommand{\rk}{\rho_k}
+\newcommand{\gk}{{\nabla m_f^{(k)}(x^{(k)})}}
+\newcommand{\oalpha}{\tau_{\Delta}}
+\newcommand{\hk}{{\nabla^2m_f^{(k)}(x^{(k)})}}
+\newcommand{\uk}{{u^{(k)}}}
+
+\newcommand{\grad}{\nabla f}
+\newcommand{\dkpo}{\Delta_{k+1}}
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+% From find ellipse
+\newcommand{\ak}{{A^{(k)}}}
+\newcommand{\bk}{{b^{(k)}}}
+\newcommand{\pik}{{\pi^{(k)}}}
+
+\newcommand{\dbuf}{{\delta_{\text{buffer}}}}
+\newcommand{\abuf}{{\alpha_{\text{buffer}}}}
+\newcommand{\reg}{{\delta_{\text{regularity}}}}
+
+\newcommand{\feasdir}{{u_{\text{feas}}}}
+\newcommand{\hfeasdir}{{\hat{u}_{\text{feas}}}}
+
+
+\newcommand{\xo}{{{\bar x}}}
+
+\newcommand{\alphaone}{{\alpha_{\text{minimizers}}}}
+\newcommand{\alphatwo}{{\alpha_{\text{minimum}}}}
+\newcommand{\alphathree}{{\alpha_{\text{func}}}}
+\newcommand{\activei}{{\mathcal A}}
+
+
+
+
+\newcommand{\shiftedcone}{{\mathcal C^k_{\text{shifted}}}}
+\newcommand{\unshiftedcone}{{\mathcal C^k_{\text{feasible}}}}
+\newcommand{\shiftedellipsoid}{{\mathcal  E^k_{\text{shifted}}}}
+\newcommand{\unshiftedellipsoid}{{\mathcal E^k_{\text{feasible}}}}
+\newcommand{\scaledunshiftedellipsoid}{{{\mathcal {\hat E}_{\text{feasible}}}^k}}
+\newcommand{\rotk}{{R_k}}
+\newcommand{\deltaf}{{\delta_{\text{f}}}}
+
+
+
+
+
+\newcommand{\zik}{{z^{(i, k)}}}
+\newcommand{\fik}{{\mathcal F_{i, k}}}
+\newcommand{\iik}{{\mathcal I_{k}}}
+% \newcommand{\uk}{{u^{(k)}}}
+\newcommand{\huk}{{{\hat u}^{(k)}}}
+\newcommand{\ask}{{\alpha^{(\star, k)}}}
+\newcommand{\bsk}{{\beta^{(\star, k)}}}
+\newcommand{\bs}{{\beta^{\star}}}
+\newcommand{\fcko}{{\mathcal {F}^{\text{outer}}_k}}
+\newcommand{\fcki}{{\mathcal {F}^{\text{inner}}_k}}
+\newcommand{\rn}{{\mathbb R^{n}}}
+\newcommand{\xsk}{{x^{(\star, k)}}}
+\newcommand{\bxk}{{\bar{x}^{(k)}}}
+\newcommand{\wik}{{w^{(i, k)}}}
+\newcommand{\lgi}{{L_{g, i}}}
+
+
+
+
+
+
+\newcommand{\trsinfset}{{E_\text{infeasible}}}
+\newcommand{\trstol}{{\delta_\text{infeasible}}}
+\newcommand{\trsfesset}{{F^{(k)}_\text{search}}}
+\newcommand{\searchk}{{\mathcal S^{(k)}_\text{search}}}
+\newcommand{\centerk}{{\mu^{(k)}}}
+\newcommand{\sigmamax}{{\sigma_{\text{max}}}}
+\newcommand{\deltafeasible}{{\Delta_{\text{feasible}}}}
+
+
+\newcommand{\gmcik}{{\nabla m_{c_i}(\xk)}}
+\newcommand{\hgik}{{\frac{\nabla m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|}}}
+\newcommand{\hgmcik}{{\nabla \hat m_{c_i}(\xk)}}
+\newcommand{\gcik}{{\nabla c_i (\xk)}}
+
+
+\newcommand{\capcones}{{C_{\cap}}}
+\newcommand{\linearization}{{C_{\bar \cap}}}
+
+
+
+\def\includeproofs{1}
+
+%=========================================
+
+\title{Derivative Free Model-Based Methods for Optimization with Partially Quantifiable Convex Constraints}
+\author{Trever Hallock}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\let\oldref\ref
+\renewcommand{\ref}[1]{(\oldref{#1})}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+We propose a model-based trust-region algorithm for constrained optimization problems with linear constraints in which derivatives of the objective function are not available and the objective function values outside the feasible region are not available.
+In each iteration, the objective function is approximated by an interpolation model, which is then minimized over a trust region.
+To ensure feasibility of all sample points and iterates, we consider two trust region strategies in which the trust regions are contained in the feasible region.
+Computational results are presented on a suite of test problems.
+
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+\section{Introduction}
+
+Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
+Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
+In such applications, function evaluations are expensive, so it is sensible to invest significant computational resources to minimize the number of function evaluations.
+
+This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
+\[ \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
+\mbox{subject to} & c_i(x) \le 0 & 1 \le i \le m,
+\end{array}
+\]
+where 
+% $\domain$ is a subset of $\Rn$, and
+$f$ and $c_i, 1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+We will let the feasible set be represented as $\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}$.
+
+We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
+Model-based methods work by constructing model functions to approximate the black box functions at each iteration.
+The model functions are determined by fitting previously evaluated function values on a set of sample points.
+In trust-region methods, the model-functions are used to define a trust-region subproblem whose solution determines the next iterate.
+For example, the trust-region subproblem might have the form
+
+\[ \begin{array}{ccl} \min_{\|s\| \le \dk}
+ & \mfk (\xk+s) \\
+\mbox{subject to} & \mcik(\xk + s) \le 0 & 1 \le i \le m, \\
+& \|s\| \le \dk \\
+\end{array}
+\]
+where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
+and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
+The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
+We are using the models of the constraints to approximate the feasible region during each iteration:
+\begin{align}
+\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \} \label{definefeasiblek}
+\end{align}
+Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
+To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
+
+
+We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
+As in \cite{DUMMY:typesofconstraints}, quantifiable means that the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+We assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
+In this case, the constraints are called {\em partially quantifiable}.   
+As such, we impose the requirement that all sample points must be feasible.
+
+An important consideration in fitting the model functions is the ``geometry'' of the sample set.
+This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
+When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.
+It is well understood how to do this for unconstrained problems; but for constrained problems with all feasible sample points, some interesting challenges must be overcome.
+The requirement that the sample points must be feasible impacts the ``geometry" of the sample set.
+In this paper we explore several strategies for choosing feasible sample points with good geometry.
+In particular, we consider ellipsoidal and polyhedral trust region strategies.
+As a first step toward developing an algorithm to solve such problems, \emph{we consider a simplified problem where all of the constraints are convex}.
+
+
+\section{Background}
+
+\subsection{Notation}
+
+Any variables that depend on the iteration will be super-scripted by $k$.
+For example, the $k$-th iterate is given by $\xk$, and the model of the objective is given by $\mfk$.
+The $i$-th row of the matrix $A$ is denoted $A_i$, while the $i$-th column is denoted $A_{\bullet i}$.
+Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts.
+Matrices are denoted with capital letters, and we use $e_i$ to denote the $i$-th unit vector.                     %, while sets are denoted with capital italic letters.
+
+$B_k(c; \Delta)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$ .
+$\delta_{i,j}$ is the kronecker delta, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$.
+The complement of a set $S$ is denoted as $\bar S$.
+
+
+\subsection{Model-based Trust Region Methods}
+
+We will modify the following derivative free trust region algorithm.
+%A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
+The objective value and derivatives are approximated in a trust region around the current iterate to construct their model functions.
+Next, this model function is minimized over the trust region and the minimum argument becomes the trial point.
+The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
+If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
+Otherwise, the trust region is reduced to increase model accuracy.
+The algorithm terminates when both and a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach sufficiently small thresholds of $\tau_{\chi}$ and $\tau_{\Delta}$.
+
+
+For unconstrained optimization, the algorithmic framework is described in \cref{unconstrained_dfo}.
+
+\begin{algorithm}[H]
+    \caption{Unconstrained Derivative Free Algorithm}
+    \label{unconstrained_dfo}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize tolerance constants $\tau_{\chi} \ge 0$, $\tau_{\Delta} \ge 0$, starting point $x^{(0)}$, initial radius $\Delta_0 > 0$, iteration counter $k=0$, and constants $\omegadec \in (0, 1)$, $ \gammasm \in (0, 1)$, $\gammabi \in (\gammasm, 1)$.
+            
+        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
+            Call the model improvement ``\cref{model_improving_algorithm}" to provide a set of sample points $Y^{(k)}$.
+            Evaluate the objective on these points and use interpolation \cref{interpolation_formula} to construct the model function $\mfk(x)$.
+        
+        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+            Compute the criticality measure $\chik$ such as $\chik = \|\nabla\mfk(\xk)\|$. \begin{itemize}
+                \item[] If $ \chik < \tau_{\chi} $ and $\Delta_k<\tau_{\Delta}$ then return solution $\xk$.
+                \item[] If $ \chik < \tau_{\chi} $ but $\Delta_k\ge\tau_{\Delta}$ then  
+                set $\Delta_{k+1} \gets \omegadec\Delta_{k}$, 
+                $x^{(k+1)} \gets \xk$,
+                $k \gets k+1$ and go to Step 1.
+            \end{itemize}
+        
+        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+            Compute $\sk = \argmin_{s\in B_2(0; \Delta_k)} \mfk (\xk + s)$ where $B_2(0; \Delta_k)$ is the ball of radius $\Delta_k$ defined in \cref{tab:TableOfNotation}.
+            
+        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+            Compute $\rho$ with \cref{rho} \begin{itemize}
+                \item[] If $\rho < \gammasm$ then $\xkpo \gets \xk$ (reject) and $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+                \item[] If $\rho \ge \gammasm$ and $\rho < \gammabi$ then $\xkpo\gets\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+                \item[] If $\rho \ge \gammabi$ and $\|\sk\| = \Delta_{k}$ then $\xkpo=\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegainc\Delta_{k}$
+                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
+            \end{itemize}
+            $k \gets k+1$ and go to Step 1.
+    \end{itemize}
+\end{algorithm}
+
+This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
+\begin{enumerate}
+    \item Models are constructed without derivative information.
+    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
+\end{enumerate}
+
+This is required to ensure that the gradient of the model function is equal to the gradient of $f$ in the limit.
+Our goal is to generalize this framework to handle constraints, where we must ensure no constraint violation occurs while also ensuring the accuracy of the models of the constraints.
+
+\section{Derivative Free Background}
+\subsection{Recent Work}
+\paragraph{Applications}
+
+Recently, there has been a growth in applications of derivative free optimization.
+Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
+
+\paragraph{Constrained derivative free algorithms}
+To address the rise in these applications, new algorithms are being developed such as \cite{doi:10.1080/10556788.2015.1026968} which is an algorithm similar to the one presented here, but the sample points are not always feasible.
+\cite{Troltzsch2016} presents another similar algorithm for equality based constraints.
+\cite{infeasiblestarting} presents an algorithm which accepts an infeasible starting point.
+\cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
+
+\paragraph{Reviews}
+Within \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
+This is the first text book devoted to derivative free optimization.
+It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+
+A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
+This compares several software libraries, and reviews the development of derivative free optimization since it started.
+Another recent review can be found in \cite{DUMMY:review2} and \cite{Larson_2019}.
+
+
+\subsection{Sample Set Geometry}
+\subsubsection{Interpolation}
+\label{interpolation}
+
+Derivative free trust region methods construct model functions from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\{\phi_0, \phi_1, \ldots, \phi_p\}$.
+Each member of this family has the from $\mfk(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
+
+In our method, we use interpolation to choose the coefficients so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ for which the functions have been evaluated.
+Thus the model functions must satisfy:
+\begin{align}
+\label{interpolation_condition}
+\mfk(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
+\end{align}
+This is known as the \emph{interpolation condition}.
+
+To satisfy the interpolation condition \cref{interpolation_condition}, we then chose this linear combination by selecting coefficients $\alpha_0, \ldots, \alpha_p$ to satisfy
+\begin{align}
+\label{interpolation_formula}
+    \mfk(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
+\end{align}
+
+% We can also write this equation in matrix form.
+If we define the Vandermode matrix as
+\begin{align}
+\label{vandermonde}
+V=
+\begin{bmatrix}
+    \phi_0(y^0)      & \phi_1(y^0)       & \ldots & \phi_{p}(y^0)      \\
+    \phi_0(y^1)      & \phi_1(y^1)       & \dots  & \phi_{p}(y^1)      \\
+                     &                   & \vdots &                    \\
+    \phi_0(y^{p})    & \phi_1(y^{p})     & \ldots & \phi_{p}(y^{p})
+\end{bmatrix},
+\end{align}
+
+the interpolation condition becomes:
+\begin{align}
+\label{matrix_form}
+V
+\begin{bmatrix}
+    \alpha_0     \\
+    \alpha_1     \\
+    \vdots       \\
+    \alpha_p
+\end{bmatrix}
+=
+\begin{bmatrix}
+    f(y^0)     \\
+    f(y^1)     \\
+    \vdots     \\
+    f(y^p)
+\end{bmatrix}
+\end{align}
+
+% Suppose that we use $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ to construct the approximation of $f$.
+We desire a method for choosing these sample points that provides error bounds on not only the function values, but also on orders of derivatives in some region around the current iterate.
+% The model is constructed to agree with the original functions on at least the sample points: we evaluate the objective here, so that we know the true function values at these points.
+% For the objective, this becomes
+
+%It is convenient to write the model as a linear combination of basis polynomials $\{\phi_0, \phi_2, \ldots, \phi_p\}$.
+
+
+\subsubsection{Geometry}
+\label{geometry}
+The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
+\cref{matrix_form} has a unique solution if and only if $V$ is nonsingular, in this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$.
+However, even when $V$ is nonsingular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
+% The condition number of $V$ measures how far the current Vandermode matrix is from being illpoised.
+Algorithms must be careful to avoid choices of sample points $Y$ that cause the condition number of this matrix to be too large.
+
+In the case of polynomial model functions, a careful analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
+Let the space of polynomials with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
+The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
+\begin{align}
+l_i(y^j) = \delta_{i,j}
+\end{align}
+where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\quad 1 \;\text{if} \; i = j \}$ is the Kronecker-delta function.
+%For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
+Thus, we can conveniently write
+\begin{align}
+\label{reg}
+\mfk(x) = \sum^p_{j=0}f(y^i)l_i(x).
+\end{align}
+%This implies computing the change of basis to the Lagrange polynomials amounts to inverting this Vandermonde matrix.
+%This relationship allows us to use properties of the Vandermonde matrix and these Lagrange polynomials to find conditions on our sample points that ensure nice geometry.
+
+We say that a set $Y$ is \emph{$\Lambda$-poised} for a fixed constant $\Lambda$ with respect to a bases $\phi$ on the set 
+$B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with $Y$
+\begin{align}
+\Lambda \ge \max_{0\le i\le p}\max_{x\in B}|l_i(x)|.
+\end{align}
+
+% This can be shown to be equivalent to the following condition \cite{DUMMY:intro_book}.
+% For any $x \in B_2(0, 1)$ there is a $\lambda \in \reals ^ {p+1}$ such that 
+% \begin{align}
+% \sum_{i=0}^p\lambda_i\phi_i(y^i) = \phi(x) \\
+% \|\lambda\|_{\infty} \le \Lambda.
+% \end{align}
+
+% This can ensure that the Vandermonde matrix is well conditioned.
+This is useful because of \cref{quadratic_errors}, which is shown in \cite{DUMMY:intro_book}.
+
+\begin{assumption}
+\label{introduction_3_1}
+We assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
+poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{1\le i \le p} \|y^0 - y^i\|$.
+
+Further, assume that the function $f$ is twice continuously differentiable in an open domain $\Sigma$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
+is Lipschitz continuous in $\Omega$ with constant $L_h > 0$.
+\end{assumption}
+
+
+\begin{theorem}
+\label{quadratic_errors}
+Let \cref{introduction_3_1} be satisfied and $m$ be a quadratic model function constructed as in \cref{reg}. Then there exist constants $\kappa_f$, $\kappa_g$, $\kappa_h$ dependent only on $p$, $L_h$, and $\Lambda$ such that:
+\begin{align}
+\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_gradient} \\
+|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta_Y). \label{error_in_function} 
+\end{align}
+\end{theorem}
+
+
+Also, \cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
+
+In particular, these bounds ensure that the following accuracy condition is satisfied, which is used by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
+\begin{equation}
+\label{accuracy}
+\|\nabla \mfk(\xk) - \nabla f(\xk) \| \le \kappa_g \Delta_k
+\end{equation}
+ for some fixed constant $\kappa_g$ independent of $k$.
+We will extend these results for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
+ 
+A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure good geometry is required for convergence analysis although it may come at the expense of adding more function evaluations.
+
+\subsubsection{Geometry Ensuring Algorithms}
+
+Sample points are chosen by a geometry ensuring algorithm from \cite{DUMMY:intro_book}.
+At any given time, the algorithm has evaluated 1 or more sample points.
+Initially, only the starting point $x_0$ is evaluated, so that points must be added to the sample set.
+Evaluated points within the trust region should be reused when possible, but the algorithm may have to replace some points to ensure a well poised set on the new trust region.
+We call the algorithm that adds points, replacing where necessary, the \emph{model improvement algorithm}.
+One classic such algorithm is presented in \cite{DUMMY:intro_book}.
+
+The idea behind this algorithm is to perform an LU factorization with partial pivoting on the Vandermonde matrix.
+As we have seen, this computes the basis for the Lagrange polynomials corresponding to $Y$.
+However, when this LU factorization encounters a small pivot, the point corresponding to that row is replaced, improving the condition number of the Vandermonde matrix.
+
+In practice, we first shift the sample set $Y$ by subtracting the current iterate and dividing by the trust region radius:
+\begin{align}
+\bar{Y} = [0, \frac{y^1 - y^0}{\Delta}, \ldots, \frac{y^p - y^0}{\Delta}]
+\end{align}
+
+At times, the algorithm will not have all $p+1$ points.
+This can be because it is only given one point during initialization, or because points not within the trust region are removed.
+Because the model improvement algorithm requires all $p+1$ points, we initialize $y^i = y^0$ for any $0 < i \le p$ corresponding to a missing point.
+We choose a threshold $0 < \ximin < 1$, and follow \cref{model_improving_algorithm}:
+
+\begin{algorithm}[H]
+    \caption{Model Improvement Algorithm}
+    \label{model_improving_algorithm}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize $i=1$.
+            Given a non-empty set $Y$ of $p+1$ points. 
+            Construct the Vandermonde matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$.
+			Initialize constant $\ximin > 0$.
+        \item[\textbf{Step 1}] \textbf{(Pivot)} \\
+            Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
+        
+        \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
+                \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y \in \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
+                \item[] Replace row $i$ with $V_{i, j} \gets \phi_j(\hat y)$.
+                \item[] $Y \gets Y \cup \{\hat y \}\\ \{y^i\}$
+            \end{itemize}
+        
+        \item[\textbf{Step 3}] \textbf{(LU)} \begin{itemize}
+%                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
+                \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
+            \end{itemize}
+            If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
+    \end{itemize}
+\end{algorithm}
+
+
+% At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
+The following result is shown in \cite{DUMMY:intro_book} through Theorem 6.5, Theorem 3.14, and 6.7 Exercise 3.
+\begin{theorem}
+\label{set_is_poised}
+After running \cref{model_improving_algorithm}, the resulting set $Y$ is Lambda poised for some $\Lambda > 0$ that depends on $\xi_{\text{min}}$.
+\end{theorem}
+
+This algorithm can also be used to create a poised set over an ellipsoidal shape.
+This is discussed further in \cref{ellipsoidal_lambda}.
+
+
+
+\subsection{Algorithm Components}
+
+Before describing the algorithm, we discuss several components referenced within an algorithm template.
+
+\subsubsection{Criticality Measure}
+
+In order to define stopping criteria for the algorithm, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
+When the criticality measure is small, we must also decrease the trust region radius.
+Once this has reached a small enough threshold $\tau_{\chi}$ and the trust region is small enough ($\Delta_k < \tau_{\Delta}$), we can terminate the algorithm.
+For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in \cite{ConnGoulToin00} of
+\begin{align}
+\label{critical}
+\chik = \|\xk - \text{Proj}_{\feasiblek}(\xk- \nabla \mfk(\xk))\|
+\end{align}
+The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
+\begin{align*}
+x^{\star} = \text{Proj}_{\feasible}\left(x^{\star} - \nabla f(x^{\star})\right).
+\end{align*}
+For convex constraints, this condition is necessary and sufficient under regularity assumptions.
+Thus, our criticality measure measures how far the current iterate is from satisfying the first order optimality conditions for $\xk$ to be a optimum of $\mfk$.
+In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches an optimum of $f$.
+
+\subsubsection{Assessing Model Accuracy and Radius Management}
+
+Each iteration that evaluates a trial point must also test the accuracy of the model functions.
+To test the accuracy, we calculate a quantity
+\begin{equation}
+\label{rho}
+\rho_k = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)}
+\end{equation}
+which measures the actual improvement over the predicted improvement.
+A small $\rho_k$ implies the model functions are not sufficiently accurate.
+Values of $\rho_k$ close to $1$ imply that the model accurately predicted the new objective value.
+A large $\rho_k$ implies progress minimizing the objective although the model was not accurate.
+This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{DUMMY:intro_book}.
+The user supplies fixed constants $0 < \gammasm \le \gammabi \le 1$ as thresholds on $\rho_k$ and $0 < \omega_{\text{dec}} < 1 \le \omega_{\text{inc}}$ as decrement or increment factors to determine the trust region update policy.
+
+
+\section{Algorithm}
+
+\subsection{Trust Regions}
+Our algorithm maintains up to three trust regions.
+The outer trust region is an $L_1$ ball of radius $ \dk $ defined by
+\begin{equation}
+\label{trust_region}
+\outertrk = B_{\infty}(\xk,\dk) = \{x\in \Rn | \; {\xk}_i - \dk \le x_i \le {\xk}_i + \dk \quad \forall 1\le i \le n\}.
+\end{equation}
+
+Note that the outer trust region may include infeasible points.
+To ensure feasibility of all sample points, we construct an inner trust region for sample points $ \sampletrk $  satisfying 
+$\sampletrk \subset \outertrk \cap \feasible$ and $\xk \in \sampletrk $.
+Of course, it may only be the case that $\sampletrk \subset \feasiblek$ rather than $\sampletrk \subset \feasible$.
+However, we show that for sufficiently small $\dk$, this is not an issue.
+
+However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
+This means we introduce another trust region $ \searchtrk $ that also satisfies $ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.
+
+
+Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
+This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.
+
+\subsection{Extensions from Linear Constraints}
+In the last paper, we showed convergence of our algorithm for linear constraints.
+We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
+To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
+Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
+\begin{itemize}
+\item A point chosen by the geometry ensuring algorithm may be infeasible.
+\item The trial point solving the trust region subproblem may be infeasible.
+\end{itemize}
+
+
+To deal with these infeasible points, we have developed several strategies.
+Although an approach for avoiding one of these two function evaluations can work for the other in thoery, we stick to one simplified version.
+
+% \subsection{Implemented Ideas not used in this paper}
+% 
+% 
+% \subsubsection{Using higher order models}
+% I have implemented an algorithm that uses higher order models to approximate the constraints.
+% 
+% In this algorithm, we add additional degrees of freedom to the constraints to cut off points that have been evaluated and are infeasible.
+% The models are forced to be a given negative value at these points.
+% 
+% One question for this method is how many constraints to model.
+% 
+% 
+% I implemented Kriging, as this can use as many points as are available.
+% However, this requires using some artificial value of the constraints at infeasible points.
+
+
+\subsection{Infeasible Sample Points: Ensuring a Feasible Sample Region}
+
+We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
+This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
+Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
+while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
+
+There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
+Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
+
+
+\subsubsection{Requirements of Sacred Region}
+\label{ellipsoid_requirements}
+We construct a set of requirements $\sampletrk$ must satisfy.
+During iteration $k$, we let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$ and center $\centerk \in \Rn$.
+\begin{align}
+\sampletrk = \{x \in \Rn | (x - \centerk)^T \qk(x - \centerk) \le 1 \}
+\end{align}
+
+Other requirements may also work, but we these are sufficient for our convergence analysis.
+\begin{comment}
+Ensure that this is true.
+\end{comment}
+The ellipsoid must:
+\begin{itemize}
+        \item \textbf{Be near the current iterate.}\\
+We enforce this by requiring the a factor of 2 to include the current iterate:
+\begin{align}
+\label{ellipsoid_close_enough}
+(\xk - \centerk)^T \qk(\xk - \centerk) \le 2
+\end{align}
+        \item \textbf{Be large enough.} \\
+        We enforce this by ensuring that the largest axis of the ellipsoid must be a certain percentage of the the trust region radius.
+\begin{align}
+\label{ellipsoid_large_enough}
+\sigma_{\text{max}}(\qk) = \dk
+\end{align}
+	\item \textbf{Produce poised points.} \\
+	We enforce this by bounding the singular value of $\qk$.
+\begin{align}
+\label{bounded_singular_value}
+\sigma(\qk) \le \sigmamax \forall k \in \ints
+\end{align}
+	\item \textbf{Be feasible.} \\
+	We enforce this by ensuring that there is a $\deltafeasible\in\ints$ such that 
+\begin{align}
+\label{feasible_sample_region}
+\sampletrk \subseteq \feasible \quad \forall \dk \ge \deltafeasible
+\end{align}
+\end{itemize}
+
+\begin{comment}
+Fix the requirement that the ellipsoid is large enough...
+Is it even needed?
+\end{comment}
+
+
+Within this paper, we construct the ellipsoid by creating cones that buffer the ellsipoid from the constraints.
+These half-cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and point towards the current iterate.
+For convenience while discussing the construction of the feasible ellipsoid, we define how to compute them here.
+The definition of these cones depends on user defined parameters of 
+\begin{align}
+\alpha, \beta \in (0, 1) \label{def_alpha_beta}.
+\end{align}
+
+For each $1\le i\le m$, we first compute the zero of the linearized constraint
+\begin{align}
+\zik = \xk - \frac{m_{c_i}(\xk)}{\|\gmcik\|} \hgmcik. \label{def_z}
+\end{align}
+where
+\begin{align}
+\hgmcik = \frac{\nabla m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|}. \label{def_normalized_gradient}
+\end{align}
+The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameter $\alpha$:
+\begin{align}
+\wik = \xk + \left(1 - \alpha\dk^{\frac 1 2}\right)\left(\zik - \xk\right). \label{def_w}
+\end{align}
+The cone is then defined using the $\beta$ parameter by
+\begin{align}
+\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2 }\right\}. \label{def_f}
+\end{align}
+
+
+
+
+\subsubsection{Linear Constraints}
+
+Throughout constructing an ellipsoid within these feasible cones, we must also require that the ellipsoid is contained within the trust region.
+Because this is $B_{\infty}(\xk, \dk)$, we can satisfy the trust region constraints by including linear constraints of the form $\xk_i - \dk \le x_i \le \xk_i + \dk$.
+As done in the linear paper, using the work of \cite{Khachiyan1993} we handle the general constraints $Ax \le b$ for some $m\times n$ matrix $A$ and $b \in \Rm$.
+That is, given a polyhedron $P = \{ x \in \Rn\; | \;  Ax \le b \}$ defined by an $m \times n$ matrix $A$, and $b \in \Rm$,
+we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
+
+Let $\bar{b} = b - A\mu$ and $d = x - \mu$ so that the polyhedron becomes
+\begin{align*}
+P = \{ \mu + d \in \Rn \; | \;  Ad \le \bar{b} \}
+\end{align*}
+Then, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
+\begin{align*}
+E = \{ d \in \Rn \; | \; \frac 1 2 d^T Q d \le 1 \}.
+\end{align*}
+Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu + E \subset P$.
+Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
+
+Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
+Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
+By the first order optimality conditions, there exists a $\lambda \in \Rm$ such that
+\begin{align*}
+\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i 
+\Longrightarrow d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall 1\le i\le m
+\end{align*}
+We also know that
+\begin{align*}
+A_i^T d^{(i)} = \bar{b_i} \Longrightarrow
+A_i^T \lambda_i Q^{-1}A_i = \bar{b_i} \Longrightarrow
+\lambda_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}
+\end{align*}
+so that
+\begin{align*}
+d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
+\end{align*}
+
+Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
+\begin{align*}
+\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1 \\
+\Longrightarrow \frac 1 2 \bigg(\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i\bigg)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b_i} A_i^T Q^{-1} Q \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1 \\
+\Longrightarrow \frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1 \\
+\Longrightarrow \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i \\
+\Longrightarrow A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2
+\end{align*}
+
+
+
+
+
+
+
+
+
+
+
+\subsubsection{Ideal Solution}
+\label{ideal_ellipsoid_in_polyhedron}
+
+One solution would be to create the largest possible ellipsoid that is contained within each of the cones $\fik$ defined in \cref{def_f}.
+Although this sounds appealing, we were not able to formulate this problem as an optimization problem.
+However, it is possible to formulate the problem of checking if an ellipsoid is contained within any particular cone.
+This admits a search over possible ellipsoids, with an algorithmic check that is efficient.
+We discuss this here.
+
+\begin{comment}
+Needs to include the constraints from the outer trust region
+\end{comment}
+
+Notice that because the cone for each constraint opens toward the current iterate, and opens at the same rate, the cones can be uniquely defined by their vertices.
+
+\begin{comment}
+Fix the definition of gamma
+\end{comment}
+This means that for an iteration $k$, after a change of variables
+\begin{align}
+x \gets x - \xk \\
+v^{(i)}  \gets \wik - \xk \\
+\beta \gets \beta \dk^{\frac 1 2},
+\end{align}
+each cone in \cref{def_f} is equivalent to
+\begin{align*}
+A_i = \fik - \xk = \left\{x\in\Rn\bigg|\;-\frac{(x - v^{(i)})^T}{\|x - v^{(i)}\|} \frac{v^{(i)}}{\|v^{(i)}\|} \ge \beta \right\}.
+\end{align*}
+Now, the ellipsoid $\sampletrk$ is contained in each a cone $A_i$ if and only if the \emph{perspective projection} from $v^{(i)}$ of the ellipsoid onto the hyper-plane 
+\begin{align*}
+H_i = \{x|{v^{(i)}}^Tx = 0\}
+\end{align*}
+is contained in the projection the cone.
+The perspective projection onto $v^{(i)}$ is the shape drawn onto a hyperplane as if a viewer were positioned at $v^{(i)}$.
+That is, imagine someone is positioned at $v^{(j)}$, and viewing the ellipsoid.
+They create a line from $v^{(j)}$ to the hyperplane by looking past the outer edge of the ellipsoid onto the hyper plane.
+If they were to trace all possible lines through the boundary of the ellipsoid onto the hyperplane, these lines intersect the hyperplane on the ellipsoid's perspective projection.
+
+First, we compute the projection of the cone, which is simply its intersection with the hyperplane:
+\begin{align*}
+H_i \cap A_i 
+= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, -\frac{\left(x - v^{(i)}\right)^T}{\|x - v^{(i)}\|}\frac{v^{(i)}}{\|v^{(i)}\|}\ge \beta \right\} \\
+= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|v^{(i)}\|\ge \beta\|x - v^{(i)}\| \right\} \\
+= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|x - v^{(i)}\|^2 \le \frac 1 {\beta^2}\|v^{(i)}\|^2 \right\} \\
+= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\} \\
+\end{align*}
+
+Then, we can compute the perspective projection of the ellipsoid, similar to \cite{eberly_2013}.
+Consider the point $x = v^{(i)} + td$ for some direction $d$ and distance $t$.
+If $x$ is on the boundary of the ellipsoid, then:
+\begin{align*}
+(v^{(i)} + t d - \centerk )^T \qk  (v^{(i)} + t d - \centerk ) = 1 \\
+\Longleftrightarrow (v^{(i)} + t d - \centerk )^T \qk  v^{(i)} + t (v^{(i)} + t d - \centerk )^T \qk  d - (v^{(i)} + t d - \centerk )^T \qk  \centerk  = 1 \\
+\Longleftrightarrow \left(v^{(i)}\right)^T \qk  v^{(i)} + t d^T \qk  v^{(i)} - \centerk ^T \qk  v^{(i)} + t \left(v^{(i)}\right)^T \qk  d + t^2 d^T \qk  d - t \centerk ^T \qk  d \\- \left(v^{(i)}\right)^T \qk  \centerk  - t d^T \qk  \centerk + \centerk ^T \qk  \centerk  = 1 \\
+\Longleftrightarrow \left(d^T\qk d
+\right) t^2 + \left(
+d^T \qk  v^{(i)} +  \left(v^{(i)}\right)^T \qk  d - \centerk ^T \qk  d - d^T \qk  \centerk 
+\right) t \\ +  \left(
+\left(v^{(i)}\right)^T \qk  v^{(i)} - \centerk ^T \qk  v^{(i)} - \left(v^{(i)}\right)^T \qk  \centerk   + \centerk ^T \qk  \centerk  - 1
+\right) = 0 \\
+\Longleftrightarrow \left(d^T\qk d
+\right) t^2 + 2\left(
+\left(v^{(i)}\right)^T \qk  d - \centerk ^T\qk d
+\right) t + \\ \left(
+\left(v^{(i)}\right)^T \qk  v^{(i)} + \centerk ^T \qk  \centerk  - 2 \centerk ^T \qk  v^{(i)} - 1
+\right) = 0
+\end{align*}
+
+There are either $0$, $1$, or $2$ values of $t$ for which this equation will have solutions.
+The directions from $v^{(i)}$ when it intersects the ellipsoid exactly $1$ time are those whose projection will be on the boundary of the perspective projection of the ellipsoid.
+The discriminant for these is $0$.
+If we let
+\begin{align*}
+M_i = 
+\qk (v^{(i)} - \centerk )\left[\qk (v^{(i)} - \centerk )\right]^T
+- \qk  \left(\left(v^{(i)}\right)^T \qk  v^{(i)} + \centerk ^T \qk  \centerk  - 2 \centerk ^T \qk  v^{(i)} - 1\right),
+\end{align*}
+we find that that these directions satisfy
+\begin{align*}
+4\left(\left(v^{(i)}\right)^T \qk  d - \centerk ^T\qk d\right)^2 - 4 \left(d^T\qk d\right) \left(\left(v^{(i)}\right)^T \qk  v^{(i)} + \centerk ^T \qk  \centerk  - 2 \centerk ^T \qk  v^{(i)} - 1\right) = 0 \\
+d^T\left[
+\left(\qk (v^{(i)} - \centerk )\right)\left(\qk (v^{(i)} - \centerk )\right)^T
+- \qk  \left(\left(v^{(i)}\right)^T \qk  v^{(i)} + \centerk ^T \qk  \centerk  - 2 \centerk ^T \qk  v^{(i)} - 1\right)\right]d = 0 \\
+d^TM_id = 0.
+\end{align*}
+Next, let
+\begin{align*}
+t = -\frac {{v^{(i)}}^T v^{(i)}}{{v^{(i)}}^T d } \Longrightarrow
+0 = {v^{(i)}}^T v^{(i)} + t {v^{(i)}}^T d \Longrightarrow
+0 = {v^{(i)}}^T \left(v^{(i)} + t d\right)
+\end{align*}
+so that $x \in H_i$.
+We already know that
+\begin{align*}
+x = v^{(i)} + t d \Longrightarrow
+d = \frac 1 t \left(x - v^{(i)}\right)
+\Longrightarrow d^TM_id = \frac 1 {t^2} \left(x - v^{(i)}\right)^TM_i\left(x - v^{(i)}\right) = 0
+\end{align*}
+so the perspective projection of the boundary of the ellipsoid on the hyper-plane $H_i$ is described by
+\begin{align*}
+\{x \in \Rn | {v^{(i)}}^Tx = 0, \left(x - v^{(i)}\right)^TM_i\left(x - v^{(i)}\right) = 0\}
+\end{align*}
+
+Thus, the ellipsoid is contained in cone $A_i$ if and only if
+\begin{align*}
+\{x \in \Rn | {v^{(i)}}^Tx = 0, \left(x - v^{(i)}\right)^TM\left(x - v^{(i)}\right) = 0\}
+\subseteq \{x \in \Rn | {v^{(i)}}^Tx = 0, \|x - v^{(i)}\|^2 \le \frac 1 {\beta_i^2}\|v^{(i)}\|^2 \} \\
+= \{x \in \Rn | {v^{(i)}}^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta_i^2} - 1\right)\|v^{(i)}\|^2 \}.
+\end{align*}
+
+For each $1 \le i \le m$, define
+\begin{align*}
+\hat v^{(i)} = \frac{v^{(i)}}{\|v^{(i)}\|} \\
+R^i = 2\frac{(\hat v^{(i)} + e_1)(\hat v^{(i)} + e_1)^T}{(\hat v^{(i)} + e_1)^T(\hat v^{(i)} + e_1)} - I
+\end{align*}
+so that
+\begin{align*}
+& {R^i}v^{(i)} = \|v^{(i)}\|e_1 & {R^i}^T{R^i} = I & \quad \det({R^i}) \in \{-1, 1\}
+\end{align*}
+and let $W_i$, $y$, $w_{1,1}$, $w_1$ be defined so that
+\begin{align*}
+& M_i = {R^i}^T M_i' {R^i} = {R^i}^T\left( \begin{array}{cc}
+{w_{1,1}^i} & {w_1^i} \\
+{w_1^i}^T	& {W_i}  \\
+\end{array} \right){R^i} &
+{R^i}x = \left(\begin{array}{c}
+0 \\
+y
+\end{array}\right)
+\end{align*}
+for all $x$ with $x^Tv = 0$.
+Then
+\begin{align*}
+\left(x - {v^{(i)}}\right)^TM_i\left(x - {v^{(i)}}\right) = 0 \\
+\Longleftrightarrow x^TM_ix - 2x^TM_i{v^{(i)}} + {v^{(i)}}^TM_i{v^{(i)}} = 0 \\
+\Longleftrightarrow x^T{R^i}^TM_i'{R^i}x - 2x^T{R^i}^TM_i'{R^i}{v^{(i)}} + {v^{(i)}}^T{R^i}^TM_i'{R^i}{v^{(i)}} = 0 \\
+\Longleftrightarrow y^T{W_i}y - 2y^T{w_1^i}\|v^{(i)}\| + {w_{1,1}^i}\|v^{(i)}\|^2 = 0 \\
+\Longleftrightarrow y^T{W_i}y - 2\|v^{(i)}\|y^T{W_i}{W_i}^{-1}{w_1^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
+\Longleftrightarrow \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{{w_1^i}}}^T{W_i}^{-1}{{w_1^i}} \\
+\end{align*}
+
+Thus, to find the maximum norm $x$ with $\left(v^{(i)}\right)^Tx = 0$, we wish to compute:
+\begin{align*}
+\max_{y} & \quad \|y\|^2  \\
+ & \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{w_1^i}
+\end{align*}
+
+After a change of variables
+\begin{align*}
+w_c = \|v^{(i)}\|{W_i}^{-1}w_1^i \\
+w_r =  - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^Tw_c \\
+s = y - w_c
+\end{align*}
+this becomes:
+
+\begin{align}
+\label{cone_feasibility_check}
+\begin{array}{ccc}
+\max_{y} & \quad \|s - \left(-w_c\right)\|^2  \\
+ & s^T\left(\frac {W_i}{w_r}\right)s = 1
+ \end{array}
+\end{align}
+
+This is the well known optimization problem of projecting a point onto the surface of an ellipsoid.
+No explicit solution exists, which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
+However, there is an efficient, binary-search algorithm to solve this \cite{projecttoellipsoid}.
+
+
+\subsubsection{Spherical Solution}
+
+One simplification that allows an explicit formulation is to restrict the ellipsoid to be a sphere.
+Although this will not produce as large an ellipsoid, it may be used as a hot start while searching over all ellipsoids.
+
+To compute the maximum volume sphere, we can maximize the minimum distance from the center of the sphere to any cone.
+We once again perform a change of variables, this time subtracting of $\xk$ and rotating $v^{(i)}$ onto $e_1$.
+This reduces the problem computing the projection of an arbitrary point $(t, y) \in \Rn$ and the second order cone: $\left\{ x \in \mathbb R^n | \quad x^Te_1 = \beta \|x\| \right\}$ for some $\beta \in \reals$.
+We find
+\begin{align*}
+ \\
+x^Te_1 = \beta \|x\| 
+ \Longleftrightarrow t^2 = \beta^2 \|te_1  + x - t e_1\|^2 \\
+ \Longleftrightarrow t^2 = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
+ \Longleftrightarrow t^2 = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
+ \Longleftrightarrow t^2 = \beta^2 \left(t^2  + \|y\|^2 \right) \\
+ \Longleftrightarrow (1 - \beta^2)t^2 = \beta^2 \|y\|^2 \\
+ \Longleftrightarrow \sqrt{\frac{1 - \beta^2}{ \beta^2}} t = \|y\|
+\end{align*}
+
+This means, that if we let $\beta' = \sqrt{\frac{1 - \beta^2}{\beta^2}}$, we have
+\begin{align*}
+\left\{ x \in \mathbb R^n | \quad x^Te_1 = \beta \|x\| \right\} = \left \{(s, x)\in \mathbb R^n | \quad\|x\| \le \beta' s \right\}.
+\end{align*}
+
+The projection gives the following optimization problem:
+\begin{align*}
+\min_{x \in \mathbb R^{n-1}, s \in \mathbb R} & \quad \frac 1 2 \|x - y\|^2 + \frac 1 2 (s - t)^2 \\
+			& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2
+\end{align*}
+which gives us the Lagranian:
+\begin{align*}
+l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \lambda \frac 1 2 \left(\|x\|^2 - {\beta'}^2 s^2\right)
+\end{align*}
+
+After taking the gradient of the lagrangian, we find that for some $\lambda$:
+\begin{align*}
+x - y - \lambda x = 0, & \quad s - t + \lambda {\beta'}^2 s = 0 \\
+x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 } \\
+\end{align*}
+
+We can substitute this into the constraint to solve for $\lambda$:
+\begin{align*}
+\|x\| = {\beta'} s \\
+\left\|\frac {y}{1 - \lambda}\right\| = {\beta'} \frac {t}{1 + \lambda {\beta'}^2 } \\
+\left(1 + \lambda {\beta'}^2\right) \left\|y\right\| = {\beta'}  {t} \left|1 - \lambda\right|\\
+\end{align*}
+
+\begin{align*}
+\left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} - t {\beta'} \lambda          &   \quad
+\left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} \lambda - t {\beta'}					\\
+\left\|y\right\|-t {\beta'} +\left( {\beta'}^2\left\|y\right\| + t {\beta'} \right)\lambda = 0  &		\\
+\lambda = \frac{t {\beta'} - \|y\|}{{\beta'}^2\|y\| + t {\beta'}}                               &		\\
+\end{align*}
+
+
+Substituting $\lambda$ to find $x$ and $s$:
+\begin{align*}
+x = \frac {y}{1 - \lambda} 																		
+= \frac {y}{1 - \frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}} 									
+= \frac {y\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} - t{\beta'} + \|y\|} 			
+= \frac {{\beta'}^2 + \frac{t{\beta'}}{\|y\|}}{1 + {\beta'}^2}y 											
+\end{align*}
+
+\begin{align*}
+s = \frac {t}{1 + \lambda{\beta'}^2 } 
+= \frac {t}{1 +\frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}{\beta'}^2 } 
+= \frac {t\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} + \left(t{\beta'} - \|y\|\right){\beta'}^2 } 
+= \frac {{\beta'}\|y\| + t}{1 + {\beta'}^2 } 
+\end{align*}
+
+
+Thus, the projected point is
+\begin{align*}
+\left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2}, \frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y\right)
+\end{align*}
+
+with squared distance
+\begin{align*}
+\left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - t\right)^2 + \left\|\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y - y\right\|^2
+= \left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - \frac{t + t{\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2} - 1\right)^2\left\|y\right\|^2 \\
+= \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|} - 1 - {\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2\left\|y\right\|^2 
+= \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{t {\beta'} - \left\|y\right\|}{1 + {\beta'} ^ 2}\right)^2 \\
+= \left(1 + {\beta'}^2\right)^{-2}\left[\left({\beta'}^2 \|y\|^2 - 2\beta' \|y\| t {\beta'}^2  + t^2 {\beta'}^4\right) + \left(t^2{\beta'}^2 - 2 t {\beta'} \|y\| + \|y\|^2\right) \right] \\
+= \left(1 + {\beta'}^2\right)^{-2}\left[
+\left(1 + {\beta'}^2\right)t^2{\beta'}^2 - 2t{\beta'}\left(1 + {\beta'}^2\right) \|y\| + \left(1 + {\beta'}^2\right)\|y\|^2
+\right] \\
+= \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}
+\end{align*}
+
+After a shift and rotation from the vertex point $\wik$ and going direction $-\wik$:
+
+\begin{align*}
+\hat w^{(i,k)} = \frac {\wik} {\|\wik\|} & \quad 1 \le i \le m\\
+R^j = 2 \frac{(e_1 + \hat w^{(i,k)})(e_1 + \hat w^{(i,k)})^T}{(e_1 + \hat w^{(i,k)})^T(e_1 + \hat w^{(i,k)})} - I  & \quad 1 \le j \le m,
+\end{align*}
+we have the following optimization problem:
+\begin{align*}
+\max_{r \ge 0, c, t^i}	& r & \\
+					& t^i = R^j\left(\hat w^{(i,k)} - c\right) 									& \quad 1 \le i \le m \\
+					& \beta^2 \left(\beta' e_1^T t^i - \left\|t^i - e_1^T t^j\right\|\right)^2 \ge r			& \quad 1 \le i \le m \\
+					& \left(\left(c - w^j\right)^T\hat w^{(i,k)}\right)^2 \ge \beta^2 \|c - \wik\|^2		& \quad 1 \le i \le m
+\end{align*}
+
+% 
+% \begin{comment}
+% What did the following few lines do, again?
+% \end{comment}
+% 
+% \begin{align*}
+% \beta^2 \left(\beta' e_1^T t^j - \left\|t^j - e_1^T t^j\right\|\right)^2 \ge r \\
+% \beta \left(\beta' e_1^T t^j - \left\|t^j - e_1^T t^j\right\|\right) \ge \sqrt{r} \\
+% \beta \beta' e_1^T t^j - \beta \left\|t^j - e_1^T t^j\right\| \ge \sqrt{r} \\
+% \beta' e_1^T t^j - \frac 1 {\beta} \sqrt{r} \ge \left\|t^j - e_1^T t^j\right\| \\
+% \left( \beta' e_1^T t^j - \frac 1 {\beta} \sqrt{r} \right) ^ 2\ge \left\|t^j - e_1^T t^j\right\|^2 \\
+% \end{align*}
+% 
+% 
+% 
+% 
+% \begin{align*}
+%  \left(\beta' e_1^T t^j - \left\|t^j - e_1^T t^j\right\|\right)^2 \ge \frac 1 {\beta^2} r \\
+%  \left(\beta' e_1^T t^j\right)^2 - 2\beta' e_1^T t^j \left\|t^j - e_1^T t^j\right\| + \left\|t^j - e_1^T t^j\right\|^2 \ge \frac 1 {\beta^2} r \\
+%  \left(\beta' e_1^T t^j\right)^2 - \frac 1 {\beta^2} r + \left\|t^j - e_1^T t^j\right\|^2 \ge 2\beta' e_1^T t^j \left\|t^j - e_1^T t^j\right\|\\
+%  \left[\left(\beta' e_1^T t^j\right)^2 - \frac 1 {\beta^2} r + \left\|t^j - e_1^T t^j\right\|^2 \right] ^2\ge 4\left(\beta' e_1^T t^j\right)^2 \left\|t^j - e_1^T t^j\right\|^2\\
+% \end{align*}
+% 
+
+Notice that this optimization problem is not convex.
+Although more efficient formulations may exist, this leads us to believe that it may sometimes be difficult to even compute the maximum volume sphere within our buffering cones.
+
+
+\subsubsection{Numerical Solution}
+
+Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
+One very simple random-search algorithm can be used to show this.
+
+\begin{algorithm}[H]
+    \caption{Search for feasible ellipsoid}
+    \label{constrained_dfo}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+                Set $E_{max}$ to any feasible ellipsoid, 
+                an initial sample variance $\sigma^2$, 
+                a threshold $M$ of iterations per sample variance, 
+                a decrease ratio $\gamma \in (0, 1)$, 
+                a variance tolerance $\delta_{\sigma} > 0$
+        
+        \item[\textbf{Step 1}] \textbf{(Random Perturbation)} \\
+            Evaluate the next iterate \begin{itemize}
+                \item[] Sample a rotation matrix $R$ with variance $\sigma^2$, $\qk \gets R \qk$
+                \item[] Sample a positive diagonal matrix $D$ with variance $\sigma^2$, $\qk \gets D \qk$
+                \item[] Sample a translation $c$ bounded by with variance $\sigma^2$, $\centerk \gets c + \centerk$
+            \end{itemize}
+        
+        \item[\textbf{Step 2}] \textbf{(Check Feasibility)} \\
+            Run feasibility check \cref{cone_feasibility_check} for each constraint.
+            If the new ellipsoid is feasible and larger than $E_{max}$, then 
+            	set $E_{max}$ to this ellipsoid,
+            	set counter $j \gets 0$, and
+            	go to Step 1
+        
+        \item[\textbf{Step 3}] \textbf{(Decrease Sample Variance)} \\
+            If the counter $j \ge M$, then
+	    	decrease $\sigma^2 \gets \gamma \sigma^2$,
+	    	set the counter $j\gets 0$, and
+	    	go to Step 1
+            
+        \item[\textbf{Step 4}] \textbf{(Check for Convergence)} \\
+	    If $\sigma^2 < \delta_{\sigma}$ \textbf{Return} $E_{max}$.
+	    Otherwise, 
+        		set counter $j \gets j + 1$, and
+        		go to Step 1
+    \end{itemize}
+\end{algorithm}
+
+Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
+
+
+\subsubsection{Conservative Ellipsoid}
+
+We were able to find another ellipsoid contained within \cref{def_f} that may, in general, be smaller than the largest possible ellipsoid.
+However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoid_requirements}.
+Here we show how to construct the ellipsoid, and show its properties in \cref{feasible_ellipsoid_analysis}.
+
+First, we define the set of active constraints as
+\begin{align}
+\iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \label{def_i}
+\end{align}
+and then compute a feasible direction for these active constraints:
+\begin{align}
+\uk \in -\min_{\|u\| = 1} \max_{i \in \iik} u^T\hgmcik\label{def_u} \\
+\huk = \frac {\uk} {\| \uk\|} \label{def_hu}.
+\end{align}
+
+
+The angle between this direction and the furthest/nearest direction that is infeasible is then given by
+\begin{align}
+\theta^{\text{min}}_k = \min_{i \in \iik} (-\hgik)^T \huk \label{def_theta_k_min} \\
+\theta^{\text{max}}_k = \max_{i \in \iik} (-\hgik)^T \huk \label{def_theta_k_max}.
+\end{align}
+
+
+The vector $\uk$ and $\theta^{\text{max}}_k$ can be computed with the following program:
+\begin{align*}
+\begin{array}{ccc}
+\argmax_{u\in\Rn, \theta\in\reals} & \theta \\
+& -u^T \hgmcik \ge \theta & \forall i \in \iik\\
+& \|u \| = 1& 
+\end{array}.
+\end{align*}
+
+We can then compute the a maximum angle that is feasible with respect to each of the constraints as
+\begin{align}
+\bsk = \beta\dk^{\frac 1 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \label{def_bs_k}
+\end{align}
+so that the cone
+\begin{align}
+\fcki = \{x \in \rn | \quad x = \xk + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \} \label{feasible_cone}
+\end{align}
+is feasible with respect to all active constraints.
+We then define an ellipsoid within this cone with a helper function
+\begin{align}
+f_e(\delta, r, \theta; x) = (x - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(x - \delta e_1) - \frac 1 2 r^2 \label{def_ellipse_function}
+\end{align}
+and rotation matrix
+\begin{align}
+R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I \label{def_rotation}
+\end{align}
+by defining
+\begin{align}
+\sampletrk = \unshiftedcone = \{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\}. \label{def_ellipse_k}
+\end{align}
+
+\subsection{Infeasible Trial Points}
+\label{convex_model_reduction}
+
+The second instance that the algorithm may attempt to evaluate an infeasible point is after solving the trust region subproblem.
+We have two methods for dealing with this case.
+
+\subsubsection{Linear cuts}
+In this case, we have chosen to solve the trust region subproblem over again, after adding a linear constraint that removes this infeasible point.
+Each new linear constraint not only cuts off the last trial point, but also stays atleast a fraction of the trust region radius away.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=300px]{images/pyomo_cut_solution.png}
+    \caption{
+		Adding linear cuts to remove infeasible points.
+		Sample points that have already been evaluated and found to be feasible are shown as green circles.
+		Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
+		The linear cuts (blue lines) are chosen to minimize the value of the objective (in black) while ensuring that all failed evaluations are infeasible.
+	}
+    \label{pvip}
+\end{figure}
+
+
+Suppose that the algorithm has evaluated several infeasible points after solving the trust region subproblem.
+These are stored in a set $\trsinfset = \{n_1, n_2, \ldots, n_{|\trsinfset|}\}$.
+We then choose one hyperplane $\{x \in \Rn | d_k^Tx = b_k\}$ for each infeasible point to remove that feasible point from our next attempt to solve the trust region subproblem.
+Notice that these hyperplanes are \emph{decision variables} during the next attempt, so as to give as much freedom for our next trial solution.
+
+If we let $\trstol \in (0, 1)$ be the percentage of the trust region radius with which we wish buffer our next solution, 
+we arrive at the following optimization problem:
+\begin{align}
+\label{buffered_trust_region_subproblem}
+\begin{array}{ccc}
+\min_{s, d^{(k)} \in \Rn, b_i \in \reals}	& \mfk(x) & 	\\
+ \mbox{subject to}  & n_k^Td^{(k)} \ge b_k + \trstol \dk& \forall 1 \le k \le |\trsinfset | \\
+ & s^T d^{(k)} \le b_k &   \forall 1 \le k \le |\trsinfset |  \\
+ & \|d^{(k)}\| = 1 & \forall 1 \le k \le |\trsinfset |	\\
+ & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall 1 \le i \le m\\
+ & \|s - \xk \|_{\infty} \le \dk & \\
+\end{array}
+\end{align}
+
+We use this optimization problem as a subroutine of the trust region subproblem algorithm:
+
+\begin{algorithm}[H]
+    \caption{Solve Trust Region Subproblem}
+    \label{linear_cut_trust_region_subproblem}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+	    Initialize the set of infeasible points $\trsinfset = \emptyset$.
+        
+        \item[\textbf{Step 1}] \textbf{Solve Trust Region Problem} \\
+	    Solve \cref{buffered_trust_region_subproblem} to find trial point $s$.
+	    If the feasible set is empty, \textbf{Fail}
+        
+        \item[\textbf{Step 2}] \textbf{(Check feasibility)} \\
+            Evaluate the objective and constraints $s$.
+            If $s\in\feasible$, \textbf{return} $s$.
+            Otherwise, if $s\in\feasible$ and $s \in \sampletrk$, \textbf{Fail}
+	    Otherwise, if $s\in\feasible$ and $s \not \in \sampletrk$ \begin{itemize}
+	    	\item[] $\trsinfset \gets \trsinfset \cup \{s\}$
+	    	\item[] Go to Step 1
+	    \end{itemize}
+            
+        \item[\textbf{Step 3}] \textbf{(Update maximum volume ellipsoid)} \\
+	    Update $E_{max}$
+	    decrease random search variance
+            
+        $k \gets k+1$ and go to Step 1.
+    \end{itemize}
+\end{algorithm}
+
+The properties of the trial point found by this algorithm, as well as its convergence are detailed in \cref{efficiency_condition_analysis}.
+
+
+
+\subsubsection{Decrease $\dk$}
+
+Another option is to simply decrease the trust region radius.
+However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
+We will later show that the set $\capcones$ defined in \cref{definecapcones} is just this set.
+Thus, we can replace the trust region subproblem with
+
+\begin{align*}
+\begin{array}{ccc}
+\min_{s^{(i)},x\in\Rn,t_i>0} & m_f(x) & \\
+ & x = \wik + t _i s^{(i)} & 1 \le i \le m \\
+ & \|s^{(i)}\| = 1 & 1 \le i \le m \\
+ -\left(s^{(i)}\right)^T\hgik \ge \beta \dk^{\frac 1 2 } & 1 \le i \le m \\
+\end{array}
+\end{align*}
+We will later show that a point within the feasible set for this optimization problem satisfies the efficiency condition.
+
+% \begin{comment}
+% Double check that this is the same as in the masters2.tex
+% \end{comment}
+
+% The optimization program for finding this constraint is given by:
+% 
+% A set of $u^i, 1 \le i \le n_{I}$ infeasible points.
+% A set of $v^i, 1 \le i \le n_{F}$ feasible points.
+% 
+% The current Lagrange polynomial $\frac 1 2 x^T Q x + b^Tx$.
+% Require all infeasible point to be a distance at least $d$ from the feasible region.
+% 
+% 
+% Find a set of planes $(n^i, b^i), 1 \le i \le n_{P}$.
+% 
+% Require $n_P \ge n_I$.
+% 
+% Let $n_I$ be the number of infeasible points
+% Tolerance $\delta$
+% \begin{align}
+% \begin{array}{ccc}
+% \min_{s, d_i \in \Rn, b_i \in \reals}	& \mfk(x) & 	\\
+%  \mbox{subject to}  & d_k^T n_k \ge b_i + \trstol & \forall 1 \le k \le |\trsinfset | \\
+%  & d_k^T s \le b_i &   \forall 1 \le k \le |\trsinfset |  \\
+%  & \|d_k\| = 1 & \forall 1 \le k \le |\trsinfset |	\\
+%  & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall 1 \le i \le m\\
+%  & \|s - \xk \|_{\infty} \le \dk & \\
+% \end{array}
+% \end{align}
+
+
+
+\subsection{Recover Feasible Ellipsoid}
+
+Although $\sampletrk$ will be feasible for small enough $\dk$, there may be some iterations in which it contains infeasible points.
+When this happens, and a point we attempt to use as a sample point is infeasible, we decrease the trust region radius.
+However, this means the previous sample points are no longer poised for the next iteration.
+We then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
+
+% \begin{algorithm}[H]
+%     \caption{Restore a feasible ellipsoid}
+%     \label{restore_feasible_ellipsoid}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%             Feasible ellipsoid, current iterate
+%             
+%         \item[\textbf{Step 1}] \textbf{(Construct Ellipsoid within the convex hull)} \\
+%         	A sphere works.
+%     \end{itemize}
+% \end{algorithm}
+% 
+% \begin{comment}
+% Fill this in.
+% \end{comment}
+% This is why we require an initial feasible ellipsoid.
+
+
+To do this, we first construct the convex hull of the points 
+Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in the previous iteration.
+
+\begin{algorithm}[H]
+    \caption{Restore a feasible ellipsoid}
+    \label{compute_convex_hull}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            $P_{\textrm{planes}} = \emptyset$
+            
+        \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
+	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyplerplane $ax\le b$ running through the points $S \cup \xk$.
+	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $P_{\textrm{planes}}$.
+	
+	\item[\textbf{Step 1}] \textbf{(Construct ellipsoid)} \\
+	   Construct the largest possible ellipsoid within $P_{\textrm{planes}} \cap B_{\infty}(\xk, \dk)$
+    \end{itemize}
+\end{algorithm}
+
+
+\subsection{Convergent Algorithm}
+
+We can now state the algorithm.
+
+
+\subsubsection{Psuedocode}
+
+\begin{algorithm}[H]
+    \caption{Always-feasible Constrained Derivative Free Algorithm}
+    \label{constrained_dfo}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize tolerance constants 
+            $\tolcrit \ge 0$,
+            $\tolrad \ge 0$,
+            \color{red} starting point $x^{(0)} \in \feasible$  OR a starting feasible ellipsoid   \color{black},
+            initial radius $\Delta_0 > 0$,
+            iteration counter $k=0$,
+            $0 < \omegadec < 1 \le \omegainc$,
+            $0 < \gammasm < \gammabi \le 1$,
+            $\alpha > 0$,
+            $k \gets 1$,
+            $0 < \omegadec < 1 \le \omegainc$,
+            $0 < \gammasm < \gammabi < 1$.
+            
+        \item[\textbf{Step 1}] \textbf{(Construct the model)} \\
+	    If $m_{f}^{k-1}(x)$, $m_{c_i}^{k-1}(x)$ exist, then use these to construct the feasible ellipsoid \cref{def_ellipse_k}.
+	    If they do not, then run \cref{restore_feasible_ellipsoid} to construct a new $\sampletrk$ and $\dk$.
+            Ensure that the sample points are poised with respect to $ \sampletrk $ for \cref{accuracy} by calling \cref{model_improving_algorithm} on the shifted ellipsoid.
+            Construct $\mfk$ and $\mcik$ as described in \cref{reg}.
+        
+        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+            Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
+                \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
+                \item[] Otherwise, if $\dk > \alpha \chik$ then 
+                $\Delta_{k+1} \gets \omegadec\dk$, 
+                $x^{(k+1)} \gets \xk$,
+                $k \gets k+1$ and go to Step 1.
+            \end{itemize}
+        
+        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+        	Use \cref{linear_cut_trust_region_subproblem} to solve the trust region subproblem.
+        	If \cref{detect_infeasible_trust_region_subproblem} is not satisfied, then reduce the trust region $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
+            
+        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+            Evaluate $f(\xk + \sk)$ and evaluate $\rho_k$ as in \cref{rho} \begin{itemize}
+                \item[] If $\rho_k < \gammasm$ then $\xkpo=\xk$ (reject) and $\Delta_{k+1} = \omegadec\dk$
+                \item[] If $\rho_k \ge \gammasm$ and $\rho < \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegadec\dk$
+                \item[] If $\rho_k > \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegainc\dk$
+                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
+            \end{itemize}
+            $k \gets k+1$ and go to Step 1.
+    \end{itemize}
+\end{algorithm}
+
+\section{Convergence Analysis}
+
+\subsection{Assumptions}
+Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
+
+$\Omega$ is some open region containing $\feasible$.
+
+\begin{assumption}
+\label{lipschitz_gradient}
+The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $L_g > 0$ in $ \Omega $.
+\begin{align}
+\|\nabla f(x) - \nabla f(y)\| \le L_g \|x - y\| \quad \forall x,y \in \Omega.
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{lipschitz_hessian}
+The function $f$ is twice differentiable and its hessian $\nabla^2 f$ is Lipschitz continuous with constant $L_h > 0$ in $ \Omega $:
+\begin{align}
+\|\nabla^2 f(x) - \nabla^2 f(y)\| \le L_h \|x - y\| \quad \forall x,y \in \Omega.
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{lipschitz_constraints}
+Each function $c_i$ for $1 \le i \le m$ is differentiable and its gradient $\nabla c_i$ is Lipschitz continuous with constant $\lgi$ in $\Omega$:
+\begin{align}
+\|\nabla c_i(x) - \nabla c_i(y)\| \le \lgi \|x - y\| \label{def_lipshitz}
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{lipschitz_constraints}
+Each function $c_i$ for $1 \le i \le m$ is has bounded hessian. That is, there exists a $M_{i}$ such that:
+\begin{align}
+\|\nabla^2 c_i(x) \| \le M_i \quad \forall x \in \Omega \label{bounded_hessians}
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{bounded_below}
+The function $f$ is bounded below in $ \Omega $. That is, there exists an $\fmin$ such that
+\begin{align}
+f(x) \ge \fmin \quad  \forall x \in \Omega
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{bounded_hessians}
+The matrices $\hk$ are uniformly bounded, that is, there exists a constant $ \beta \ge 1 $ such that 
+\begin{align}
+\|\hk\| \le \beta - 1 \quad \forall k \ge 0.
+\end{align}
+\end{assumption}
+
+
+\begin{theorem}
+\label{accuracy_theorem}
+There exists a constant $\kappa_g$ such that 
+\begin{align}
+\|\nabla f(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk
+\end{align}
+\end{theorem}
+
+
+\begin{assumption}
+The models of the constraints and the true constraints agree at the current iterate:
+\begin{align}
+\mcik(\xk) = c_i(\xk)\quad \forall k \in \naturals
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{h4_placeholder}
+The iterates are generated by the algorithm.
+That is,
+\begin{itemize}
+\item something about $\mfk$
+\item something about $\xk$
+\item whatever else needs to be said
+\end{itemize}
+
+\end{assumption}
+
+
+
+
+\subsection{Requirements}
+
+The construction of each variant of our algorithm ensures that the following two criteria are also met.
+\paragraph{Accuracy}
+The accuracy condition \cref{accuracy} is satisfied:
+there exists a constant $\kappa_{g} > 0$ such that $ \| \gk - \grad(\xk) \| \le \kappa_{g} \dk $ for $k \in \ints $.
+
+We have shown that this is satisfied for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
+These two conditions are required by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence in the case with linear constraints.
+
+
+\begin{comment}
+Cite the other paper...
+\end{comment}
+
+\subsection{Sufficient Model Reduction}
+
+To ensure sufficient reduction of the objective's model function during each iteration, we impose the following efficiency condition:
+\begin{equation}
+\label{efficiency}
+\mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
+\end{equation}
+where $\kappa_f$ is a constant independent of $k$.
+This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
+It can be shown that the \emph{generalized Cauchy point} satisfies this condition \cite{Conn:2000:TM:357813}.
+
+
+% A efficiency condition \cref{efficiency} is satisfied:
+% \begin{equation}
+% \mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \Delta_k, 1 \}
+% \end{equation}
+
+With explicit constraints, we know that this is satisfied by the Generalized Cauchy Point.
+For convex constraints, we refer to the algorithm presented in \cref{convex_model_reduction}.
+
+
+\subsection{Construction of $\sampletrk$}
+\label{feasible_ellipsoid_analysis}
+
+\subsubsection{Notation}
+Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
+\begin{align}
+\theta^{\text{min}} = \liminf_{k\to\infty} \theta^{\text{min}}_k \label{def_theta_min} \\
+\theta^{\text{max}} = \limsup_{k\to\infty} \theta^{\text{max}}_k \label{def_theta_max} \\
+\bs = \sqrt{ 1 - (\theta^{\text{max}}_k)^2} \label{def_bs} \\
+0 < g_{\text{low}} \le \|\gmcik\| \le g_{\text{hi}} \label{def_g_bounds} \\
+0 < h_{\text{low}} \le \|\nabla^2m_{c_i}(x)\| \le h_{\text{hi}} \label{def_h_bounds} \\
+\nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu \label{def_lambda_poised} \\
+\inf_{k}\min\{\sigma(\nabla c_{\mathcal I_k}(\xk)) \; | \; \sigma(\nabla c_{\mathcal I_k}(\xk)) > 0 \} \ge \epsilon_{\sigma} > 0\\
+\end{align}
+
+
+\subsubsection{Existence Proof}
+
+\begin{lemma}
+Let $\theta^{\text{min}}$ be as defined as in \cref{def_theta_min}.
+Then $\theta^{\text{min}} > 0.$
+\end{lemma}
+
+\ifnum\includeproofs=1
+\begin{proof}
+
+% \begin{comment}
+% Adapting from the linear case.
+% \end{comment}
+
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+
+\begin{lemma}
+\label{cone_subset_cone}
+Given $u^1, u^2 \in \rn$, $\|u^1\| = \|u^2\|= 1$, $\beta >0$, with ${u^1}^Tu^2 \ge \beta$ define
+\begin{align*}
+B = \{x\in\rn | {u^2}^Tx \ge \beta\|x\|\}, \quad
+S = \left\{x\in\rn \bigg| {u^1}^Tx \ge \left(\beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)}\right)\|x\| \right\}. 
+\end{align*}
+Then, $S \subseteq B$.
+\end{lemma}
+
+
+\ifnum\includeproofs=1
+\begin{proof}
+Let 
+\begin{align*}
+x^{\star} = \beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )
+\end{align*} and for a contradiction, let $y \in \rn$ be such that $y \not \in B$ and $y \in S$ and define $\hat y = \frac{y}{\|y\|}$.
+Then
+\begin{align*}
+\hat y \in \left\{x \in \rn | {u^2}^Tx < \beta, {u^1}^Tx \ge \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} \right\}.
+\end{align*}
+
+Note that
+\begin{align}
+{u^1}^Tx^{\star} &=& {u^1}^T\left(\beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )\right) = 
+\beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} \\
+{u^2}^Tx^{\star} &=& {u^2}^T\left(\beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )\right) = 
+\beta + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} ({u^2}^Tu^1 - {u^2}^Tu^1 ) = \beta.
+\end{align}
+That means
+\begin{align}
+{u^1}^T\hat y = {u^1}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} + {u^1}^T\left(\hat y - x^{\star}\right) \\
+\ge \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} 
+\Longrightarrow {u^1}^T\left(\hat y - x^{\star}\right) \ge 0 \\
+{u^2}^T\hat y = {u^2}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta + {u^2}^T\left(\hat y - x^{\star}\right) < \beta
+\Longrightarrow {u^2}^T\left(\hat y - x^{\star}\right) < 0. \label{the_difference_is_nonzero}
+\end{align}
+
+From these two equations, we not only know that $\left(\hat y - x^{\star}\right) \ne 0$, but
+\begin{align*}
+{\left(\hat y - x^{\star}\right)}^Tx^{\star} = 
+\left(\beta {\left(\hat y - x^{\star}\right)}^Tu^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \left({\left(\hat y - x^{\star}\right)}^Tu^1 - {u^2}^Tu^1 {\left(\hat y - x^{\star}\right)}^Tu^2 \right)\right) > 0
+\end{align*}
+as ${u^1}^Tu^2 \ge \beta \Longrightarrow {u^2}^Tu^1\sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \ge \beta$.
+However, this is a contradiction as
+\begin{align*}
+1 = \|\hat y\| = \|x^{\star} + \hat y - x^{\star}\| > \|x^{\star}\| = 1
+\end{align*}
+and there is no such $y$.
+Thus, any $y \in\rn$ with $y \in S$ must also have $y \in B$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+
+
+
+\begin{lemma}
+If 
+\begin{align}
+z^{(i, k)} \in B_{\infty}(\xk, \dk)) \label{z_is_active} \\
+M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x) \label{m_bounds} \\
+\text{and} \quad \dk \le \min\left\{
+1,
+\left(\frac{\alpha g_{\text{low}}}{M \sqrt{n} + \epsilon_g}\right)^2,
+\left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3},
+\left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2
+\right\}, \label{delta_is_small_enough}
+\end{align} then
+\begin{align*}
+c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
+\end{align*}
+
+\end{lemma}
+
+\ifnum\includeproofs=1
+\begin{proof}
+
+Let 
+\begin{align}
+y = \wik + ts \in \fik \cap B_{\infty}(\xk, \dk) \label{t_is_bounded}
+\end{align}
+with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$.
+Because the model $m_{c_i}$ is fully quadratic, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds:
+\begin{align*}
+\nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
+\end{align*}
+
+First, we will show that $c(\wik) \le 0$.
+For simplicity, we use \cref{def_z}, and \cref{def_w} to compute
+\begin{align}
+\wik - \xk & = & \xk + \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) - \xk 
+= \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) \\
+& = &  \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gmcik\|^2}\gmcik - \xk\right) 
+= \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik. \label{simple_computation}
+\end{align}
+
+Also, note by \cref{delta_is_small_enough}, \cref{def_alpha_beta} that both
+\begin{align*}
+\dk \le \left(\frac{\alpha \|\gmcik\|}{M \sqrt{n} + \epsilon_g}\right)^2 \Longrightarrow 
+M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} \le \alpha \|\gmcik\| \quad \text{and} \quad
+0 < 1 - \alpha \dk^{\frac 3 2 } < 1.
+\end{align*}
+
+We can combine these and \cref{z_is_active} to find 
+\begin{align*}
+M \sqrt{n}\dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2  + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right) \le M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} \le \alpha \|\gmcik\| \\
+\Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gmcik\| + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \sqrt{n}\dk+ \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le  0 \\
+\Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gmcik\|\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)^2\\
+\epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) \le 0.
+\end{align*}
+
+However, we also know by \cref{m_bounds}, \cref{simple_computation} and the Mean Value Theorem, that
+\begin{align*}
+0 &\ge& \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} & \\
+&\ge& \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\nu^T\gmcik & \\
+&=& c_i(\xk)\left[1 - \left(1 - \alpha \dk^{\frac 1 2 }\right)\right] + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
+&& + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
+&=& c_i(\xk) + \left(\gmcik\right)^T\left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik + M \left\|\left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik\right\|^2 & \\
+&=& c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right)+ M \left\|\wik - \xk\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
+ & = & c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \ge c_i(\wik). &
+\end{align*}
+
+% \begin{align*}
+% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} \le 0\\
+% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \dk^2\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^3 \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
+% \alpha c_i(\xk) + M \dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} \le 0\\
+% \alpha \dk^{\frac 3 2 }\|\gmcik\| + M \frac {c_i(\xk)}{\|\gmcik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 - \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \ge 0\\
+% M \dk\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le \alpha \dk^{\frac 3 2 }\|\gmcik\| \\
+% \end{align*}
+
+
+% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \dk^2\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^3 \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
+% \alpha c_i(\xk) + M \dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
+% \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le \alpha \dk^{\frac 3 2 }\|\gmcik\| + M \frac {c_i(\xk)}{\|\gmcik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2\\
+% \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \dk \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 3 2 }\|\gmcik\|\\
+% \epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 1 2 }\|\gmcik\|\\
+% \epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - 2\alpha \dk^{\frac 3 2 } + \alpha^2 \dk^{3}\right) \le \alpha \dk^{\frac 1 2 }\|\gmcik\|\\
+
+
+
+% = \epsilon_g \dk^2 \nu^T\left(\wik - \xk\right) + c_i(\xk)\alpha \dk^{\frac 3 2} + M \left\|\wik - \xk\right\|^2 \\
+% \le \epsilon_g \dk^3 + c_i(\xk)\alpha \dk^{\frac 3 2} + M \dk^2 \\
+% = \dk^{\frac 3 2} \left(\epsilon_g \dk^{\frac 3 2} + c_i(\xk)\alpha + M \dk^{\frac 1 2}\right) \\
+
+
+Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{\frac 1 2}$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_gk}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
+
+% \Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
+% \Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
+\begin{align}
+\dk \le \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3} 
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
+\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{\frac 3 2} \le \|\gmcik\| - \frac 1 2 g_{\text{low}} \nonumber \\
+\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2  \nonumber \\
+\Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
+\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} 
+\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}. \label{nsc_pos}
+\end{align}
+
+% So that if $\xk + ts \in B_{\infty}(\xk, \dk)$, then 
+
+We also know by \cref{delta_is_small_enough} that
+% \Longrightarrow \dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}
+\begin{align}
+\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2 
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk^{\frac 1 2} \le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2}
+\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \label{eqn2}
+\end{align}
+which implies by \cref{def_g_bounds}, \cref{t_is_bounded}, \cref{nsc_pos}, \cref{eqn2}
+
+% t \le -\frac 1 M \left( \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts\right) \\
+\begin{align}
+t 
+\le \sqrt{n} \dk 
+\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} 
+\le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \nonumber \\
+\Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0. \label{eqn3}
+\end{align}
+
+From there, we can conclude with \cref{def_lipshitz}, \cref{z_is_active}, \cref{eqn3}
+\begin{align*}
+c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \\
+\le t \left(\nabla c_i(\wik)^Ts - \nabla c_i(\xk)^Ts + \nabla c_i(\xk)^Ts + M t\right) \\
+\le t \left(\lgi\|\wik - \xk\| + \nabla c_i(\xk)^Ts + M t\right) \\
+\le t \left(\sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t\right) \le 0.
+\end{align*}
+
+% Thus, the entire cone $\fik$ is feasible with respect to the linearization of the constraint $c_i$ for sufficiently small $\dk$.
+% \begin{align*}
+% c_i(\xk + ts) \le c_i(\xk) + t\nabla c_i(\xk)^Ts + Mt^2 \le t(\nabla c_i(\xk)^Ts + Mt) \le 0.\\
+% \end{align*}
+
+
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+\begin{lemma}
+We have that $\cap_{i \in \iik} \fik \cap B_{\infty}(\xk, \dk) \subseteq \feasible$ 
+\end{lemma}
+
+\ifnum\includeproofs=1
+\begin{proof}
+This follows directly from $x \in \fik \cap B_{\infty}(\xk, \dk) \Longrightarrow c_i(x) \le 0$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{lemma}
+For sufficiently small $\dk$, the set $\fcki \subseteq \fik$ for all $1\le i \le m$.
+\end{lemma}
+
+
+\ifnum\includeproofs=1
+\begin{proof}
+Fix some $1\le i \le m$.
+Letting $\dk \le 1$, we see that $\xk \in \fik$:
+\begin{align*}
+\xk = \xk + \left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk) - \left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk) \\
+\end{align*}
+where
+\begin{align*}
+\frac{-\left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{\frac 1 2}\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta\\
+\end{align*}
+
+% = -\frac{m_{c_i}(\xk)}{\|\gmcik\|}\frac{\|\gmcik\|}{m_{c_i}(\xk)}
+
+Now, let $\dk$ be sufficiently small that $-(\huk)^T\hgik \ge \beta\dk^{\frac 1 2}$.
+This is possible, because $ -(\huk)^T\hgik \ge \theta^{\text{min}}_k \ge \theta^{\text{min}} > 0$.
+
+Then
+\begin{align*}
+\left\{s\quad | \quad s^T(-\hgik)\ge\dk^{\frac 1 2}\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
+\end{align*}
+by \cref{cone_subset_cone} with $u^1 \gets \hat u$, $u^2 \gets -\hgik$, $\beta \gets \beta \dk^{\frac 1 2 }$ because:
+\begin{align*}
+\left(-\beta\dk^{\frac 1 2}(\huk)^T\hgik + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
+\le \max_i \left(-\beta\dk^{\frac 1 2}(\huk)^T{\hgik} + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
+\le \beta\dk^{\frac 1 2} \max_i\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk\beta^2)\left(1 - \left((\max_i(-\hgik)^T\huk\right)^2\right)} \\
+= \beta\dk^{\frac 1 2} \theta^{\text{max}}_k + \sqrt{(1 - \dk\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
+\end{align*}
+Thus, $\fcki \subseteq \fik$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{lemma}
+For sufficiently small $\dk$, $\fcki \ne \emptyset$.
+\end{lemma}
+\ifnum\includeproofs=1
+\begin{proof}
+As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
+% Also, the ray $\xk + t \huk$ is within this cone.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+\begin{lemma}
+\label{ellipse_in_cone}
+Let $r \le \delta$.
+Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
+\end{lemma}
+
+
+\ifnum\includeproofs=1
+\begin{proof}
+Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
+First, note that
+\begin{align*}
+(e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
+\Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
+\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - \left((e_1^Tx)^2 - 2e_1^Tx\delta + \delta^2\right) \le (e_1^Tx)^2 \\
+\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2 \le (e_1^Tx)^2.
+\end{align*}
+
+We use this inequality to show:
+\begin{align*}
+f_e(\delta, r, \theta, x) \le 0 \\
+\Longrightarrow (x - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(x - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1) \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 r^2 \\
+\Longrightarrow
+(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 \\
+\Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
+\Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta.
+\end{align*}
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{lemma}
+\label{ellipse_fits}
+We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ and $f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) = 0$
+\end{lemma}
+\ifnum\includeproofs=1
+\begin{proof}
+
+We have
+\begin{align*}
+f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(0 - \delta e_1) - \frac 1 2 (\sqrt 2 \delta)^2
+=\delta^2 - \delta^2 = 0\\
+\end{align*}
+and
+\begin{align*}
+f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) =\frac {\delta}{\sqrt{2}}e_1^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)\frac {\delta}{\sqrt{2}}e_1 - \frac 1 2 \delta^2
+=\frac 1 2 \delta^2 - \frac 1 2 \delta^2 = 0.\\
+\end{align*}
+\end{proof}
+
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{lemma}
+For sufficiently small $\dk$, the ellipse $E_k \subseteq \feasible$ has a bounded condition number, and its major axis is atleast $\frac 1 2 \dk$
+\end{lemma}
+
+\ifnum\includeproofs=1
+\begin{proof}
+Note that the condition number is given by
+\begin{align*}
+\frac{\max\{1, \frac{\bs^2}{1 - \bs^2}\}}{\min\{1, \frac{\bs^2}{1 - \bs^2}\}} = \frac{\bs^2}{1 - \bs^2}
+\end{align*}
+because the condition number of a matrix is not affected by rotations.
+
+We have already shown that the cone $\fcki \cap B_{\infty}(\xk, \dk) \subset \feasible$.
+By construction, the ellipse has been shifted to put $\xk$ at the origin and rotated by $R$ to put $\hat u$ along the x-axis.
+Thus, by \cref{ellipse_in_cone}, we know that $E_k \subseteq \fcki$.
+We know that $t_k > \dk$ because it measures the distance from $\xk$ to some point on the boundary of $B_{\infty}(\xk, \dk)$.
+Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 \dk$ along $\huk$.
+Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $B_{\infty}(\xk, \dk)$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{lemma}
+The accuracy condition is satisfied
+\end{lemma}
+
+\begin{proof}
+Basically a copy and paste from the linear paper.
+\end{proof}
+
+\subsection{Efficiency Condition}
+\label{efficiency_condition_analysis}
+
+Another requirement of our convergence analysis is to satisfy the efficiency condition \cref{efficiency}.
+As in \cref{definefeasiblek},
+\begin{align*}
+\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \}
+\end{align*}
+
+However, for this anslysis, we limit ourselves to the smaller region
+\begin{align}
+\trsfesset = \left\{x \in \Rn | x \in B_{\infty}(\xk, \dk)\cap \mcik(x) \le 0 \; \forall 1 \le i \le m\cap \|x - y \| \ge \trstol \forall y \in \bar \feasible\right\}
+\end{align}
+
+\begin{lemma}
+Suppose that $s$ is a point being added to $ \trsinfset $, and $n_k$ is any point within $\trsinfset$.
+Then $\|s - n_k\| \ge \trstol \dk$.
+\end{lemma}
+
+\begin{proof}
+Because $s$ is a solution to \cref{buffered_trust_region_subproblem},
+there exists a $d_k \in \Rn$ and $b_k \in \reals$ such that $\|d_k\| = 1$ and
+\begin{align*}
+ b_k \ge d_k^Ts\\
+d_k^Tn_k \ge b_k + \trstol \dk
+\end{align*}
+for each $n_k \in \trsinfset$.
+Adding these two equations, we find that
+% d_k^Tn_k + b_k\ge b_k + \trstol \dk + d_k^Ts \\
+\begin{align*}
+\trstol \dk \le d_k^T\left(n_k - s\right) \le \|d_k\|\|n_k - s\| \le \|n_k - s\|.
+\end{align*}
+\end{proof}
+
+
+\begin{lemma}
+For each iteration $k$, \cref{linear_cut_trust_region_subproblem} will terminate after a finite number of iterations.
+\end{lemma}
+
+\begin{proof}
+Because each point added to $ \trsinfset $ is a fixed distance from every other point in $ \trsinfset $,
+and must also lie within the bounded set $B_\infty(\xk, \dk)$, only a finite number of points can be added.
+\end{proof}
+
+
+\begin{lemma}
+\label{trs_subset}
+During each iteration of \cref{linear_cut_trust_region_subproblem}, $\trsfesset$ is a subset of the feasible region for \cref{buffered_trust_region_subproblem}.
+\end{lemma}
+
+\begin{proof}
+Suppose that $s \in \trsfesset$.
+Then, $\|n_k - s\| \ge \trstol \dk \forall n_k \in \trsinfset \subset \bar \feasible$.
+For each $n_k \in \trsinfset$, let $d_k = \frac{n_k - s}{\|n_k - s\|}$ and $b_k = n_k^Td_k - \trstol\dk$.
+Then we have that 
+\begin{align*}
+\frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k = \frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k  - \trstol\dk + \trstol\dk \Longrightarrow
+d_k^Tn_k \ge b_k + \trstol\dk
+\end{align*}
+and
+\begin{align*}
+\trstol\dk \le \|n_k - s\| \Longrightarrow
+\trstol\dk \|n_k - s\| \le  \|n_k - s\|^2 = \left(n_k - s\right)^Tn_k - \left(n_k - s\right)^T s\\
+\Longrightarrow \frac{\left(n_k - s\right)^T}{\|n_k - s\|} s \le  \frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k - \trstol\dk \Longrightarrow
+d_k s \le b_k.
+\end{align*}
+Because $s$ is also within the trust region boundary and modelled constraints, $s$ is feasible with respect to \cref{buffered_trust_region_subproblem}.
+\end{proof}
+
+
+
+\begin{lemma}
+Let $s^{\star}$ be the output of \cref{linear_cut_trust_region_subproblem} after the algorithm does not fail, and let $s'  \in \argmin_{s \in \trsfesset} \mcik(s)$.
+Then $\mcik(s^{\star}) \le \mcik(s')$.
+\end{lemma}
+\begin{proof}
+This follows immediately from \cref{trs_subset} and the fact that $s^{\star}$ is a solution to \cref{buffered_trust_region_subproblem}.
+\end{proof}
+
+\begin{lemma}
+There exists a constant $c$ such that if $s_1 \in \argmin_{\trsfesset}\mfk(s)$ and $s_2 \in \argmin_{\feasiblek \cap B_{\infty}(\xk, \dk)} \mfk(s)$, then $\mfk(s_1) \le c \mfk(s_2)$.
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
+
+\begin{lemma}
+For iteration $k$, let $s^{\star}$ is the output of \cref{linear_cut_trust_region_subproblem} after the algorithm does not fail.
+Then $s^{\star}$ satisfies the efficiency condition \cref{efficiency}
+\end{lemma}
+
+\begin{proof}
+We know that $s^{\star}$ satisfies the efficiency condition
+\begin{align*}
+a
+\end{align*}
+\end{proof}
+
+
+% \subsection{Sufficient Reduction}
+% 
+% Let 
+% \begin{align}
+% \label{definecapcones}
+% \capcones = \{x\in\Rn | x \in B_{\infty}(\xk, \dk) \cap \left( \cap_i   \fik \right) \} 
+% \end{align}
+% and 
+% $\linearization = \{x \in\Rn | x \in B_{\infty}(\xk, \dk) \cap\nabla \mcik(\xk)^Tx \le \mcik(\xk)\}$.
+% 
+% Let $u \in \linearization - \capcones$, and $u^{\star} = \textrm{P}_{\capcones}(u)$.
+% 
+% $t \wik + (1-t) (u - \wik)$
+% $t \wik + (1-t) (u - \wik)$
+% 
+% 
+% \begin{align*}
+% \left(\wik - \xk\right)^T z = \left(\wik - \xk\right)^T\wik \\
+% (u - z)^T\left(\wik - z\right) = 0 \\
+% \|\wik + \frac{z - \wik}{\|z - \wik\|} - y \left(\xk -\wik\right)\|^2 = \beta^2 \\
+% 1 + \beta^2 = \|\wik + \frac{z - \wik}{\|z - \wik\|} + y \left(\xk -\wik\right) - \wik \|^2 = \beta^2 \\
+% 1 + \beta^2 = \left\|\wik + \frac{z - \wik}{\|z - \wik\|} + y \left(\xk -\wik\right) - \wik \right\|^2 \\
+% 1 + \beta^2 = \left\|\frac{z - \wik}{\|z - \wik\|} + y \left(\xk -\wik\right)\right\|^2 \\
+% = \left\|\frac{z - \wik}{\|z - \wik\|}\right\|^2 + y \left\|\left(\xk -\wik\right)\right\|^2 \\
+% \Longrightarrow y = \frac{\beta^2}{\|\xk - \wik\|^2}
+% \end{align*}
+% 
+% For what values of $t_1$ and $t_2$ does 
+% \begin{align*}
+% \frac{t_1}{\|u - \wik\|} u + \left(1-\frac{t_1}{{\|u - \wik\|}}\right) \wik  \\
+% t_2 z    -\left(1-t_2\right)\wik \\
+% t_3 \left( \wik + \frac{z - \wik}{\|z - \wik\|} +  \frac{\beta^2}{\|\xk - \wik\|^2} \left(\xk -\wik\right)   \right)    -\left(1-t_3\right)\wik \\
+% \end{align*}
+% 
+% 
+% 
+% % \begin{align*}
+% % \left \|\frac{t}{\|u - \wik\|} u + \left(1-\frac{t}{{\|u - \wik\|}}\right) \wik   -t \left( u + y \xk    \right)    -\left(1-t\right)\wik \right\| = \beta \\
+% % \end{align*}
+% 
+% % \left \|\frac{1}{\|u - \wik\|} u + \left(1-\frac{1}{{\|u - \wik\|}}\right) \wik   -\frac{1}{\|u + y\xk - \wik\|}\left( u + y \xk    \right)    -\left(1-\frac{1}{\|u + y\xk - \wik\|}\right)\wik \right\|^2 = \beta^2 \\
+% % \left \|u + \left(\|u - \wik\|-1\right) \wik    -\frac{1}{\|u + y\xk - \wik\|}\left( u + y \xk    \right)    -\left(1-\frac{1}{\|u + y\xk - \wik\|}\right)\wik \right\| = \beta \|u - \wik\|    \\
+% % \left \|u + \left(\|u - \wik\|-1\right) \wik    - \left( u + y \xk    \right)    -\left(\|u + y\xk - \wik\|-1\right)\wik \right\| = \beta \|u - \wik\|  \|u + y\xk - \wik\|  \\
+% 
+% \begin{theorem}
+% $\|u - u^{\star}\| \le  {\|u - \wik\|} \frac{\beta}{2} $
+% \end{theorem}
+% 
+% 
+% \begin{proof}
+% \end{proof}
+% 
+% 
+% \begin{theorem}
+% $\|\xk - u\| \ge \|\xk - \wik\| - \|u - \wik\| \beta$
+% \end{theorem}
+% \begin{proof}
+% \end{proof}
+% 
+% \begin{theorem}
+% $\|u^{\star} - \xk\| \le C \|u - \xk\|$
+% \end{theorem}
+% 
+% \begin{proof}
+% \begin{align*}
+% \|u^{\star} - \xk\| \le \|u - \xk\| + \|u^{\star} - u\| \le \|u - \xk\| + {\|u - \wik\|} \frac{\beta}{2} \\
+% \frac{\|u^{\star} - \xk\|}{\|u - \xk\|} \le 1 + \frac{{\|u - \wik\|} \frac{\beta}{2}}{\|u - \xk\|} \le 1+\frac{{\|u - \wik\|} \frac{\beta}{2}}{\|\xk - \wik\| - \|u - \wik\| \beta} \\
+% = 1+\frac {\beta}{2}\frac{1}{\frac{\|\xk - \wik\|}{ \|u - \wik\| } - \beta}
+% \end{align*}
+% \end{proof}
+
+
+
+
+\subsection{Bounded Projection}
+
+In this section, we show that the projection onto the linearization of the constraints converges to the projection onto the true constraints as $\dk \to 0$.
+We trace constants found in a simplification of \cite{dummy:hoffman}, \cite{dummy:continuity_of_inverse}, \cite{dummy:perturbations} to show that our approximation of the projection is bounded.
+
+To this end, we define the two bounded polyhera
+\begin{align*}
+\begin{array}{ccc}
+P_1 &=& \{ x \in \Rn | A_1x\le b_1 \} \\
+P_2 &=& \{ x \in \Rn | A_2x\le b_2 \}
+\end{array}
+\end{align*}
+where the $m\times n$ matrices $A_1, A_2$ vectors $b_1, b_2 \in \Rm$  satisfy
+\begin{align*}
+\begin{array}{cc}
+\|A_1 - A_2\| \le \epsilon, & \|b_1 - b_2\| \le \epsilon
+\end{array}
+\end{align*}
+for some $\epsilon > 0$.
+Because these are bounded, we can let $\|x_1\|\infty \le M_1 \forall x_1 \in P_1$ and $\|x_2\|\infty \le M_2 \forall x_2 \in P_2$.
+We denote the projection of the origin onto these polyhedra as
+\begin{align*}
+\begin{array}{ccc}
+x_1 = \argmin_{x\in P_1}\|x\|^2, &\textrm{and} & x_2 = \argmin_{x\in P_2}\|x\|^2.
+\end{array}
+\end{align*}
+
+We will assume that there is some $\hat x \in P_1$ and $h > 0$ such that such that $A_1 \hat x \le b_1 - h$.
+
+% \subsubsection{Assumptions}
+% 
+% %The dimension of the range of $B'$ on $X$ equals the dimension of the range of $B$ on $X$ for all $\epsilon \ge 0$.
+% The dimension of the range of $N$ on $X$ equals the dimension of the range of $N'$ on $X$ for all $\epsilon \ge 0$.
+
+
+First, we will state some well known theorems without proof.
+\begin{theorem}[Hoffman's theorem of \cite{dummy:hoffman}]
+\label{hoffman}
+Suppose that $Ax \le b$ is consistent.
+Then there exists a value $\Gamma_0(A, b) > 0$ such that for any such $x$, there exists an $x_0$ with
+\begin{align*}
+Ax_0 \le b \\
+\|x - x_0\| \le \Gamma_0(A, b) \|(Ax - b)^+\|_\infty. \\
+\end{align*}
+
+This $\Gamma_0(A,b)$ is defined as follows, where $i_1, i_2, \ldots, i_r$ are the linearly independent rows of $A$ (which are assumed to be normalized) and $C_{i,j}$ is the $i,j$ cofactor of $C$:
+\begin{align*}
+\Lambda(C) = \sqrt{\sum_{j=1}^r\bigg(\sum_{i=1}^r C_{i,j}\bigg)^2} \\
+\Gamma_0(A, b) = \sqrt{\frac{\sum_{1 < j_1 < \ldots < j_k \le n} \|\Lambda^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}{\sum_{1 < j_1 < \ldots < j_k \le n} \|A^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}} \\
+\end{align*}
+\end{theorem}
+
+\begin{comment}
+Note that there also needs to be a constant for changing the metric norm.
+\end{comment}
+
+\begin{theorem}[Theorem 1.1 of \cite{dummy:continuity_of_inverse}]
+For two matrices $A$ and $B$, if $B = A + E$ and $\text{rank}(A) = \text{rank}(B)$, then
+
+\begin{align*}
+\|B^{\dagger} - A^{\dagger} \|_\infty \le \frac{1 + \sqrt{5}}{2} \|A^{\dagger}\|_\infty\|B^{\dagger}\|_\infty\|E\|_\infty.
+\end{align*}
+\end{theorem}
+
+\color{red}
+% 
+% 
+% 
+% 
+% \begin{theorem}[Lemma 4.1 of \cite{dummy:perturbations}]
+% \label{4_1}
+% Define $\hat {f_r} = P_r \begin{bmatrix}b \\ d \end{bmatrix}_r $. 
+% Let $h_i$ be the components of $h$ and define
+% \begin{align*}
+% \Gamma_3(A, N_r, h) = \frac{1}{2\|A\|\|N_r^{\dagger}\|}\frac{\max_i h_i}{\min_ih_i} \\
+% \delta = \frac{\max_i h_i}{2\|A\|\|N_r^{\dagger}\|}
+% \end{align*}
+% 
+% Then the system $Ax \le a''$ and $N_rx = f_r$ is simultaneously solvable whenever
+% $\|f_r - \hat{f_r}\| \le \delta$, $\|(a - a'')^+\|\le \delta$, and $\delta \le \Gamma_3(A, N_r, h) \min_{i} h_i$.
+% \end{theorem}
+% 
+% \ifnum\includeproofs=1
+% \begin{proof}
+% First note that $A$ is not empty, otherwise there would be nothing to prove.
+% Let $\hat x $ be such that $A\hat x \le a - h$ and $N_r \hat x = \hat f_r$.
+% Define $u = \hat x + N_r^{\dagger}(f_r - \hat f_r)$.
+% It follows that $\|u - \hat x\| \le \|N_r^{\dagger}\|\delta$.
+% Since $N_r$ has full row rank, it maps onto its column space, and hence it follows easily that
+% $N_r u = f_r$.
+% Thus, $Au - a'' = A\hat x - a + A(u - \hat x) + a - a'' \le -h + A(u - \hat x) + (a - a'')^+$.
+% 
+% 
+% %It is clear that for some $\Gamma_3(A, N_r, h)$ and for $\delta \le \Gamma_3(A, N_r, h) \min_i h_i$ this vector on the right will be negative and, in fact, less than or equal to $-\frac 1 2 h$.
+% The vector on the right will be less than or equal to $-\frac 1 2 h$ because
+% 
+% % We need
+% % \begin{align*}
+% % -h + A(u - \hat x) + (a - a'')^+ \le -\frac 1 2 h \\
+% % \delta \le\Gamma_3(*) \min_i h_i \\
+% % \end{align*}
+% % To acheive this, we let
+% \begin{align*}
+% \delta = \frac{\max_i h_i}{2\|A\|\|N_r^{\dagger}\|} \\
+% \delta e \le \frac h {2\|A\|\|N_r^{\dagger}\|} \\
+% -h + A(u - \hat x) + (a - a'')^+ \le -h + \|A\|\|N_r^{\dagger}\|\delta \le -\frac h 2 \\
+% \end{align*}
+% Finally,
+% \begin{align*}
+% \Gamma_3(A, N_r, h) = \frac{1}{2\|A\|\|N_r^{\dagger}\|}\frac{\max_i h_i}{\min_ih_i} \\
+% \Longrightarrow \delta = \frac{\max_i h_i}{2\|A\|\|N_r^{\dagger}\|} \le \Gamma_3(A, N_r, h)\min_ih_i \\
+% \end{align*}
+% 
+% Thus, $u$ solves $A u \le a'$ and $N_ru = f_r$ as required.
+% 
+% \end{proof}
+% \else
+% \begin{proof}
+% Proof omitted
+% \end{proof}
+% \fi
+\color{black}
+
+
+\begin{theorem}[Dramatic simplification of Lemma 4.1]
+\label{4_1}
+For some $b' \in \Rm$, the system $A_1x \le b'$ is solvable if $\|b_1 - b'\|_{\infty} \le \min_i h_i$.
+\end{theorem}
+
+\begin{proof}
+Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
+\end{proof}
+
+
+
+
+\begin{theorem}[Theorem 4.2 of \cite{dummy:perturbations}]
+\label{4_2}
+Suppose that $\epsilon \le \frac{\min_i h_i}{1 + M_2}$.
+Then, for every $s_1 \in P_1$ satisfying $\epsilon(1 + \|s_1\|) \le ?$ there corresponds an $s_2$ in $P_2$ satisfying 
+$\|s_1 - s_2\|\le \Gamma_0(A_1, b_1)\epsilon (1 + \|s_2\|)$.
+\end{theorem}
+
+\ifnum\includeproofs=1
+\begin{proof}
+Because $s \in P_1$, we know that $A_1s \le b_1$.
+Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
+Define $x_1 = s$, so that $x_1$ solves $A_1x_1 \le b_1$.
+For all $n = 1, 2, \ldots$, let $x_{n+1}$ to solve
+$A_1 x_{n+1} \le b_2 + (A_1 - A_2) x_n$.
+By \cref{4_1} this is solvable as long as
+\begin{align*}
+\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i,
+\end{align*}
+but we know that $\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_{\infty} \le \|\epsilon\|_\infty + \|\epsilon x_n^+\|_{\infty} \le \epsilon(1 + \|x_n\|_\infty)$.
+But 
+\begin{align*}
+\epsilon \le \frac{\min_i h_i}{1 + M_2} \Longrightarrow
+\epsilon(1 + \|s\|_\infty) \le \epsilon(1 + M_2) \le \min_i h_i
+\end{align*}
+% Thus, this will have a solution for a suitably small $\epsilon$ with a uniform bound on $\|x_n\|_\infty$.
+By \cref{hoffman}, there is a constant $\Gamma_1 = \Gamma_0(A_1, b_2 + (A_1 - A_2)x_n)$ such that we can find $x_2$ whose distance from $x_1$ is given by
+\begin{align*}
+\|x_2 - x_1\|_\infty \le \Gamma_1 \left\|[A_1x_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty.
+\end{align*}
+
+However,
+\begin{align*}
+\left\|[A_1x_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty \le \left\|[b_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty \le \epsilon(1 + \|s\|_\infty)
+\end{align*}
+so that
+\begin{align*}
+\|x_2 - x_1\|_\infty \le \Gamma_1  \epsilon(1 + \|s\|_\infty)
+\Longrightarrow \|x_2\|_\infty \le \|s\| _\infty+ \Gamma_1  \epsilon(1 + \|s\|_\infty).
+\end{align*}
+
+Continuing to use Hoffman's theorem, we see that 
+\begin{align*}
+\|x_{k+1} - x_{k}\|_\infty \le \Gamma_0(A_1, b_1)\|[A_1x_k - b_2 - (A_1 - A_2)x_k]^+\|_\infty \le \Gamma_0(A_1, b_1) \epsilon \|x_{k+1}-x_k\|_\infty.
+\end{align*}
+
+By induction we see that
+\begin{align*}
+\|x_{n+1}\|_\infty \le \|s\|_\infty + \|x_2 - x_1\|_\infty \left(\Gamma_0(A_1, b_1)\epsilon\right)^n \\
+\|x_{n+1} - x_n\|_\infty \le \left(\Gamma_0(A_1, b_1)\epsilon\right)^{n-1}\left\|x_2 - x_1\right\|_\infty \\
+\end{align*}
+
+This means that $\{x_n\}$ is Cauchy, so it must converge to a point $s'$ satisfying
+\begin{align*}
+\|s' - s\|_\infty = \|s' - x_1\|_\infty \le \frac{1}{1 - \Gamma_0(A_1, b_1)\epsilon}\|x_2 - x_1\| \le \epsilon\Gamma_0(A_1, b_1)\left(1 + \|s\|\right) \\
+\end{align*}
+
+We know that $s'$ solves $A_1s' \le b_2 + (A_1 - A_2)s'$ so that $A_2s' \le b_2$ and $s' \in S'$.
+\end{proof}
+
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{theorem}[Proposition 3.7 of \cite{dummy:continuity}]
+\label{3_7}
+There exist positive constants $c$ and  $\epsilon_0$ depending on $C'$ such that:
+to each $x \in C'$ satisyfing $\epsilon(1 + \|x\|) \le \epsilon_0$ there corresponds an $x' \in C'$ satisfying $\|x - x'\| \le c\epsilon(1 + \|x\|)$ and
+to each $x' \in C'$ there corresponds an $x \in C$ satisfying $\|x - x'\| \le c \epsilon (1 + \|x'\|)$.
+\end{theorem}
+
+\ifnum\includeproofs=1
+\begin{proof}
+Combine \cref{4_2} and \cref{hoffman}.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\begin{theorem}[Theorem 2.2 of \cite{dummy:continuity}]
+\label{2_2}
+Suppose that for each $r > 0$ the is a constant $c_r$ such that to each 
+$x$ in $C$ with $\|x\| \le r$ there corresponds an $x'$ in $C'$ with $\|x-x'\| \le c_r \epsilon$ and 
+to each $y' \in C'$ with $\|y'\| \le r$ there corresponds a $y\in C$ with $\|y - y'\| \le c_r \epsilon$.
+Then there exists a constant $c$ such that $\xo'$ satisifies $\|\bar x - \bar x '\|\le c \sqrt{\epsilon}$ as $\epsilon \to 0$.
+\end{theorem}
+
+\ifnum\includeproofs=1
+\begin{proof}
+For $\bar x'$ let $u' \in C'$ satisfy $\|u - \bar x\| \le c_{r_0} \epsilon$ for $\epsilon > 0$ where $r_0 = \|\bar x\|$.
+Since $\|\bar x \| \le \|u\| = \|\bar x + u - \bar x\| \le \|\bar x \| + c_{r_0} \epsilon \equiv r$, we know that there exist 
+$v \in C$ satisfying $\|\bar x' - v\| \le c_r \epsilon$.
+Because these are minimums over a convex set, we know that
+$\langle \xo', u - \xo'\rangle \ge 0$ and $\langle\xo, v-\xo\rangle \ge 0$ so that
+\begin{align*}
+0 \le \langle \xo' - \xo, \xo - \xo'\rangle + \langle \xo' - \xo, \xo'-v\rangle + \langle \xo', u - \xo + v - \xo'\rangle \\
+\Longrightarrow \|\xo ' - \xo \|^2 \le \|\xo' - \xo\|c_r \epsilon + r(2c_r\epsilon)
+\end{align*}
+\end{proof}
+
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+\begin{theorem}[Corollary 3.9 of \cite{dummy:continuity}]
+\label{3_9}
+There exist positive constants $\epsilon_0$ and $c$ such that for all $\epsilon \le \epsilon_0$,  one has $\|\xo - \xo'\| \le c \sqrt{\epsilon}$.
+\end{theorem}
+
+\ifnum\includeproofs=1
+\begin{proof}
+Combine \cref{3_7} and \cref{2_2}.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+\subsection{Convergence Proof}
+
+
+
+We will define:
+
+\begin{align*}
+S = \{k \in \ints | \rk > \eta \} \\
+\bar{S} = \{k \in \ints | \rk \ge \eta_1 \} \\
+c = \frac{L + \kappa_{g} + \frac {\beta} 2}{\kappa_f} \\
+c_0 = L + \kappa_{g} + \frac {\beta} 2 \\
+\mathcal K = \big \{ k \in \ints | \dk \le \min \{ \frac {\chik}{\beta}, \frac{1-\eta_1}{\chik}c, \oalpha \chik, 1 \} \big \}
+\end{align*}
+
+
+
+\subsubsection{$\mathcal K \subset \bar{S}$}
+\begin{theorem}
+Suppose that Hypothesis \cref{lipschitz_gradient},  \cref{bounded_hessians}, and \cref{bounded_below} hold. If $\mathcal K \subset \bar{S}$.
+\end{theorem}
+ 
+\ifnum\includeproofs=1
+\begin{proof}
+
+By the Mean Value Theorem, there exists a $t_k \in (0, 1)$ such that
+\begin{align*}
+f(\xk + \sk) = f(\xk) + \grad(\xk + t_k\sk)^T\sk
+\end{align*}
+
+By \cref{lipschitz_gradient}, \cref{bounded_hessians}, \cref{h4_placeholder},
+\begin{align*}
+|f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)| \\
+= |-(\grad(\xk + t_k\sk) - \gk)^T\sk + \frac 1 2 (\sk)^T \hk \sk| \\
+\le (\| \grad(\xk + t_k\sk) - \grad(\xk) \| + \| \grad(\xk)-\gk \|) \|\sk\| + \frac 1 2 \|\sk\|^2\|\hk\| \\
+\le (t_k L \|\sk\| + \kappa_{g}\dk) \|\sk\| + \frac 1 2 \beta \|\sk\|^2
+\end{align*}
+
+Since $\| \sk \| \le \dk$ and $t_k \in (0, 1)$ we have that
+\begin{align}
+|f(\xk) - f(\xk + \sk) - (\mfk(\xk) + \mfk(\xk + \sk)| \le c_0 \dk^2
+\end{align}
+
+By the definition of $\mathcal K$, for every $k \in \mathcal K$ we have that $\dk \le \oalpha \chik$ and consequently $\chik > 0$.
+By the efficiency condition, this means that $\mfk(\xk) - \mfk(\xk + \sk) \ne 0$.
+Then,
+\begin{align*}
+|\rk - 1| = \bigg |\frac{f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)}{\mfk(\xk) - \mfk(\xk + \sk)} \bigg | \\
+\le \frac {c_0 \dk^2} {\kappa_f \chik \min\{\frac{\chik}{\beta}, \dk, 1\}} \\
+= \frac {c \dk^2} {\chik \min\{\frac{\chik}{\beta}, \dk, 1\}}
+\end{align*}
+
+We also know that 
+\begin{align*}
+\dk = \min\{\frac {\chik} {\beta}, \dk, 1 \} \\
+\frac {c \dk}{\chik} \le 1 - \eta_1
+\end{align*}
+so that
+\begin{align*}
+|\rk - 1| \le 1 - \eta_1 \\
+\Longrightarrow \rk \ge \eta_1
+\end{align*}
+so that $k \in \bar{S}$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+
+\subsubsection{$\Delta_k \to 0$}
+\begin{theorem}
+Suppose Hypothesis \cref{bounded_below}, \cref{bounded_hessians}. Then the sequence $(\dk)$ converges to zero.
+\end{theorem}
+ 
+\ifnum\includeproofs=1
+\begin{proof}
+
+Suppose that $\bar{S}$ is finite. Then there exists $k_0 \in \ints$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
+Thus, $(\dk)$ converges to zero.
+From now on $\bar{S}$ is infinite.
+For any $k \in \bar{S}$, we know $\dk \le \oalpha \chik$ using \cref{bounded_hessians} we have
+\begin{align*}
+f(\xk) -  f(\xkpo) \ge \eta_1 \big (\mfk(\xk) - \mfk(\xk + \sk)\big ) \ge \eta_1 \kappa_f \chik \min\{\frac{\chik}{\beta}, \dk, 1\}\\
+f(\xk) - f(\xkpo) \ge \eta_1\kappa_f\frac{\dk}{\oalpha}\min\{\frac{\dk}{\oalpha \beta}, \dk, 1\}
+\end{align*}
+Because $f(\xk)$ is nonincreasing, the left hand side goes to zero.
+Thus,
+\begin{align}
+\lim_{k \in \bar{S}} \dk = 0
+\end{align}
+
+
+Consider the set
+$\mathcal U = \{ k \in \ints | k \not \in \bar S \}$.
+If $\mathcal U$ is finite, then $\lim_{k\to\infty}\dk = 0$.
+Otherwise, consider $k \in \mathcal U$ and define $\l_k$ to be the last index in $\bar S$ before $k$.
+Then $l_k$ is well-defined for all large $k$  and $\dk \le \omegainc \Delta_{l_k}$ which implies that
+\begin{align}
+\lim_{k \in \mathcal U } \dk \le \omegainc \lim_{k \in \mathcal U} \Delta_{l_k} = \omegainc \lim_{l_k \in \bar{S}} \Delta_{l_k}
+\end{align}
+
+so that $\lim_{k \in \mathcal U} \dk = 0$.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+
+\subsubsection{$\chik \to 0$ Part 1}
+\begin{theorem}
+Suppose that Hypothesis \cref{lipschitz_gradient}, \cref{h4_placeholder}. Then $\liminf_{k\to\infty} \chik = 0$.
+\end{theorem}
+ 
+\ifnum\includeproofs=1
+\begin{proof}
+Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $K > 0$ such that for $\chik \ge \epsilon$ for each $k \ge K$.
+Take $ \tilde \Delta = \min \{\frac{\epsilon}{\beta}, \frac{(1 - \eta_1)c}{\epsilon}, \oalpha \epsilon, 1\}$.
+Consider $k \ge K$.
+If $\dk \le \tilde \Delta$, then $k \in \mathcal K$.
+Then $k \in \bar S$ and thus $\dkpo \ge \dk$.
+Therefore, the trust region radius can only decrease if $\Delta > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
+Therefore, one can see that for all $k \ge K$
+\begin{align}
+\dk \ge \min\{\omegadec \tilde \Delta, \dk \}
+\end{align}
+which is a contradiction.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+\subsubsection{$\chik \to 0$ Part 2}
+\begin{theorem}
+Suppose that \cref{lipschitz_gradient}, \cref{bounded_below}, \cref{bounded_hessians}, \cref{h4_placeholder} hold and $\eta > 0$. Then $\lim_{k\to\infty}\chik=0$.
+\end{theorem}
+
+\ifnum\includeproofs=1
+\begin{proof}
+Suppose for a contradiction that for some $\epsilon > 0$ the set $\int ' = \{k \in \ints | \chik \ge \epsilon \}$
+is finite.
+
+Because $\lim_{k\to\infty}\Delta_k\to 0$, there exists a $k_0 \in \ints$ such that for all $k \ge k_0$,
+
+\begin{align*}
+\dk \le \min\{\frac{\epsilon}{\beta}, \frac{(1-\eta_1)\epsilon}{c}, \oalpha\chik, 1\}.
+\end{align*}
+
+Then if $k \in \ints '$ with $k \ge k_0$:
+
+\begin{align*}
+\dk \le \min\{\frac{\chik}{\beta}, \frac{(1-\eta_1)\chik}{c}, \oalpha\chik, 1\}
+\end{align*}
+
+and therefore $k \in \bar S \subset S$.
+
+Given $k \in \ints'$ with $k\ge k_0$, consider $l_k$ the first index such that $l_k > k$ and $\chi_{l_k} \le \frac{\epsilon} 2$.
+The existence of $l_k$ is ensured by lemma 3.3.
+This means that $\chik - \chi_{l_k} \ge \frac {\epsilon} 2 $.
+Using the definition of $\chik$, the triangle inequality and the contraction property of projections, we have that
+
+\begin{align*}
+\frac{\epsilon}{2} \le \|P_{\Omega}(\xk - \gk) - \xk\| - \|P_{\Omega}(x^{(l_k)} - g^{(l_k)}) - x^{(l_k)}\| \\
+\le \|P_{\Omega}(\xk - \gk) - \xk - P_{\Omega}(x^{(l_k)} - g^{(l_k)}) + x^{(l_k)}\| \\
+\le 2\|\xk - x^{(l_k)}\| + \|\gk - g^{(l_k)}\| \\
+=   2\|\xk - x^{(l_k)}\| + \|\gk - \grad(\xk) + \grad(\xk) - \grad(x^{(l_k)}) + \grad(x^{(l_k)}) - g^{(l_k)}\| \\
+\le 2\|\xk - x^{(l_k)}\| + \|\gk - \grad(\xk)\| + \|\grad(\xk) - \grad(x^{(l_k)})\| + \|\grad(x^{(l_k)}) - g^{(l_k)}\|.
+\end{align*}
+
+So that
+\begin{align}
+\frac{\epsilon} 2 \le (2 + L) \|\xk - x^{(l_k)}\| + \kappa_{g}(\dk + \Delta_{l_k}).
+\end{align}
+
+Consider $C_k = \{i \in S | k \le i < l_k\}$.
+Note that because $k \in S$, so $C_k \ne \varnothing $.
+For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians}, we conclude that 
+
+\begin{align}
+f(x^{(i)}) - f(x^{(i+1)}) \ge \eta\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \eta \kappa_f \chi_i \min\{\frac{\chi_{i}}{\beta}, \Delta_i, 1\} 
+\end{align}
+
+By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
+As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\beta}$ and $\Delta_i \le 1$.
+Therefore,
+\begin{align}
+\frac{\Delta_i}{2} \le \frac{\epsilon}{2\beta} \le \frac{\pi_i}{\beta}.
+\end{align}
+
+It follows that
+\begin{align}
+f(x^{(i)}) - f(x^{(i+1)}) > \frac{\eta \kappa_f \epsilon \Delta_i}{4}
+\end{align}
+
+and hence
+\begin{align}
+\Delta_i < \frac{4}{\eta \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\end{align}
+
+Meanwhile,
+\begin{align}
+\|x^{(i)} - x^{(l_k)}\| \le \sum_{i \in C_k}\|x^{(i)} - x^{(i+1)}\| \le \sum_{i \in C_k} \Delta_i
+\end{align}
+
+so that
+
+\begin{align}
+\|x^{(i)} - x^{(l_k)}\| < \frac{4}{\eta \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\end{align}
+
+We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
+Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \ints '}$ converges to zero.
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+\subsubsection{Convergence}
+
+\begin{theorem}
+Suppose that \cref{lipschitz_gradient}, \cref{bounded_below}, \cref{bounded_hessians}, and \cref{h4_placeholder} hold.
+
+If $\eta = 0$, then
+\begin{align}
+\liminf_{k\to\infty} \|P_{\Omega}(\xk - \grad(\xk)) - \xk \| = 0.
+\end{align}
+
+If $\eta > 0$, then
+\begin{align}
+\lim_{k\to\infty} \|P_{\Omega}(\xk - \grad(\xk)) - \xk \| = 0.
+\end{align}
+
+\end{theorem}
+
+
+\ifnum\includeproofs=1
+\begin{proof}
+By the triangle inequality, the contraction property of projections and \cref{h4_placeholder}, we have that
+
+\begin{align*}
+\|P_{\Omega}(\xk - \grad(\xk)) - \xk \| = \|P_{\Omega}(\xk - \grad(\xk)) - P_{\Omega}(\xk - \gk) + P_{\Omega}(\xk - \gk) - \xk\| \\
+\le \|P_{\Omega}(\xk - \grad(\xk)) - P_{\Omega}(\xk - \gk)\| + \|P_{\Omega}(\xk - \gk) - \xk\| \\
+\le \|\grad(\xk) - \gk\| + \|P_{\Omega}(\xk - \gk) - \xk\| \\
+\le \kappa_{g} \Delta_k + \chik
+\end{align*}
+\end{proof}
+\else
+\begin{proof}
+Proof omitted
+\end{proof}
+\fi
+
+
+
+
+
+\appendix
+
+\section{Table of Notation}
+\begin{longtable}{| p{.20\textwidth} | p{.80\textwidth} |}
+$\xk$ & is the current iterate in iteration $k$\\
+$\mfk$ & is the model of the objective $f$ during iteration $k$\\
+$\mcik$ & is the model of the $i$-th constraint $c_i$ during iteration $k$\\
+$\mck$ & is the model of the constraint $c$ during iteration $k$\\
+$\dk$ & is the outer trust region radius in iteration $k$ \\
+This & is some filler....... \\
+$\domain$ & is the domain \\
+$\real$ & is the real numbers \\
+$f$ & is the objective function \\
+$f_{\text{min}}$ & is a lower bound on the objective function \\
+$\beta$ & is a bound on the hessian of the model functions \\
+$c_i$ & are the constraints $\forall i \in \mathcal{I} \cup \mathcal{E} $ \\
+$e_i$ & is the unit vector \\
+$\phi_i$ & is a basis vector \\
+$Y$ & is the set of sample points \\
+$V$ & is a vander mode matrix \\
+$y^i$ & is a sample point \\
+$d$ & is the dimension of the space of model functions \\
+$\lambda_i$ & are the weights of a linear combination \\
+$\alpha_i$ & are the coefficients of a model function on its basis polynomials \\
+$\phi_i$ & are basis polynomials \\
+$p-1$ & is the size of the sample set \\
+$l_i$ & is a lagrange polynomial \\
+$\Lambda$ & is a constant bounding the poisedness of a sample set \\
+$\kappa_{ef},\kappa_{eg},\kappa_{eh}$ & are constants used to bound the model's error \\
+$\kappa_{f}$ & is a constant in the efficiency condition \\
+$\kappa_{g}$ & is a constant in the accuracy condition \\
+$\sk$ & is the trial point in iteration $k$ \\
+$\chik$ & is the criticality measure in iteration $k$ \\
+$\outertrk$ & is the outer trust region in iteration $k$ \\
+$\feasible$ & is the feasible region \\
+$\feasiblek$ & is the feasible region during iteration $k$ \\
+% $\innerfritr$ & is the feasible region intersect the inner trust region \\
+$\outerfritr$ & is the feasible region intersect the outer trust region \\
+$s$ & is the decision variable within the trust region subproblem \\
+$B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
+& $B_k(c;\Delta) = \{ x \in \mathbb{R}^n : \| x - c\|_k \le \Delta \}$ \\
+$\Delta$ & is the trust region radius \\
+$\rho$ & measures actual improvement over the predicted improvement \\
+$\gamma_1, \gamma_2$ &  are bounds on $\rho$ \\
+$\omega_{\text{dec}}, \omega_{\text{inc}}$ & are scalars used to manipulate the trust region radius \\
+$\tau$ & is a tolerance \\
+$\mathcal{F}^k$ & is the feasible region \\
+$f^k$ & is the function value \\
+$g^k$ & is the gradient of the model \\
+$A$ & is the jacobian of the constraint model functions \\
+$\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\
+$T$ & is an affine transformation that brings the trust region back to the origin \\
+$Q$ & is the semi-definite matrix defining the affine transformation $T$ \\
+$L$ & is a cholesky factorization of $Q$ \\
+$L$ & is the Lipschitz constant of $f$ \\
+$\mu^k$ & is the center of the ellipse \\
+$\ellipsek$ is the ellipse during iteration $k$ \\
+$\pi$ & is a scaling factor while finding the ellipse \\
+$d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\
+$M$ & is an upper bound \\
+$P$ & is a polyhedron \\
+$\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\
+$\tau_{\xi}$ & is a threshold for the criticallity measure \\
+$\tau_{\Delta}$ & is a threshold for the trust region radius
+\label{tab:TableOfNotation}
+\end{longtable}
+
+\newpage
+
+
+\bibliography{bibliography}
+\bibliographystyle{ieeetr}
+
+\end{document}
+
+
+
+
+
+
+
+
+
