@@ -63,6 +63,7 @@
 \newcommand{\reals}{\mathbb R}
 \newcommand{\dk}{\Delta_k}
 \newcommand{\fmin}{f_{\text{min}}}
+\newcommand{\gfmin}{M_{\nabla f}}
 
 
 \newcommand{\mfk}{{{m}_f}^{(k)}}
@@ -197,9 +198,15 @@
 \newcommand{\gcik}{{\nabla c_i (\xk)}}
 
 
-\newcommand{\capcones}{{C_{\cap}}}
-\newcommand{\linearization}{{C_{\bar \cap}}}
+\newcommand{\capcones}{{C^{(k)}_{\cap}}}
+\newcommand{\linearization}{{C^{(k)}_{L}}}
 
+
+\newcommand{\minangledelta}{{\Delta_{\alpha^{\star}}}}
+\newcommand{\minanglealpha}{{ \alpha^{\star} }}
+
+\newcommand{\tr}{{ B_{\infty}\left(\xk, \dk\right) }}
+\newcommand{\hfb}{{M_{\nabla^2 f}}}
 
 
 \def\includeproofs{1}
@@ -627,7 +634,7 @@ Our algorithm maintains up to three trust regions.
 The outer trust region is an $L_1$ ball of radius $ \dk $ defined by
 \begin{equation}
 \label{trust_region}
-\outertrk = B_{\infty}(\xk,\dk) = \{x\in \Rn | \; {\xk}_i - \dk \le x_i \le {\xk}_i + \dk \quad \forall 1\le i \le n\}.
+\outertrk = \tr = \{x\in \Rn | \; {\xk}_i - \dk \le x_i \le {\xk}_i + \dk \quad \forall 1\le i \le n\}.
 \end{equation}
 
 Note that the outer trust region may include infeasible points.
@@ -748,11 +755,11 @@ where
 \end{align}
 The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameter $\alpha$:
 \begin{align}
-\wik = \xk + \left(1 - \alpha\dk^{\frac 1 2}\right)\left(\zik - \xk\right). \label{def_w}
+\wik = \xk + \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right). \label{def_w}
 \end{align}
 The cone is then defined using the $\beta$ parameter by
 \begin{align}
-\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2 }\right\}. \label{def_f}
+\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk \right\}. \label{def_f}
 \end{align}
 
 
@@ -761,7 +768,7 @@ The cone is then defined using the $\beta$ parameter by
 \subsubsection{Linear Constraints}
 
 Throughout constructing an ellipsoid within these feasible cones, we must also require that the ellipsoid is contained within the trust region.
-Because this is $B_{\infty}(\xk, \dk)$, we can satisfy the trust region constraints by including linear constraints of the form $\xk_i - \dk \le x_i \le \xk_i + \dk$.
+Because this is $\tr$, we can satisfy the trust region constraints by including linear constraints of the form $\xk_i - \dk \le x_i \le \xk_i + \dk$.
 As done in the linear paper, using the work of \cite{Khachiyan1993} we handle the general constraints $Ax \le b$ for some $m\times n$ matrix $A$ and $b \in \Rm$.
 That is, given a polyhedron $P = \{ x \in \Rn\; | \;  Ax \le b \}$ defined by an $m \times n$ matrix $A$, and $b \in \Rm$,
 we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
@@ -1171,7 +1178,7 @@ Here we show how to construct the ellipsoid, and show its properties in \cref{fe
 
 First, we define the set of active constraints as
 \begin{align}
-\iik = \{1\le i \le m | \zik \in B_{\infty}(\xk, \dk) \} \label{def_i}
+\iik = \{1\le i \le m | \zik \in \tr \} \label{def_i}
 \end{align}
 and then compute a feasible direction for these active constraints:
 \begin{align}
@@ -1386,7 +1393,7 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
 	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $P_{\textrm{planes}}$.
 	
 	\item[\textbf{Step 1}] \textbf{(Construct ellipsoid)} \\
-	   Construct the largest possible ellipsoid within $P_{\textrm{planes}} \cap B_{\infty}(\xk, \dk)$
+	   Construct the largest possible ellipsoid within $P_{\textrm{planes}} \cap \tr$
     \end{itemize}
 \end{algorithm}
 
@@ -1497,10 +1504,19 @@ f(x) \ge \fmin \quad  \forall x \in \Omega
 
 
 \begin{assumption}
-\label{bounded_hessians}
-The matrices $\hk$ are uniformly bounded, that is, there exists a constant $ \beta \ge 1 $ such that 
+\label{bounded_gradient}
+The function $f$ has bounded gradient  in $ \Omega $. That is, there exists an $\gfmin$ such that
 \begin{align}
-\|\hk\| \le \beta - 1 \quad \forall k \ge 0.
+\|\nabla f(x)\| \le \gfmin \quad  \forall x \in \Omega
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{bounded_hessians}
+The matrices $\hk$ are uniformly bounded, that is, there exists a constant $ \hfb \ge 1 $ such that 
+\begin{align}
+\|\hk\| \le \hfb - 1 \quad \forall k \ge 0.
 \end{align}
 \end{assumption}
 
@@ -1677,17 +1693,17 @@ Proof omitted
 \begin{lemma}
 If 
 \begin{align}
-z^{(i, k)} \in B_{\infty}(\xk, \dk)) \label{z_is_active} \\
-M \ge \sup_{x \in B_{\infty}(\xk, \dk)} \frac 1 2 \nabla^2 c_i(x) \label{m_bounds} \\
+z^{(i, k)} \in \tr \label{z_is_active} \\
+M \ge \sup_{x \in \tr} \frac 1 2 \nabla^2 c_i(x) \label{m_bounds} \\
 \text{and} \quad \dk \le \min\left\{
 1,
 \left(\frac{\alpha g_{\text{low}}}{M \sqrt{n} + \epsilon_g}\right)^2,
-\left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3},
+\frac{\beta}{2\epsilon_{g}}g_{\text{low}},
 \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2
 \right\}, \label{delta_is_small_enough}
 \end{align} then
 \begin{align*}
-c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
+c_i(x) \le 0 \quad \forall x \in \fik \cap \tr.
 \end{align*}
 
 \end{lemma}
@@ -1697,22 +1713,33 @@ c_i(x) \le 0 \quad \forall x \in \fik \cap B_{\infty}(\xk, \dk).
 
 Let 
 \begin{align}
-y = \wik + ts \in \fik \cap B_{\infty}(\xk, \dk) \label{t_is_bounded}
+y = \wik + ts \in \fik \cap \tr \label{t_is_bounded}
 \end{align}
-with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$.
+with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk$.
 Because the model $m_{c_i}$ is fully quadratic, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds:
-\begin{align*}
-\nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu.
-\end{align*}
+\begin{align}
+\nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu. \label{model_error_for_gradient}
+\end{align}
+
+We know from \cref{m_bounds} that for all $x \in \tr$,
+\begin{align}
+c_i(x) \le c_i(\xk) + \nabla c_i(\xk)^T(x - \xk) + M \left \|x - \xk \right\|^2 \label{constraint_lower_bound}
+\end{align}
 
 First, we will show that $c(\wik) \le 0$.
 For simplicity, we use \cref{def_z}, and \cref{def_w} to compute
+% \begin{align}
+% \wik - \xk = \xk + \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) - \xk 
+% = \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) \\
+% =  \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gmcik\|^2}\gmcik - \xk\right) 
+% = \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik. \label{simple_computation}
+% \end{align}
+
+
 \begin{align}
-\wik - \xk & = & \xk + \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) - \xk 
-= \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\zik - \xk\right) \\
-& = &  \left(1 - \alpha \dk^{\frac 1 2 }\right)\left(\xk - \frac{c_i(\xk)}{\|\gmcik\|^2}\gmcik - \xk\right) 
-= \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik. \label{simple_computation}
+\wik - \xk = \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik. \label{simple_computation}
 \end{align}
+
 
 Also, note by \cref{delta_is_small_enough}, \cref{def_alpha_beta} that both
 \begin{align*}
@@ -1724,20 +1751,41 @@ M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} \le \alpha \|\gmcik\| \qu
 We can combine these and \cref{z_is_active} to find 
 \begin{align*}
 M \sqrt{n}\dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2  + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right) \le M \sqrt{n}\dk^{\frac 1 2} + \epsilon_g \dk^{\frac 1 2} \le \alpha \|\gmcik\| \\
-\Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gmcik\| + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \sqrt{n}\dk+ \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le  0 \\
-\Longrightarrow -\alpha \dk^{\frac 1 2 }\|\gmcik\|\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)^2\\
-\epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) \le 0.
 \end{align*}
-
-However, we also know by \cref{m_bounds}, \cref{simple_computation} and the Mean Value Theorem, that
+Multiplying by $\dk^{\frac 1 2}$ we see,
 \begin{align*}
-0 &\ge& \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} & \\
-&\ge& \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\nu^T\gmcik & \\
-&=& c_i(\xk)\left[1 - \left(1 - \alpha \dk^{\frac 1 2 }\right)\right] + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 1 2 }\right)^2 + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
-&& + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
-&=& c_i(\xk) + \left(\gmcik\right)^T\left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik + M \left\|\left(1 - \alpha \dk^{\frac 1 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik\right\|^2 & \\
-&=& c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right)+ M \left\|\wik - \xk\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) & \\
- & = & c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \ge c_i(\wik). &
+-\alpha \dk^{\frac 1 2 }\|\gmcik\| + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \sqrt{n}\dk+ \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le  0.
+\end{align*}
+Multiplying by $-\frac{c_i(\xk)}{\|\gmcik\|} > 0$ and using $\zik \in \tr \Longrightarrow \frac{-c_i(\xk)}{\|\gmcik\|} \le \sqrt{n}\dk$, we see
+\begin{align*}
+-\alpha \dk^{\frac 1 2 }\|\gmcik\|\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) + M \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)^2\\
++\epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) \le 0.
+\end{align*}
+Cancelling terms, we see
+\begin{align*}
+0 \ge \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|}.
+\end{align*}
+Because the last term is positive, we can only decrease the expression by multiplying by $\nu^T \frac{\gmcik}{\|\gmcik\|} \le 1$:
+\begin{align*}
+0\ge \alpha \dk^{\frac 1 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\nu^T\gmcik
+\end{align*}
+Using \cref{simple_computation}, this is
+\begin{align*}
+0 \ge c_i(\xk)\left[1 - \left(1 - \alpha \dk^{\frac 3 2 }\right)\right] + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right)
+\end{align*}
+Multiplying $c_i(\xk)$ by $1 = \frac{\|\gmcik\|^2}{\|\gmcik\|^2}$ and distributing, we find
+\begin{align*}
+0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik  \\
++ M \left\|\left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik\right\|^2
++ \epsilon_g \dk^2\nu^T \left(\wik - \xk\right)
+\end{align*}
+Using \cref{simple_computation}, we see
+\begin{align*}
+0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right)+ M \left\|\wik - \xk\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right).
+\end{align*}
+Using \cref{model_error_for_gradient} and \cref{constraint_lower_bound} we see
+\begin{align*}
+0 \ge c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \ge c_i(\wik). 
 \end{align*}
 
 % \begin{align*}
@@ -1768,37 +1816,41 @@ However, we also know by \cref{m_bounds}, \cref{simple_computation} and the Mean
 % = \dk^{\frac 3 2} \left(\epsilon_g \dk^{\frac 3 2} + c_i(\xk)\alpha + M \dk^{\frac 1 2}\right) \\
 
 
-Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{\frac 1 2}$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_gk}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
+Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
 
 % \Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
 % \Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
 \begin{align}
-\dk \le \left(\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right)^{\frac 2 3} 
-\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
-\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{\frac 3 2} \le \|\gmcik\| - \frac 1 2 g_{\text{low}} \nonumber \\
-\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2  \nonumber \\
-\Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
-\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} 
-\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}. \label{nsc_pos}
+\dk \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
+\Longrightarrow \dk \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
+\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk \le \|\gmcik\| - \frac 1 2 g_{\text{low}} \nonumber \\
+\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk \ge \frac 1 2 g_{\text{low}} \beta \dk + \epsilon_{g}\dk^2  \nonumber \\
+\Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
+\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk 
+\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk. \label{nsc_pos}
 \end{align}
 
 % So that if $\xk + ts \in B_{\infty}(\xk, \dk)$, then 
 
 We also know by \cref{delta_is_small_enough} that
+\color{red}
+
+
 % \Longrightarrow \dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}
 \begin{align}
-\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} \right]^2 
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk^{\frac 1 2} \le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2}
-\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \label{eqn2}
+\dk \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} 
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk\le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk
+\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk \label{eqn2}
 \end{align}
+\color{black}
 which implies by \cref{def_g_bounds}, \cref{t_is_bounded}, \cref{nsc_pos}, \cref{eqn2}
 
 % t \le -\frac 1 M \left( \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts\right) \\
 \begin{align}
 t 
 \le \sqrt{n} \dk 
-\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} 
+\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk
 \le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \nonumber \\
 \Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0. \label{eqn3}
 \end{align}
@@ -1827,12 +1879,12 @@ Proof omitted
 
 
 \begin{lemma}
-We have that $\cap_{i \in \iik} \fik \cap B_{\infty}(\xk, \dk) \subseteq \feasible$ 
+We have that $\cap_{i \in \iik} \fik \cap \tr \subseteq \feasible$ 
 \end{lemma}
 
 \ifnum\includeproofs=1
 \begin{proof}
-This follows directly from $x \in \fik \cap B_{\infty}(\xk, \dk) \Longrightarrow c_i(x) \le 0$.
+This follows directly from $x \in \fik \cap \tr \Longrightarrow c_i(x) \le 0$.
 \end{proof}
 \else
 \begin{proof}
@@ -1987,12 +2039,12 @@ Note that the condition number is given by
 \end{align*}
 because the condition number of a matrix is not affected by rotations.
 
-We have already shown that the cone $\fcki \cap B_{\infty}(\xk, \dk) \subset \feasible$.
+We have already shown that the cone $\fcki \cap \tr \subset \feasible$.
 By construction, the ellipse has been shifted to put $\xk$ at the origin and rotated by $R$ to put $\hat u$ along the x-axis.
 Thus, by \cref{ellipse_in_cone}, we know that $E_k \subseteq \fcki$.
-We know that $t_k > \dk$ because it measures the distance from $\xk$ to some point on the boundary of $B_{\infty}(\xk, \dk)$.
+We know that $t_k > \dk$ because it measures the distance from $\xk$ to some point on the boundary of $\tr$.
 Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 \dk$ along $\huk$.
-Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $B_{\infty}(\xk, \dk)$.
+Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $\tr$.
 \end{proof}
 \else
 \begin{proof}
@@ -2019,7 +2071,7 @@ As in \cref{definefeasiblek},
 
 However, for this anslysis, we limit ourselves to the smaller region
 \begin{align}
-\trsfesset = \left\{x \in \Rn | x \in B_{\infty}(\xk, \dk)\cap \mcik(x) \le 0 \; \forall 1 \le i \le m\cap \|x - y \| \ge \trstol \forall y \in \bar \feasible\right\}
+\trsfesset = \left\{x \in \Rn | x \in \tr \cap \mcik(x) \le 0 \; \forall 1 \le i \le m\cap \|x - y \| \ge \trstol \forall y \in \bar \feasible\right\}
 \end{align}
 
 \begin{lemma}
@@ -2088,7 +2140,7 @@ This follows immediately from \cref{trs_subset} and the fact that $s^{\star}$ is
 \end{proof}
 
 \begin{lemma}
-There exists a constant $c$ such that if $s_1 \in \argmin_{\trsfesset}\mfk(s)$ and $s_2 \in \argmin_{\feasiblek \cap B_{\infty}(\xk, \dk)} \mfk(s)$, then $\mfk(s_1) \le c \mfk(s_2)$.
+There exists a constant $c$ such that if $s_1 \in \argmin_{\trsfesset}\mfk(s)$ and $s_2 \in \argmin_{\feasiblek \cap \tr} \mfk(s)$, then $\mfk(s_1) \le c \mfk(s_2)$.
 \end{lemma}
 
 \begin{proof}
@@ -2108,7 +2160,323 @@ a
 \end{proof}
 
 
-% \subsection{Sufficient Reduction}
+\subsection{Sufficient Reduction}
+
+
+Define $\capcones$ to be the set within the cones of each constraint:
+% \cap_{i=1}^m  
+\begin{align}
+\label{definecapcones}
+\capcones = \{x\in\Rn | x \in \fik \quad \forall 1 \le i \le m \} 
+\end{align}
+and $\linearization$ to be the linearization of the constraints:
+\begin{align}
+\linearization = \{x \in\Rn | x \in \nabla \mcik(\xk)^Tx \le \mcik(\xk) \quad \forall 1\le i\le m\}.
+\end{align}
+
+We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
+This statement is formalized in the following theorem.
+
+
+\begin{assumption}
+\label{minangleassumption}
+There exists a $\minangledelta > 0$ and a $\minanglealpha > 0$ such that for each $x \in \domain$ there exists a $u \in \Rn$ with $\|u\| = 1$ such that 
+if $\dk \le \minangledelta$ and $i$ is such that 
+$\zik \in \tr$
+then
+\begin{align*}
+-\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha.
+\end{align*}
+
+\end{assumption}
+
+
+
+\begin{theorem}
+Define 
+\begin{align}
+u_l = P_{\linearization}(\xk - \gk) \\
+u_c = P_{\capcones\cap\tr}(\xk-\gk) \\
+u_{GC} = P_{\linearization\cap\tr}(\xk-\gk) \\
+\delta = \frac 1 {2\gfmin} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \label{sr_define_delta}
+\end{align}
+and let $\kappa_{\chi} > 0$ be a constant.
+Then, by letting $\kappa_{r} > 0$ be defined by
+\begin{align}
+\kappa_r = \min\{\frac 1 2 , \}
+\end{align}
+we know that if, during iteration $k$, we have
+\begin{align}
+\chik \ge \kappa_{\chi} \dk \label{sr_chi_big_enough}
+\end{align}
+and
+\begin{align}
+\dk \le \min\left\{1, \minangledelta, \left(\frac 1 2 \frac{\delta\minanglealpha^2\min\{\kappa_{\chi}, 1 \}}{\sqrt{2}\left(2\beta + \alpha\right)}\right)^2 \right\}, \label{sr_delta_small_enough}
+\end{align}
+we also have
+\begin{align*}
+\left(-\gk\right)^T \left(u_c - \xk\right) \ge \kappa_r \left(-\gk\right)^T \left(u_{GC} - \xk\right) \\
+\end{align*}
+% \mfk(\xk) - \mfk(u_c) \ge \kappa_{r} \left(\mfk(\xk) - \mfk(u_l) \right).
+\end{theorem}
+
+\begin{proof}
+
+
+By \cref{sr_delta_small_enough} $\dk \le \minangledelta$, we know by \cref{minangleassumption}
+that there is a $u$ with $-\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha$ for any $i$ with $\zik \in \tr$.
+
+\emph{Case 1}
+
+Consider the case that
+\begin{align*}
+-u^T \frac{u_{GC}- \xk}{\|u_{GC} - \xk\|} \le \frac 1 2 \minanglealpha \Longrightarrow u^T \frac{u_{GC} - \xk}{\|u_{GC}- \xk\|} \ge -\frac 1 2\minanglealpha
+\end{align*}
+
+
+Then $u + t u_l$ where $\frac{u + t u_l}{\|u + t u_l\|}^T\frac{u_l}{\|u_l\|} = \frac 1 2\minanglealpha$  defines a decent direction that achieves $\frac 1 2 \dk \minanglealpha$ the decrease of $u_l$.
+
+\begin{comment}
+TODO, fill in
+\end{comment}
+
+\emph{Case 2}
+We may now suppose that 
+\begin{align}
+-u^T \frac{u_{GC}- \xk}{\|u_{GC} - \xk\|} \ge \frac 1 2 \minanglealpha. \label{sr_case_2}
+\end{align}
+Consider the point 
+\begin{align}
+v = u_{GC} - \delta \dk \left(\left(u_{GC}- \xk\right)^T u\right)u. \label{define_v}
+\end{align}
+
+
+Because we are using a linear criticality measure, $u_{GC}$ is the Cauchy point, and using \cref{sr_chi_big_enough}, \cref{sr_delta_small_enough} we know that
+\begin{align*}
+\left(-\gk\right)^T\left(u_{GC} - \xk\right) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\} \\
+ \ge \kappa_f \kappa_{\chi} \dk \min\left\{ \frac{\kappa_{\chi} \dk}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
+ \ge \kappa_f \kappa_{\chi} \dk^2 \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}.
+\end{align*}
+Using this and \cref{sr_define_delta}, we know that
+\begin{align*}
+\delta \dk  \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \le \delta\gfmin  \dk^2  \\
+\le \frac 1 2 \kappa_f \kappa_{\chi} \dk^2 \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}
+\le \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) \\
+\end{align*}
+so that
+\begin{align*}
+\left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \\
+\ge\left(-\gk\right)^T\left(u_{GC} - \xk\right)  - \delta \dk \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right|  \\
+\ge \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right)
+\end{align*}
+
+
+
+
+
+
+\begin{align*}
+\left(-\gk\right)^T\left(u_{GC} - v\right) = \delta\dk\left(u_{GC} - \xk\right)^Tu\left(-\gk\right)^Tu
+\end{align*}
+
+
+% \ge \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \dk^2 - \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right|
+% \ge \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \dk^2 - \delta \chik\dk^2 \\
+% \ge \left(\kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} - \delta \kappa_{\chi}\right)\dk^2
+% = \frac 1 2 \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}\dk^2
+% \begin{align*}
+% \left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \\
+% \ge \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \\
+% \ge \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \\
+% \end{align*}
+
+
+
+
+
+
+
+
+
+
+
+
+We will first show several identities for any some cosntraint $c_i$.
+\color{red}
+If $\zik \not \in \tr$, then constraint $c_i$ cannot remove $v$ as $v\in\tr$.
+\color{black}
+Thus, by \cref{sr_delta_small_enough}, \cref{minangleassumption}, 
+\begin{align}
+-\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^Tu \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
+\end{align}
+However, because $u_l$ is feasible with respect to the linearization of the constraints, we also know that
+\begin{align}
+\left(\zik - \xk\right)^T(u_{GC} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
+\end{align}
+
+
+If $u_l \in \tr$, then by \cref{sr_chi_big_enough} $\left\|u_{GC} - \xk\right\|  = \left\|u_{l} - \xk\right\| = \chik \ge \kappa_{\chi} \dk$.
+If $u_l \not \in \tr$, then a trust region constraint is active and $\left\|u_{GC} - \xk\right\| \ge \dk$.
+In either case, we find that 
+\begin{align}
+\left\|u_{GC} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
+\end{align}
+
+Also, by the triangle inequality and \cref{def_z}, \cref{def_w}
+\color{red}show $v \in \tr$ \color{black}
+\begin{align}
+\left\|v - \wik\right\| \le \left\|v - \xk\right\| + \left\|\wik-\xk \right\| \le \sqrt{n}\dk + \|\zik - \xk\| \le 2\sqrt{2}\dk \label{v_minus_w_small}
+\end{align}
+
+
+Now, by \cref{sr_delta_small_enough},
+\begin{align*}
+\dk \le \left(\frac 1 2 \frac{\delta\minanglealpha^2\min\{\kappa_{\chi}, 1 \}}{\sqrt{2}\left(2\beta + \alpha\right)}\right)^2
+\Longrightarrow
+\frac 1 2 \delta\minanglealpha^2\min\{\kappa_{\chi}, 1 \}\dk
+\ge\sqrt{2} \left(2\beta + \alpha\right)\dk^{\frac 3 2}
+\end{align*}
+Using \cref{v_minus_w_small} and \cref{gc_is_feasible} 
+\begin{align*}
+\Longrightarrow
+\frac 1 2 \delta\minanglealpha^2\min\{\kappa_{\chi}, 1 \}\dk
+\ge \beta \dk^{\frac 1 2} \left\|v - \wik\right\| + \alpha\dk^{\frac 1 2}\left\|\zik - \xk \right\|.
+\end{align*}
+Using \cref{gc_big_enough}
+\begin{align*}
+\Longrightarrow
+\frac 1 2 \delta\minanglealpha^2 \left\|u_{GC} - \xk\right\|
+\ge \beta \dk^{\frac 1 2} \left\|v - \wik\right\| + \alpha\dk^{\frac 1 2}\left\|\zik - \xk \right\|
+\end{align*}
+
+xxx
+
+
+\begin{align}
+\Longrightarrow
+\frac 1 2 \delta\minanglealpha^2 \min\{\kappa_{\chi}, 1 \}\dk^{\frac 1 2}
+\ge 2\beta\sqrt{2} + \alpha\dk \min\{\kappa_{\chi}, 1 \}
+\end{align}
+
+
+\begin{align}
+\Longrightarrow
+\frac 1 2 \delta\minanglealpha^2 \min\{\kappa_{\chi}, 1 \}\dk^2
+\ge 2\beta\sqrt{2} \dk^{\frac 3 2} + \alpha\dk^{\frac 5 2} \min\{\kappa_{\chi}, 1 \}
+\end{align}
+
+
+\begin{align}
+\Longrightarrow
+\left(\frac 1 2 \delta\dk\minanglealpha^2 -\alpha\dk^{\frac 3 2}\right)\dk \min\{\kappa_{\chi}, 1 \}
+\ge 2\beta\sqrt{2} \dk^{\frac 3 2}
+\end{align}
+\begin{align}
+\Longrightarrow
+\left(\frac 1 2 \delta\dk\minanglealpha^2 -\alpha\dk^{\frac 3 2}\right)\left\|u_{GC} - \xk\right\|
+\ge \beta \dk^{\frac 1 2} \left\|v - \wik\right\| \label{sr_smh}
+\end{align}
+
+However, using \cref{def_z}, \cref{def_w}, \cref{define_v}
+\begin{align*}
+\left(v - \wik \right)^T\left(\xk - \zik \right) \\
+=\left( u_{GC} - \delta\dk \left(\left(u_{GC} - \xk\right)^T u\right)u - \xk - \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) \right)^T\left(\xk - \zik \right) \\
+=\left[
+-\left( u_{GC}- \xk\right)^T\left(\zik - \xk \right) 
++\left(1 - \alpha\dk^{\frac 3 2}\right)\left\|\zik - \xk\right\|^2
+\right]
+- \delta\dk\left[ \left(u_{GC} - \xk\right)^T u\right]\left[ \left(\xk - \zik \right)^Tu\right]
+\end{align*}
+Using \cref{u_is_feasible}, \cref{gc_is_feasible}, \cref{sr_case_2}
+\begin{align*}
+\left(v - \wik \right)^T\left(\xk - \zik \right)\ge-\alpha\dk^{\frac 3 2}\left( u_{GC}- \xk\right)^T\left(\zik - \xk \right)
++ \frac 1 2 \delta\dk\minanglealpha^2 \left\|u_{GC} - \xk\right\| \|\zik - \xk\| \\
+\ge \left(\frac 1 2 \delta\dk\minanglealpha^2 -\alpha\dk^{\frac 3 2}\right)\left\|u_{GC} - \xk\right\| \|\zik - \xk\|
+\end{align*}
+or
+\begin{align*}
+\ge \left(\frac 1 2 \delta\dk\minanglealpha^2 \|\zik - \xk\| -\alpha\dk^{\frac 3 2}\left\|u_{GC} - \xk\right\|\right) \|\zik - \xk\|
+\end{align*}
+
+
+
+Using \cref{sr_smh},
+\begin{align*}
+\left(v - \wik \right)^T\left(\xk - \zik \right)\ge\|\zik - \xk\|  \left[
+\frac 1 2 \delta\dk\minanglealpha^2 \left\|u_{GC} - \xk\right\|
+-\alpha\dk^{\frac 1 2}\left\|\zik - \xk \right\| \right] \\
+\Longrightarrow \left(v - \wik \right)^T\left(\xk - \zik \right)\ge\beta \dk^{\frac 3 2} \left\|v - \wik\right\| \left\| \xk - \zik\right\| \\
+\Longrightarrow -\frac {\left(v - \wik \right)}{\left\|v - \wik \right\|}^T\frac{\gmcik}{\left\|\gmcik\right\|}\ge\beta \dk^{\frac 1 2}
+\Longrightarrow v \in \fik.
+\end{align*}
+
+
+\end{proof}
+
+
+
+xxxx
+
+
+\begin{align*}
+\frac 1 2 \dk\delta\minanglealpha^2 \left\|u_{GC} - \xk\right\| 
+\ge
+\beta \dk^{\frac 1 2} \left\|v - \wik\right\| + \alpha\dk^{\frac 1 2}\left\|\zik - \xk \right\| \\
+\frac 1 2\dk^{\frac 1 2} \delta\minanglealpha^2 \left\|u_{GC} - \xk\right\| 
+\ge
+\beta  \left\|v - \wik\right\| + \alpha\left\|\zik - \xk \right\| \\
+\frac 1 2 \delta\minanglealpha^2 \left\|u_{GC} - \xk\right\| 
+\ge
+(\beta + \alpha) \dk^{\frac 1 2} \\
+\end{align*}
+
+
+
+
+\subsubsection{}
+
+
+
+
+
+\begin{theorem}
+Let $c$ be an arbitrary constant.
+Then, if $\dk \le $, and $\chik \ge c \dk$, then there is a point $s \in $ such that $\mfk(\xk) - \mfk(s) \ge \chik$.
+\end{theorem}
+
+
+
+Suppose that $\chik \ge c \dk$.
+
+
+
+% 
+% 
+% \begin{align}
+% -\frac{\left(v - \xk\right)^T}{\left\|v - \xk\right\|}\frac{\gmcik}{\left\|\gmcik \right\|} \ge \alpha \dk^{\frac 1 2}
+% \end{align}
+% 
+% % = \left[\left(u - \xk\right)^T\gk+ \frac{\left\|\gk\right\|^2 - \left(u - \xk\right)^T\gk}{\left(\xk\right)^T\gk}\left(\left(\xk\right)^T\gk - \left\|\gk\right\|^2\right) \right] \\
+% 
+% 
+% 
+
+
+
+% \begin{align}
+% u + z \left(\xk - \gk - u\right) \\
+% \left[ u - \xk + z \left(\xk - \gk - u\right) \right] ^T \gk = 0\\
+% \left( u - \xk\right)^T\gk - z \left(\gk + \left(u - \xk\right) \right) ^T \gk = 0\\
+% z \left(\left\|\gk\right\|^2 + \left(u - \xk\right)^T\gk \right) = \left( u - \xk\right)^T\gk\\
+% z \left(\frac {\left\|\gk\right\|^2}{ \left( u - \xk\right)^T\gk} + 1 \right) = 1\\
+% z = \left(\frac {\left\|\gk\right\|^2}{ \left( u - \xk\right)^T\gk} + 1 \right)^{-1}\\
+% \end{align}
+
+
+
+
+
+
 % 
 % Let 
 % \begin{align}
@@ -2454,9 +2822,9 @@ We will define:
 \begin{align*}
 S = \{k \in \ints | \rk > \eta \} \\
 \bar{S} = \{k \in \ints | \rk \ge \eta_1 \} \\
-c = \frac{L + \kappa_{g} + \frac {\beta} 2}{\kappa_f} \\
-c_0 = L + \kappa_{g} + \frac {\beta} 2 \\
-\mathcal K = \big \{ k \in \ints | \dk \le \min \{ \frac {\chik}{\beta}, \frac{1-\eta_1}{\chik}c, \oalpha \chik, 1 \} \big \}
+c = \frac{L + \kappa_{g} + \frac {\hfb} 2}{\kappa_f} \\
+c_0 = L + \kappa_{g} + \frac {\hfb} 2 \\
+\mathcal K = \big \{ k \in \ints | \dk \le \min \{ \frac {\chik}{\hfb}, \frac{1-\eta_1}{\chik}c, \oalpha \chik, 1 \} \big \}
 \end{align*}
 
 
@@ -2479,7 +2847,7 @@ By \cref{lipschitz_gradient}, \cref{bounded_hessians}, \cref{h4_placeholder},
 |f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)| \\
 = |-(\grad(\xk + t_k\sk) - \gk)^T\sk + \frac 1 2 (\sk)^T \hk \sk| \\
 \le (\| \grad(\xk + t_k\sk) - \grad(\xk) \| + \| \grad(\xk)-\gk \|) \|\sk\| + \frac 1 2 \|\sk\|^2\|\hk\| \\
-\le (t_k L \|\sk\| + \kappa_{g}\dk) \|\sk\| + \frac 1 2 \beta \|\sk\|^2
+\le (t_k L \|\sk\| + \kappa_{g}\dk) \|\sk\| + \frac 1 2 \hfb \|\sk\|^2
 \end{align*}
 
 Since $\| \sk \| \le \dk$ and $t_k \in (0, 1)$ we have that
@@ -2492,13 +2860,13 @@ By the efficiency condition, this means that $\mfk(\xk) - \mfk(\xk + \sk) \ne 0$
 Then,
 \begin{align*}
 |\rk - 1| = \bigg |\frac{f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)}{\mfk(\xk) - \mfk(\xk + \sk)} \bigg | \\
-\le \frac {c_0 \dk^2} {\kappa_f \chik \min\{\frac{\chik}{\beta}, \dk, 1\}} \\
-= \frac {c \dk^2} {\chik \min\{\frac{\chik}{\beta}, \dk, 1\}}
+\le \frac {c_0 \dk^2} {\kappa_f \chik \min\{\frac{\chik}{\hfb}, \dk, 1\}} \\
+= \frac {c \dk^2} {\chik \min\{\frac{\chik}{\hfb}, \dk, 1\}}
 \end{align*}
 
 We also know that 
 \begin{align*}
-\dk = \min\{\frac {\chik} {\beta}, \dk, 1 \} \\
+\dk = \min\{\frac {\chik} {\hfb}, \dk, 1 \} \\
 \frac {c \dk}{\chik} \le 1 - \eta_1
 \end{align*}
 so that
@@ -2530,8 +2898,8 @@ Thus, $(\dk)$ converges to zero.
 From now on $\bar{S}$ is infinite.
 For any $k \in \bar{S}$, we know $\dk \le \oalpha \chik$ using \cref{bounded_hessians} we have
 \begin{align*}
-f(\xk) -  f(\xkpo) \ge \eta_1 \big (\mfk(\xk) - \mfk(\xk + \sk)\big ) \ge \eta_1 \kappa_f \chik \min\{\frac{\chik}{\beta}, \dk, 1\}\\
-f(\xk) - f(\xkpo) \ge \eta_1\kappa_f\frac{\dk}{\oalpha}\min\{\frac{\dk}{\oalpha \beta}, \dk, 1\}
+f(\xk) -  f(\xkpo) \ge \eta_1 \big (\mfk(\xk) - \mfk(\xk + \sk)\big ) \ge \eta_1 \kappa_f \chik \min\{\frac{\chik}{\hfb}, \dk, 1\}\\
+f(\xk) - f(\xkpo) \ge \eta_1\kappa_f\frac{\dk}{\oalpha}\min\{\frac{\dk}{\oalpha \hfb}, \dk, 1\}
 \end{align*}
 Because $f(\xk)$ is nonincreasing, the left hand side goes to zero.
 Thus,
@@ -2568,7 +2936,7 @@ Suppose that Hypothesis \cref{lipschitz_gradient}, \cref{h4_placeholder}. Then $
 \ifnum\includeproofs=1
 \begin{proof}
 Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $K > 0$ such that for $\chik \ge \epsilon$ for each $k \ge K$.
-Take $ \tilde \Delta = \min \{\frac{\epsilon}{\beta}, \frac{(1 - \eta_1)c}{\epsilon}, \oalpha \epsilon, 1\}$.
+Take $ \tilde \Delta = \min \{\frac{\epsilon}{\hfb}, \frac{(1 - \eta_1)c}{\epsilon}, \oalpha \epsilon, 1\}$.
 Consider $k \ge K$.
 If $\dk \le \tilde \Delta$, then $k \in \mathcal K$.
 Then $k \in \bar S$ and thus $\dkpo \ge \dk$.
@@ -2600,13 +2968,13 @@ is finite.
 Because $\lim_{k\to\infty}\Delta_k\to 0$, there exists a $k_0 \in \ints$ such that for all $k \ge k_0$,
 
 \begin{align*}
-\dk \le \min\{\frac{\epsilon}{\beta}, \frac{(1-\eta_1)\epsilon}{c}, \oalpha\chik, 1\}.
+\dk \le \min\{\frac{\epsilon}{\hfb}, \frac{(1-\eta_1)\epsilon}{c}, \oalpha\chik, 1\}.
 \end{align*}
 
 Then if $k \in \ints '$ with $k \ge k_0$:
 
 \begin{align*}
-\dk \le \min\{\frac{\chik}{\beta}, \frac{(1-\eta_1)\chik}{c}, \oalpha\chik, 1\}
+\dk \le \min\{\frac{\chik}{\hfb}, \frac{(1-\eta_1)\chik}{c}, \oalpha\chik, 1\}
 \end{align*}
 
 and therefore $k \in \bar S \subset S$.
@@ -2634,14 +3002,14 @@ Note that because $k \in S$, so $C_k \ne \varnothing $.
 For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians}, we conclude that 
 
 \begin{align}
-f(x^{(i)}) - f(x^{(i+1)}) \ge \eta\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \eta \kappa_f \chi_i \min\{\frac{\chi_{i}}{\beta}, \Delta_i, 1\} 
+f(x^{(i)}) - f(x^{(i+1)}) \ge \eta\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \eta \kappa_f \chi_i \min\{\frac{\chi_{i}}{\hfb}, \Delta_i, 1\} 
 \end{align}
 
 By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
-As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\beta}$ and $\Delta_i \le 1$.
+As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\hfb}$ and $\Delta_i \le 1$.
 Therefore,
 \begin{align}
-\frac{\Delta_i}{2} \le \frac{\epsilon}{2\beta} \le \frac{\pi_i}{\beta}.
+\frac{\Delta_i}{2} \le \frac{\epsilon}{2 \hfb} \le \frac{\pi_i}{\hfb}.
 \end{align}
 
 It follows that
@@ -2727,7 +3095,7 @@ $\domain$ & is the domain \\
 $\real$ & is the real numbers \\
 $f$ & is the objective function \\
 $f_{\text{min}}$ & is a lower bound on the objective function \\
-$\beta$ & is a bound on the hessian of the model functions \\
+$\hfb$ & is a bound on the hessian of the model functions \\
 $c_i$ & are the constraints $\forall i \in \mathcal{I} \cup \mathcal{E} $ \\
 $e_i$ & is the unit vector \\
 $\phi_i$ & is a basis vector \\
@@ -2787,12 +3155,5 @@ $\tau_{\Delta}$ & is a threshold for the trust region radius
 \bibliographystyle{ieeetr}
 
 \end{document}
-
-
-
-
-
-
-
 
 
