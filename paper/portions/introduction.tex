@@ -152,7 +152,7 @@ For unconstrained optimization, the algorithmic framework is described in \cref{
 This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
 \begin{enumerate}
     \item Models are constructed without derivative information.
-    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
+    \item The trust region radius $\dk$ must go to zero as $k\to\infty$.
 \end{enumerate}
 
 This is required to ensure that the gradient of the model function is equal to the gradient of $f$ in the limit.
@@ -470,6 +470,7 @@ $\chik$ can be computed as
 % Namely, when $ \chik(x) = 0$, we have $x = \text{Proj}_{\feasiblek}(x - \nabla \mfk(x))$ so that there is no decent direction along $\nabla \mfk(x)$ as it points away from the feasible region.
 % As $\Delta_k$ gets smaller, we also have that $\mfk$ better represents $\nabla f$, so that $\nabla f$ will also either be zero or lie in the iterate's normal cone.
 
+
 \subsubsection{Assessing Model Accuracy and Radius Management}
 
 Each iteration that evaluates a trial point must also test the accuracy of the model functions.
@@ -526,6 +527,7 @@ To ensure feasibility of all sample points, we construct an inner trust region f
 $\sampletrk \subset \outertrk \cap \feasiblek$ and $\xk \in \sampletrk $.
 However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
 This means we introduce another trust region $ \searchtrk $ that also satisfies $ \searchtrk \subset \outertrk \cap \feasiblek$ and $\xk \in \searchtrk $ for the trust region subproblem.
+
 
 \paragraph{The Sample Region}
 \label{sample_region_choices}

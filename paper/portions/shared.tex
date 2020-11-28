@@ -5,9 +5,15 @@
 \subsection{Assumptions}
 
 As a first step toward solving a general derivative free problem with partially-quantifiable constraints,
+<<<<<<< HEAD
+we solve a simpler problem with $\domain = \Rn$ and $c(x) = Ax-b$ for some $m\times n$ matrix $A$ and a vector $b\in \Rm$:
+
+\[ \begin{array}{ccl} \min_{x \in \mathbb \Rn} & f(x) \\
+=======
 we solve a simpler problem with $\domain = R^n$ and $c(x) = Gx-g$ for some $m\times n$ matrix $A$ and a vector $b\in \Rm$:
 
 \[ \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 & Ax \le b & 
 \end{array}
 \]
@@ -48,10 +54,17 @@ The different versions are described in the remainder of this section.
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
             Compute $\chi_k$ as in \cref{critical}. \begin{itemize}
+<<<<<<< HEAD
+                \item[] If $ \chik < \tolcrit $ and $\dk < \tolrad$ then return $ \xk $ as the solution.
+                \item[] Otherwise, if $\dk > \alpha \chik$ then 
+                $\Delta_{k+1} \gets \omegadec \dk$, 
+                $ \xkp \gets \iteratek$,
+=======
                 \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
                 \item[] Otherwise, if $\dk > \alpha \chik$ then 
                 $\Delta_{k+1} \gets \omegadec\dk$, 
                 $x^{(k+1)} \gets \xk$,
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
                 $k \gets k+1$ and go to Step 1.
             \end{itemize}
         
@@ -75,8 +88,13 @@ Much of the work is deferred to the \emph{ConstructTrustRegion} subroutine.
 We will describe several different approaches for this subroutine.
 
 \subsection{Polyhedral Trust Region Approach}
+<<<<<<< HEAD
+One simple approach to handle partially-quantifiable constraints is to maintain the same trust region as the classical algorithm, but avoid letting points fhow many times to flip an unfair coin to land headsall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
+That is, we add the constraints $\modelconstrainti(x) \le 0 \forall i \in \mathcal{I}$ and $\modelconstrainti(x) = 0 \forall i \in \mathcal{E}$ to the model improvement algorithm while selecting new points.
+=======
 One simple approach to handle partially-quantifiable constraints is to maintain the same trust region as the classical algorithm, but avoid letting points fall outside the feasible region within the model improvement algorithm \cref{model_improving_algorithm}.
 That is, we add the constraints $\mcik(x) \le 0 \forall i \in \mathcal{I}$ and $\mcik(x) = 0 \forall i \in \mathcal{E}$ to the model improvement algorithm while selecting new points.
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 This constrains the new points to also lie within the current model of the trust region in \cref{model_improving_algorithm}, Step 2.
 The search space for this optimization problem will be the feasible region intersect the trust region: $\feasiblek \cap \outertrk $.
 
@@ -92,7 +110,7 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
     \caption{Limited sample point choice}
     \label{lspc}
 \end{figure}
-
+ 
 %As the number of dimensions grows the ratio of volume of the trust region intersect the feasible region to the feasible region can become smaller.
 
 One way to handle this is to introduce a $\xi_{\text{cur}}$ which is allowed to decrease.
@@ -148,19 +166,33 @@ As is usual, we may also wish to remove points larger than a certain radius from
 
 If we adopt the ellipsoidal trust region approach to maintain a feasible inner trust region with a ``nice" shape we ensure of a stronger version of \cref{accuracy}.
 Namely, we know from \cref{ellipsoidal_lambda} that 
+<<<<<<< HEAD
+\[
+    \|\modelk(x) - \nabla f(x) \| \le \kappa_g \Delta_{k} \quad \forall x \in \innertrk.
+\]
+=======
 \begin{align*}
     \|\mfk(x) - \nabla f(x) \| \le \kappa_g \Delta_{k} \quad \forall x \in \innertrk.
 \end{align*}
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 If we also choose our trial point with \cref{search_a_little}, we have no guarantee of satisfying the efficiency condition \cref{efficiency} because $\dk$ is the outer trust region radius.
 However, the model will likely be more accurate over this region.
 
 %If bounds can be shown relating the model error of the inner trust region to the outer trust region, then we will satisfy \cref{accuracy}.
+<<<<<<< HEAD
+%In this case, classical methods ensure that $\|\nabla f(\xk) - \nabla m_f(\xk)\| < \Delta_{inner} \le \dk$.
+=======
 %In this case, classical methods ensure that $\|\nabla f(x^{(k)}) - \nabla m_f(x^{(k)})\| < \Delta_{inner} \le \dk$.
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 
 \subsubsection{Circular Trust Region}
 The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
 Within the \emph{ConstructTrustRegion} subroutine, this method sets the trust region radius to the distance to the closest constraint:
+<<<<<<< HEAD
+$\outertrk = B_2(\iteratek, \min\{\dk, \min_{i}\frac{|A_i\iteratek - b_i|}{\|A_i\|} \})$.
+=======
 $\outertrk = B_2(\xk, \min\{\dk, \min_{i}\frac{|A_i\xk - b_i|}{\|A_i\|} \})$.
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 In practice, this does not work well as the radius can become too small to allow adequate progress.
 
 Two general strategies were considered for addressing this issue as illustrated in \cref{options_basis}.
@@ -190,12 +222,20 @@ In figure \cref{ellipse_adv}, we have this type of iterate, but by using an elli
 \end{figure}
 
 
+<<<<<<< HEAD
+More specifically, at iteration $k$, we choose a scaling factor $\pi^k$ and solve for an ellipsoid center $\ellipsoidcenter$ and positive definite matrix $\qk$ to define an ellipsoid
+$ \ellipsek = \{x \in \mathbb R^n \| \pi^k - \frac 1 2 (x - \ellipsoidcenter)^T\qk(x - \ellipsoidcenter) \ge 0 \}$.
+% We then map this back to the origin with the affine transformation $T : \mathbb R^n \to R$, $T(x) = \frac {\sqrt{2}}{\pi^k} L^k(x-\mu^k)$ where $L = cholesky(Q)$.
+% This allows us to construct a $\Lambda$-poised set within narrow trust regions.
+Of course, the simplest approach is to not change the center of the ellipsoid, but instead let $\ellipsoidcenter = \xk$.
+=======
 More specifically, at iteration $k$, we choose a scaling factor $\pi^k$ and solve for an ellipsoid center $\mu^k$ and positive definite matrix $\qk$ to define an ellipsoid
 $ \ellipsek = \{x \in \Rn \| \pi^k - \frac 1 2 (x - \mu^{k})^T\qk(x - \mu^{k}) \ge 0 \}$.
 Of course, the simplest approach is to not change the center of the ellipsoid, but instead let $\mu^k = x^k$.
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 
 
-\subsubsection{Finding the Maximal $ \ellipsek $ Given $\mu^k$}
+\subsubsection{Finding the Maximal $ \ellipsek $ Given $\ellipsoidcenter$}
 
 \label{ellipse_optimization}
 
@@ -205,6 +245,31 @@ Later we perform a search over different centers of the ellipsoid.
 We adopt a method similar to that described in \cite{Khachiyan1993}.
 For now, we also let $\pi^k = 1$.
 
+<<<<<<< HEAD
+Given a polyhedron $P$ defined by an $m \times n$ matrix $A$,
+\[
+P = \{ x \; | \;  Ax \le b \},
+\]
+we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\ellipsoidcenter$ within this polyhedron.
+
+Let $\bar{b} = b - A\ellipsoidcenter$ and $d = x - \ellipsoidcenter$ so that the polyhedron becomes
+\[
+P = \{ \mu^k + d \; | \;  Ad \le \bar{b} \}
+\]
+The ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
+\[
+E = \{ d \; | \; \frac 1 2 d^T Q d \le 1 \}.
+\]
+Our goal is to determine $Q$ to maximize the volume of $E$ such that $\ellipsoidcenter + E \subset P$.
+Define the auxiliary function 
+\[
+f(d) = \frac 1 2 d^T Q d
+\]
+so that 
+\[
+E = \{ d \; | \; f(d) \le 1 \}.
+\]
+=======
 Given a polyhedron $P$ defined by an $m \times n$ matrix $A$, $P = \{ x \in \Rn\; | \;  Ax \le b \}$.
 we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
 
@@ -218,6 +283,7 @@ E = \{ d \in \Rn \; | \; \frac 1 2 d^T Q d \le 1 \}.
 \end{align*}
 Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu + E \subset P$.
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 
 Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
 Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
@@ -250,8 +316,15 @@ Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
 
 Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1}$, the maximal ellipsoid is defined by
 
+<<<<<<< HEAD
+\[
+\qk = V(\ellipsoidcenter) = \sup_{Q \succeq 0} \det(Q^{-1})
+\]
+\[
+=======
 \begin{align*}
 Q = V(\mu) = \sup_{Q \succeq 0} \det(Q^{-1}) \\
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 s.t. \quad A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
 \end{align*}
 
@@ -271,6 +344,19 @@ s.t. \quad A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
 % \end{align}
 % \end{center}
 
+<<<<<<< HEAD
+After shifting the center to $\ellipsoidcenter$, this problem takes the form:
+
+\begin{center}
+\begin{align}
+\label{ellipse_1}
+\qk = V(\ellipsoidcenter) = \sup_{Q \succ 0} & \det(Q^{-1}) & \\
+  & {A^k}_i^T Q^{-1} {A^k}_i \ge \frac 1 2 (b^k - A^k\ellipsoidcenter)^T(b^k - A^k \ellipsoidcenter) & \nonumber
+\end{align}
+\end{center}
+
+=======
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 
 \subsubsection{Poisedness over Ellipsoidal Trust Regions}
 \label{ellipsoidal_lambda}
@@ -460,7 +546,7 @@ This can be done by either of the following two options:
 
 \paragraph{Adding a constraint.}
 In order to include the original point as a constraint, we add a constraint to the definition of the ellipsoid of the following form:
-$$ \pi^k - \frac 1 2 (x^k - \mu^{k})^T\qk(x^k - \mu^{k}) \ge 0. $$
+$$ \pi^k - \frac 1 2 (x^k - \ellipsoidcenter)^T\qk(x^k - \ellipsoidcenter) \ge 0. $$
 Constraints of this nature make finding the ellipsoid much more expensive.
 This is because the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
@@ -468,10 +554,14 @@ This is because the optimization problem we construct uses ${\qk}^{-1}$ as decis
 An alternative is to scale $\qk$ by a constant.
 We use the scaling factor $\pi^k$ defined by
 
-$$\pi^{(k)} = \max \{1, \frac 1 {2} (x^{k} - \mu^{k})^T \qk (x^{k} - \mu^{k})^T \}$$
+$$\pi^{(k)} = \max \{1, \frac 1 {2} (x^{k} - \ellipsoidcenter)^T \qk (x^{k} - \ellipsoidcenter)^T \}$$
 
 and let the ellipsoid be:
+<<<<<<< HEAD
+$$\ellipsek = \{x \in \mathbb | 1 - \frac 1 {2\pi^k} (x - \ellipsoidcenter)^T \qk (x - \ellipsoidcenter) \ge 0\} $$
+=======
 $$\ellipsek = \{x \in \Rn | 1 - \frac 1 {2\pi^k} (x - \mu^{k})^T \qk (x - \mu^{k}) \ge 0\} $$
+>>>>>>> 55d669a111513e45e73de36c2dc070eb0cbc5189
 However, this means that in general $\ellipsek \not \subset \feasiblek$ so that the trust region subproblem must contain constraints for both the ellipsoid and the feasible region: $\searchtrk = \ellipsek \cap \domain$.
 
 To help mitigate the second issue, we maximize the volume of the ellipsoid.
@@ -508,7 +598,7 @@ Choosing the best center is the topic of the next section.\
 
 \subsection{Searches for the Center}
 
-We consider several different approaches for determining the trust region center $\mu^k$.
+We consider several different approaches for determining the trust region center $\ellipsoidcenter$.
 In this case, our \emph{ConstructTrustRegion} subroutine searches over multiple centers of the ellipsoid, however it may not need to construct the model functions for each until it has found a desirable ellipsoid.
 
 
@@ -540,7 +630,11 @@ In this case, our \emph{ConstructTrustRegion} subroutine searches over multiple 
 
 One approach is to search all possible centers within $ \feasiblek \cap \outertrk $.
 That is, we solve:
-$$\mu^k = \sup_{\mu \in \feasiblek \cap \outertrk} V(\mu)$$
+
+\begin{align*}
+\ellipsoidcenter = \sup_{\mu \in \feasiblek \cap \outertrk} V(\mu)
+\end{align*}
+
 where $V(\mu)$ is the volume of the ellipsoid defined in \cref{ellipse_1}.
 %The search within the \emph{ConstructTrustRegion} is allowed to go anywhere within $ \feasiblek \cap \outertrk$.
 This has the advantage that it captures much of the feasible region.
