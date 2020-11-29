@@ -4,7 +4,7 @@
 
 
 \usepackage[fleqn]{amsmath}
-\usepackage{graphicx}
+\usepackage[demo]{graphicx}
 \usepackage{color}
 \usepackage{xspace}
 \usepackage{cite}
@@ -759,7 +759,7 @@ The vertex of the cone is then positioned a distance along the ray towards this 
 \end{align}
 The cone is then defined using the $\beta$ parameter by
 \begin{align}
-\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk \right\}. \label{def_f}
+\fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2} \right\}. \label{def_f}
 \end{align}
 
 
@@ -1715,7 +1715,7 @@ Let
 \begin{align}
 y = \wik + ts \in \fik \cap \tr \label{t_is_bounded}
 \end{align}
-with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk$.
+with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{\frac 1 2}$.
 Because the model $m_{c_i}$ is fully quadratic, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds:
 \begin{align}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu. \label{model_error_for_gradient}
@@ -1788,69 +1788,40 @@ Using \cref{model_error_for_gradient} and \cref{constraint_lower_bound} we see
 0 \ge c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \ge c_i(\wik). 
 \end{align*}
 
-% \begin{align*}
-% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} \le 0\\
-% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \dk^2\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^3 \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
-% \alpha c_i(\xk) + M \dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
-% \end{align*}
-% 
-% 
-% \begin{align*}
-% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right)\frac{-c_i(\xk)}{\|\gmcik\|} \le 0\\
-% \alpha \dk^{\frac 3 2 }\|\gmcik\| + M \frac {c_i(\xk)}{\|\gmcik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 - \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \ge 0\\
-% M \dk\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le \alpha \dk^{\frac 3 2 }\|\gmcik\| \\
-% \end{align*}
 
-
-% \alpha \dk^{\frac 3 2 } c_i(\xk) + M \dk^2\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^3 \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
-% \alpha c_i(\xk) + M \dk^{\frac 1 2}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2 + \epsilon_g \dk^{\frac 3 2} \left(1 - \alpha \dk^{\frac 3 2 }\right)\le 0\\
-% \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) \le \alpha \dk^{\frac 3 2 }\|\gmcik\| + M \frac {c_i(\xk)}{\|\gmcik\|}\left(1 - \alpha \dk^{\frac 3 2 }\right)^2\\
-% \epsilon_g \dk^2 \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \dk \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 3 2 }\|\gmcik\|\\
-% \epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - \alpha \dk^{\frac 3 2 }\right)^2 \le \alpha \dk^{\frac 1 2 }\|\gmcik\|\\
-% \epsilon_g \dk \left(1 - \alpha \dk^{\frac 3 2 }\right) + M\sqrt{n} \left(1 - 2\alpha \dk^{\frac 3 2 } + \alpha^2 \dk^{3}\right) \le \alpha \dk^{\frac 1 2 }\|\gmcik\|\\
-
-
-
-% = \epsilon_g \dk^2 \nu^T\left(\wik - \xk\right) + c_i(\xk)\alpha \dk^{\frac 3 2} + M \left\|\wik - \xk\right\|^2 \\
-% \le \epsilon_g \dk^3 + c_i(\xk)\alpha \dk^{\frac 3 2} + M \dk^2 \\
-% = \dk^{\frac 3 2} \left(\epsilon_g \dk^{\frac 3 2} + c_i(\xk)\alpha + M \dk^{\frac 1 2}\right) \\
-
-
-Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
+Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{\frac 1 2}$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_lambda_poised}, and our assumption \cref{delta_is_small_enough}, we know
 
 % \Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
 % \Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2\nu^T s \\
 \begin{align}
-\dk \le \frac{\beta}{2\epsilon_{g}}g_{\text{low}}
-\Longrightarrow \dk \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
-\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk \le \|\gmcik\| - \frac 1 2 g_{\text{low}} \nonumber \\
-\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk \ge \frac 1 2 g_{\text{low}} \beta \dk + \epsilon_{g}\dk^2  \nonumber \\
-\Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
-\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk 
-\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk. \label{nsc_pos}
+\dk \le \left[\frac{\beta}{2\epsilon_{g}}g_{\text{low}}\right]^{\frac 2 3}
+\Longrightarrow \dk^{\frac 3 2} \le \frac{\beta}{\epsilon_{g}}\left(g_{\text{low}} - \frac 1 2 g_{\text{low}}\right)
+\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{\frac 3 2} \le \|\gmcik\| - \frac 1 2 g_{\text{low}} \nonumber \\
+\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{\frac 1 2} \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2  \nonumber \\
+\Longrightarrow -s^T\gmcik \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2} + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
+\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 2 g_{\text{low}} \beta \dk ^{\frac 1 2}
+\Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 2 g_{\text{low}} \beta \dk^{\frac 1 2}. \label{nsc_pos}
 \end{align}
 
 % So that if $\xk + ts \in B_{\infty}(\xk, \dk)$, then 
 
 We also know by \cref{delta_is_small_enough} that
-\color{red}
 
 
 % \Longrightarrow \dk^{\frac 1 2} \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}
 \begin{align}
-\dk \le \frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)} 
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk\le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk
-\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk \label{eqn2}
+\dk \le \left[\frac {g_{\text{low}} \beta} {2M\sqrt{n}\left(1 + \frac {\lgi} M \right)}\right]^2 
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk^{\frac 1 2}\le \frac 1 {2M} g_{\text{low}} \beta \nonumber \\
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lgi} M \right) \dk \le \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2}
+\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2} \label{eqn2}
 \end{align}
-\color{black}
 which implies by \cref{def_g_bounds}, \cref{t_is_bounded}, \cref{nsc_pos}, \cref{eqn2}
 
 % t \le -\frac 1 M \left( \sqrt{n}\dk L_g + \nabla c_i(\xk)^Ts\right) \\
 \begin{align}
 t 
 \le \sqrt{n} \dk 
-\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk
+\le -\frac 1 M \sqrt{n}\dk \lgi + \frac 1 {2M} g_{\text{low}} \beta \dk^{\frac 1 2}
 \le -\frac 1 M \sqrt{n}\dk \lgi -\frac 1 M \nabla c_i(\xk)^Ts \nonumber \\
 \Longrightarrow \sqrt{n}\dk \lgi + \nabla c_i(\xk)^Ts + M t \le 0. \label{eqn3}
 \end{align}
@@ -2207,7 +2178,7 @@ Then, by letting $\kappa_{r} > 0$ be defined by
 \end{align}
 we know that if, during iteration $k$, we have
 \begin{align}
-\chik \ge \kappa_{\chi} \dk \label{sr_chi_big_enough}
+\chik \ge \kappa_{\chi} \dk^{\frac 1 2} \label{sr_chi_big_enough}
 \end{align}
 and
 \begin{align}
@@ -2247,59 +2218,29 @@ We may now suppose that
 \end{align}
 Consider the point 
 \begin{align}
-v = u_{GC} - \delta \dk \left(\left(u_{GC}- \xk\right)^T u\right)u. \label{define_v}
+v = u_{GC} - \delta \dk^{\frac 1 2} \left(\left(u_{GC}- \xk\right)^T u\right)u. \label{define_v}
 \end{align}
 
 
 Because we are using a linear criticality measure, $u_{GC}$ is the Cauchy point, and using \cref{sr_chi_big_enough}, \cref{sr_delta_small_enough} we know that
 \begin{align*}
-\left(-\gk\right)^T\left(u_{GC} - \xk\right) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\} \\
- \ge \kappa_f \kappa_{\chi} \dk \min\left\{ \frac{\kappa_{\chi} \dk}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
- \ge \kappa_f \kappa_{\chi} \dk^2 \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}.
+\left(-\gk\right)^T\left(u_{GC} - \xk\right) 
+ \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\} \\
+ \ge \kappa_f \kappa_{\chi} \dk^{\frac 1 2} \min\left\{ \frac{\kappa_{\chi} \dk^{\frac 1 2}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
+ \ge \kappa_f \kappa_{\chi} \dk^{\frac 3 2} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}.
 \end{align*}
 Using this and \cref{sr_define_delta}, we know that
 \begin{align*}
-\delta \dk  \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \le \delta\gfmin  \dk^2  \\
-\le \frac 1 2 \kappa_f \kappa_{\chi} \dk^2 \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}
+\delta \dk^{\frac 1 2}  \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \le \delta\gfmin  \dk^{\frac 3 2}  \\
+\le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{\frac 3 2}\min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}
 \le \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) \\
 \end{align*}
 so that
 \begin{align*}
 \left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \\
-\ge\left(-\gk\right)^T\left(u_{GC} - \xk\right)  - \delta \dk \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right|  \\
+\ge\left(-\gk\right)^T\left(u_{GC} - \xk\right)  - \delta \dk^{\frac 1 2} \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right|  \\
 \ge \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right)
 \end{align*}
-
-
-
-
-
-
-\begin{align*}
-\left(-\gk\right)^T\left(u_{GC} - v\right) = \delta\dk\left(u_{GC} - \xk\right)^Tu\left(-\gk\right)^Tu
-\end{align*}
-
-
-% \ge \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \dk^2 - \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right|
-% \ge \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \dk^2 - \delta \chik\dk^2 \\
-% \ge \left(\kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} - \delta \kappa_{\chi}\right)\dk^2
-% = \frac 1 2 \kappa_f \kappa_{\chi}  \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}\dk^2
-% \begin{align*}
-% \left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \\
-% \ge \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \\
-% \ge \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \delta \left\|\gk\right \|  \left|\left(u_{GC}- \xk\right)^T u\right| \\
-% \end{align*}
-
-
-
-
-
-
-
-
-
-
-
 
 We will first show several identities for any some cosntraint $c_i$.
 \color{red}
@@ -2309,13 +2250,13 @@ Thus, by \cref{sr_delta_small_enough}, \cref{minangleassumption},
 \begin{align}
 -\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^Tu \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
 \end{align}
-However, because $u_l$ is feasible with respect to the linearization of the constraints, we also know that
+However, because $u_{GC}$ is feasible with respect to the linearization of the constraints, we also know that
 \begin{align}
 \left(\zik - \xk\right)^T(u_{GC} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
 
 
-If $u_l \in \tr$, then by \cref{sr_chi_big_enough} $\left\|u_{GC} - \xk\right\|  = \left\|u_{l} - \xk\right\| = \chik \ge \kappa_{\chi} \dk$.
+If $u_l \in \tr$, then by \cref{sr_chi_big_enough}: $\left\|u_{GC} - \xk\right\|  = \left\|u_{l} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{\frac 1 2} \ge  \kappa_{\chi} \dk$.
 If $u_l \not \in \tr$, then a trust region constraint is active and $\left\|u_{GC} - \xk\right\| \ge \dk$.
 In either case, we find that 
 \begin{align}
@@ -2380,17 +2321,17 @@ xxx
 However, using \cref{def_z}, \cref{def_w}, \cref{define_v}
 \begin{align*}
 \left(v - \wik \right)^T\left(\xk - \zik \right) \\
-=\left( u_{GC} - \delta\dk \left(\left(u_{GC} - \xk\right)^T u\right)u - \xk - \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) \right)^T\left(\xk - \zik \right) \\
+=\left( u_{GC} - \delta\dk^{\frac 1 2} \left(\left(u_{GC} - \xk\right)^T u\right)u - \xk - \left(1 - \alpha\dk^{\frac 3 2}\right)\left(\zik - \xk\right) \right)^T\left(\xk - \zik \right) \\
 =\left[
 -\left( u_{GC}- \xk\right)^T\left(\zik - \xk \right) 
 +\left(1 - \alpha\dk^{\frac 3 2}\right)\left\|\zik - \xk\right\|^2
 \right]
-- \delta\dk\left[ \left(u_{GC} - \xk\right)^T u\right]\left[ \left(\xk - \zik \right)^Tu\right]
+- \delta\dk^{\frac 1 2}\left[ \left(u_{GC} - \xk\right)^T u\right]\left[ \left(\xk - \zik \right)^Tu\right]
 \end{align*}
 Using \cref{u_is_feasible}, \cref{gc_is_feasible}, \cref{sr_case_2}
 \begin{align*}
 \left(v - \wik \right)^T\left(\xk - \zik \right)\ge-\alpha\dk^{\frac 3 2}\left( u_{GC}- \xk\right)^T\left(\zik - \xk \right)
-+ \frac 1 2 \delta\dk\minanglealpha^2 \left\|u_{GC} - \xk\right\| \|\zik - \xk\| \\
++ \frac 1 2 \delta\dk^{\frac 1 2}\minanglealpha^2 \left\|u_{GC} - \xk\right\| \|\zik - \xk\| \\
 \ge \left(\frac 1 2 \delta\dk\minanglealpha^2 -\alpha\dk^{\frac 3 2}\right)\left\|u_{GC} - \xk\right\| \|\zik - \xk\|
 \end{align*}
 or
@@ -2405,7 +2346,7 @@ Using \cref{sr_smh},
 \left(v - \wik \right)^T\left(\xk - \zik \right)\ge\|\zik - \xk\|  \left[
 \frac 1 2 \delta\dk\minanglealpha^2 \left\|u_{GC} - \xk\right\|
 -\alpha\dk^{\frac 1 2}\left\|\zik - \xk \right\| \right] \\
-\Longrightarrow \left(v - \wik \right)^T\left(\xk - \zik \right)\ge\beta \dk^{\frac 3 2} \left\|v - \wik\right\| \left\| \xk - \zik\right\| \\
+\Longrightarrow \left(v - \wik \right)^T\left(\xk - \zik \right)\ge\beta \dk^{\frac 1 2} \left\|v - \wik\right\| \left\| \xk - \zik\right\| \\
 \Longrightarrow -\frac {\left(v - \wik \right)}{\left\|v - \wik \right\|}^T\frac{\gmcik}{\left\|\gmcik\right\|}\ge\beta \dk^{\frac 1 2}
 \Longrightarrow v \in \fik.
 \end{align*}
@@ -2831,7 +2772,7 @@ c_0 = L + \kappa_{g} + \frac {\hfb} 2 \\
 
 \subsubsection{$\mathcal K \subset \bar{S}$}
 \begin{theorem}
-Suppose that Hypothesis \cref{lipschitz_gradient},  \cref{bounded_hessians}, and \cref{bounded_below} hold. If $\mathcal K \subset \bar{S}$.
+Suppose that Hypothesis \cref{lipschitz_gradient},  \cref{bounded_hessians}, and \cref{bounded_below} hold. Then $\mathcal K \subset \bar{S}$.
 \end{theorem}
  
 \ifnum\includeproofs=1
