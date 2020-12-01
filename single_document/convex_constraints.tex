@@ -2222,8 +2222,7 @@ where
 \begin{align}
 \delta = \min\left\{\frac 1 {4\gfmin(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}, \sqrt{\frac{\kappa_f \kappa_{\chi}}{4\left(\hfb - 1\right)\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}}\right\} \label{sr_define_delta}
 \end{align}
-
-then we also have
+then there exists a $v \in \capcones \cap \tr$ such that
 \begin{align*}
 m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(v)\right) \ge \left(\frac{\kappa_f}{2} \right)\chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
 \end{align*}
@@ -2382,10 +2381,6 @@ Combining this with \cref{sr_what_to_bound} we see
 \end{align*}
 
 Because $\fik$ is convex, $\xk \in \fik$, $\zeta \in (0, 1]$, we know that $v = \zeta v' + (1 - \zeta)\xk\in\fik$.
-By \cref{sr_define_u_c} and \cref{sr_sr}, we conclude 
-\begin{align*}
--\gk^T (u_c-\xk) \ge -\gk^T (v-\xk) \ge -\frac 1 2 \gk^T (u_{GC}-\xk).
-\end{align*}
 \end{proof}
 
 
