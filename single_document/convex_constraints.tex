@@ -2373,19 +2373,21 @@ P_2 &=& \{ x \in \Rn | A_2x\le b_2 \}
 where the $m\times n$ matrices $A_1, A_2$ vectors $b_1, b_2 \in \Rm$  satisfy
 \begin{align*}
 \begin{array}{cc}
-\|A_1 - A_2\| \le \epsilon, & \|b_1 - b_2\| \le \epsilon
+\|A_1 - A_2\|_{\infty} \le \epsilon, & \|b_1 - b_2\|_{\infty} \le \epsilon
 \end{array}
 \end{align*}
 for some $\epsilon > 0$.
-Because these are bounded, we can let $\|x_1\|\infty \le M_1 \forall x_1 \in P_1$ and $\|x_2\|\infty \le M_2 \forall x_2 \in P_2$.
+We further assume that the rows of $A_1$ and $A_2$ are normalized: $\sum_{i = 0}^n{A_1}_{i,j}^2 = 1 = \sum_{i = 0}^n{A_2}_{i,j}^2$ for each $1 \le j \le m$.
+Because these are bounded, we can let $\|x_1\|_{\infty} \le M_1 \forall x_1 \in P_1$ and $\|x_2\|_{\infty} \le M_2 \forall x_2 \in P_2$.
 We denote the projection of the origin onto these polyhedra as
 \begin{align*}
 \begin{array}{ccc}
-x_1 = \argmin_{x\in P_1}\|x\|^2, &\textrm{and} & x_2 = \argmin_{x\in P_2}\|x\|^2.
+x_1^{\star} = \argmin_{x\in P_1}\|x\|^2, &\textrm{and} & x_2^{\star} = \argmin_{x\in P_2}\|x\|^2.
 \end{array}
 \end{align*}
 
 We will assume that there is some $\hat x \in P_1$ and $h > 0$ such that such that $A_1 \hat x \le b_1 - h$.
+Also, define $\phi_{2,\infty},\phi_{\infty,2}>0$ such that $\|x\|_2 \le \phi_{2, \infty}\|x\|_{\infty}, \|x\|_{\infty} \le \phi_{\infty,2}\|x\|_2\forall x \in \Rn$
 
 % \subsubsection{Assumptions}
 % 
@@ -2396,23 +2398,20 @@ We will assume that there is some $\hat x \in P_1$ and $h > 0$ such that such th
 First, we will state some well known theorems without proof.
 \begin{theorem}[Hoffman's theorem of \cite{dummy:hoffman}]
 \label{hoffman}
-Suppose that $Ax \le b$ is consistent.
-Then there exists a value $\Gamma_0(A, b) > 0$ such that for any such $x$, there exists an $x_0$ with
+Suppose that the system $Ax \le b$ is consistent and $A$ is normalized so that $\sum_{i = 0}^n{A}_{i,j}^2 = 1$ for all $1 \le j \le m$
+Then there exists a value $\Gamma_0(A) > 0$ such that for any such $x$, there exists an $x_0$ with
 \begin{align*}
 Ax_0 \le b \\
-\|x - x_0\| \le \Gamma_0(A, b) \|(Ax - b)^+\|_\infty. \\
+\|x - x_0\|_{\infty} \le \phi_{\infty, 2}\|x - x_0\|_2 \le {\Gamma_0(A)} \|(Ax - b)^+\|_\infty.
 \end{align*}
 
-This $\Gamma_0(A,b)$ is defined as follows, where $i_1, i_2, \ldots, i_r$ are the linearly independent rows of $A$ (which are assumed to be normalized) and $C_{i,j}$ is the $i,j$ cofactor of $C$:
+This $\Gamma_0(A,b)$ is defined as follows, where $i_1, i_2, \ldots, i_r$ are the linearly independent rows of $A$ and $C_{i,j}$ is the $i,j$ cofactor of $C$:
 \begin{align*}
-\Lambda(C) = \sqrt{\sum_{j=1}^r\bigg(\sum_{i=1}^r C_{i,j}\bigg)^2} \\
-\Gamma_0(A, b) = \sqrt{\frac{\sum_{1 < j_1 < \ldots < j_k \le n} \|\Lambda^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}{\sum_{1 < j_1 < \ldots < j_k \le n} \|A^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}} \\
+\Lambda(C) = \sqrt{\sum_{j=1}^r\bigg(\sum_{i=1}^r C_{i,j}\bigg)^2}, \quad
+{\Gamma_0(A)} \le \phi_{\infty, 2}\sqrt{\frac{\sum_{1 < j_1 < \ldots < j_k \le n} \|\Lambda^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}{\sum_{1 < j_1 < \ldots < j_k \le n} \|A^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}}.
 \end{align*}
 \end{theorem}
 
-\begin{comment}
-Note that there also needs to be a constant for changing the metric norm.
-\end{comment}
 
 \begin{lemma}[Theorem 1.1 of \cite{dummy:continuity_of_inverse}]
 For two matrices $A$ and $B$, if $B = A + E$ and $\text{rank}(A) = \text{rank}(B)$, then
@@ -2426,7 +2425,7 @@ For two matrices $A$ and $B$, if $B = A + E$ and $\text{rank}(A) = \text{rank}(B
 
 \begin{lemma}[Dramatic simplification of Lemma 4.1]
 \label{4_1}
-For some $b' \in \Rm$, the system $A_1x \le b'$ is solvable if $\|b_1 - b'\|_{\infty} \le \min_i h_i$.
+For any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, the system $A_1x \le b'$ is solvable.
 \end{lemma}
 
 \begin{proof}
@@ -2438,61 +2437,65 @@ Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\l
 
 \begin{lemma}[Theorem 4.2 of \cite{dummy:perturbations}]
 \label{4_2}
-Suppose that $\epsilon \le \frac{\min_i h_i}{1 + M_2}$.
-Then, for every $s_1 \in P_1$ satisfying $\epsilon(1 + \|s_1\|) \le ?$ there corresponds an $s_2$ in $P_2$ satisfying 
-$\|s_1 - s_2\|\le \Gamma_0(A_1, b_1)\epsilon (1 + \|s_2\|)$.
+Suppose that $\epsilon\le \min\left\{\frac{\min_i h_i}{1 + M_2},\left(2\Gamma_0(A_1)\right)^{-1}\right\}$.
+Then, for every $s_1 \in P_1$,
+% satisfying $\epsilon'(1 + \|s_1\|) \le ?$ 
+there corresponds an $s_2$ in $P_2$ satisfying 
+$\|s_1 - s_2\|_{\infty}\le 1 + \|s_1\|_{\infty}$.
 \end{lemma}
 
 \ifnum\includeproofs=1
 \begin{proof}
-Because $s \in P_1$, we know that $A_1s \le b_1$.
-Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
-Define $x_1 = s$, so that $x_1$ solves $A_1x_1 \le b_1$.
-For all $n = 1, 2, \ldots$, let $x_{n+1}$ to solve
+Because $s_1 \in P_1$, we know that $A_1s_1 \le b_1$
+% Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
+% Define $x_1 = s_1$, so that $x_1$ solves $A_1x_1 \le b_1$.
+and for all $n = 2, 3, \ldots$, let $x_{n+1}$ to solve
 $A_1 x_{n+1} \le b_2 + (A_1 - A_2) x_n$.
 By \cref{4_1} this is solvable as long as
 \begin{align*}
-\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i,
+\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i.
 \end{align*}
-but we know that $\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_{\infty} \le \|\epsilon\|_\infty + \|\epsilon x_n^+\|_{\infty} \le \epsilon(1 + \|x_n\|_\infty)$.
-But 
+To show this is the case, we note that $\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_{\infty} \le \epsilon + \epsilon\| x_n^+\|_{\infty} \le \epsilon(1 + \|x_n\|_\infty)$
+and
 \begin{align*}
 \epsilon \le \frac{\min_i h_i}{1 + M_2} \Longrightarrow
-\epsilon(1 + \|s\|_\infty) \le \epsilon(1 + M_2) \le \min_i h_i
+\epsilon(1 + \|x_n\|_\infty) \le \epsilon(1 + M_2) \le \min_i h_i.
 \end{align*}
 % Thus, this will have a solution for a suitably small $\epsilon$ with a uniform bound on $\|x_n\|_\infty$.
-By \cref{hoffman}, there is a constant $\Gamma_1 = \Gamma_0(A_1, b_2 + (A_1 - A_2)x_n)$ such that we can find $x_2$ whose distance from $x_1$ is given by
+By \cref{hoffman}, we can find $x_{n+1}$ whose distance from $x_n$ is given by
 \begin{align*}
-\|x_2 - x_1\|_\infty \le \Gamma_1 \left\|[A_1x_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty.
+\|x_{n+1} - x_n\|_\infty \le \Gamma_0(A_1) \left\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty.
 \end{align*}
 
 However,
 \begin{align*}
-\left\|[A_1x_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty \le \left\|[b_1 - b_2 - (A_1 - A_2)s]^+\right\|_\infty \le \epsilon(1 + \|s\|_\infty)
+\left\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \le \left\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty\le \epsilon(1 + \|x_n\|_\infty)
 \end{align*}
-so that
+so that, for $n=1$ we have
 \begin{align*}
-\|x_2 - x_1\|_\infty \le \Gamma_1  \epsilon(1 + \|s\|_\infty)
-\Longrightarrow \|x_2\|_\infty \le \|s\| _\infty+ \Gamma_1  \epsilon(1 + \|s\|_\infty).
+\|x_2 - x_1\|_\infty \le \epsilon\Gamma_0(A_1)  (1 + \|s_1\|_\infty)
+\Longrightarrow \|x_2\|_\infty \le \|s_1\| _\infty+ \epsilon\Gamma_0(A_1)(1 + \|s_1\|_\infty).
 \end{align*}
 
-Continuing to use Hoffman's theorem, we see that 
+For all other values of $n$, Hoffman's theorem gives us an $x_{n+1}$ such that
 \begin{align*}
-\|x_{k+1} - x_{k}\|_\infty \le \Gamma_0(A_1, b_1)\|[A_1x_k - b_2 - (A_1 - A_2)x_k]^+\|_\infty \le \Gamma_0(A_1, b_1) \epsilon \|x_{k+1}-x_k\|_\infty.
+\left\|x_{n+1} - x_{n}\|_\infty \le \Gamma_0(A_1)\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \\
+\le \Gamma_0(A_1)\left\|[b_2 + (A_1 - A_2)x_{n-1} - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty
+\le \epsilon \Gamma_0(A_1)  \|x_{n}-x_{n-1}\|_\infty.
 \end{align*}
 
-By induction we see that
+By induction, we see that
 \begin{align*}
-\|x_{n+1}\|_\infty \le \|s\|_\infty + \|x_2 - x_1\|_\infty \left(\Gamma_0(A_1, b_1)\epsilon\right)^n \\
-\|x_{n+1} - x_n\|_\infty \le \left(\Gamma_0(A_1, b_1)\epsilon\right)^{n-1}\left\|x_2 - x_1\right\|_\infty \\
+\|x_{n+1} - x_n\|_\infty \le \left(\epsilon\Gamma_0(A_1)\right)^{n-1}\left\|x_2 - x_1\right\|_\infty \\
+\Longrightarrow \|x_{n+1}\|_\infty \le \|s\|_\infty + \left( \sum_{i=1}^{n-1}( \epsilon\Gamma_0(A))^i\right) \|x_2 - x_1\|_\infty .
 \end{align*}
 
-This means that $\{x_n\}$ is Cauchy, so it must converge to a point $s'$ satisfying
+Because $\epsilon\le \Gamma_0(A)\le\frac 1 2$, we know that $\{x_n\}$ is Cauchy, and it must converge to a point $s_2$ satisfying
 \begin{align*}
-\|s' - s\|_\infty = \|s' - x_1\|_\infty \le \frac{1}{1 - \Gamma_0(A_1, b_1)\epsilon}\|x_2 - x_1\| \le \epsilon\Gamma_0(A_1, b_1)\left(1 + \|s\|\right) \\
+\|s_2 - s_1\|_\infty \le \frac{1}{1 - \epsilon\Gamma_0(A_1)}\|x_2 - x_1\| \le \frac{\epsilon\Gamma_0(A_1)}{1 - \epsilon\Gamma_0(A_1)}\left(1 + \|s_1\|_{\infty}\right) \le 1 + \|s_1\|_{\infty}.
 \end{align*}
 
-We know that $s'$ solves $A_1s' \le b_2 + (A_1 - A_2)s'$ so that $A_2s' \le b_2$ and $s' \in S'$.
+Lastly, we know that $s_2$ solves $A_1s_2 \le b_2 + (A_1 - A_2)s_2$ so that $A_2s_2 \le b_2$ and $s_2 \in P_2$.
 \end{proof}
 
 \else
@@ -2503,6 +2506,8 @@ Proof omitted
 
 \begin{lemma}[Proposition 3.7 of \cite{dummy:continuity}]
 \label{3_7}
+Suppose that $\epsilon\le \min\left\{\frac{\min_i h_i}{1 + M_2},\left(2\Gamma_0(A_1)\right)^{-1}, \left(2\Gamma_0(A_2)\right)^{-1}\right\}$
+Then for every $x \in P_2$, there exists a $x_1 \in P_2$
 There exist positive constants $c$ and  $\epsilon_0$ depending on $C'$ such that:
 to each $x \in C'$ satisyfing $\epsilon(1 + \|x\|) \le \epsilon_0$ there corresponds an $x' \in C'$ satisfying $\|x - x'\| \le c\epsilon(1 + \|x\|)$ and
 to each $x' \in C'$ there corresponds an $x \in C$ satisfying $\|x - x'\| \le c \epsilon (1 + \|x'\|)$.
@@ -2520,30 +2525,112 @@ Proof omitted
 
 \begin{lemma}[Theorem 2.2 of \cite{dummy:continuity}]
 \label{2_2}
-Suppose that for each $r > 0$ the is a constant $c_r$ such that to each 
-$x$ in $C$ with $\|x\| \le r$ there corresponds an $x'$ in $C'$ with $\|x-x'\| \le c_r \epsilon$ and 
-to each $y' \in C'$ with $\|y'\| \le r$ there corresponds a $y\in C$ with $\|y - y'\| \le c_r \epsilon$.
-Then there exists a constant $c$ such that $\xo'$ satisifies $\|\bar x - \bar x '\|\le c \sqrt{\epsilon}$ as $\epsilon \to 0$.
+Suppose that for each $r > 0$, there exists a constant $c_r$ such that 
+to each $x_1 \in P_1$ with $\|x_1\|_{\infty} \le r$ there corresponds an $x_2 \in P_2$ with $\|x_2 - x_1\|_{\infty} \le c_r \epsilon$ and
+to each $y_2 \in P_2$ with $\|y_2\|_{\infty} \le r$ there corresponds an $y_1 \in P_1$ with $\|y_2 - y_1\|_{\infty} \le c_r \epsilon$.
+Letting $c = $, we have that $\|x_1^{\star} - x_2^{\star}\| \le c\sqrt{\epsilon}$.
 \end{lemma}
 
-\ifnum\includeproofs=1
 \begin{proof}
-For $\bar x'$ let $u' \in C'$ satisfy $\|u - \bar x\| \le c_{r_0} \epsilon$ for $\epsilon > 0$ where $r_0 = \|\bar x\|$.
-Since $\|\bar x \| \le \|u\| = \|\bar x + u - \bar x\| \le \|\bar x \| + c_{r_0} \epsilon \equiv r$, we know that there exist 
-$v \in C$ satisfying $\|\bar x' - v\| \le c_r \epsilon$.
-Because these are minimums over a convex set, we know that
-$\langle \xo', u - \xo'\rangle \ge 0$ and $\langle\xo, v-\xo\rangle \ge 0$ so that
+Letting $r_1 = \|x_1^{\star}\|_{\infty}$, we can let $x_2 \in P_2$ satisfy $\|x_2 - x_1^{\star}\| \le c_{r_1}\epsilon$.
+Letting $r_2 =  \|x_1^{\star}\|_{\infty} + c_{r_1}\epsilon$, we see that
+$\|x_2^{\star}\| \le \|x_2\| = \|x_1^{\star} + x_2 - x_1^{\star}\| \le x_1^{\star} + c_{r_1}\epsilon = r_1$.
+We can then choose a $y_1 \in P_1$ satisfying $\|x_1 ^{\star} - y_1\|_{\infty} \le c_{r_1}\epsilon$.
+Because $P_1, P_2$ are convex sets, and $x_1^{\star}, x_2^{\star}$ minimize the projection of the origin, we know
+$\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right)\ge 0$ and
+$\left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)\ge 0$.
+
+Adding these, we find that
 \begin{align*}
-0 \le \langle \xo' - \xo, \xo - \xo'\rangle + \langle \xo' - \xo, \xo'-v\rangle + \langle \xo', u - \xo + v - \xo'\rangle \\
-\Longrightarrow \|\xo ' - \xo \|^2 \le \|\xo' - \xo\|c_r \epsilon + r(2c_r\epsilon)
+0 \le \left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right) + \left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)  \\
+=
+\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right) + \left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)  
+-\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right)
++\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+=
+\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right) - \left(x_1^{\star}\right)^T \left(x_1^{\star}\right)  
+-\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} - x_2^{\star}\right)
+-\left(x_2^{\star}-x_1^{\star}\right)^Ty_1
++\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+=
+\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right) - \left(x_1^{\star}\right)^T \left(x_1^{\star}\right)  
+-\left(x_2^{\star}\right)^T\left(x_2\right)
++ \left(x_2^{\star}-x_1^{\star}\right)^Tx_2^{\star}
+-\left(x_2^{\star}-x_1^{\star}\right)^Ty_1
++\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+=
+-\left(x_2^{\star}\right)^T \left(x_2^{\star}\right) - \left(x_1^{\star}\right)^T \left(x_1^{\star}\right)  
++ \left(x_2^{\star}-x_1^{\star}\right)^Tx_2^{\star}
+-\left(x_2^{\star}-x_1^{\star}\right)^Ty_1
++\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+=
+a
+=
+\left(x_2^{\star}-x_1^{\star}\right)^T\left(x_1^{\star}\right)-\left(x_2^{\star}-x_1^{\star}\right)^T\left(x_2^{\star}\right)
++ \left(x_2^{\star}-x_1^{\star}\right)^Tx_2^{\star}-\left(x_2^{\star}-x_1^{\star}\right)^Ty_1
++ \left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+=
+\left(x_2^{\star}-x_1^{\star}\right)^T\left(x_1^{\star}-x_2^{\star}\right)
++ \left(x_2^{\star}-x_1^{\star}\right)^T\left(x_2^{\star}-y_1\right)
++ \left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+\le 
+-\left\|x_2^{\star}-x_1^{\star}\right\|^2
++ \left\|x_2^{\star}-x_1^{\star}\right\|\left\|x_2^{\star}-y_1\right\|
++ \left\|x_2^{\star}\right|\left(\left\|x_2-x_1^{\star}\right\| + \left\|y_1 - x_2^{\star}\right\|\right)\\
+\le-\|x_2^{\star} - x_1^{\star}\|_{\infty}^2 +\|x_2^{\star} - x_1^{\star}\|_{\infty} c_{r_1}\epsilon + r_1(2c_{r_1}\epsilon) \\
+\Longrightarrow \|x_2^{\star} - x_1^{\star}\|_{\infty}^2 \le \|x_2^{\star} - x_1^{\star}\|_{\infty} c_{r_1}\epsilon + r_1(2c_{r_1}\epsilon) \\
+\Longrightarrow \|x_2^{\star} - x_1^{\star}\|_{\infty} \le \frac 1 2 \left[c_{r_1}\epsilon \pm \sqrt{c_{r_1}^2\epsilon^2 + 8r_1c_{r_1}\epsilon}\right] \\
+\Longrightarrow \|x_2^{\star} - x_1^{\star}\|_{\infty} \le \frac {c_{r_1}\epsilon} 2 \left[1 \pm \sqrt{1 + \frac{8r_1}{c_{r_1}\epsilon}}\right] 
+\end{align*}
+Because the norm is always positive, we may take the positive sign.
+
+\begin{align*}
+\Longrightarrow \|x_2^{\star} - x_1^{\star}\|_{\infty} \le \frac 1 2 \left[c_{r_1}\epsilon + \sqrt{c_{r_1}^2\epsilon^2 + 8r_1c_{r_1}\epsilon}\right] \\
 \end{align*}
 \end{proof}
 
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
+% \left(x_2^{\star}\right)^Tx_2^{\star}-\left(x_1^{\star}\right)^Tx_2^{\star}-\left(x_2^{\star}\right)^T\left(x_1^{\star}\right)-\left(x_1^{\star}\right)^T\left(x_1^{\star}\right)
+% + \left(x_2^{\star}-x_1^{\star}\right)^Tx_2^{\star}-\left(x_2^{\star}-x_1^{\star}\right)^Ty_1
+% + \left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+% =
+% \left(x_2^{\star}\right)^T x_2 - \left(x_2^{\star}\right)^T x_2^{\star}
+% + \left(x_1^{\star}\right)^T y_1 - \left(x_1^{\star}\right)^T x_1^{\star} \\
+
+
+% = \left(x_2^{\star}\right)^T \left(x_1^{\star} - x_2^{\star}\right) + \left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)  
+% -\left(x_2^{\star}\right)^T\left(y_1 - x_2^{\star}\right)
+% +\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+% = \left(x_2^{\star}\right)^T \left(x_1^{\star} - x_2^{\star}\right) + \left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)  
+% -\left(x_2^{\star}\right)^T\left(y_1 - x_2^{\star}\right)
+% +\left(x_2^{\star}\right)^T\left(x_2-x_1^{\star} + y_1 - x_2^{\star}\right) \\
+
+
+
+% 
+% Suppose that for each $r > 0$ the is a constant $c_r$ such that to each 
+% $x$ in $C$ with $\|x\| \le r$ there corresponds an $x'$ in $C'$ with $\|x-x'\| \le c_r \epsilon$ and 
+% to each $y' \in C'$ with $\|y'\| \le r$ there corresponds a $y\in C$ with $\|y - y'\| \le c_r \epsilon$.
+% Then there exists a constant $c$ such that $\xo'$ satisifies $\|\bar x - \bar x '\|\le c \sqrt{\epsilon}$ as $\epsilon \to 0$.
+% \end{lemma}
+% 
+% \ifnum\includeproofs=1
+% \begin{proof}
+% For $\bar x'$ let $u' \in C'$ satisfy $\|u - \bar x\| \le c_{r_0} \epsilon$ for $\epsilon > 0$ where $r_0 = \|\bar x\|$.
+% Since $\|\bar x \| \le \|u\| = \|\bar x + u - \bar x\| \le \|\bar x \| + c_{r_0} \epsilon \equiv r$, we know that there exist 
+% $v \in C$ satisfying $\|\bar x' - v\| \le c_r \epsilon$.
+% Because these are minimums over a convex set, we know that
+% $\langle \xo', u - \xo'\rangle \ge 0$ and $\langle\xo, v-\xo\rangle \ge 0$ so that
+% \begin{align*}
+% 0 \le \langle \xo' - \xo, \xo - \xo'\rangle + \langle \xo' - \xo, \xo'-v\rangle + \langle \xo', u - \xo + v - \xo'\rangle \\
+% \Longrightarrow \|\xo ' - \xo \|^2 \le \|\xo' - \xo\|c_r \epsilon + r(2c_r\epsilon)
+% \end{align*}
+% \end{proof}
+% 
+% \else
+% \begin{proof}
+% Proof omitted
+% \end{proof}
+% \fi
 
 
 \begin{lemma}[Corollary 3.9 of \cite{dummy:continuity}]
