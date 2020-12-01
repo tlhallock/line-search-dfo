@@ -2203,7 +2203,6 @@ and define
 u_l = P_{\linearization}(\xk - \gk) \\
 u_c = P_{\capcones\cap\tr}(\xk-\gk) \label{sr_define_u_c} \\
 u_{GC} = P_{\linearization\cap\tr}(\xk-\gk) \\
-\delta = \frac 1 {2\gfmin(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \label{sr_define_delta} \\
 p = 1 + \frac 1 2 \left(p_{\Delta} + \min\{p_{\alpha}, p_{\beta}\}\right) \label{sr_def_p}\\
 \epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta}
 \end{align}
@@ -2219,11 +2218,15 @@ and
 \left(\frac{\delta \minanglealpha}{\left(\delta + 2\sqrt{n}\right)\left(\beta +\alpha\right)}\right)^{\frac 1 {\epsilon_{\Delta}}}
 \right\} \label{sr_delta_small_enough}
 \end{align}
+where
+\begin{align}
+\delta = \min\left\{\frac 1 {4\gfmin(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}, \sqrt{\frac{\kappa_f \kappa_{\chi}}{4\left(\hfb - 1\right)\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}}\right\} \label{sr_define_delta}
+\end{align}
+
 then we also have
 \begin{align*}
-\left(-\gk\right)^T \left(u_c - \xk\right) \ge \frac 1 2 \left(-\gk\right)^T \left(u_{GC} - \xk\right) \\
+m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(v)\right) \ge \left(\frac{\kappa_f}{2} \right)\chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
 \end{align*}
-% \mfk(\xk) - \mfk(u_c) \ge \kappa_{r} \left(\mfk(\xk) - \mfk(u_l) \right).
 \end{theorem}
 
 \begin{proof}
@@ -2232,7 +2235,7 @@ tells us there is a $u$ with $-\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha
 
 Also, note that by \cref{sr_def_p}, \cref{sr_def_epsilon_delta}, \cref{define_p_delta}, \cref{def_p_alpha}, and \cref{def_p_beta} we have
 \begin{align}
-1 + p_{\Delta} < p \label{sr_p_big} \\
+1 + p_{\Delta} < p < 2p\label{sr_p_big} \\
 p < 1 + p_{\alpha} \Longrightarrow 1 - p + p_{\alpha} > 0  \label{sr_p_small_alpha} \\
 p < 1 + p_{\beta}\Longrightarrow 1 - p + p_{\beta} > 0 \label{sr_p_small_beta} \\
 \Longrightarrow \epsilon_{\Delta} = \min\{1 - p + p_{\alpha}, 1 - p + p_{\beta} \} > 0 \label{sr_epsilon_delta_positive}
@@ -2254,24 +2257,56 @@ Note that because $u_{GC} \in \tr$,
 \le \delta\left(1 + \sqrt{n}\right) \dk^{p} \label{sr_v_close_u}
 \end{align}
 
-Because we are using a linear criticality measure, $u_{GC}$ is the Cauchy point, and using \cref{sr_chi_big_enough}, \cref{sr_delta_small_enough} we know that
+Because $u_{GC}$ is the Cauchy point, and using \cref{sr_chi_big_enough}, \cref{sr_delta_small_enough} we know that
 \begin{align*}
-\left(-\gk\right)^T\left(u_{GC} - \xk\right) 
+\mfk(\xk) - \mfk(u_{GC})
  \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\} \\
  \ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
  \ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}.
 \end{align*}
+
+
+% 
+% \color{red}
+% \begin{align*}
+% \left(u_{GC} - \xk\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - \xk\right) 
+% \end{align*}
+% \color{black}
+% 
+% 
+% 
+% \begin{align*}
+% \delta^2 \left(\hfb - 1\right)\left(1 + \sqrt{n}\right)^2 \le \frac 1 2 \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \\
+% \delta^2 \le \frac{\kappa_f \kappa_{\chi}}{2\left(\hfb - 1\right)\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\} \\
+% \delta \le \\
+% \end{align*}
+
+\color{red}
+\color{black}
+
+
 Using this, \cref{sr_define_delta}, \cref{sr_p_big}, and \cref{sr_v_close_u} we know that
 \begin{align*}
- \left\|\gk\right \|  \left\|u_{GC}- v\right\|  \le \delta\gfmin \left(1 + \sqrt{n}\right) \dk^{p}  \\
+m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) = 
+\left(\gk\right)^T(u_{GC} - v) + \left(u_{GC} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \\
+\le \left\|\gk\right \|  \left\|u_{GC}- v\right\|  + \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
+\le \delta\gfmin \left(1 + \sqrt{n}\right) \dk^{p}  + \delta^2 \left(\hfb - 1\right)\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
 \le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}
-\le \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) \\
+\le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC}) \\
 \end{align*}
+% \begin{align*}
+%  \left\|\gk\right \|  \left\|u_{GC}- v\right\|  \le \delta\gfmin \left(1 + \sqrt{n}\right) \dk^{p}  \\
+% \le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\hfb}, 1 \right\}
+% \le \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) \\
+% \end{align*}
+
+% \left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \nonumber \\
+% \ge\left(-\gk\right)^T\left(u_{GC} - \xk\right)  -  \left\|\gk\right \|  \left\|u_{GC}- v\right\|  \nonumber \\
+% \ge \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) 
 so that
 \begin{align}
-\left(-\gk\right)^T\left(v - \xk\right) = \left(-\gk\right)^T\left(u_{GC} - \xk\right) -  \left(-\gk\right)^T\left(u_{GC} - v\right) \nonumber \\
-\ge\left(-\gk\right)^T\left(u_{GC} - \xk\right)  -  \left\|\gk\right \|  \left\|u_{GC}- v\right\|  \nonumber \\
-\ge \frac 1 2 \left(-\gk\right)^T\left(u_{GC} - \xk\right) \label{sr_sr}
+m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) \right| \\
+\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(v)\right) \label{sr_sr}
 \end{align}
 and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
 
@@ -2288,7 +2323,6 @@ Also, because $u_{GC}$ is feasible with respect to the linearization of the cons
 \begin{align}
 \left(\zik - \xk\right)^T(u_{GC} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
-
 
 If $u_l \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{GC} - \xk\right\|  = \left\|u_{l} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
 If $u_l \not \in \tr$, then a trust region constraint is active and $\left\|u_{GC} - \xk\right\| \ge \dk$.
