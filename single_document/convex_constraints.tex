@@ -2183,89 +2183,146 @@ Therefore, $\theta^{\text{min}}_k \ge \minanglealpha$.
 
 \begin{lemma}
 Assume that \cref{minangleassumption} holds.
+Let $\epsilon \in \left(0, \frac 1 2 (\minanglealpha)^2\right)$ be arbitrary.
 Then, if
 \begin{align}
 \dk \le \min\left\{
 \minangledelta,
-\frac 1 2 \left(\frac{\left(\minanglealpha\right)^2}{\beta\left(2 - \left(\minanglealpha\right)^2\right)}\right)^{\frac 1 {p_{\beta}}}
 \right\}, \label{nonempty_delta_small}
 \end{align}
-we have that $\fcki \ne \emptyset$, .
+we have that $\bsk \le 1 - \epsilon$, implying $\fcki \ne \emptyset$.
 \end{lemma}
 
 \begin{proof}
 % As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
 By \cref{theta_min_is_bounded}, $\theta^{\text{min}}_k \ge \minanglealpha$ and $\sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}$.
-We use this along with
+Also,
+
 \begin{align*}
-\dk < \left(\frac{\left(\minanglealpha\right)^2}{\beta\left(2 - \left(\minanglealpha\right)^2\right)}\right)^{\frac 1 {p_{\beta}}}
-\Longrightarrow \left(2 - \left(\minanglealpha\right)^2\right)\beta\dk^{p_{\beta}} < \left(\minanglealpha\right)^2
-\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\beta\dk^{p_{\beta}} < 1 - \beta\dk^{p_{\beta}} - \left(1 - \left(\minanglealpha\right)^2\right) \\
-\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\left(1 + \beta\dk^{p_{\beta}}\right) < 1 - \beta\dk^{p_{\beta}}
-\Longrightarrow 1 - \left(\minanglealpha\right)^2 < \frac{1 - \beta\dk^{p_{\beta}}}{1 + \beta\dk^{p_{\beta}}}
-= \frac{\left(1 - \beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} < \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} < 1.
+\left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 1 2 \frac{\left(\minanglealpha\right)^2}{5- \left(\minanglealpha\right)^2} 
+\Longrightarrow \left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 1 2 \left(\minanglealpha\right)^2
+\Longrightarrow - \left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \ge - \frac 1 2 \left(\minanglealpha\right)^2
+\end{align*}
+
+\begin{align*}
+\dk^{p_{\beta}} \le \frac 3 {8\beta} \left(\minanglealpha\right)^2
+\Longrightarrow 4\beta\dk^{p_{\beta}} \le \frac 3 2 \left(\minanglealpha\right)^2
+\Longrightarrow 4\beta\dk^{p_{\beta}} - \frac 1 2 \left(\minanglealpha\right)^2 \le \left(\minanglealpha\right)^2
+\end{align*}
+\begin{align*}
+4\beta\dk^{p_{\beta}} -\left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \le 4\beta\dk^{p_{\beta}} - \frac 1 2 \left(\minanglealpha\right)^2  \le \left(\minanglealpha\right)^2 \\
+\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) \le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
+\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right) \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+\Longrightarrow \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\end{align*}
+
+% \begin{align*}
+% \Longrightarrow \left(2\beta\dk^{p_{\beta}}\right)^2 \le \left(\beta\dk^{p_{\beta}}\right)^2  \\
+% \Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 - \left(2\beta\dk^{p_{\beta}}\right)^2 \\
+% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le \sqrt{1 - \left(2\beta\dk^{p_{\beta}}\right)^2} \\
+% \Longrightarrow \frac{1}{\sqrt{1 - \left(2\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% \end{align*}
+
+% 
+% \begin{align*}
+% \frac{4\epsilon}{1 - \left(\minanglealpha\right)^2}\beta\dk^{p_{\beta}} - \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac{2\epsilon^2}{1 - \left(\minanglealpha\right)^2} - 1\\
+% 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac{2\epsilon^2}{1 - \left(\minanglealpha\right)^2} - \frac{4\epsilon}{1 - \left(\minanglealpha\right)^2}\beta\dk^{p_{\beta}} \\
+% \frac 1 2 \left(1 - \left(\minanglealpha\right)^2\right) \le \frac{\epsilon^2 - 2\epsilon\beta\dk^{p_{\beta}}}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+% = \frac{\left(1 - \beta\dk^{p_{\beta}}\right)^2 }{1 - \left(\beta\dk^{p_{\beta}}\right)^2} + \frac{\epsilon^2 - 2\epsilon\beta\dk^{p_{\beta}}}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\\
+% \end{align*}
+
+% \begin{align*}
+% \epsilon \le \frac 1 2 \minanglealpha
+% \Longrightarrow 1 - \epsilon = \frac 1 2 (2 - \epsilon) \le \minanglealpha \\
+% \Longrightarrow \epsilon(2 - \epsilon) \le \left(\minanglealpha\right)^2 \\
+% \end{align*}
+
+\begin{align*}
+\epsilon \le \frac 1 2 \left(\minanglealpha\right)^2 \\
+\Longrightarrow 2\epsilon \le \left(\minanglealpha\right)^2 \\
+\Longrightarrow 1 - \left(\minanglealpha\right)^2 \le 1 - 2\epsilon \\
+\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)^2 \le 1 - \left(\minanglealpha\right)^2 \le \left(1 - 2\epsilon\right)^2 \\
+\Longrightarrow 1 - \left(\minanglealpha\right)^2 \le \left(1 - 2\epsilon\right)^2 \\
+\Longrightarrow 1 \le \frac{\left(1 - 2\epsilon\right)^2}{1 - \left(\minanglealpha\right)^2}
+\end{align*}
+
+\begin{align*}
+\Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - 2\epsilon\right)^2}{1 - \left(\minanglealpha\right)^2} \\
+\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - 2\epsilon}{\sqrt{1 - \left(\minanglealpha\right)^2} } \\
+\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - 2\epsilon}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
+\Longrightarrow \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{\frac 1 2 - \epsilon}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\end{align*}
+
+
+\begin{align*}
+\end{align*}
+
+\begin{align*}
+\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - \epsilon - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 - \epsilon.
 \end{align*}
 to show
 \begin{align*}
 \bsk 
 = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)} 
 \le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} 
-< 1.
+\le 1 - \epsilon.
 \end{align*}
-
-
-
-
-% by \cref{}
-
-
-
-
-% Also, the ray $\xk + t \huk$ is within this cone.
+% Also,
+% \begin{align*}
+% \bsk 
+% = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)}
+% \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}
+% \end{align*}
 \end{proof}
 
 
 
 \begin{lemma}
 \label{ellipse_in_cone}
-Let $r \le \delta$.
-Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
+Let $\delta \le \epsilon$.
+Then $\{x \in \rn | f_e(\epsilon, \delta, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
 \end{lemma}
 
-
-
 \begin{proof}
-Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
+Let $x$ be such that $f_e(\epsilon, \delta, \theta, x) \le 0$.
 First, note that
 \begin{align*}
-(e_1^Tx - \frac 1 2 \delta )^2\ge 0\\
-\Longrightarrow (e_1^Tx)^2 + e_1^Tx\delta  - \frac 1 4 \delta^2 \ge 0\\
-\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\delta  - \frac 1 2 \delta^2\\
-\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx)^2 + 2e_1^Tx\delta - \delta^2 \le (e_1^Tx)^2 \\
-\Longrightarrow \frac 1 2 \delta^2 - \left((e_1^Tx)^2 - 2e_1^Tx\delta + \delta^2\right) \le (e_1^Tx)^2 \\
-\Longrightarrow \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2 \le (e_1^Tx)^2.
+2(e_1^Tx - \frac 1 2 \epsilon )^2\ge 0
+\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\epsilon  - \frac 1 2 \epsilon^2 \\
+\Longrightarrow \frac 1 2 \epsilon^2 - \left((e_1^Tx)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) \le (e_1^Tx)^2
+\Longrightarrow \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2 \le (e_1^Tx)^2.
 \end{align*}
+
+% \Longrightarrow \frac 1 2 \epsilon^2 - (e_1^Tx)^2 + 2e_1^Tx\epsilon - \epsilon^2 \le (e_1^Tx)^2 \\
+% \begin{align*}
+% \|x - e_1^Tx e_1\|^2 \ge \|x\|^2 - (e_1^Tx)^2 \\
+% \|x\|^2 \le (e_1^Tx)^2 + \|x - e_1^Tx e_1\|^2 \\
+% \end{align*}
+
 
 We use this inequality to show:
 \begin{align*}
-f_e(\delta, r, \theta, x) \le 0 \\
-\Longrightarrow (x - \delta e_1)^T\bigg(\begin{bmatrix}
+f_e(\epsilon, \delta, \theta, x) \le 0
+\Longrightarrow (x - \epsilon e_1)^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}\bigg)(x - \delta e_1) \le \frac 1 2 r^2 \\
-\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1)^T\bigg(\begin{bmatrix}
+\end{bmatrix}\bigg)(x - \epsilon e_1) \le \frac 1 2 \delta^2 \\
+\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1)^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \delta e_1) \le \frac 1 2 r^2 \\
+\end{bmatrix}\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1) \le \frac 1 2 \delta^2 \\
+\Longrightarrow 
+(e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2.
+\end{align*}
+But,
+\begin{align*}
 \Longrightarrow
-(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 r^2 \\
-\Longrightarrow
-(e_1^Tx - \delta)^2 + \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 \\
-\Longrightarrow\frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \delta^2 - (e_1^Tx - \delta)^2\\
-\Longrightarrow\|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
-\Longrightarrow\|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2 \\
+(e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\left(\|x\|^2 - (e_1^Tx)^2\right) \le (e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2 \le \frac 1 2 \epsilon^2 \\
+\Longrightarrow \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2 \le (e_1^Tx)^2
+\Longrightarrow \|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
+\Longrightarrow \|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2
 \Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta.
 \end{align*}
 \end{proof}
@@ -2274,10 +2331,8 @@ f_e(\delta, r, \theta, x) \le 0 \\
 \label{ellipse_fits}
 We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ and $f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) = 0$
 \end{lemma}
-
 \begin{proof}
-
-We have
+We compute
 \begin{align*}
 f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
@@ -2317,11 +2372,58 @@ Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it 
 \end{proof}
 
 \begin{lemma}
-The accuracy condition is satisfied
-\end{lemma}
+Assume that
 
+hold, and assume that 
+\begin{align}
+\dk \le 
+\end{align}
+Let $R$ be defined as in \cref{def_rotation}, then \cref{ellipsoids_exist} is satisfied if
+\begin{align*}
+\qk = R^T \begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\bsk^2}{1 - \bsk^2} \boldsymbol I \\
+\end{bmatrix} R, \quad
+\ck = \xk  + \frac 1 2 \dk\huk, \quad
+\delta_k = \frac 1 2 \dk.
+\end{align*}
+as in \cref{def_ellipse_k}.
+\end{lemma}
 \begin{proof}
-Basically a copy and paste from the linear paper.
+
+\begin{align*}
+\kappa(\qk) = \frac{\max\{1, \frac{\bsk^2}{1 - \bsk^2}\}}{\min\{1, \frac{\bsk^2}{1 - \bsk^2}\}} = \frac{\bsk^2}{1 - \bsk^2}
+\end{align*}
+as $\det(R) = 1$.
+Also, $R\huk = e_1$, so that
+
+
+\begin{align*}
+\bsk \le 1 - \frac 1 4 \minanglealpha^2 \\
+1-\bsk \ge \frac 1 4 \minanglealpha^2 \\
+\frac{\bsk}{1-\bsk} \le \frac{1 - \frac 1 4 \minanglealpha^2}{\frac 1 4 \minanglealpha^2} = \frac{4 - \minanglealpha^2}{\minanglealpha^2} = \frac 4 {\minanglealpha^2} - 1\\
+\end{align*}
+
+
+By \cref{def_ellipse_k}, \cref{def_rotation}, \cref{def_ellipse_function}, we have
+\begin{align}
+f_e(\epsilon, \delta, \theta; x) = (x - \epsilon e_1)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+\end{bmatrix}\bigg)(x - \epsilon e_1) - \frac 1 2 \delta^2
+\end{align}
+and rotation matrix
+\begin{align}
+R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I
+\end{align}
+by defining
+\begin{align}
+\sampletrk = \unshiftedellipsoid = \left\{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R\left(x - \xk\right)\right) \le 0\right\}.
+\end{align}
+
+
+
+
 \end{proof}
 
 \color{red}
