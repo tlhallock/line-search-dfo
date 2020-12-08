@@ -79,6 +79,7 @@
 
 
 \newcommand{\qk}{{Q^{(k)}}}
+\newcommand{\ck}{{c^{(k)}}}
 \newcommand{\sk}{{{s}^{(k)}}}
 \newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
 \newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
@@ -164,8 +165,6 @@
 
 \newcommand{\zik}{{z^{(i, k)}}}
 \newcommand{\fik}{{\mathcal F_{i, k}}}
-\newcommand{\iik}{{\mathcal I_{k}}}
-% \newcommand{\uk}{{u^{(k)}}}
 \newcommand{\huk}{{{\hat u}^{(k)}}}
 \newcommand{\ask}{{\alpha^{(\star, k)}}}
 \newcommand{\bsk}{{\beta^{(\star, k)}}}
@@ -177,9 +176,6 @@
 \newcommand{\bxk}{{\bar{x}^{(k)}}}
 \newcommand{\wik}{{w^{(i, k)}}}
 \newcommand{\lpc}{{L_{c}}}
-
-
-
 
 
 
@@ -219,6 +215,7 @@
 \newcommand{\deltalargzik}{{\Delta_{\alpha,\beta}}}
 
 \newcommand{\maxnorm}{{M_{\|\cdot\|}}}
+\newcommand{\activeconstraintsk}{{\mathbb A_{k}}}
 
 \def\includeproofs{1}
 
@@ -322,12 +319,12 @@ Matrices are denoted with capital letters, and we use $e_i$ to denote the $i$-th
 $B_k(c; \Delta)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$ .
 $\delta_{i,j}$ is the kronecker delta, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$.
 The complement of a set $S$ is denoted as $\bar S$.
-
-
+We will let the condition number of a matrix $Q$ be denoted $\kappa(Q)$.
 Also, we define $\phi_{2,\infty},\phi_{\infty,2}>0$ such that 
 \begin{align}
-\|x\|_2 \le \phi_{2, \infty}\|x\|_{\infty}, \|x\|_{\infty} \le \phi_{\infty,2}\|x\|_2\forall x \in \Rn \label{define_norm_changers}
+\|x\|_2 \le \phi_{2, \infty}\|x\|_{\infty}, \|x\|_{\infty} \le \phi_{\infty,2}\|x\|_2\forall x \in \Rn \label{define_norm_changers}.
 \end{align}
+We also define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
 
 
 \subsection{Model-based Trust Region Methods}
@@ -534,13 +531,14 @@ Let \cref{introduction_3_1} be satisfied and $m$ be a quadratic model function c
 
 Also, \cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
 
-In particular, these bounds ensure that the following accuracy condition is satisfied, which is used by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
+In particular, these bounds ensure that the following accuracy condition is satisfied, which we can adapt a proof from \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
 \begin{equation}
 \label{accuracy}
-\|\nabla \mfk(\xk) - \nabla f(\xk) \| \le \kappa_g \Delta_k
+\|\nabla \mfk(\xk) - \nabla f(\xk) \| \le \kappa_g \dk^2
 \end{equation}
- for some fixed constant $\kappa_g$ independent of $k$.
-We will extend these results for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
+for some fixed constant $\kappa_g$ independent of $k$.
+This will need accuracy for both the objective and the constraints, as described in \cref{accuracy_assumption}
+We have extend these results for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
  
 A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure good geometry is required for convergence analysis although it may come at the expense of adding more function evaluations.
 
@@ -656,12 +654,14 @@ The outer trust region is an $L_1$ ball of radius $ \dk $ defined by
 
 Note that the outer trust region may include infeasible points.
 To ensure feasibility of all sample points, we construct an inner trust region for sample points $ \sampletrk $  satisfying 
-$\sampletrk \subset \outertrk \cap \feasible$ and $\xk \in \sampletrk $.
+$\sampletrk \subset \outertrk \cap \feasible$.
+% and $\xk \in \sampletrk $.
 Of course, it may only be the case that $\sampletrk \subset \feasiblek$ rather than $\sampletrk \subset \feasible$.
 However, we show that for sufficiently small $\dk$, this is not an issue.
 
 However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
-This means we introduce another trust region $ \searchtrk $ that also satisfies $ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.
+This means we introduce another trust region $ \searchtrk $ that also satisfies 
+$ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.
 
 
 Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
@@ -708,63 +708,27 @@ There is a well known algorithm for constructing poised sets over spheres, and t
 Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
-\subsubsection{Requirements of Sacred Region}
+\subsubsection{Requirements of the Interpolation Region}
 \label{ellipsoid_requirements}
 We construct a set of requirements $\sampletrk$ must satisfy.
-During iteration $k$, we let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$ and center $\centerk \in \Rn$.
-\begin{align}
-\sampletrk = \{x \in \Rn | (x - \centerk)^T \qk(x - \centerk) \le 1 \}
-\end{align}
-
-Other requirements may also work, but we these are sufficient for our convergence analysis.
-\begin{comment}
-Ensure that this is true.
-\end{comment}
-The ellipsoid must:
-\begin{itemize}
-        \item \textbf{Be near the current iterate.}\\
-We enforce this by requiring the a factor of 2 to include the current iterate:
-\begin{align}
-\label{ellipsoid_close_enough}
-(\xk - \centerk)^T \qk(\xk - \centerk) \le 2
-\end{align}
-        \item \textbf{Be large enough.} \\
-        We enforce this by ensuring that the largest axis of the ellipsoid must be a certain percentage of the the trust region radius.
-\begin{align}
-\label{ellipsoid_large_enough}
-\sigma_{\text{max}}(\qk) = \dk
-\end{align}
-	\item \textbf{Produce poised points.} \\
-	We enforce this by bounding the singular value of $\qk$.
-\begin{align}
-\label{bounded_singular_value}
-\sigma(\qk) \le \sigmamax \forall k \in \ints
-\end{align}
-	\item \textbf{Be feasible.} \\
-	We enforce this by ensuring that there is a $\deltafeasible\in\ints$ such that 
-\begin{align}
-\label{feasible_sample_region}
-\sampletrk \subseteq \feasible \quad \forall \dk \ge \deltafeasible
-\end{align}
-\end{itemize}
-
-\begin{comment}
-Fix the requirement that the ellipsoid is large enough...
-Is it even needed?
-\end{comment}
-
-
+During iteration $k$, we let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$.
+We define 
+\begin{align*}
+\sampletrk = \unshiftedellipsoid = \left \{x \in \Rn | (x - \ck)^T \qk(x - \ck) \le \frac 1 2 \delta_k^2 \right \}
+\end{align*}
+Although other conditions may also work, we state the requirements that are needed for convergence within \cref{ellipsoids_exist}.
 Within this paper, we construct the ellipsoid by creating cones that buffer the ellsipoid from the constraints.
 These half-cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and point towards the current iterate.
-For convenience while discussing the construction of the feasible ellipsoid, we define how to compute them here.
+For convenience, while discussing the construction of the feasible ellipsoid, we define how to compute them here.
 The definition of these cones depends on user defined parameters of 
 \begin{align}
 \alpha, \beta \in (0, 1) \label{def_alpha_beta} \\
 0 < p_{\alpha}  < 1 \label{def_p_alpha} \\
-0 < p_{\beta} < 1 \label{def_p_beta}
+0 < p_{\beta} < 1 \label{def_p_beta}.
 \end{align}
 
-For each $1\le i\le m$, we first compute the zero of the linearized constraint
+
+For each $1\le i\le m$, if $\|\gmcik\| \ne 0$, we first compute the zero of the linearized constraint
 \begin{align}
 \zik = \xk - \frac{m_{c_i}(\xk)}{\|\gmcik\|} \hgmcik. \label{def_z}
 \end{align}
@@ -772,11 +736,17 @@ where
 \begin{align}
 \hgmcik = \frac{\nabla m_{c_i}(\xk)}{\|\nabla m_{c_i}(\xk)\|}. \label{def_normalized_gradient}
 \end{align}
-The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameter $\alpha$:
+We do not construct cones for each of our constraints, as some may have $\|\gmcik\| = 0$.
+Thus, we let the set of ``active" constraints by defined by 
+\begin{align}
+\activeconstraintsk = \left\{1 \le i \le m | \zik \in B_{\infty}(\xk, 3\dk)\right\} \label{defineactiveconstraints}
+\end{align}
+% \|\gmcik\| \ne 0, \quad 
+The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameters $\alpha, p_{\alpha}$:
 \begin{align}
 \wik = \xk + \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right). \label{def_w}
 \end{align}
-The cone is then defined using the $\beta$ parameter by
+The cone is then defined using the $\beta$ and $p_{\beta}$ parameters by
 \begin{align}
 \fik = \left\{x \in \rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{p_{\beta}} \right\}. \label{def_f}
 \end{align}
@@ -831,15 +801,6 @@ Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
 \Longrightarrow \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i \\
 \Longrightarrow A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2
 \end{align*}
-
-
-
-
-
-
-
-
-
 
 
 \subsubsection{Ideal Solution}
@@ -1191,40 +1152,36 @@ Although not efficient, this can be used to find a large ellipsoid within the bu
 
 \subsubsection{Conservative Ellipsoid}
 
-We were able to find another ellipsoid contained within \cref{def_f} that may, in general, be smaller than the largest possible ellipsoid.
-However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoid_requirements}.
-Here we show how to construct the ellipsoid, and show its properties in \cref{feasible_ellipsoid_analysis}.
+We were able to find another ellipsoid contained within each \cref{def_f} that may, in general, be smaller than the largest possible ellipsoid.
+However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_exist}.
+Here we show how to construct the ellipsoid, and we later show its properties in \cref{feasible_ellipsoid_analysis}.
 
-First, we define the set of active constraints as
-\begin{align}
-\iik = \{1\le i \le m | \zik \in \tr \} \label{def_i}
-\end{align}
+First, we define the set of active constraints as in \cref{defineactiveconstraints}
 and then compute a feasible direction for these active constraints:
 \begin{align}
-\uk \in -\min_{\|u\| = 1} \max_{i \in \iik} u^T\hgmcik\label{def_u} \\
-\huk = \frac {\uk} {\| \uk\|} \label{def_hu}.
+\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\hgmcik\label{def_u}
 \end{align}
+% \huk = \frac {\uk} {\| \uk\|} \label{def_hu}.
 
 
-The angle between this direction and the furthest/nearest direction that is infeasible is then given by
+The angle between this direction and the nearest direction that is infeasible is then measured by
 \begin{align}
-\theta^{\text{min}}_k = \min_{i \in \iik} (-\hgik)^T \huk \label{def_theta_k_min} \\
-\theta^{\text{max}}_k = \max_{i \in \iik} (-\hgik)^T \huk \label{def_theta_k_max}.
+\theta^{\text{min}}_k = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{def_theta_k_min}.
 \end{align}
 
 
-The vector $\uk$ and $\theta^{\text{max}}_k$ can be computed with the following program:
+The vector $\huk$ and and value $\theta^{\text{min}}_k$ can be easily computed with the following program:
 \begin{align*}
 \begin{array}{ccc}
-\argmax_{u\in\Rn, \theta\in\reals} & \theta \\
-& -u^T \hgmcik \ge \theta & \forall i \in \iik\\
+\huk \in \argmax_{u\in\Rn, \theta\in\reals} & \theta \\
+& -u^T \hgmcik \ge \theta & \forall i \in \activeconstraintsk \\
 & \|u \| = 1& 
 \end{array}.
 \end{align*}
 
 We can then compute the a maximum angle that is feasible with respect to each of the constraints as
 \begin{align}
-\bsk = \beta\dk^{p_{\beta}} \theta^{\text{max}}_k + \sqrt{(1 - \dk\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \label{def_bs_k}
+\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - (\theta^{\text{max}}_k) ^2\right)} \label{def_bs_k}
 \end{align}
 so that the cone
 \begin{align}
@@ -1233,10 +1190,10 @@ so that the cone
 is feasible with respect to all active constraints.
 We then define an ellipsoid within this cone with a helper function
 \begin{align}
-f_e(\delta, r, \theta; x) = (x - \delta e_1)^T\bigg(\begin{bmatrix}
+f_e(\epsilon, \delta, \theta; x) = (x - \epsilon e_1)^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}\bigg)(x - \delta e_1) - \frac 1 2 r^2 \label{def_ellipse_function}
+\end{bmatrix}\bigg)(x - \epsilon e_1) - \frac 1 2 \delta^2 \label{def_ellipse_function}
 \end{align}
 and rotation matrix
 \begin{align}
@@ -1244,7 +1201,7 @@ R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol
 \end{align}
 by defining
 \begin{align}
-\sampletrk = \unshiftedcone = \{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\}. \label{def_ellipse_k}
+\sampletrk = \unshiftedellipsoid = \left\{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\right\}. \label{def_ellipse_k}
 \end{align}
 
 \subsection{Infeasible Trial Points}
@@ -1484,19 +1441,61 @@ The algorithm depends on a parameter $p_{\Delta}$
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
 Throughout our assumptions, we will let $\Omega$ be some open region containing $\feasible$.
 
+\paragraph{Bounded functions}
+The following assumptions let us know that the functions $f$ and $c_i \forall 1 \le i \le m$ are smooth functions.
+
+
+
+\begin{assumption}
+\label{bounded_below}
+The function $f$ is bounded below in $ \Omega $. That is, there exists an $\fmin$ such that
+\begin{align}
+f(x) \ge \fmin \quad  \forall x \in \Omega
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{bounded_gradient_constraint}
+The functions $c_i$ has bounded gradient  in $ \Omega $. That is, there exists an $\gcmax > 0$ such that
+\begin{align}
+\|\nabla c_i(x)\| \le \gcmax \quad  \forall x \in \Omega\forall 1 \le i \le m
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{bounded_constraint_hessians}
+Each function $c_i$ for $1 \le i \le m$ is has bounded hessian. That is, there exists a $ \maxconstrainthessian $ such that:
+\begin{align}
+\|\nabla^2 c_i(x) \| \le \maxconstrainthessian \quad \forall x \in \Omega \label{bounded_hessians}
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{maxnormassumption}
+There exists a $\maxnorm > 0$ such that for each $k \in \ints$ we have
+\begin{align*}
+\|x\| \le \maxnorm \forall x \in \feasiblek
+\end{align*}
+\end{assumption}
+
+\begin{assumption}
+\label{bounded_hessians}
+The matrices $\hk$ are uniformly bounded, that is, there exists a constant $ \hfb \ge 1 $ such that 
+\begin{align}
+\|\hk\| \le \hfb - 1 \quad \forall k \ge 0.
+\end{align}
+\end{assumption}
+
+\paragraph{All functions are smooth}
+The following assumptions let us know that the functions $f$ and $c_i \forall 1 \le i \le m$ are smooth functions.
+
+
 \begin{assumption}
 \label{lipschitz_gradient}
 The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $L_g > 0$ in $ \Omega $.
 \begin{align}
 \|\nabla f(x) - \nabla f(y)\| \le L_g \|x - y\| \quad \forall x,y \in \Omega.
-\end{align}
-\end{assumption}
-
-\begin{assumption}
-\label{lipschitz_hessian}
-The function $f$ is twice differentiable and its hessian $\nabla^2 f$ is Lipschitz continuous with constant $L_h > 0$ in $ \Omega $:
-\begin{align}
-\|\nabla^2 f(x) - \nabla^2 f(y)\| \le L_h \|x - y\| \quad \forall x,y \in \Omega.
 \end{align}
 \end{assumption}
 
@@ -1510,48 +1509,16 @@ Each function $c_i$ for $1 \le i \le m$ is differentiable and its gradient $\nab
 
 
 \begin{assumption}
-\label{bounded_constraint_hessians}
-Each function $c_i$ for $1 \le i \le m$ is has bounded hessian. That is, there exists a $ \maxconstrainthessian $ such that:
+\label{lipschitz_hessian}
+The function $f$ is twice differentiable and its hessian $\nabla^2 f$ is Lipschitz continuous with constant $L_h > 0$ in $ \Omega $:
 \begin{align}
-\|\nabla^2 c_i(x) \| \le \maxconstrainthessian \quad \forall x \in \Omega \label{bounded_hessians}
+\|\nabla^2 f(x) - \nabla^2 f(y)\| \le L_h \|x - y\| \quad \forall x,y \in \Omega.
 \end{align}
 \end{assumption}
 
 
-\begin{assumption}
-\label{bounded_below}
-The function $f$ is bounded below in $ \Omega $. That is, there exists an $\fmin$ such that
-\begin{align}
-f(x) \ge \fmin \quad  \forall x \in \Omega
-\end{align}
-\end{assumption}
-
-
-\begin{assumption}
-\label{bounded_gradient}
-The function $f$ has bounded gradient  in $ \Omega $. That is, there exists an $\gfmin > 0$ such that
-\begin{align}
-\|\nabla f(x)\| \le \gfmin \quad  \forall x \in \Omega
-\end{align}
-\end{assumption}
-
-\begin{assumption}
-\label{bounded_gradient_constraint}
-The functions $c_i$ has bounded gradient  in $ \Omega $. That is, there exists an $\gcmax > 0$ such that
-\begin{align}
-\|\nabla c_i(x)\| \le \gcmax \quad  \forall x \in \Omega\forall 1 \le i \le m
-\end{align}
-\end{assumption}
-
-\begin{assumption}
-\label{bounded_hessians}
-The matrices $\hk$ are uniformly bounded, that is, there exists a constant $ \hfb \ge 1 $ such that 
-\begin{align}
-\|\hk\| \le \hfb - 1 \quad \forall k \ge 0.
-\end{align}
-\end{assumption}
-
-
+\paragraph{Regularity Assumptions}
+We use the following assumptions as our regularity assumptions.
 
 \begin{assumption}
 \label{minangleassumption}
@@ -1570,15 +1537,6 @@ then
 There exists a $\mingradepsilon > 0$ and a $\mingrad > 0$ such that for each $x \in \Omega$ we have
 \begin{align*}
 -c_i(x) \le \mingradepsilon \Longrightarrow \| \nabla c_i(x) \| \ge \mingrad.
-\end{align*}
-\end{assumption}
-
-
-\begin{assumption}
-\label{maxnormassumption}
-There exists a $\maxnorm > 0$ such that for each $k \in \ints$ we have
-\begin{align*}
-\|x\| \le \maxnorm \forall x \in \feasiblek
 \end{align*}
 \end{assumption}
 
@@ -1602,63 +1560,139 @@ then
 \end{assumption}
 
 
+\paragraph{Proven assumptions}
+The following assumptions are proven throughout the paper.
+
 \begin{assumption}
 \label{hopefully_there_is_a_bound_for_this}
 We have that $\Gamma_0(A_k) \le M_{\Gamma_0} \forall k$
-
+\color{red}
 This follows from continuity?
+\color{black}
 \end{assumption}
+
+
+% \begin{assumption}
+% \label{h4_placeholder}
+% The iterates are generated by the algorithm.
+% That is,
+% \begin{itemize}
+% \item something about $\mfk$
+% \item something about $\xk$
+% \item whatever else needs to be said
+% \end{itemize}
+% \end{assumption}
 
 
 \begin{assumption}
-\label{h4_placeholder}
-The iterates are generated by the algorithm.
-That is,
+\label{accuracy_assumption}
+There exists a constant $\kappa_g$ such that 
+\begin{align}
+\|\nabla f(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk^2 \\
+\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2 \quad \forall 1 \le i \le m
+\end{align}
+\end{assumption}
+This is the accuracy condition \cref{accuracy} and is shown in \cref{accuracy_is_satisfied}.
+
+
+\begin{assumption}
+\label{bounded_gradient}
+The function $f$ has bounded gradient in $ \Omega $. That is, there exists an $\gfmin > 0$ such that
+\begin{align}
+\|\nabla f(x)\| \le \gfmin \quad  \forall x \in \Omega
+\end{align}
+\end{assumption}
+This follows immediately from \cref{lipschitz_gradient} and \cref{maxnormassumption}.
+
+
+\begin{assumption}
+\label{ellipsoids_exist}
+There exists an $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, and a bound $\sigma_{\text{min}} > 0$ and scalars $\delta_k > 0$
+such that each of the following hold:
 \begin{itemize}
-\item something about $\mfk$
-\item something about $\xk$
-\item whatever else needs to be said
+\item The condition numbers of $\qk$ are bounded:
+\begin{align}
+\sigma(Q^{(k)}) \le \sigma_{\text{max}} \forall k \in \ints
+\end{align}
+\item An ellipsoid defined by $\qk, \ck$ is feasible:
+\begin{align}
+\unshiftedellipsoid \subseteq \feasiblek \cap \tr
+\end{align}
+where
+\begin{align}
+\unshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck \right)^T \qk \left(x - \ck\right) \le \frac 1 2 {\delta_k}^2 \right\}
+\end{align}
+\item An ellipsoid defined by $\qk, \ck$ is close to the current iterate:
+\begin{align}
+\xk \in \scaledunshiftedellipsoid
+\end{align}
+where
+\begin{align}
+\scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\delta_k}^2 \right\}
+\end{align}
 \end{itemize}
 \end{assumption}
 
+We have already constructed $\qk$, $\ck$, $\delta_k$, and we show that they satisfy \cref{ellipsoids_exist} in \cref{feasible_ellipsoid_analysis}.
 
 
+We will be using the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
+We restate the theorem here, with the simplication that $f$ is deterministic function.
+Note that the assumption is satisfied for $f$ by \cref{lipschitz_hessian}, and for the constraints by \cref{bounded_constraint_hessians}.
+
+\begin{assumption}
+\label{fully_quadratic_assumption}
+Suppose that a set $S$ and a radius $\dmax$ are given.
+Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
+$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
+\end{assumption}
+
+\begin{lemma}
+\label{change_radius} 
+Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
+If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
+Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
+\begin{align*}
+\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
+\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
+\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
+\end{align*}
+\end{lemma}
 
 
-
+We also use a theorem found within our convergence analysis for linear constraints:
 \begin{theorem}
-\label{accuracy_theorem}
-There exists a constant $\kappa_g$ such that 
-\begin{align}
-\|\nabla f(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk
-\end{align}
+\label{shifted_ellipsoid}
+Given $\qk$, $\ck$ as defined in \cref{ellipsoids_exist},
+Let $\qk = L D^2 L^T$ where $L^TL = I$ and $D$ is a diagonal matrix with positive entries be the eigen-decomposition of $\qk$.
+Also, let $\delta = \max_{x\in \ellipsek}\|x-c\|$, 
+and define the transformation $T(x) = \delta DL^T(x - c)$.
+Let $\hat m_f(u)$ be a model of the shifted objective $\hat f(u) = f(T^{-1}(u))$ in the $\delta$ ball such that
+there exist constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$ such that for all $\{u \in R^n | \;\|u\| \le \delta \}$, we have
+% for all $u \in B(0 ; \delta)$ we have the following error bounds:
+\begin{align*}
+|\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta^3\\
+\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta^2\\
+\|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta.
+\end{align*}
+
+Then, with
+\begin{align*}
+\kappa_{ef}' = \kappa_{ef} \\
+\kappa_{eg}' = \kappa_{eg}\sqrt{\kappa(\qk)} \\
+\kappa_{eh}' = \kappa_{eh}\kappa(\qk),
+\end{align*}
+we have that for all $x \in \ellipsek$,
+the model function $m_f(x) = \hat m_f(T(x))$ will satisfy
+\begin{align*}
+| m(x) - f(x)| \le \kappa_{ef}'\delta^3 \\
+\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta^2 \\
+\|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta.
+\end{align*}
 \end{theorem}
 
-
-
-
-
-\subsection{Requirements}
-
-The construction of each variant of our algorithm ensures that the following two criteria are also met.
-These two conditions are required by \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence in the case with linear constraints.
-Because we have modified the proof they have given, we are allowed to weaken the second of these.
-
-\paragraph{Accuracy}
-The accuracy condition \cref{accuracy} is satisfied:
-there exists a constant $\kappa_{g} > 0$ such that $ \| \gk - \grad(\xk) \| \le \kappa_{g} \dk $ for $k \in \ints $.
-
-We have shown that this is satisfied for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
-Proving this is the topic of \cref{feasible_ellipsoid_analysis}.
-
-
-\begin{comment}
-Cite the other linear paper...
-\end{comment}
-
-
-\paragraph{Sufficient Model Reduction}
-
+\paragraph{Sufficient Reduction}
 To ensure sufficient reduction of the objective's model function during each iteration, the authors of \cite{Conejo:2013:GCT:2620806.2621814} impose the following efficiency condition:
 \begin{equation}
 \label{efficiency}
@@ -1680,14 +1714,70 @@ However, we show that this is not required during every iteration, but those ite
 This is the topic of \cref{sufficient_reduction_section}.
 
 
+\subsection{Accuracy}
+\label{ellipsoidal_lambda}
+
+\begin{theorem}
+\label{accuracy_is_satisfied}
+Suppose that \cref{fully_quadratic_assumption} and \cref{ellipsoids_exist} holds.
+Then, the accuracy condition \cref{accuracy_assumption} is satisfied for each iterate $k$ with $\dk \le 1$.
+\end{theorem}
+
+\begin{proof}
+Fix an iterate $k$.
+We can use \cref{ellipsoids_exist} to define $\qk, \ck, \scaledunshiftedellipsoid$.
+As in \cref{shifted_ellipsoid}, we can give $\qk = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in \unshiftedellipsoid} \|x - \mu^{(k)}\|$, 
+so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the $\delta$ ball.
+As also described in \cref{shifted_ellipsoid}, we  create shifted functions
+\begin{align*}
+\begin{array}{ccc}
+\hat {m}_f(u) = m_f(T^{-1}(u)),&  \hat f (u) = f(T^{-1}(u)) &\\
+\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \hat c_i (u) = c(T^{-1}(u))& \forall 1 \le i \le m
+\end{array}
+\end{align*}
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
+here exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta)$ and all $1\le i\le m$:
+\begin{align*}
+\begin{array}{ccc}
+\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 &
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 &
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta \\
+\left\| \hat {{c_i}}\left(u\right) -  \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_f \delta^3 &
+\left\|\nabla \hat {{c_i}}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_g \delta^2 &
+\left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
+\end{array}
+\end{align*}
+We can then use \cref{change_radius} to conclude that there is another constant $\Lambda_2$ such that for all $u \in B_2(0, 2\delta)$:
+\begin{align*}
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2, \quad \textrm{and} \quad
+\left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2.
+\end{align*}
+where $\kappa_{g}' = 16 \Lambda_2 L \sqrt{p+1}$.
+After defining $\kappa''_{g} =  \sigma_{\text{max}}\kappa'_g$, we see that
+we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \scaledunshiftedellipsoid$:
+\begin{align*}
+\left\|\nabla f\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le 
+\kappa'_g  \dk^2 \sqrt{\kappa\left(\frac 2 {\delta_k} Q^{(k)}\right)} \le \kappa'_g \sqrt{\sigma_{\text{max}}}\dk^2 \le \kappa''_g\dk^2 \\
+\left\|\nabla {c_i}\left(x_0 \right) - \nabla m_{c_i}\left(x_0\right)\right\| \le \kappa''_g\dk^2 \quad \forall 1 \le i \le m
+\end{align*}
+In particular, $\xk \in \scaledunshiftedellipsoid$.
+\end{proof}
+
+
+% Notice that Lemma 3.1 and Lemma 3.2 within \cite{doi:10.1080/10556788.2015.1026968} show that $\lim_{k\to\infty}\dk = 0$ without requiring the accuracy condition.
+% This is because Lemma 3.1 assumes that $\dk \le 1$ explicitly, while Lemma 3.2 uses the accuracy of the model's hessians.
+% This justifies the use of a $\dmax > 0$, such that $\dk \le \dmax\;\forall k \in \naturals$.
+
+
 \subsection{Construction of $\sampletrk$}
 \label{feasible_ellipsoid_analysis}
 
 \subsubsection{Notation}
 Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
+
+% \theta^{\text{min}} = \liminf_{k\to\infty} \theta^{\text{min}}_k \label{def_theta_min} \\
+% \theta^{\text{max}} = \limsup_{k\to\infty} \theta^{\text{max}}_k \label{def_theta_max} \\
 \begin{align}
-\theta^{\text{min}} = \liminf_{k\to\infty} \theta^{\text{min}}_k \label{def_theta_min} \\
-\theta^{\text{max}} = \limsup_{k\to\infty} \theta^{\text{max}}_k \label{def_theta_max} \\
 \bs = \sqrt{ 1 - (\theta^{\text{max}}_k)^2} \label{def_bs} \\
 0 < g_{\text{low}} \le \|\gmcik\| \le g_{\text{hi}} \label{def_g_bounds} \\
 0 < h_{\text{low}} \le \|\nabla^2m_{c_i}(x)\| \le h_{\text{hi}} \label{def_h_bounds} \\
@@ -1698,100 +1788,87 @@ Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever the
 
 \subsubsection{Existence Proof}
 
-\begin{lemma}
-Let $\theta^{\text{min}}$ be as defined as in \cref{def_theta_min}.
-Then $\theta^{\text{min}} > 0.$
-\end{lemma}
-
-\ifnum\includeproofs=1
-\begin{proof}
-
-% \begin{comment}
-% Adapting from the linear case.
-% \end{comment}
-
-\end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
-
-
-
 
 \begin{lemma}
 \label{cone_subset_cone}
-Given $u^1, u^2 \in \rn$, $\|u^1\| = \|u^2\|= 1$, $\beta >0$, with ${u^1}^Tu^2 \ge \beta$ define
+Given $u, v \in \rn$, and $\gamma, \beta \in (0, 1]$ that satisfy $\|u\| = \|v\|= 1$, $u^Tv = \gamma > \beta > 0$, define
 \begin{align*}
-B = \{x\in\rn | {u^2}^Tx \ge \beta\|x\|\}, \quad
-S = \left\{x\in\rn \bigg| {u^1}^Tx \ge \left(\beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)}\right)\|x\| \right\}. 
+B = \{x\in\rn | {v}^Tx \ge \beta\|x\|\}, \quad
+S = \left\{x\in\rn \bigg| v^Tx \ge \left(\beta\gamma + \sqrt{(1 - \beta^2)\left(1 - \gamma^2\right)}\right)\|x\| \right\}. 
 \end{align*}
 Then, $S \subseteq B$.
 \end{lemma}
 
 
-\ifnum\includeproofs=1
+
 \begin{proof}
-Let 
+For a contradiction, let $y \in \rn$ be such that $y \not \in B$ and $y \in S$ and define $\hat y = \frac{y}{\|y\|}$.
+That is,
+\begin{align}
+v^T\hat y < \beta \label{csc_vy} \\
+u^T\hat y \ge \beta\gamma + \sqrt{\left(1 - \beta^2\right)\left(1 - \gamma^2\right)}. \label{csc_uy}
+\end{align}
+
+Define
 \begin{align*}
-x^{\star} = \beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )
-\end{align*} and for a contradiction, let $y \in \rn$ be such that $y \not \in B$ and $y \in S$ and define $\hat y = \frac{y}{\|y\|}$.
-Then
+x^{\star} = \beta v + \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} (u - \gamma v )
+\end{align*} and notice that
+\begin{align}
+\begin{array}{ccccc}
+{u}^Tx^{\star} &=& \beta\gamma + \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} (1 - \gamma^2) &=&  \beta\gamma + \sqrt{\left(1 - \beta^2\right)\left(1 - \gamma^2\right)} \\
+{v}^Tx^{\star} &=& \beta + \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}}(\gamma - \gamma) &=& \beta \\
+{x^{\star}}^Tx^{\star} &=& \beta^2 + 2\beta\sqrt{\frac{1 - \beta^2}{1 - \gamma^2}}(\gamma - \gamma) + \frac{1 - \beta^2}{1 - \gamma^2} (1- 2\gamma^2 + \gamma^2)&=& 1.
+\end{array}. \label{csc_vx_ux}
+\end{align}
+
+Using \cref{csc_vx_ux} and \cref{csc_uy}, we see that
 \begin{align*}
-\hat y \in \left\{x \in \rn | {u^2}^Tx < \beta, {u^1}^Tx \ge \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} \right\}.
+\beta\gamma + \sqrt{\left(1 - \beta^2\right)\left(1 - \gamma^2\right)} \le {u}^T\hat y = {u}^T\left(x^{\star} + \hat y - x^{\star}\right) 
+= \beta \gamma + \sqrt{(1 - \beta^2)\left(1 - \gamma^2\right)} + {u}^T\left(\hat y - x^{\star}\right).
 \end{align*}
-
-Note that
+Subtracting $\beta\gamma + \sqrt{\left(1 - \beta^2\right)\left(1 - \gamma^2\right)}$ from both sides, we find that
 \begin{align}
-{u^1}^Tx^{\star} &=& {u^1}^T\left(\beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )\right) = 
-\beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} \\
-{u^2}^Tx^{\star} &=& {u^2}^T\left(\beta u^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} (u^1 - {u^2}^Tu^1 u^2 )\right) = 
-\beta + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} ({u^2}^Tu^1 - {u^2}^Tu^1 ) = \beta.
+{u}^T\left(\hat y - x^{\star}\right) \ge 0 \label{csc_uymx}.
 \end{align}
-That means
+Likewise, we can use \cref{csc_vx_ux} and \cref{csc_vy} to provide
+\begin{align*}
+\beta > {v}^T\hat y = {v}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta + {v}^T\left(\hat y - x^{\star}\right).
+\end{align*}
+After subtracting $\beta$ from both sides, we see
 \begin{align}
-{u^1}^T\hat y = {u^1}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} + {u^1}^T\left(\hat y - x^{\star}\right) \\
-\ge \beta {u^1}^Tu^2 + \sqrt{(1 - \beta^2)\left(1 - ({u^2}^Tu^1)^2\right)} 
-\Longrightarrow {u^1}^T\left(\hat y - x^{\star}\right) \ge 0 \\
-{u^2}^T\hat y = {u^2}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta + {u^2}^T\left(\hat y - x^{\star}\right) < \beta
-\Longrightarrow {u^2}^T\left(\hat y - x^{\star}\right) < 0. \label{the_difference_is_nonzero}
+{v}^T\left(\hat y - x^{\star}\right) < 0 \Longrightarrow -{v}^T\left(\hat y - x^{\star}\right) > 0. \label{csc_vymx}
+\end{align}
+% which means $\hat y \ne x^{\star}$.
+
+Lastly, we will need
+\begin{align}
+\gamma > \beta 
+\Longrightarrow 1 - \beta^2 > 1 - \gamma^2
+\Longrightarrow \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} > 1
+\Longrightarrow \gamma \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} - \beta > 0. \label{csc_gamma_beta_positive}
 \end{align}
 
-From these two equations, we not only know that $\left(\hat y - x^{\star}\right) \ne 0$, but
+Now, we can compute
 \begin{align*}
 {\left(\hat y - x^{\star}\right)}^Tx^{\star} = 
-\left(\beta {\left(\hat y - x^{\star}\right)}^Tu^2 + \sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \left({\left(\hat y - x^{\star}\right)}^Tu^1 - {u^2}^Tu^1 {\left(\hat y - x^{\star}\right)}^Tu^2 \right)\right) > 0
+\beta {\left(\hat y - x^{\star}\right)}^Tv
++ \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} 
+\left(u^T\left(\hat y - x^{\star}\right) - \gamma v^T \left(\hat y - x^{\star}\right) \right)\\ 
+= \left[\gamma \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} - \beta\right] \left[-v^T\left(\hat y - x^{\star}\right)^T\right]
++ \left[\sqrt{\frac{1 - \beta^2}{1 - \gamma^2}}\right] \left[u^T\left(\hat y - x^{\star}\right) \right] > 0.
 \end{align*}
-as ${u^1}^Tu^2 \ge \beta \Longrightarrow {u^2}^Tu^1\sqrt{\frac{1 - \beta^2}{1 - ({u^2}^Tu^1)^2}} \ge \beta$.
+because \cref{csc_uymx}, \cref{csc_vymx}, and \cref{csc_gamma_beta_positive} show that the first product is postive and the second product is non-negative.
 However, this is a contradiction as
 \begin{align*}
-1 = \|\hat y\| = \|x^{\star} + \hat y - x^{\star}\| > \|x^{\star}\| = 1
+1 = \|\hat y\|^2 = \|x^{\star} + \hat y - x^{\star}\|^2 = \|x^{\star}\|^2 + 2{\left(\hat y - x^{\star}\right)}^Tx^{\star} + \|\hat y - x^{\star}\|^2 > \|x^{\star}\|^2 = 1
 \end{align*}
 and there is no such $y$.
 Thus, any $y \in\rn$ with $y \in S$ must also have $y \in B$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
-
-
-\begin{theorem}
-If $h(x)$ is some function satisfying some assumptions, and $m_h(x)$ is fully quadratic over $\tr$, then $m_h(x)$ is fully quadratic over $B_{\infty}(\xk, 2\dk)$.
-\end{theorem}
-\begin{proof}
-\begin{comment}
-Reference the other paper.
-\end{comment}
-\end{proof}
-
-
 
 \begin{lemma}
 \label{only_small_z_matters}
-Assume \cref{mingradassumption}, \cref{bounded_gradient_constraint}, and \cref{bounded_constraint_hessians} hold and \color{red} $m_{c_i}$ is fully quadratic\color{black}.
+Assume \cref{mingradassumption}, \cref{bounded_gradient_constraint}, \cref{bounded_constraint_hessians}, \cref{accuracy_assumption} hold.
 Define
 \begin{align}
 \mingraddelta = \min\left\{
@@ -1844,7 +1921,8 @@ By \cref{szm_delta_small}, this means that
 
 
 \begin{lemma}
-Assuming \cref{mingradassumption}, \cref{bounded_gradient_constraint}, and \cref{bounded_constraint_hessians} hold and \color{red} $m_{c_i}$ is fully quadratic\color{black}, 
+\label{each_constraints_cone_is_feasible}
+Assuming \cref{mingradassumption}, \cref{bounded_gradient_constraint}, \cref{accuracy_assumption}, and \cref{bounded_constraint_hessians} hold,
 if 
 \begin{align}
 \dk \le \min\left\{
@@ -1860,24 +1938,20 @@ c_i(y) \le 0 \quad \forall y \in \fik \cap \tr.
 \end{align*}
 \end{lemma}
 
-\ifnum\includeproofs=1
 \begin{proof}
 
 Because $\dk \le \mingraddelta$, we satisfy the assumptions for \cref{only_small_z_matters}.
 If $c(y) \le \forall y \in \tr \subseteq \fik \cap \tr$ we are done.
-From here on we can assume
+From here on, we can assume both
 \begin{align}
-\zik \in \tr, \quad \left\|\gmcik\right\| \ge \frac 1 2 \mingrad \label{z_is_active}
+\zik \in \tr, \quad \textrm{and} \quad \left\|\gmcik\right\| \ge \frac 1 2 \mingrad. \label{z_is_active}
 \end{align}
-
 Let
 \begin{align}
 y = \wik + ts \in \fik \cap \tr \label{t_is_bounded}
 \end{align}
 with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{p_{\beta}}$.
-
-
-Because the model $m_{c_i}$ is fully quadratic, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds:
+By \cref{accuracy_assumption}, we know that there exists a $\nu\in\rn$ such that \cref{def_lambda_poised} holds with $\|\nu\|\le 1$:
 \begin{align}
 \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu. \label{model_error_for_gradient}
 \end{align}
@@ -1988,82 +2062,169 @@ c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \le 0.
 \end{align*}
 
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 
 \begin{lemma}
-We have that $\cap_{i \in \iik} \fik \cap \tr \subseteq \feasible$ 
+Assume the assumptions for \cref{each_constraints_cone_is_feasible} hold.
+We have that $\cap_{i \in \activeconstraintsk} \fik \cap \tr \subseteq \feasible$ 
 \end{lemma}
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 This follows directly from $x \in \fik \cap \tr \Longrightarrow c_i(x) \le 0$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 \begin{lemma}
-For sufficiently small $\dk$, the set $\fcki \subseteq \fik$ for all $1\le i \le m$.
+If $\dk \le 1$, the set $\fcki \subseteq \fik$ for all $i \in \activeconstraintsk$.
 \end{lemma}
+% \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
 
 
-\ifnum\includeproofs=1
+
 \begin{proof}
-Fix some $1\le i \le m$.
-Letting $\dk \le 1$, we see that $\xk \in \fik$:
+Fix some $i \in \activeconstraintsk$, and define $\gamma_i = -\left(\huk\right)^T\hgik$ as well as
 \begin{align*}
-\xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) \\
+S_1 = \left\{s\in\Rn | \quad s^T\huk\ge\bsk\|s\| \right\} \\
+S_2 = \left\{s\in\Rn | \quad s^T\huk\ge\left[\beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \left(\dk^{p_{\beta}}\beta\right)^2)\left(1 - \gamma_i^2\right)}\right]\|s\| \right\} \\
+S_3 = \left\{s\in\Rn | \quad s^T\left(-\hgik\right)\ge\beta\dk^{p_{\beta}}\|s\| \right\}
+\end{align*}
+We know that $S_1$ is that set of all feasible direction from $\xk$ for $\fcki$, and $S_3$ is that set of all feasible direction from $\wik$ for $\fik$.
+If $\xk \in \fik$ and $S_1 \subseteq S_3$, then it follows that $\fcki \subseteq \fik$.
+
+First, we show that $\xk \in \fik$.
+We see that:
+\begin{align*}
+\xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)
 \end{align*}
 where
 \begin{align*}
-\frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta\\
+\frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta \dk^{p_{\beta}}
 \end{align*}
+because $\dk \le 1$.
 
 % = -\frac{m_{c_i}(\xk)}{\|\gmcik\|}\frac{\|\gmcik\|}{m_{c_i}(\xk)}
-
-Now, let $\dk$ be sufficiently small that $-(\huk)^T\hgik \ge \beta\dk^{p_{\beta}}$.
-This is possible, because $ -(\huk)^T\hgik \ge \theta^{\text{min}}_k \ge \theta^{\text{min}} > 0$.
-
-Then
+Now, we show that $S_1 \subseteq S_3$.
+By \cref{cone_subset_cone} with $u \gets \huk$, $v \gets -\hgik$, $\beta \gets \beta \dk^{p_{\beta}}$, we know that
+$S_2 \subseteq S_3$.
+But $\gamma_i \ge \theta^{\text{min}}_k$, so that
 \begin{align*}
-\left\{s\quad | \quad s^T(-\hgik)\ge\dk^{p_{\beta}}\beta\|s\| \right\}  \subseteq \left\{s\quad | \quad s^T\huk\ge\beta^{\star}\|s\| \right\}
+\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}
+\le \max_{i\in\activeconstraintsk} \left(\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}\right) \\
+\le \beta\dk^{p_{\beta}} \max_{i\in\activeconstraintsk}\left\{\gamma_i\right\} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\min_{i\in\activeconstraintsk}\left\{\gamma_i\right\}\right)^2\right)} \\
+\le \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)} = \bsk
 \end{align*}
-by \cref{cone_subset_cone} with $u^1 \gets \hat u$, $u^2 \gets -\hgik$, $\beta \gets \beta \dk^{p_{\beta}}$ because:
+
+and for any $s\in S_1$,
 \begin{align*}
-\left(-\beta\dk^{p_{\beta}}(\huk)^T\hgik + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \left((\hgik)^T\hat u^{(k)}\right)^2\right)}\right) \\
-\le \max_i \left(-\beta\dk^{p_{\beta}}(\huk)^T{\hgik} + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \left((\hgik)^T\huk\right)^2\right)}\right) \\
-\le \beta\dk^{p_{\beta}} \max_i\{-(\huk)^T\hgik\} + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \left((\max_i(-\hgik)^T\huk\right)^2\right)} \\
-= \beta\dk^{p_{\beta}} \theta^{\text{max}}_k + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - (\theta^{\text{max}}_k) ^2\right)} = \beta^{\star}
+\left(\frac{s}{\|s\|}\right)^T\huk \ge \beta^{\star} 
+\ge \beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \gamma_i^2\right)}
+\Longrightarrow s \in S_2 \subseteq S_3.
 \end{align*}
+
+
 Thus, $\fcki \subseteq \fik$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
+
+
+% XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Also, by \cref{fikfeas_delta_small},
+% \begin{align*}
+% \dk\le \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
+% \Longrightarrow \beta\dk^{p_{\beta}} \le \sqrt{\frac 3 4}
+% \Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \ge \frac 1 4
+% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \ge \frac 1 2
+% \end{align*}
+% \Longrightarrow \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 3 4
+
+
+% \begin{align*}
+% \sqrt{1-\minanglealpha^2} \le  1 - \beta\dk^{p_{\beta}} \\
+% \beta\dk^{p_{\beta}} + \left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)^{\frac 3 2} < 1 \\
+% \left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)^{\frac 3 2} < 1 - \beta\dk^{p_{\beta}}\\
+% \end{align*}
+
+% \begin{align*}
+% \sqrt{1-\minanglealpha^2} \le  f(\dk) \\
+% \beta\dk^{p_{\beta}} + f(\dk)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 \\
+% f(\dk)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 - \beta\dk^{p_{\beta}} \\
+% f(\dk) \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \sqrt{1-\minanglealpha^2} \le  \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2 \left(\beta\dk^{p_{\beta}}\right)^2}} \\
+% f(\dk) \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2 \left(\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
+% \end{align*}
+
+% \le \beta\dk^{p_{\beta}} + \sqrt{1-\minanglealpha^2}\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+% = \beta\dk^{p_{\beta}} + \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} = \\
+% = \beta\dk^{p_{\beta}} + \left(1 - \beta\dk^{p_{\beta}}\right) \sqrt{\frac{1 - \left(\beta\dk^{p_{\beta}}\right)^2}{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} 
 
 \begin{lemma}
-For sufficiently small $\dk$, $\fcki \ne \emptyset$.
+\label{theta_min_is_bounded}
+Assume that \cref{minangleassumption} holds.
+Then if $\dk \le \minangledelta$, $\theta^{\text{min}}_k \ge \minanglealpha$.
 \end{lemma}
-\ifnum\includeproofs=1
+
 \begin{proof}
-As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
+By \cref{minangleassumption}, there is a $u$ such that 
+$-u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$.
+But, by definition of $\huk$ in \cref{def_u}:
+$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\hgmcik$
+so that for all $i \in \activeconstraintsk$,
+\begin{align*}
+-\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
+\end{align*}
+Therefore, $\theta^{\text{min}}_k \ge \minanglealpha$.
+\end{proof}
+
+
+\begin{lemma}
+Assume that \cref{minangleassumption} holds.
+Then, if
+\begin{align}
+\dk \le \min\left\{
+\minangledelta,
+\frac 1 2 \left(\frac{\left(\minanglealpha\right)^2}{\beta\left(2 - \left(\minanglealpha\right)^2\right)}\right)^{\frac 1 {p_{\beta}}}
+\right\}, \label{nonempty_delta_small}
+\end{align}
+we have that $\fcki \ne \emptyset$, .
+\end{lemma}
+
+\begin{proof}
+% As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
+By \cref{theta_min_is_bounded}, $\theta^{\text{min}}_k \ge \minanglealpha$ and $\sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}$.
+We use this along with
+\begin{align*}
+\dk < \left(\frac{\left(\minanglealpha\right)^2}{\beta\left(2 - \left(\minanglealpha\right)^2\right)}\right)^{\frac 1 {p_{\beta}}}
+\Longrightarrow \left(2 - \left(\minanglealpha\right)^2\right)\beta\dk^{p_{\beta}} < \left(\minanglealpha\right)^2
+\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\beta\dk^{p_{\beta}} < 1 - \beta\dk^{p_{\beta}} - \left(1 - \left(\minanglealpha\right)^2\right) \\
+\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\left(1 + \beta\dk^{p_{\beta}}\right) < 1 - \beta\dk^{p_{\beta}}
+\Longrightarrow 1 - \left(\minanglealpha\right)^2 < \frac{1 - \beta\dk^{p_{\beta}}}{1 + \beta\dk^{p_{\beta}}}
+= \frac{\left(1 - \beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} < \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} < 1.
+\end{align*}
+to show
+\begin{align*}
+\bsk 
+= \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)} 
+\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} 
+< 1.
+\end{align*}
+
+
+
+
+% by \cref{}
+
+
+
+
 % Also, the ray $\xk + t \huk$ is within this cone.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 
@@ -2074,7 +2235,7 @@ Then $\{x \in \rn | f_e(\delta, r, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^
 \end{lemma}
 
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 Let $x$ be such that $f_e(\delta, r, \theta, x) \le 0$.
 First, note that
@@ -2108,17 +2269,12 @@ f_e(\delta, r, \theta, x) \le 0 \\
 \Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta.
 \end{align*}
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 \begin{lemma}
 \label{ellipse_fits}
 We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ and $f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) = 0$
 \end{lemma}
-\ifnum\includeproofs=1
+
 \begin{proof}
 
 We have
@@ -2139,17 +2295,12 @@ f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) =\frac {\delta}
 \end{align*}
 \end{proof}
 
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 \begin{lemma}
 For sufficiently small $\dk$, the ellipse $E_k \subseteq \feasible$ has a bounded condition number, and its major axis is atleast $\frac 1 2 \dk$
 \end{lemma}
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 Note that the condition number is given by
 \begin{align*}
@@ -2164,11 +2315,6 @@ We know that $t_k > \dk$ because it measures the distance from $\xk$ to some poi
 Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 \dk$ along $\huk$.
 Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $\tr$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 \begin{lemma}
 The accuracy condition is satisfied
@@ -2681,7 +2827,7 @@ there corresponds an $s_2$ in $P_2$ satisfying
 $\|s_1 - s_2\|_{\infty}\le \epsilon\Gamma_0(A_1)\left(1 + \|s_1\|_{\infty}\right)$.
 \end{lemma}
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 Because $s_1 \in P_1$, we can let $x_1 = s_1$ to see $A_1s_1 \le b_1$
 % Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
@@ -2731,11 +2877,6 @@ by \cref{simple_bound}.
 Lastly, we know that $s_2$ solves $A_1s_2 \le b_2 + (A_1 - A_2)s_2$ so that $A_2s_2 \le b_2$ and $s_2 \in P_2$.
 \end{proof}
 
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 \begin{lemma}[Theorem 2.2 of \cite{dummy:continuity}]
@@ -3048,7 +3189,7 @@ Suppose that \cref{lipschitz_gradient},  \cref{bounded_hessians}, and \cref{boun
 Then $\mathcal K \subset \bar{S}$.
 \end{lemma}
  
-\ifnum\includeproofs=1
+
 \begin{proof}
 
 By the Mean Value Theorem, there exists a $t_k \in (0, 1)$ such that
@@ -3090,11 +3231,6 @@ so that
 \end{align*}
 so that $k \in \bar{S}$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 
@@ -3105,7 +3241,7 @@ Proof omitted
 Suppose \cref{bounded_below}, \cref{bounded_hessians} as well as the assumptions for \cref{sufficient_reduction_theorem}. Then the sequence $(\dk)$ converges to zero.
 \end{lemma}
  
-\ifnum\includeproofs=1
+
 \begin{proof}
 
 Suppose that $\bar{S}$ is finite. Then there exists $k_0 \in \ints$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
@@ -3133,11 +3269,6 @@ Then $l_k$ is well-defined for all large $k$  and $\dk \le \omegainc \Delta_{l_k
 
 so that $\lim_{k \in \mathcal U} \dk = 0$.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 \subsubsection{$\chik \to 0$ Part 1}
@@ -3146,7 +3277,7 @@ Proof omitted
 Suppose that \cref{lipschitz_gradient}, \cref{h4_placeholder} as well as the assumptions for \cref{sufficient_reduction_theorem}. Then $\liminf_{k\to\infty} \chik = 0$.
 \end{lemma}
  
-\ifnum\includeproofs=1
+
 \begin{proof}
 Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $K > 0$ such that $\chik \ge \epsilon$ for each $k \ge K$.
 Take $ \tilde \Delta = \min \{\frac{\epsilon}{\hfb}, \frac{(1 - \eta_1)c}{\epsilon}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}$
@@ -3160,11 +3291,6 @@ Therefore, one can see that for all $k \ge K$
 \end{align}
 which is a contradiction.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 
@@ -3175,7 +3301,7 @@ Further suppose that $\eta > 0$.
 Then $\lim_{k\to\infty}\chik=0$.
 \end{lemma}
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 Suppose for a contradiction that for some $\epsilon > 0$ the set $\mathcal U = \{k \in \ints | \chik \ge \epsilon \}$ is infinite.
 By \cref{delta_to_zero}, there exists a $k_0 \in \ints$ such that for all $k \ge k_0$,
@@ -3255,11 +3381,6 @@ so that
 We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
 Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \ints '}$ converges to zero.
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 \subsubsection{Convergence}
 
@@ -3279,7 +3400,7 @@ If $\eta > 0$, then
 \end{theorem}
 
 
-\ifnum\includeproofs=1
+
 \begin{proof}
 By the triangle inequality, the contraction property of projections and \cref{h4_placeholder}, we have that
 
@@ -3290,11 +3411,6 @@ By the triangle inequality, the contraction property of projections and \cref{h4
 \le \kappa_{g} \Delta_k + \chik
 \end{align*}
 \end{proof}
-\else
-\begin{proof}
-Proof omitted
-\end{proof}
-\fi
 
 
 
