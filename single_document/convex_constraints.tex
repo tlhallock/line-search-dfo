@@ -1772,18 +1772,18 @@ In particular, $\xk \in \scaledunshiftedellipsoid$.
 \subsection{Construction of $\sampletrk$}
 \label{feasible_ellipsoid_analysis}
 
-\subsubsection{Notation}
-Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
+% \subsubsection{Notation}
+% Then for all $1 \le i \le m$, $k = 1, \ldots$, define the following whenever they exist:
 
 % \theta^{\text{min}} = \liminf_{k\to\infty} \theta^{\text{min}}_k \label{def_theta_min} \\
 % \theta^{\text{max}} = \limsup_{k\to\infty} \theta^{\text{max}}_k \label{def_theta_max} \\
-\begin{align}
-\bs = \sqrt{ 1 - (\theta^{\text{max}}_k)^2} \label{def_bs} \\
-0 < g_{\text{low}} \le \|\gmcik\| \le g_{\text{hi}} \label{def_g_bounds} \\
-0 < h_{\text{low}} \le \|\nabla^2m_{c_i}(x)\| \le h_{\text{hi}} \label{def_h_bounds} \\
-\nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu \label{def_lambda_poised} \\
-\inf_{k}\min\{\sigma(\nabla c_{\mathcal I_k}(\xk)) \; | \; \sigma(\nabla c_{\mathcal I_k}(\xk)) > 0 \} \ge \epsilon_{\sigma} > 0\\
-\end{align}
+% \begin{align}
+% \bs = \sqrt{ 1 - (\theta^{\text{max}}_k)^2} \label{def_bs} \\
+% 0 < g_{\text{low}} \le \|\gmcik\| \le g_{\text{hi}} \label{def_g_bounds} \\
+% 0 < h_{\text{low}} \le \|\nabla^2m_{c_i}(x)\| \le h_{\text{hi}} \label{def_h_bounds} \\
+% \nabla c_i(\xk) = \nabla m_{c_i}(\xk) + \epsilon_{g}\dk^2\nu \label{def_lambda_poised} \\
+% \inf_{k}\min\{\sigma(\nabla c_{\mathcal I_k}(\xk)) \; | \; \sigma(\nabla c_{\mathcal I_k}(\xk)) > 0 \} \ge \epsilon_{\sigma} > 0\\
+% \end{align}
 
 
 \subsubsection{Existence Proof}
@@ -2011,25 +2011,32 @@ Multiplying $c_i(\xk)$ by $1 = \frac{\|\gmcik\|^2}{\|\gmcik\|^2}$ and distributi
 \begin{align*}
 0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik  \\
 + M \left\|\left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik\right\|^2
-+ \epsilon_g \dk^2\nu^T \left(\wik - \xk\right)
-\end{align*}
-Using \cref{simple_computation}, we see
-\begin{align*}
++ \epsilon_g \dk^2\nu^T \left(\wik - \xk\right) \\
 0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right)+ M \left\|\wik - \xk\right\|^2  + \epsilon_g \dk^2\nu^T \left(\wik - \xk\right).
 \end{align*}
+by \cref{simple_computation}.
 Using \cref{model_error_for_gradient} and \cref{constraint_lower_bound} we see
 \begin{align}
 0 \ge c_i(\xk) + \nabla c_i(\xk)^T\left(\wik - \xk \right) + M \left\|\wik - \xk\right\|^2 \ge c_i(\wik). \label{c_is_negative}
 \end{align}
 
-
-Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{p_{\beta}}$ where $\|s\| = 1$, and by \cref{def_g_bounds}, \cref{def_lambda_poised}, \cref{def_p_beta} and our assumption \cref{delta_is_small_enough}, we know
-\begin{align}
+Also, by \cref{def_f} we know that $-s^T \hgik \ge \beta \dk^{p_{\beta}}$ where $\|s\| = 1$.
+By our assumption \cref{delta_is_small_enough}, \cref{def_p_beta}, \cref{z_is_active} we know
+\begin{align*}
 \dk \le \left[\frac{\beta}{4\epsilon_{g}}\mingrad \right]^{\frac 1 {2 - p_{\beta}}}
 \Longrightarrow \dk^{2 - p_{\beta}} \le \frac{\beta}{\epsilon_{g}}\left(\frac 1 2\mingrad  - \frac 1 4 \mingrad \right)
-\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{2 - p_{\beta}} \le \|\gmcik\| - \frac 1 4 \mingrad  \nonumber \\
-\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{p_{\beta}} \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2  \nonumber \\
-\Longrightarrow -s^T\gmcik \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2|\nu^T s| \nonumber \\ 
+\Longrightarrow \frac{\epsilon_{g}}{\beta} \dk^{2 - p_{\beta}} \le \|\gmcik\| - \frac 1 4 \mingrad.
+\end{align*}
+Multiplying by $\dk^2$, and using $-s^T \hgik \ge \beta \dk^{p_{\beta}}$, we see
+\begin{align*}
+\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{p_{\beta}} \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2.
+\end{align*}
+Because $\|\nu\| = \|s\| = 1$,
+\begin{align*}
+\Longrightarrow -s^T\gmcik \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2|\nu^T s|
+\end{align*}
+
+\begin{align}
 \Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 4 \mingrad  \beta \dk ^{p_{\beta}}
 \Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}}. \label{nsc_pos}
 \end{align}
@@ -2060,6 +2067,9 @@ Using \cref{constraint_lower_bound} and \cref{c_is_negative} we can then conclud
 \begin{align*}
 c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \le 0.
 \end{align*}
+
+% model_error_for_gradient
+
 
 \end{proof}
 
@@ -3128,8 +3138,8 @@ $\gmcik - \nabla c_i(\xk) = u \kappa_g \dk^2$.
 \begin{align*}
 \nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right) = \nabla c_i(\xk)^T\left(p_{\xk} - \xk\right) - \nabla c_i(\xk)^T\left(p^{(k)} - \xk\right) \\
 = -c_i(\xk) - \nabla c_i(\xk)^T\left(p^{(k)} - \xk\right) \\
-= -c_i(\xk) - \gmcik^T\left(p^{(k)} - \xk\right) - \nabla c_i(\xk)^Tu \kappa_g \dk^2 
-= - \nabla c_i(\xk)^Tu \kappa_g \dk^2.
+= -c_i(\xk) - \gmcik^T\left(p^{(k)} - \xk\right) + u^T\left(p^{(k)} - \xk\right) \kappa_g \dk^2 
+= u^T\left(p^{(k)} - \xk\right) \kappa_g \dk^2.
 \end{align*}
 % \Longrightarrow  \left\|\nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right)\right\| \le \left\|\nabla c_i(\xk)\right\|\kappa_g \dk^2.
 
@@ -3138,7 +3148,7 @@ But this means
 c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \\
 \Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p^{(k)} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 \\
 \Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 + \nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right)\\
-\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 - \nabla c_i(\xk)^Tu \kappa_g \dk^2\\
+\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 + u^T\left(p^{(k)} - \xk\right) \kappa_g \dk^2\\
 \Longrightarrow |c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk)| \le \left(\gfmin - \gcmax\right) \kappa_g \dk^2 \le \minactivegraddelta.
 \end{align*}
 \end{proof}
@@ -3272,6 +3282,9 @@ the equation that stephen couldn't find...
 \end{proof}
 
 \subsection{Convergence Proof}
+\begin{comment}
+Use better accuracy condition
+\end{comment}
 We will define:
 \begin{align}
 S = \{k \in \ints | \rk > \eta \} \\
