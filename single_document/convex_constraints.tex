@@ -23,9 +23,15 @@
 \newfloat{algorithm}{thp}{lop}
 \floatname{algorithm}{Algorithm}
 
+
 \newcounter{assumptioncounter}
 \newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
 \textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+\newcounter{criteriacounter}
+\newenvironment{criteria}[1][]{\refstepcounter{criteriacounter}\par\medskip
+\textbf{Criteria \thecriteriacounter} \rmfamily \itshape}{\medskip}
+
 
 
 \usepackage{framed}
@@ -38,9 +44,12 @@
   \medskip}
   
   
+  
 
+\crefname{criteriacounter}{Criteria}{criteria}
 \crefname{assumptioncounter}{Assumption}{assumption}
 \crefname{equation}{}{equations}
+
 
 %============================
 
@@ -508,14 +517,14 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 % This can ensure that the Vandermonde matrix is well conditioned.
 This is useful because of \cref{quadratic_errors}, which is shown in \cite{DUMMY:intro_book}.
 
-\begin{assumption}
+\begin{criteria}
 \label{introduction_3_1}
 We assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
 poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{1\le i \le p} \|y^0 - y^i\|$.
 
 Further, assume that the function $f$ is twice continuously differentiable in an open domain $\Sigma$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
 is Lipschitz continuous in $\Omega$ with constant $L_h > 0$.
-\end{assumption}
+\end{criteria}
 
 
 \begin{theorem}
@@ -1157,7 +1166,7 @@ However, we are able to show that this ellipsoid satisfies each of the requireme
 Here we show how to construct the ellipsoid, and we later show its properties in \cref{feasible_ellipsoid_analysis}.
 
 First, we define the set of active constraints as in \cref{defineactiveconstraints}
-and then compute a feasible direction for these active constraints:
+and then, if $\activeconstraintsk \ne \emptyset$, compute a feasible direction for these active constraints:
 \begin{align}
 \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\hgmcik\label{def_u}
 \end{align}
@@ -1168,7 +1177,6 @@ The angle between this direction and the nearest direction that is infeasible is
 \begin{align}
 \theta^{\text{min}}_k = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{def_theta_k_min}.
 \end{align}
-
 
 The vector $\huk$ and and value $\theta^{\text{min}}_k$ can be easily computed with the following program:
 \begin{align*}
@@ -1201,8 +1209,11 @@ R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol
 \end{align}
 by defining
 \begin{align}
-\sampletrk = \unshiftedellipsoid = \left\{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R(x - \xk)\right) \le 0\right\}. \label{def_ellipse_k}
+\gamma = 1 + \frac 1 {\sqrt{2}} \\
+\beta^{\star} = \max\left\{\frac 1 2 , \bsk\right\} \\
+\sampletrk = \unshiftedellipsoid = \left\{x \in \rn | f_e\left(\frac 1 {2\gamma} \dk, \frac 1 {2\gamma} \dk, \beta^{\star}; R(x - \xk)\right) \le 0\right\}. \label{def_ellipse_k}
 \end{align}
+\cref{ellsoid_is_feasible_theorem} tells us that this ellipsoid satisfies \cref{ellipsoids_exist}.
 
 \subsection{Infeasible Trial Points}
 \label{convex_model_reduction}
@@ -1529,6 +1540,7 @@ then
 \begin{align*}
 -\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha.
 \end{align*}
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
 
 
@@ -1563,13 +1575,13 @@ then
 \paragraph{Proven assumptions}
 The following assumptions are proven throughout the paper.
 
-\begin{assumption}
+\begin{theorem}
 \label{hopefully_there_is_a_bound_for_this}
 We have that $\Gamma_0(A_k) \le M_{\Gamma_0} \forall k$
 \color{red}
 This follows from continuity?
 \color{black}
-\end{assumption}
+\end{theorem}
 
 
 % \begin{assumption}
@@ -1584,28 +1596,31 @@ This follows from continuity?
 % \end{assumption}
 
 
-\begin{assumption}
+\begin{criteria}
 \label{accuracy_assumption}
 There exists a constant $\kappa_g$ such that 
 \begin{align}
 \|\nabla f(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk^2 \\
 \|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2 \quad \forall 1 \le i \le m
 \end{align}
-\end{assumption}
+\end{criteria}
 This is the accuracy condition \cref{accuracy} and is shown in \cref{accuracy_is_satisfied}.
 
 
-\begin{assumption}
+\begin{lemma}
 \label{bounded_gradient}
 The function $f$ has bounded gradient in $ \Omega $. That is, there exists an $\gfmin > 0$ such that
 \begin{align}
 \|\nabla f(x)\| \le \gfmin \quad  \forall x \in \Omega
 \end{align}
-\end{assumption}
+\end{lemma}
+
+\begin{proof}
 This follows immediately from \cref{lipschitz_gradient} and \cref{maxnormassumption}.
+\end{proof}
 
 
-\begin{assumption}
+\begin{criteria}
 \label{ellipsoids_exist}
 There exists an $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, and a bound $\sigma_{\text{min}} > 0$ and scalars $\delta_k > 0$
 such that each of the following hold:
@@ -1616,7 +1631,7 @@ such that each of the following hold:
 \end{align}
 \item An ellipsoid defined by $\qk, \ck$ is feasible:
 \begin{align}
-\unshiftedellipsoid \subseteq \feasiblek \cap \tr
+\unshiftedellipsoid \subseteq \fcki \cap \tr
 \end{align}
 where
 \begin{align}
@@ -1631,21 +1646,21 @@ where
 \scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\delta_k}^2 \right\}
 \end{align}
 \end{itemize}
-\end{assumption}
+\end{criteria}
 
 We have already constructed $\qk$, $\ck$, $\delta_k$, and we show that they satisfy \cref{ellipsoids_exist} in \cref{feasible_ellipsoid_analysis}.
 
 
 We will be using the following result shown \cite{Billups_Larson_2013}, Corollary 4.7.
 We restate the theorem here, with the simplication that $f$ is deterministic function.
-Note that the assumption is satisfied for $f$ by \cref{lipschitz_hessian}, and for the constraints by \cref{bounded_constraint_hessians}.
+Note that the criteria is satisfied for $f$ by \cref{lipschitz_hessian}, and for the constraints by \cref{bounded_constraint_hessians}.
 
-\begin{assumption}
+\begin{criteria}
 \label{fully_quadratic_assumption}
 Suppose that a set $S$ and a radius $\dmax$ are given.
 Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
 $\cup_{x \in S} B(x; \dmax)$ of the set $S$.
-\end{assumption}
+\end{criteria}
 
 \begin{lemma}
 \label{change_radius} 
@@ -1854,7 +1869,7 @@ Now, we can compute
 \beta {\left(\hat y - x^{\star}\right)}^Tv
 + \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} 
 \left(u^T\left(\hat y - x^{\star}\right) - \gamma v^T \left(\hat y - x^{\star}\right) \right)\\ 
-= \left[\gamma \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} - \beta\right] \left[-v^T\left(\hat y - x^{\star}\right)^T\right]
+= \left[\gamma \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} - \beta\right] \left[-v^T\left(\hat y - x^{\star}\right)\right]
 + \left[\sqrt{\frac{1 - \beta^2}{1 - \gamma^2}}\right] \left[u^T\left(\hat y - x^{\star}\right) \right] > 0.
 \end{align*}
 because \cref{csc_uymx}, \cref{csc_vymx}, and \cref{csc_gamma_beta_positive} show that the first product is postive and the second product is non-negative.
@@ -2029,43 +2044,49 @@ By our assumption \cref{delta_is_small_enough}, \cref{def_p_beta}, \cref{z_is_ac
 \end{align*}
 Multiplying by $\dk^2$, and using $-s^T \hgik \ge \beta \dk^{p_{\beta}}$, we see
 \begin{align*}
-\Longrightarrow -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{p_{\beta}} \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2.
+ -s^T\gmcik =  -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{p_{\beta}} \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2.
 \end{align*}
 Because $\|\nu\| = \|s\| = 1$,
 \begin{align*}
-\Longrightarrow -s^T\gmcik \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2|\nu^T s|
+-s^T\gmcik \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2 \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \epsilon_{g}\dk^2|\nu^T s|
 \end{align*}
-
+Subtracting the last term and using \cref{model_error_for_gradient}
 \begin{align}
-\Longrightarrow -s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 4 \mingrad  \beta \dk ^{p_{\beta}}
+-s^T\left(\gmcik + \epsilon_{g}\dk^2\nu\right) \ge \frac 1 4 \mingrad  \beta \dk ^{p_{\beta}}
 \Longrightarrow -s^T\nabla c_i(\xk) \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}}. \label{nsc_pos}
 \end{align}
 We also know by \cref{delta_is_small_enough} and \cref{def_p_beta} that
-\begin{align}
-\dk \le \left[\frac {\mingrad  \beta} {4M\sqrt{n}\left(1 + \frac {\lpc} M \right)}\right]^{\frac1 {1 - p_{\beta}} }
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lpc} M \right) \dk^{1-p_{\beta}}\le \frac 1 {4M} \mingrad  \beta \nonumber \\
-\Longrightarrow \sqrt{n}\left(1 + \frac {\lpc} M \right) \dk \le \frac 1 {4M} \mingrad  \beta \dk^{p_{\beta}}
-\Longrightarrow \sqrt{n} \dk \le -\frac 1 M \sqrt{n}\dk \lpc + \frac 1 {4M} \mingrad  \beta \dk^{p_{\beta}} \label{eqn2}
-\end{align}
-which implies by \cref{def_g_bounds}, \cref{t_is_bounded}, \cref{nsc_pos}, \cref{eqn2}
+\begin{align*}
+\dk \le \left[\frac {\mingrad  \beta} {4\maxconstrainthessian\sqrt{n}\left(1 + \frac {\lpc} \maxconstrainthessian \right)}\right]^{\frac1 {1 - p_{\beta}} }
+\Longrightarrow \sqrt{n}\left(1 + \frac {\lpc} \maxconstrainthessian \right) \dk^{1-p_{\beta}}\le \frac 1 {4\maxconstrainthessian} \mingrad  \beta
+\end{align*}
+Multiplying by $\dk^{p_{\beta}}$,
+\begin{align*}
+\sqrt{n}\left(1 + \frac {\lpc} \maxconstrainthessian \right) \dk \le \frac 1 {4\maxconstrainthessian} \mingrad  \beta \dk^{p_{\beta}}
+\Longrightarrow \sqrt{n} \dk \le -\frac 1 \maxconstrainthessian \sqrt{n}\dk \lpc + \frac 1 {4\maxconstrainthessian} \mingrad  \beta \dk^{p_{\beta}}
+\end{align*}
+which implies by \cref{z_is_active}, \cref{t_is_bounded}, and \cref{nsc_pos} that
 \begin{align*}
 t 
 \le \sqrt{n} \dk 
-\le -\frac 1 M \sqrt{n}\dk \lpc + \frac 1 {4M} \mingrad \beta \dk^{p_{\beta}}
-\le -\frac 1 M \sqrt{n}\dk \lpc -\frac 1 M \nabla c_i(\xk)^Ts \\
-\Longrightarrow \sqrt{n}\dk \lpc + \nabla c_i(\xk)^Ts + M t \le 0.
+\le -\frac 1 \maxconstrainthessian \sqrt{n}\dk \lpc + \frac 1 {4\maxconstrainthessian} \mingrad \beta \dk^{p_{\beta}}
+\le -\frac 1 \maxconstrainthessian \sqrt{n}\dk \lpc -\frac 1 \maxconstrainthessian \nabla c_i(\xk)^Ts.
+\end{align*}
+Multiplying by $\maxconstrainthessian$ and adding the right hand side, we see
+\begin{align*}
+\Longrightarrow \sqrt{n}\dk \lpc + \nabla c_i(\xk)^Ts + \maxconstrainthessian t \le 0.
 \end{align*}
 Multiplying by $t$ and using \cref{z_is_active},
 \begin{align*}
- t \left(\lpc\|\wik - \xk\| + \nabla c_i(\xk)^Ts + M t\right) \le t \left(\sqrt{n}\dk \lpc + \nabla c_i(\xk)^Ts + M t\right) \le 0.
+ t \left(\lpc\|\wik - \xk\| + \nabla c_i(\xk)^Ts + \maxconstrainthessian t\right) \le t \left(\sqrt{n}\dk \lpc + \nabla c_i(\xk)^Ts + \maxconstrainthessian t\right) \le 0.
 \end{align*}
 Using \cref{lipschitz_constraints},
 \begin{align*}
-t \left(\nabla c_i(\wik)^Ts - \nabla c_i(\xk)^Ts + \nabla c_i(\xk)^Ts + M t\right) \le 0.
+t \left(\nabla c_i(\wik)^Ts - \nabla c_i(\xk)^Ts + \nabla c_i(\xk)^Ts + \maxconstrainthessian t\right) \le 0.
 \end{align*}
 Using \cref{constraint_lower_bound} and \cref{c_is_negative} we can then conclude
 \begin{align*}
-c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + M t^2 \le 0.
+c_i(y) = c_i(\wik + ts) + c_i(\wik) + t\nabla c_i(\wik)^Ts + \maxconstrainthessian t^2 \le 0.
 \end{align*}
 
 % model_error_for_gradient
@@ -2132,45 +2153,8 @@ and for any $s\in S_1$,
 \Longrightarrow s \in S_2 \subseteq S_3.
 \end{align*}
 
-
 Thus, $\fcki \subseteq \fik$.
 \end{proof}
-
-
-% XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Also, by \cref{fikfeas_delta_small},
-% \begin{align*}
-% \dk\le \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
-% \Longrightarrow \beta\dk^{p_{\beta}} \le \sqrt{\frac 3 4}
-% \Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \ge \frac 1 4
-% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \ge \frac 1 2
-% \end{align*}
-% \Longrightarrow \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 3 4
-
-
-% \begin{align*}
-% \sqrt{1-\minanglealpha^2} \le  1 - \beta\dk^{p_{\beta}} \\
-% \beta\dk^{p_{\beta}} + \left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)^{\frac 3 2} < 1 \\
-% \left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)^{\frac 3 2} < 1 - \beta\dk^{p_{\beta}}\\
-% \end{align*}
-
-% \begin{align*}
-% \sqrt{1-\minanglealpha^2} \le  f(\dk) \\
-% \beta\dk^{p_{\beta}} + f(\dk)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 \\
-% f(\dk)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 - \beta\dk^{p_{\beta}} \\
-% f(\dk) \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
-% \end{align*}
-% 
-% 
-% 
-% \begin{align*}
-% \sqrt{1-\minanglealpha^2} \le  \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2 \left(\beta\dk^{p_{\beta}}\right)^2}} \\
-% f(\dk) \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2 \left(\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
-% \end{align*}
-
-% \le \beta\dk^{p_{\beta}} + \sqrt{1-\minanglealpha^2}\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
-% = \beta\dk^{p_{\beta}} + \frac{1 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} = \\
-% = \beta\dk^{p_{\beta}} + \left(1 - \beta\dk^{p_{\beta}}\right) \sqrt{\frac{1 - \left(\beta\dk^{p_{\beta}}\right)^2}{1 - \frac 1 2\left(\beta\dk^{p_{\beta}}\right)^2}} 
 
 \begin{lemma}
 \label{theta_min_is_bounded}
@@ -2192,107 +2176,87 @@ Therefore, $\theta^{\text{min}}_k \ge \minanglealpha$.
 
 
 \begin{lemma}
+\label{boundbeta}
 Assume that \cref{minangleassumption} holds.
-Let $\epsilon \in \left(0, \frac 1 2 (\minanglealpha)^2\right)$ be arbitrary.
-Then, if
+Define
 \begin{align}
-\dk \le \min\left\{
+\Delta_{\beta} =\min\left\{
 \minangledelta,
-\right\}, \label{nonempty_delta_small}
+\left(\frac 1 {4\beta} \left(\minanglealpha\right)^2\right)^{\frac 1 {p_{\beta}}},
+\left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
+\right\}\label{define_boundedbeta_deltasmall}
 \end{align}
-we have that $\bsk \le 1 - \epsilon$, implying $\fcki \ne \emptyset$.
+and assume that $\dk \le \Delta_{\beta}$, so that
+\begin{align}
+\dk \le \minangledelta \label{boundedbeta_deltasmall_1} \\
+\beta\dk^{p_{\beta}} \le \frac 1 {4} \left(\minanglealpha\right)^2 \label{boundedbeta_deltasmall_2} \\
+2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
+\end{align}
+Then $\bsk \le 1 - \frac 1 4 (\minanglealpha)^2$, implying $\fcki \ne \emptyset$.
 \end{lemma}
 
 \begin{proof}
-% As $\dk \to 0$, $\bsk \to \sqrt{1 - (\theta^{\text{max}}_k) ^2} \ge \bs > 0$.
-By \cref{theta_min_is_bounded}, $\theta^{\text{min}}_k \ge \minanglealpha$ and $\sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}$.
+By \cref{boundedbeta_deltasmall_2}, we know $-\left(\minanglealpha\right)^2 \le -4\beta\dk^{p_{\beta}}$,
+so that because $\left(\minanglealpha\right)^2 \le 1$:
+\begin{align*}
+-\left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \left(\minanglealpha\right)^2 \le -4\beta\dk^{p_{\beta}}.
+\end{align*}
+But this means
+\begin{align*}
+\left(1 - \left(\minanglealpha\right)^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
+= 1 - \left(\minanglealpha\right)^2 - \left[5 - \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
+\le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
+\end{align*}
+Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see that because of \cref{boundedbeta_deltasmall_3}
+% 1 - \left(\minanglealpha\right)^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+% \Longrightarrow
+\begin{align} \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
+\end{align}
 Also,
-
 \begin{align*}
-\left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 1 2 \frac{\left(\minanglealpha\right)^2}{5- \left(\minanglealpha\right)^2} 
-\Longrightarrow \left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \le \frac 1 2 \left(\minanglealpha\right)^2
-\Longrightarrow - \left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \ge - \frac 1 2 \left(\minanglealpha\right)^2
+1 - \left(\minanglealpha\right)^2 \le 1 - \left(\minanglealpha\right)^2 + \frac 1 4 \left(\minanglealpha\right)^4 
+= \left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2 
+\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2}{1 - \left(\minanglealpha\right)^2}
 \end{align*}
-
+so that
 \begin{align*}
-\dk^{p_{\beta}} \le \frac 3 {8\beta} \left(\minanglealpha\right)^2
-\Longrightarrow 4\beta\dk^{p_{\beta}} \le \frac 3 2 \left(\minanglealpha\right)^2
-\Longrightarrow 4\beta\dk^{p_{\beta}} - \frac 1 2 \left(\minanglealpha\right)^2 \le \left(\minanglealpha\right)^2
+1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2}{1 - \left(\minanglealpha\right)^2} 
+\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\minanglealpha\right)^2} } 
+\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - \frac 1 2 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
 \end{align*}
+Dividing by $2$ yields:
+\begin{align}
+\frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{\frac 1 2 - \frac 1 4 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\label{boundedbeta_eqn2}.
+\end{align}
+
+We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
 \begin{align*}
-4\beta\dk^{p_{\beta}} -\left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 \le 4\beta\dk^{p_{\beta}} - \frac 1 2 \left(\minanglealpha\right)^2  \le \left(\minanglealpha\right)^2 \\
-\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) \le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
-\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right) \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\Longrightarrow \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} = \frac{1 -  \frac 1 4 \left(\minanglealpha\right)^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \left(\minanglealpha\right)^2.
 \end{align*}
-
-% \begin{align*}
-% \Longrightarrow \left(2\beta\dk^{p_{\beta}}\right)^2 \le \left(\beta\dk^{p_{\beta}}\right)^2  \\
-% \Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 - \left(2\beta\dk^{p_{\beta}}\right)^2 \\
-% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le \sqrt{1 - \left(2\beta\dk^{p_{\beta}}\right)^2} \\
-% \Longrightarrow \frac{1}{\sqrt{1 - \left(2\beta\dk^{p_{\beta}}\right)^2}} \le \frac{1}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-% \end{align*}
-
-% 
-% \begin{align*}
-% \frac{4\epsilon}{1 - \left(\minanglealpha\right)^2}\beta\dk^{p_{\beta}} - \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac{2\epsilon^2}{1 - \left(\minanglealpha\right)^2} - 1\\
-% 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le \frac{2\epsilon^2}{1 - \left(\minanglealpha\right)^2} - \frac{4\epsilon}{1 - \left(\minanglealpha\right)^2}\beta\dk^{p_{\beta}} \\
-% \frac 1 2 \left(1 - \left(\minanglealpha\right)^2\right) \le \frac{\epsilon^2 - 2\epsilon\beta\dk^{p_{\beta}}}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
-% = \frac{\left(1 - \beta\dk^{p_{\beta}}\right)^2 }{1 - \left(\beta\dk^{p_{\beta}}\right)^2} + \frac{\epsilon^2 - 2\epsilon\beta\dk^{p_{\beta}}}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\\
-% \end{align*}
-
-% \begin{align*}
-% \epsilon \le \frac 1 2 \minanglealpha
-% \Longrightarrow 1 - \epsilon = \frac 1 2 (2 - \epsilon) \le \minanglealpha \\
-% \Longrightarrow \epsilon(2 - \epsilon) \le \left(\minanglealpha\right)^2 \\
-% \end{align*}
-
-\begin{align*}
-\epsilon \le \frac 1 2 \left(\minanglealpha\right)^2 \\
-\Longrightarrow 2\epsilon \le \left(\minanglealpha\right)^2 \\
-\Longrightarrow 1 - \left(\minanglealpha\right)^2 \le 1 - 2\epsilon \\
-\Longrightarrow \left(1 - \left(\minanglealpha\right)^2\right)^2 \le 1 - \left(\minanglealpha\right)^2 \le \left(1 - 2\epsilon\right)^2 \\
-\Longrightarrow 1 - \left(\minanglealpha\right)^2 \le \left(1 - 2\epsilon\right)^2 \\
-\Longrightarrow 1 \le \frac{\left(1 - 2\epsilon\right)^2}{1 - \left(\minanglealpha\right)^2}
-\end{align*}
-
-\begin{align*}
-\Longrightarrow 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - 2\epsilon\right)^2}{1 - \left(\minanglealpha\right)^2} \\
-\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - 2\epsilon}{\sqrt{1 - \left(\minanglealpha\right)^2} } \\
-\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - 2\epsilon}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}} \\
-\Longrightarrow \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{\frac 1 2 - \epsilon}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\end{align*}
-
-
-\begin{align*}
-\end{align*}
-
-\begin{align*}
-\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - \epsilon - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 - \epsilon.
-\end{align*}
-to show
+But by \cref{theta_min_is_bounded}and \cref{boundedbeta_deltasmall_1}, 
+$\theta^{\text{min}}_k \ge \minanglealpha \Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}$
+so that
 \begin{align*}
 \bsk 
 = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)} 
-\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} 
-\le 1 - \epsilon.
+\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+\le 1 -  \frac 1 4 \left(\minanglealpha\right)^2.
 \end{align*}
-% Also,
-% \begin{align*}
-% \bsk 
-% = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\theta^{\text{min}}_k\right)^2\right)}
-% \ge \sqrt{1 - \left(\theta^{\text{min}}_k\right)^2}
-% \end{align*}
+
 \end{proof}
 
 
 
 \begin{lemma}
 \label{ellipse_in_cone}
-Let $\delta \le \epsilon$.
-Then $\{x \in \rn | f_e(\epsilon, \delta, \theta; x) \le 0\} \subseteq \{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\}$.
+Let $0 < \delta \le \epsilon$ and $\theta > 0$.
+Then 
+\begin{align*}
+\left\{x \in \rn | f_e(\epsilon, \delta, \theta; x) \le 0\right\} \subseteq \left\{tx\in\rn| e_1^T x \ge \theta,\|x\|=1, t>0\right\}.
+\end{align*}
 \end{lemma}
 
 \begin{proof}
@@ -2304,12 +2268,6 @@ First, note that
 \Longrightarrow \frac 1 2 \epsilon^2 - \left((e_1^Tx)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) \le (e_1^Tx)^2
 \Longrightarrow \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2 \le (e_1^Tx)^2.
 \end{align*}
-
-% \Longrightarrow \frac 1 2 \epsilon^2 - (e_1^Tx)^2 + 2e_1^Tx\epsilon - \epsilon^2 \le (e_1^Tx)^2 \\
-% \begin{align*}
-% \|x - e_1^Tx e_1\|^2 \ge \|x\|^2 - (e_1^Tx)^2 \\
-% \|x\|^2 \le (e_1^Tx)^2 + \|x - e_1^Tx e_1\|^2 \\
-% \end{align*}
 
 
 We use this inequality to show:
@@ -2324,22 +2282,27 @@ f_e(\epsilon, \delta, \theta, x) \le 0
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
 \end{bmatrix}\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1) \le \frac 1 2 \delta^2 \\
 \Longrightarrow 
-(e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2.
+(e_1^Tx - \epsilon)^2 + \frac{\theta_1^2}{1 - \theta_1^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2.
 \end{align*}
+For a contradiction, suppose that $e_1^Tx < 0$, then $(e_1^Tx - \epsilon)^2 \ge \epsilon^2 \ge \delta^2$, but the previous line shows $(e_1^Tx - \epsilon)^2 \le \frac 1 2 \delta^2$.
+Thus, $e_1^Tx \ge 0$.
+
 But,
 \begin{align*}
 \Longrightarrow
-(e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\left(\|x\|^2 - (e_1^Tx)^2\right) \le (e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2 \le \frac 1 2 \epsilon^2 \\
+(e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\left(\|x\|^2 - (e_1^Tx)^2\right) 
+\le (e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2 \le \frac 1 2 \epsilon^2 \\
 \Longrightarrow \frac{\theta^2}{1 - \theta^2}(\|x\|^2 - (e_1^Tx)^2) \le \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2 \le (e_1^Tx)^2
 \Longrightarrow \|x\|^2 - (e_1^Tx)^2 \le \frac{1 - \theta^2}{\theta^2}(e_1^Tx)^2 \\
 \Longrightarrow \|x\|^2 \le \frac 1 {\theta^2}(e_1^Tx)^2
-\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta.
+\Longrightarrow e_1^T\frac{x}{\|x\|} \ge \theta
 \end{align*}
+where we can take the square root because $e_1^Tx \ge 0$.
 \end{proof}
 
 \begin{lemma}
 \label{ellipse_fits}
-We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ and $f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) = 0$
+We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$.
 \end{lemma}
 \begin{proof}
 We compute
@@ -2348,194 +2311,145 @@ f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
 \end{bmatrix}\bigg)(0 - \delta e_1) - \frac 1 2 (\sqrt 2 \delta)^2
-=\delta^2 - \delta^2 = 0\\
+=\delta^2 - \delta^2 = 0.
 \end{align*}
-and
+% and
+% \begin{align*}
+% f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) =\frac {\delta}{\sqrt{2}}e_1^T\bigg(\begin{bmatrix}
+% 1 & \boldsymbol0^T \\
+% \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
+% \end{bmatrix}\bigg)\frac {\delta}{\sqrt{2}}e_1 - \frac 1 2 \delta^2
+% =\frac 1 2 \delta^2 - \frac 1 2 \delta^2 = 0.\\
+% \end{align*}
+\end{proof}
+
+
+\begin{lemma}
+\label{ellipse_fits_part_2}
+Suppose that $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2, 1\right]$, $\delta \in [0, \frac 1 2]$ and $f_e(\delta, \delta, \theta; ts) \le 0$.
+Then $t \le \left(2 + \sqrt{2}\right) \delta$.
+\end{lemma}
+\begin{proof}
+Notice that $s^Te_1 - \delta \in \left[0, 1\right]$
+We let $ts - \delta e_1= \left[\left(ts^Te_1 - \delta\right) e_1 + t\left(s - \left(s^Te_1\right) e_1\right)\right]$
 \begin{align*}
-f_e(\delta, \delta, \theta; (1 + \frac{1}{\sqrt{2}}) \delta e_1) =\frac {\delta}{\sqrt{2}}e_1^T\bigg(\begin{bmatrix}
+f_e(\delta, \delta, \theta; ts) \le 0 \\
+\Longrightarrow 
+\left[\left(ts^Te_1 - \delta\right) e_1 + t\left(s - \left(s^Te_1\right) e_1\right)\right]^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}\bigg)\frac {\delta}{\sqrt{2}}e_1 - \frac 1 2 \delta^2
-=\frac 1 2 \delta^2 - \frac 1 2 \delta^2 = 0.\\
+\end{bmatrix}\bigg)\left[\left(ts^Te_1 - \delta\right) e_1 + t\left(s - \left(s^Te_1\right) e_1\right)\right] \le \frac 1 2 \delta^2 \\
+\Longrightarrow
+\left(ts^Te_1 - \delta\right)^2 + t^2\left(s - \left(s^Te_1\right) e_1\right)^2  \frac{\theta^2}{1 - \theta^2} \le \frac 1 2 \delta^2
+\Longrightarrow 
+\left(t s^Te_1 - \delta\right)^2 \le \frac 1 2 \delta^2 
+\Longrightarrow t s^Te_1 - \delta \le \frac 1 {\sqrt{2}} \delta.
 \end{align*}
-\end{proof}
-
-
-\begin{lemma}
-For sufficiently small $\dk$, the ellipse $E_k \subseteq \feasible$ has a bounded condition number, and its major axis is atleast $\frac 1 2 \dk$
-\end{lemma}
-
-
-\begin{proof}
-Note that the condition number is given by
+But,
 \begin{align*}
-\frac{\max\{1, \frac{\bs^2}{1 - \bs^2}\}}{\min\{1, \frac{\bs^2}{1 - \bs^2}\}} = \frac{\bs^2}{1 - \bs^2}
+\frac 1 2 t \le t s^Te_1 \le \left(1 + \frac 1 {\sqrt{2}}\right) \delta
+\Longrightarrow t \le \left(2 + \sqrt{2}\right) \delta.
 \end{align*}
-because the condition number of a matrix is not affected by rotations.
+\end{proof}
 
-We have already shown that the cone $\fcki \cap \tr \subset \feasible$.
-By construction, the ellipse has been shifted to put $\xk$ at the origin and rotated by $R$ to put $\hat u$ along the x-axis.
-Thus, by \cref{ellipse_in_cone}, we know that $E_k \subseteq \fcki$.
-We know that $t_k > \dk$ because it measures the distance from $\xk$ to some point on the boundary of $\tr$.
-Also, we know from \cref{ellipse_fits} that the ellipse can be scaled by $2$ to include $\xk$, and extends by $\frac 1 2 \dk$ along $\huk$.
-Finally, we know that it does not travel more than $\dk$ from $\xk$, so that it is contained within $\tr$.
+
+\begin{lemma}
+During iteration $k$, if $\activeconstraintsk = \emptyset$, then the definitions
+\begin{align*}
+\qk = I, \quad \ck = \xk, \quad \delta_k = \sqrt{2} \dk.
+\end{align*}
+satisfy \cref{ellipsoids_exist}.
+\end{lemma}
+\begin{proof}
+We have that $\kappa(\qk) = 1$.
+Also, $\unshiftedellipsoid = \left\{x \in \Rn | \|x - \xk\|^2 \le \dk^2 \right\} \subseteq \tr = \capcones$.
+Finally, $(\xk - \xk)^T\qk(\xk - \xk) = 0 \le \delta_k^2$.
 \end{proof}
 
 \begin{lemma}
+\label{ellsoid_is_feasible_theorem}
 Assume that
 
-hold, and assume that 
+hold, and suppose that $\activeconstraintsk \ne \emptyset$.
+Let
 \begin{align}
-\dk \le 
+\dk \le \min\left\{
+1,
+\Delta_{\beta}
+\right\}\label{accuracy_small_delta}\\
+\beta^{\star} = \max\left\{\frac 1 2, \bsk\right\} \\
+\gamma = 1 + \frac 1 {\sqrt 2}
 \end{align}
-Let $R$ be defined as in \cref{def_rotation}, then \cref{ellipsoids_exist} is satisfied if
+where $\Delta_{\beta}$ is defined in \cref{define_boundedbeta_deltasmall}, and $R$ be defined as in \cref{def_rotation}.
+Then, \cref{ellipsoids_exist} is satisfied by letting
 \begin{align*}
 \qk = R^T \begin{bmatrix}
 1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\bsk^2}{1 - \bsk^2} \boldsymbol I \\
+\boldsymbol 0 & \frac{\beta^{\star}}{1 - \beta^{\star}} \boldsymbol I \\
 \end{bmatrix} R, \quad
-\ck = \xk  + \frac 1 2 \dk\huk, \quad
-\delta_k = \frac 1 2 \dk.
+\ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
+\delta_k = \frac 1 {2\gamma} \dk.
 \end{align*}
-as in \cref{def_ellipse_k}.
+% as in \cref{def_ellipse_k}.
 \end{lemma}
 \begin{proof}
-
+First note that by \cref{accuracy_small_delta} and \cref{boundbeta}, we have that
 \begin{align*}
-\kappa(\qk) = \frac{\max\{1, \frac{\bsk^2}{1 - \bsk^2}\}}{\min\{1, \frac{\bsk^2}{1 - \bsk^2}\}} = \frac{\bsk^2}{1 - \bsk^2}
+\frac {1} 2 \le \beta^{\star} \le 1 - \frac 1 4 \left(\minanglealpha\right)^2 \\
+\frac {1} 4 \le \left(\beta^{\star}\right)^2 \le \left(1 - \frac 1 4 \left(\minanglealpha\right)^2\right)^2 \le 1 - \frac 1 4 \left(\minanglealpha\right)^2 \\
+\Longrightarrow 
+\frac 1 4 \left(\minanglealpha\right)^2 \le 1 - \left(\beta^{\star}\right)^2 \le \frac 3 4
+\end{align*}
+Dividing these, we see that
+\begin{align*}
+\frac 1 3
+\le \frac{\left(\beta^{\star}\right)^2}{1 - \left(\beta^{\star}\right)^2}
+\le \frac {4 - \left(\minanglealpha\right)^2}{\left(\minanglealpha\right)^2} \le \frac {4}{\left(\minanglealpha\right)^2}
+\Longrightarrow 
+\kappa(\qk) 
+= \frac{\max\{1, \frac{\left(\beta^{\star}\right)^2}{1 - \left(\beta^{\star}\right)^2}\}}{\min\{1, \frac{\left(\beta^{\star}\right)^2}{1 - \left(\beta^{\star}\right)^2}\}} 
+\le \frac {12}{\left(\minanglealpha\right)^2}
 \end{align*}
 as $\det(R) = 1$.
-Also, $R\huk = e_1$, so that
-
-
+Also, $R\huk = e_1$, so that for any $\delta > 0$,
 \begin{align*}
-\bsk \le 1 - \frac 1 4 \minanglealpha^2 \\
-1-\bsk \ge \frac 1 4 \minanglealpha^2 \\
-\frac{\bsk}{1-\bsk} \le \frac{1 - \frac 1 4 \minanglealpha^2}{\frac 1 4 \minanglealpha^2} = \frac{4 - \minanglealpha^2}{\minanglealpha^2} = \frac 4 {\minanglealpha^2} - 1\\
-\end{align*}
-
-
-By \cref{def_ellipse_k}, \cref{def_rotation}, \cref{def_ellipse_function}, we have
-\begin{align}
-f_e(\epsilon, \delta, \theta; x) = (x - \epsilon e_1)^T\bigg(\begin{bmatrix}
+\left(x - \ck\right)^T\qk\left(x - \ck\right) - \frac 1 2 \delta^2 \\
+= \left(x - \left(\xk + \frac 1 2 \dk \huk\right)\right)^TR^T\bigg(\begin{bmatrix}
 1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{bmatrix}\bigg)(x - \epsilon e_1) - \frac 1 2 \delta^2
-\end{align}
-and rotation matrix
-\begin{align}
-R = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I
-\end{align}
-by defining
-\begin{align}
-\sampletrk = \unshiftedellipsoid = \left\{x \in \rn | f_e\left(\frac 1 2 \dk, \frac 1 2 \dk, \bsk; R\left(x - \xk\right)\right) \le 0\right\}.
-\end{align}
-
-
-
-
-\end{proof}
-
-\color{red}
-\subsection{Efficiency Condition}
-\label{efficiency_condition_analysis}
-
-Another requirement of our convergence analysis is to satisfy the efficiency condition \cref{efficiency}.
-As in \cref{definefeasiblek},
-\begin{align*}
-\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \}
+\boldsymbol 0 & \frac{\left(\beta^{\star}\right)^2}{1 - \left(\beta^{\star}\right)^2} \boldsymbol I \\
+\end{bmatrix}\bigg) R\left(x - \left(\xk + \frac 1 2 \dk \huk\right)\right) - \frac 1 2 \delta^2 \\
+= \left(R(x-\xk) - \frac 1 2 \dk e_1\right)^T\bigg(\begin{bmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\left(\beta^{\star}\right)^2}{1 - \left(\beta^{\star}\right)^2} \boldsymbol I \\
+\end{bmatrix}\bigg) \left(R(x-\xk) - \frac 1 2 \dk e_1\right) - \frac 1 2 \delta^2 \\
+= f_e\left(\frac 1 2 \dk, \delta, \beta^{\star}; R\left(x - \xk\right)\right).
 \end{align*}
-
-However, for this anslysis, we limit ourselves to the smaller region
-\begin{align}
-\trsfesset = \left\{x \in \Rn | x \in \tr \cap \mcik(x) \le 0 \; \forall 1 \le i \le m\cap \|x - y \| \ge \trstol \forall y \in \bar \feasible\right\}
-\end{align}
-
-\begin{lemma}
-Suppose that $s$ is a point being added to $ \trsinfset $, and $n_k$ is any point within $\trsinfset$.
-Then $\|s - n_k\| \ge \trstol \dk$.
-\end{lemma}
-
-\begin{proof}
-Because $s$ is a solution to \cref{buffered_trust_region_subproblem},
-there exists a $d_k \in \Rn$ and $b_k \in \reals$ such that $\|d_k\| = 1$ and
+In particular, letting $\delta = \delta_k$ and $\delta = \sqrt{2}\delta_k$, we see that
 \begin{align*}
- b_k \ge d_k^Ts\\
-d_k^Tn_k \ge b_k + \trstol \dk
+\unshiftedellipsoid = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dk, \frac 1 {2\gamma} \dk, \beta^{\star}; R\left(x - \xk\right)\right) \le 0 \right\} \\
+\scaledunshiftedellipsoid = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dk, \sqrt{2} \frac {1}{2\gamma}\dk, \beta^{\star}; R\left(x - \xk\right)\right) \le 0 \right\}.
 \end{align*}
-for each $n_k \in \trsinfset$.
-Adding these two equations, we find that
-% d_k^Tn_k + b_k\ge b_k + \trstol \dk + d_k^Ts \\
+Using \cref{ellipse_in_cone}, we know that $\unshiftedellipsoid \subseteq \left\{t y \in \Rn | e_1^TR\left(y - \xk\right) \ge \beta^{\star}, \|R\left(y - \xk\right)\| = 1, t > 0 \right\}$,
+because $\beta^{\star} \ge \bsk$ and $\frac 1 {2\gamma} \dk \le \frac 1 {2\gamma} \dk$.
+With a change of variables $s \gets y - \xk, x \gets \xk + t s$, we see that
 \begin{align*}
-\trstol \dk \le d_k^T\left(n_k - s\right) \le \|d_k\|\|n_k - s\| \le \|n_k - s\|.
+\unshiftedellipsoid \subseteq \left\{t y \in \Rn | e_1^TR\left(y - \xk\right) \ge \beta^{\star}, \|R\left(y - \xk\right)\| = 1, t > 0 \right\} \\
+= \left\{x \in \Rn | x = \xk + ts, e_1^TRs = s^T\huk \ge \beta^{\star}, \|s\| = \|Rs\| = 1, t > 0 \right\}
 \end{align*}
-\end{proof}
-
-
-\begin{lemma}
-For each iteration $k$, \cref{linear_cut_trust_region_subproblem} will terminate after a finite number of iterations.
-\end{lemma}
-
-\begin{proof}
-Because each point added to $ \trsinfset $ is a fixed distance from every other point in $ \trsinfset $,
-and must also lie within the bounded set $B_\infty(\xk, \dk)$, only a finite number of points can be added.
-\end{proof}
-
-
-\begin{lemma}
-\label{trs_subset}
-During each iteration of \cref{linear_cut_trust_region_subproblem}, $\trsfesset$ is a subset of the feasible region for \cref{buffered_trust_region_subproblem}.
-\end{lemma}
-
-\begin{proof}
-Suppose that $s \in \trsfesset$.
-Then, $\|n_k - s\| \ge \trstol \dk \forall n_k \in \trsinfset \subset \bar \feasible$.
-For each $n_k \in \trsinfset$, let $d_k = \frac{n_k - s}{\|n_k - s\|}$ and $b_k = n_k^Td_k - \trstol\dk$.
-Then we have that 
+as $R = R^T$.
+We know two things from this, because $\beta^{\star} \ge \bsk$ and $\beta^{\star} \ge \frac 1 2$:
 \begin{align*}
-\frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k = \frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k  - \trstol\dk + \trstol\dk \Longrightarrow
-d_k^Tn_k \ge b_k + \trstol\dk
+\unshiftedellipsoid \subseteq \left\{x \in \Rn | x = \xk + ts, s^T\huk \ge \frac 1 2, \|s\|, t > 0 \right\} \\
+\textrm{and} \quad \unshiftedellipsoid \subseteq \left\{x \in \Rn | x = \xk + ts, s^T\huk \ge \bsk, \|s\|, t > 0 \right\} = \fcki.
 \end{align*}
-and
-\begin{align*}
-\trstol\dk \le \|n_k - s\| \Longrightarrow
-\trstol\dk \|n_k - s\| \le  \|n_k - s\|^2 = \left(n_k - s\right)^Tn_k - \left(n_k - s\right)^T s\\
-\Longrightarrow \frac{\left(n_k - s\right)^T}{\|n_k - s\|} s \le  \frac{\left(n_k - s\right)^T}{\|n_k - s\|}n_k - \trstol\dk \Longrightarrow
-d_k s \le b_k.
-\end{align*}
-Because $s$ is also within the trust region boundary and modelled constraints, $s$ is feasible with respect to \cref{buffered_trust_region_subproblem}.
+Thus, for any $x \in \unshiftedellipsoid$, we can let $x = \xk + ts$, $\|s\| = 1$, $s^T\huk \ge \frac 1 2$.
+Applying \cref{ellipse_fits_part_2} because $\frac 1 2 \dk \le \frac 1 2$, we know that $\|x - \xk\| = t \le \left(2 + \sqrt{2}\right)\frac 1 {2\gamma} \dk = \dk$.
+Thus, $x \in \tr$, and $\unshiftedellipsoid \subseteq \fcki \cap \tr$.
+
+For the third requirement, \cref{ellipse_fits} tells us that
+$f_e\left(\frac 1 2 \dk, \frac 1 {\sqrt{2}}\dk, \beta^{\star}; R\left(\xk - \xk\right)\right) = 0$, so that $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
 
-
-
-\begin{lemma}
-Let $s^{\star}$ be the output of \cref{linear_cut_trust_region_subproblem} after the algorithm does not fail, and let $s'  \in \argmin_{s \in \trsfesset} \mcik(s)$.
-Then $\mcik(s^{\star}) \le \mcik(s')$.
-\end{lemma}
-\begin{proof}
-This follows immediately from \cref{trs_subset} and the fact that $s^{\star}$ is a solution to \cref{buffered_trust_region_subproblem}.
-\end{proof}
-
-\begin{lemma}
-There exists a constant $c$ such that if $s_1 \in \argmin_{\trsfesset}\mfk(s)$ and $s_2 \in \argmin_{\feasiblek \cap \tr} \mfk(s)$, then $\mfk(s_1) \le c \mfk(s_2)$.
-\end{lemma}
-
-\begin{proof}
-
-\end{proof}
-
-\begin{lemma}
-For iteration $k$, let $s^{\star}$ is the output of \cref{linear_cut_trust_region_subproblem} after the algorithm does not fail.
-Then $s^{\star}$ satisfies the efficiency condition \cref{efficiency}
-\end{lemma}
-
-\begin{proof}
-We know that $s^{\star}$ satisfies the efficiency condition
-\begin{align*}
-a
-\end{align*}
-\end{proof}
-\color{black}
 
 \subsection{Sufficient Reduction}
 \label{sufficient_reduction_section}
@@ -2782,71 +2696,7 @@ Because $\fik$ is convex, $\xk \in \fik$, $\zeta \in (0, 1]$, we know that $v = 
 \end{proof}
 
 
-
-
-
 \subsection{Bounded Projection}
-
-\color{red}
-\begin{lemma}
-Let $p, a \in \Rn$, $r, \epsilon > 0$ and $b \in \reals$ be given such that 
-\begin{align*}
-\|a\| = 1 \\
-a^Tp > b \\
-r > \epsilon \\
-a^T\left(p - (r - \epsilon)a\right) = a^Tp - r + \epsilon = b.
-\end{align*}
-
-Suppose that $x_1, x_2$ are such that 
-\begin{align*}
-a^T x_1 \le b \\
-a^T x_2 \le b \\
-\|p - x_1\|\le r \\
-\|p - x_2\|\le r.
-\end{align*}
-Then $\|x_1 - x_2\| \le 2\sqrt{\epsilon(2r - \epsilon)}$.
-\end{lemma}
-
-\begin{proof}
-Consider the optimization program
-\begin{align*}
-\begin{array}{cc}
-\max_{x_1, x_2\in\Rn} & \frac 1 2 \|x_2 - x_1\|^2 \\
-& a^T x_1 \le b \\
-& a^T x_2 \le b \\
-& \frac 1 2 \|x_1 - p\|^2\le r^2 \\
-& \frac 1 2 \|x_2 - p\|^2\le r^2 \\
-\end{array}
-\end{align*}
-Let $n \in \Rn$ be such that $\|n\| = 1$, $n^Ta = 0$, and consider the pair
-\begin{align*}
-x_1 = p - a(r - \epsilon) - n\sqrt{\epsilon(2r - \epsilon)}, \quad
-x_2 = p - a(r - \epsilon) + n\sqrt{\epsilon(2r - \epsilon)}
-\end{align*}
-
-Then
-\begin{align*}
-\begin{array}{cc}
-\|x_1 - p\|^2 = (r - \epsilon)^2 + \epsilon(2r - \epsilon) = r^2, &
-\|x_2 - p\|^2 = (r - \epsilon)^2 + \epsilon(2r - \epsilon) = r^2 \\
-a^Tx_1 = a^Tp - r + \epsilon = b, &
-a^Tx_2 = a^Tp - r + \epsilon = b \\
-\end{array}
-\end{align*}
-so that $x_1, x_2$ are feasible.
-
-Furthermore, because $r > \epsilon$ and $1>0$,
-\begin{align*}
-\frac 1 2 \left[-(x_2 - x_1)\right] = -n\sqrt{\epsilon(2r - \epsilon)} = (r - \epsilon) a + \left(x_1 - p\right) \\
-\frac 1 2        (x_2 - x_1)        =  n\sqrt{\epsilon(2r - \epsilon)} = (r - \epsilon) a + \left(x_2 - p\right)
-\end{align*}
-shows that this pair satisfies the first order optimality conditions.
-Notice that,
-\begin{align*}
-\|x_2 - x_1\| = 2\sqrt{\epsilon(2r - \epsilon)}.
-\end{align*}
-\end{proof}
-\color{black}
 
 
 In this section, we show that the projection onto the linearization of the constraints converges to the projection onto the true constraints as $\dk \to 0$.
@@ -3109,32 +2959,28 @@ We see that
 
 We will define the following for the next two proofs:
 
-\begin{align*}
-\mathcal F^{(k)} = \{ y \in \Rn | c_i(\xk) + \gmcik^T(y - \xk) \le 0 \forall 1 \le i \le m\} \\
-p^{(k)} = \argmin_{p \in \mathcal F^{(k)}} \|\xk - \gk - p\|^2 \\
-\mathcal A^{(k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \}
-\end{align*}
+\begin{align}
+\mathcal F^{(k)} = \{ y \in \Rn | c_i(\xk) + \gmcik^T(y - \xk) \le 0 \quad \forall 1 \le i \le m\} \label{def_two_proofs_fk} \\
+p^{(k)} = \argmin_{p \in \mathcal F^{(k)}} \|\xk - \gk - p\|^2 \label{def_two_proofs_pk} \\
+\mathcal A^{(k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \} \label{def_two_proofs_activeidx}
+\end{align}
 
 
 \begin{lemma}
 \label{active_models_are_active}
-Let $m_{c_i}^{(j)}$ be fully quadratic model of $c_i(x)$, and assume that
-\cref{minactivegradassumption}, \cref{bounded_gradient_constraint} and \cref{bounded_gradient} hold as well as
+Assume that \cref{accuracy_assumption}, \cref{minactivegradassumption}, \cref{bounded_gradient_constraint} and \cref{bounded_gradient} hold as well as
 \begin{align*}
-\dk \le \min\left\{\minactivegraddelta, \sqrt{\frac{\minactivegraddelta}{\left(\gfmin - \gcmax\right) \kappa_g}}\right\}.
+\dk \le \min\left\{\minactivegraddelta, \sqrt{\frac{\minactivegraddelta}{2\gfmin\kappa_g}}\right\}.
 \end{align*}
-Let $\mathcal F_x, p_x, \mathcal A_x$ be defined as in \cref{define_projection_active}.
+Use definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, and \cref{def_two_proofs_activeidx}, and let $\mathcal F_x, p_x, \mathcal A_x$ be defined as in \cref{define_projection_active}.
 Then $\mathcal A^{(k)} \subseteq \mathcal A_{\xk}$.
 \end{lemma}
 \begin{proof}
-\begin{comment}
-Is this actually right? I feel like I just did a circle and ended up where I wanted to be.
-\end{comment}
 
 Let $i \in \mathcal A^{(k)}$.
 We know that because $m_{c_i}^{(k)}$ be fully quadratic model, there is a $u \in \Rn$ with $\|u\| \le 1$ such that
 $\gmcik - \nabla c_i(\xk) = u \kappa_g \dk^2$.
-
+We first compute
 \begin{align*}
 \nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right) = \nabla c_i(\xk)^T\left(p_{\xk} - \xk\right) - \nabla c_i(\xk)^T\left(p^{(k)} - \xk\right) \\
 = -c_i(\xk) - \nabla c_i(\xk)^T\left(p^{(k)} - \xk\right) \\
@@ -3146,10 +2992,10 @@ $\gmcik - \nabla c_i(\xk) = u \kappa_g \dk^2$.
 But this means
 \begin{align*}
 c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \\
-\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p^{(k)} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 \\
-\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 + \nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right)\\
-\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = u^T(p^{(k)} - \xk) \kappa_g \dk^2 + u^T\left(p^{(k)} - \xk\right) \kappa_g \dk^2\\
-\Longrightarrow |c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk)| \le \left(\gfmin - \gcmax\right) \kappa_g \dk^2 \le \minactivegraddelta.
+\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p^{(k)} - \xk) = -u^T(p^{(k)} - \xk) \kappa_g \dk^2 \\
+\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = -u^T(p^{(k)} - \xk) \kappa_g \dk^2 + \nabla c_i(\xk)^T\left(p_{\xk} - p^{(k)}\right)\\
+\Longrightarrow c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk) = -u^T(p^{(k)} - \xk) \kappa_g \dk^2 + u^T\left(p^{(k)} - \xk\right) \kappa_g \dk^2\\
+\Longrightarrow |c_i(\xk) + \nabla c_i(\xk)^T(p_{\xk} - \xk)| \le 2\gfmin \kappa_g \dk^2 \le \minactivegraddelta.
 \end{align*}
 \end{proof}
 
@@ -3158,7 +3004,7 @@ c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \\
 \label{bounded_projection_theorem}
 % Letting $M' = 4\Gamma_0(A_2)\left(1 + M + 2\Gamma_0(A_1)\left(1 + M\right)\right)$, we have that $\|x_1^{\star} - x_2^{\star}\| \le \left( M' + \sqrt{2MM'}\right)\sqrt{\epsilon}$.
 Assuming \cref{maxnormassumption}, \cref{hopefully_there_is_a_bound_for_this},
-\cref{minactivegradassumption},
+\cref{minactivegradassumption}, \cref{accuracy_assumption}
 
 
 
@@ -3177,7 +3023,7 @@ Assuming \cref{maxnormassumption}, \cref{hopefully_there_is_a_bound_for_this},
 % p^{(k)} = \argmin_{p \in \mathcal F^{(k)}} \|\xk - \gk - p\|^2 \\
 % \mathcal A^{(k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \} \\
 
-and also define
+and using definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, and \cref{def_two_proofs_activeidx} also define
 \begin{align}
 \mathcal A_{k, l} = \mathcal A^{(k)} \cup \mathcal A^{(l)}\\
 {A^{(k)}}_{i} = \frac{\gmcik}{\left\|\gmcik\right\|}, \quad {b^{(k)}}_i = \frac{-c_i(\xk)}{\left\|\gmcik\right\|} \forall i \in \mathcal A_{P} \\
@@ -3190,6 +3036,7 @@ Then, if $\dk$ and $\|\xk - x^{(l)}\|$ are sufficiently small that
 \dk \le \sqrt{\frac{\minactivegraddelta}{\left(\gfmin - \gcmax\right) \kappa_g}} \\
 \lpc\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2 \le \frac 1 2 \minactivegrad \\
 \frac{1}{\mingrad^2} \left(L_g\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2\right)\left(\gcmax + \kappa_g\dk^2\right) \le \epsilon_1 \\
+\frac{2}{2\minactivegrad^2} \max\left\{\gcmax, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lpc\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lpc \|\xk - x^{(l)}\| + \maxconstrainthessian\|\xk - x^{(l)}\|^2\right\} \le \epsilon_1 \\
 \epsilon_1 \le  \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + M_2},\left(2\Gamma_0(A_1)\right)^{-1}, \left(2\Gamma_0(A_2)\right)^{-1}\right\} \\
 \left( M' + \sqrt{2\maxnorm M'}\right)\sqrt{\epsilon_1} \le \epsilon
 \end{align}
@@ -3199,7 +3046,7 @@ we have that $\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon$.
 \begin{proof}
 Fix some $i \in \mathcal A_{k, l}$.
 Without loss of generality, assume that there is an $0 < s \le 1$ with $\Delta_l = s \dk$.
-We have that there exists a $\kappa_{g}$ such that $u^{(i)}, v^{(i)}\in\Rn$ such that 
+We have by \cref{accuracy_assumption}, that there exists a $\kappa_{g}$ such that $u^{(i)}, v^{(i)}\in\Rn$ such that 
 \begin{align}
 \|u^{(i)} \| \le 1, \quad 
 \|u^{(i)} \| \le 1 \\
@@ -3261,19 +3108,22 @@ so that either way, both
 \end{align*}
 
 Also, using \cref{the_simple_bound_one},
+and $\left|c_i(\xk) - c_i(x^{(l)})\right| \le \lpc \|\xk - x^{(l)}\| + \maxconstrainthessian\|\xk - x^{(l)}\|^2$ by \cref{lipschitz_constraints} and \cref{bounded_constraint_hessians},
 \begin{align*}
 \left|\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|c_i(\xk) - \left\|\gmcik\right\|c_i(x^{(l)})\right| \\
-\le 2 \max\left\{\gcmax, c_i(\xk), c_i(x^{(l)}\right\}\max\left\{\lpc\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \left|c_i(\xk) - c_i(x^{(l)})\right|\right\}
+\le 2 \max\left\{\gcmax, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lpc\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lpc \|\xk - x^{(l)}\| + \maxconstrainthessian\|\xk - x^{(l)}\|^2\right\}
 \end{align*}
-
-\begin{comment}
+so that
 Get to
 \begin{align*}
-\left|\frac{c_i(\xk)}{\left\|\gmcik\right\|} - \frac{c_i(x^{(l)})}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|}\right| \le \epsilon_1
+\left|\frac{c_i(\xk)}{\left\|\gmcik\right\|} - \frac{c_i(x^{(l)})}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|}\right| \\
+\le \frac{2}{2\minactivegrad^2} \max\left\{\gcmax, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lpc\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lpc \|\xk - x^{(l)}\| + \maxconstrainthessian\|\xk - x^{(l)}\|^2\right\}
+\le \epsilon_1.
 \end{align*}
-\end{comment}
-
-All that is left is to apply \cref{3_9}.
+Thus, we can apply \cref{3_9} to find that
+\begin{align*}
+\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon
+\end{align*}
 
 \begin{comment}
 the equation that stephen couldn't find...
