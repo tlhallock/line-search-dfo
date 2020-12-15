@@ -77,6 +77,7 @@
 \newcommand{\liphess}{{L_{\nabla^2}}}
 \newcommand{\maxgrad}{{M_{\nabla}}}
 \newcommand{\maxhessian}{{M_{\nabla^2}}}
+\newcommand{\maxmodelhessian}{{M_{\nabla^2 m}}}
 
 \newcommand{\dacc}{{\Delta_{\text{acc}}}}
 \newcommand{\dsr}{{\Delta_{\text{sr}}}}
@@ -1234,6 +1235,7 @@ The vector $\huk$ and and value $\thetamink$ can be easily computed with the fol
 & \|u \| = 1& 
 \end{array}.
 \end{align*}
+For simplicity, we will define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
 
 We can then compute the a maximum angle that is feasible with respect to each of the constraints as
 \begin{align}
@@ -1529,7 +1531,7 @@ f(x) \ge \fmin \quad  \forall x \in \Omega.
 
 \begin{assumption}
 \label{bounded_hessians_assumption}
-Each function $c_i$ for $1 \le i \le m$ and $f$ has bounded hessian. That is, there exists a $ \maxhessian $ such that:
+Each function $c_i$ for $1 \le i \le m$ and $f$ has bounded hessian. That is, there exists a $ \maxhessian > 0$ such that:
 \begin{align*}
 \|\gradf(x) \| \le \maxhessian \quad \forall x \in \Omega \\
 \|\nabla^2 c_i(x) \| \le \maxhessian \quad \forall x \in \Omega, \forall 1 \le i \le m
@@ -1625,7 +1627,28 @@ Thus, for any $x \in \Omega$,
 \gradf(x) \le |\gradf(x^{(0)})| + \lipgrad \left\|x - 0 - (x^{(0)} - 0)\right\| \le |\gradf(x^{(0)})| + 2\lipgrad \maxnorm \le \maxgrad.
 \end{align*}
 The same applies to each $c_i$.
+\end{proof}
 
+
+
+\begin{lemma}
+\label{bounded_gradients_lemma}
+Assume
+\cref{lipschitz_gradients_assumption} and \cref{max_norm_assumption} hold.
+The functions $c_i$ for all $ 1 \le i \le m$ and $f$ have bounded gradient in $ \Omega $.
+That is, there exists an $\maxgrad > 0$ such that
+\begin{align}
+\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
+\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible \forall 1 \le i \le m
+\end{align}
+\end{lemma}
+\begin{proof}
+We are given a $x^{(0)} \in \feasible$, let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf(x^{(0)})|, \max_{1\le i\le m}\left\{\nabla c_i(x^{(0)})|\right\} \right\}$.
+Thus, for any $x \in \Omega$,
+\begin{align*}
+\gradf(x) \le |\gradf(x^{(0)})| + \lipgrad \left\|x - 0 - (x^{(0)} - 0)\right\| \le |\gradf(x^{(0)})| + 2\lipgrad \maxnorm \le \maxgrad.
+\end{align*}
+The same applies to each $c_i$.
 \end{proof}
 
 
@@ -1740,6 +1763,24 @@ But,
 \end{align*}
 \end{proof}
 
+\begin{lemma}
+\label{theta_min_is_bounded}
+Assume that \cref{minangleassumption} holds.
+Then if $\dk \le \minangledelta$, we have $\thetamink \ge \minanglealpha$.
+\end{lemma}
+
+\begin{proof}
+If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
+Otherwise, by \cref{minangleassumption}, there is a $u$ such that 
+$-u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
+But, by definition of $\huk$ in \cref{define_u}:
+$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\hgmcik$
+so that for all $i \in \activeconstraintsk$,
+\begin{align*}
+-\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
+\end{align*}
+Therefore, $\thetamink \ge \minanglealpha$.
+\end{proof}
 
 
 \begin{lemma}
@@ -1804,7 +1845,7 @@ We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
 \Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} = \frac{1 -  \frac 1 4 \left(\minanglealpha\right)^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
 \Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \left(\minanglealpha\right)^2.
 \end{align*}
-But by \cref{theta_min_is_bounded}and \cref{boundedbeta_deltasmall_1}, 
+But by \cref{theta_min_is_bounded} and \cref{boundedbeta_deltasmall_1}, 
 $\thetamink \ge \minanglealpha \Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
 so that
 \begin{align*}
@@ -1972,10 +2013,12 @@ the model function $m_f(x) = \hat m_f(T(x))$ will satisfy
 \begin{theorem}
 \label{accuracy_is_satisfied}
 Assume that \cref{lipschitz_gradients_assumption} and \cref{bounded_hessians_assumption} hold, and that $\dk \le \dacc$.
-Then, there exists a $\kappa_g$ such that
+Then, there exists a $\kappa_g>0$ and a $\kappa_h>0$ such that
 \begin{align*}
-\|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk^2 \\
-\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2 \quad \forall 1 \le i \le m.
+\begin{array}{ccc}
+\|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk^2, & \|\nabla^2 f(\xk) - \hk \| \le \kappa_h \dk, & \\
+\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2, & \|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \dk & \forall 1 \le i \le m. \\
+\end{array}
 \end{align*}
 \end{theorem}
 
@@ -2004,21 +2047,45 @@ here exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in 
 \left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
 \end{array}
 \end{align*}
-We can then use \cref{change_radius} to conclude that there is another constant $\Lambda_2$ such that for all $u \in B_2(0, 2\delta)$:
+We can then use \cref{change_radius} to conclude that there are other constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $1\le i\le m$:
 \begin{align*}
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2, \quad \textrm{and} \quad
-\left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2.
+\begin{array}{cc}
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 \lipgrad \sqrt{p+1} = {\kappa'}_g\delta^2, &
+\left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2 \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_3 \left(2\delta\right) \lipgrad \sqrt{p+1} = {\kappa'}_h\delta^2, &
+\left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
+\end{array}
 \end{align*}
-where $\kappa_{g}' = 16 \Lambda_2 L \sqrt{p+1}$.
-After defining $\kappa''_{g} =  \sigmamax\kappa'_g$, we see that
+where $\kappa_{g}' = 16 \Lambda_2 \lipgrad \sqrt{p+1}$ and $\kappa_{h}' = 8 \Lambda_3 \lipgrad\sqrt{p+1}$.
+After defining $\kappa''_{g} =  \sqrt{\sigmamax}\kappa'_g$ and $\kappa''_h = \sigmamax\kappa'_h$, we see that
 we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \scaledunshiftedellipsoid$:
 \begin{align*}
-\left\|\gradf\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le 
+\left\|\gradf\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le 
 \kappa'_g  \dk^2 \sqrt{\kappa\left(\frac 2 {\sdk} Q^{(k)}\right)} \le \kappa'_g \sqrt{\sigmamax}\dk^2 \le \kappa''_g\dk^2 \\
-\left\|\nabla {c_i}\left(x_0 \right) - \nabla m_{c_i}\left(x_0\right)\right\| \le \kappa''_g\dk^2 \quad \forall 1 \le i \le m
+\left\|\nabla {c_i}\left(x_0 \right) - \nabla m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa''_g\dk^2 \quad \forall 1 \le i \le m \\
+\left\|\nabla^2\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le \kappa''_h\dk, \quad
+\left\|\nabla^2 {c_i}\left(x_0 \right) - \nabla^2 m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa''_h\dk \quad \forall 1 \le i \le m \\
 \end{align*}
 In particular, $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
+
+
+
+\begin{lemma}
+\label{max_model_hessian_lemma}
+Assume that \label{bounded_hessians_assumption} and \label{minangleassumption} hold and that $\dk \le \dsr$.
+Then there exists a $\maxmodelhessian > 0$ such that 
+
+\begin{align*}
+\| \hk \| \le \maxmodelhessian \quad \forall x \in \Omega \\
+\|\nabla^2  \| \le \maxmodelhessian \quad \forall x \in \Omega, \forall 1 \le i \le m
+\end{align*}
+
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
 
 
 \subsection{Sufficient Reduction}
@@ -2288,11 +2355,6 @@ c = \frac{L + \kappa_{g} + \frac {\maxhessian} 2}{\kappa_f} \\
 c_0 = L + \kappa_{g} + \frac {\maxhessian} 2 \\
 \mathcal K = \big \{ k \in \naturals | \dk \le \min \{ \dsr, \frac {\chik}{\maxhessian}, \frac{1-\eta_1}{c}\chik, \left(\frac 1 {\kappa_{\chi}}  \chik\right)^{\frac 1 {p_{\Delta}}}, 1 \} \big \} \label{define_mathcal_k}
 \end{align}
-
-
-\begin{comment}
-The following lemma uses \cref{bounded_hessians_assumption} on the model functions....
-\end{comment}
 
 
 \begin{lemma}
@@ -2754,28 +2816,6 @@ and for any $s\in S_1$,
 Thus, $\fcki \subseteq \fik$.
 \end{proof}
 
-
-
-
-
-
-\begin{lemma}
-\label{theta_min_is_bounded}
-Assume that \cref{minangleassumption} holds.
-Then if $\dk \le \minangledelta$, we have $\thetamink \ge \minanglealpha$.
-\end{lemma}
-
-\begin{proof}
-By \cref{minangleassumption}, there is a $u$ such that 
-$-u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$.
-But, by definition of $\huk$ in \cref{define_u}:
-$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\hgmcik$
-so that for all $i \in \activeconstraintsk$,
-\begin{align*}
--\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -u^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
-\end{align*}
-Therefore, $\thetamink \ge \minanglealpha$.
-\end{proof}
 
 
 
