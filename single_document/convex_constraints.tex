@@ -3114,10 +3114,10 @@ We will define the following for the next several proofs:
 \begin{align}
 \mathcal F^{(k)} = \{ y \in \Rn | c_i(\xk) + \gmcik^T(y - \xk) \le 0 \quad \forall 1 \le i \le m\} \label{def_two_proofs_fk} \\
 p^{(l, k)} = \argmin_{p \in \mathcal F^{(l)}} \|\xk - \gk - p\|^2 \label{def_two_proofs_pk} \\
-\mathcal A^{(l, k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k, l)} - \xk) = 0 \}. \label{def_two_proofs_activeidx}
+\mathcal A^{(k, l)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k, l)} - \xk) = 0 \}. \label{def_two_proofs_activeidx}
 \end{align}
 That is, $p^{(l, k)}$ is the projection of $\xk - \gk$ onto iterate $l$'s constraint's linearization,
-and $\mathcal A^{(k, l)}$ are the constraints which are active at this projection.
+and $\mathcal A^{(l, k)}$ are the constraints which are active at this projection.
 
 Also, for any iterate $k$ and any $S \subseteq \activeconstraintsk$,
 define the $|S|\times n$ matrix $A^k_c(S)$ and vector $b^k_c(S) \in \mathbb R^{|S|}$ 
@@ -3246,8 +3246,9 @@ and \cref{def_two_proofs_activeidx} also define
 \mathcal A_{k, l} = \mathcal A^{(k)} \cup \mathcal A^{(l)} \label{define_common_constraints}
 \end{align}
 and let $\epsilon > 0$ be given.
-Then, if $\lim_{k\to\infty} \dk = 0$,
-we have that there is a $k_P \in \naturals$ such that if $k \ge k_P$, then 
+Suppose that $\lim_{k\to\infty} \dk = 0$, and
+for any $\epsilon' > 0$ there exists a $k_1 \in \naturals$ such that $\|\xk - x^{(l)}\| \le \epsilon'$ whenever $k, l \ge k_1$.
+Then, we have that there is a $k_P \in \naturals$ such that if $k \ge k_P$, then 
 \begin{align*}
 \begin{array}{cc}
 \|A_c^k\left(\mathcal A_{k, l}\right) - A_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon & \|b_c^k\left(\mathcal A_{k, l}\right) - b_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon
@@ -3385,6 +3386,7 @@ Use definitions
 \cref{define_normalized_constraints},
 and \cref{define_common_constraints}.
 
+Suppose that $\lim_{k\to\infty}\dk = 0$ and for any $\epsilon' > 0$ there exists a $k_1 \in \naturals$ such that $\|\xk - x^{(l)}\| \le \epsilon'$ whenever $k, l \ge k_1$.
 Let $\epsilon > 0$ be given.
 Then there is a $k_0$ such that whenever $k, l \ge k_0$,
 we will have $\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon$.
@@ -3471,24 +3473,15 @@ The existence of $l_k$ is ensured by \cref{liminf_chi_to_zero}.
 This means that $\chik - \chi_{l_k} \ge \frac {\epsilon} 2 $.
 
 We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied}
-\begin{align*}
-\left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
-\le \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+\begin{align}
+\left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \nonumber \\
+\le \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \nonumber \\
 \le \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right) + \lipgrad \left\|\xk - x^{(l_k)} \right\| \label{chi2zero2_comp1}
-\end{align*}
+\end{align}
 
 Let $\Omega_1 = \capcones \cap \tr$ and $\Omega_2 = {C^{(l_k)}_{\cap}} \cap B_{\infty}\left(x^{(l_k)}, \Delta_{(l_k)}\right) $.
 
-
-
-
-
-
-
-
-
-
-Using the definition of $\chik$, the triangle inequality, the contraction property of projections,
+Using the definition of $\chik$, the triangle inequality, the contraction property of projections, \cref{chi2zero2_comp1},
 definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, \cref{accuracy_is_satisfied} we have that
 
 \begin{align*}
@@ -3503,47 +3496,42 @@ definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, \cref{accuracy_i
 
 % \le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
 % \le \left(2 + \lipgrad\right)\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|.
-
-\cref{bounded_projection_theorem}
-
-
 % \le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right)\right\| \\
 
 So that
 \begin{align}
-\frac{\epsilon} 2 \le (2 + L) \|\xk - x^{(l_k)}\| + \kappa_{g}(\dk + \Delta_{l_k}).
+\frac{\epsilon} 2 \le \left(2 + \lipgrad\right) \|\xk - x^{(l_k)}\| + \kappa_{g}\left(\dk + \Delta_{l_k}\right) + \| p^{(k)} - p^{(k_l)}\| \label{chi2zero2_conv}.
 \end{align}
 
 Consider $C_k = \{i \in S | k \le i < l_k\}$.
 Note that because $k \in S$, so $C_k \ne \varnothing $.
 For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians_assumption}, we conclude that 
 
-\begin{align}
+\begin{align*}
 f(x^{(i)}) - f(x^{(i+1)}) \ge \eta\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \eta \kappa_f \chi_i \min\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\} 
-\end{align}
+\end{align*}
 
 By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
 As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\maxhessian}$ and $\Delta_i \le 1$.
 Therefore,
-\begin{align}
+\begin{align*}
 \frac{\Delta_i}{2} \le \frac{\epsilon}{2 \maxhessian} \le \frac{\pi_i}{\maxhessian}.
-\end{align}
+\end{align*}
 
 It follows that
-\begin{align}
+\begin{align*}
 f(x^{(i)}) - f(x^{(i+1)}) > \frac{\eta \kappa_f \epsilon \Delta_i}{4}
-\end{align}
+\end{align*}
 
 and hence
-\begin{align}
+\begin{align*}
 \Delta_i < \frac{4}{\eta \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
-\end{align}
+\end{align*}
 
 Meanwhile,
-\begin{align}
+\begin{align*}
 \|x^{(i)} - x^{(l_k)}\| \le \sum_{i \in C_k}\|x^{(i)} - x^{(i+1)}\| \le \sum_{i \in C_k} \Delta_i
-\end{align}
-
+\end{align*}
 so that
 
 \begin{align}
@@ -3552,6 +3540,8 @@ so that
 
 We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
 Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \naturals '}$ converges to zero.
+Then by \cref{bounded_projection_theorem}, the entire right hand side of \cref{chi2zero2_conv} goes to zero.
+This is a contraduction, and there is no such $\epsilon > 0$.
 \end{proof}
 
 \subsubsection{Convergence}
