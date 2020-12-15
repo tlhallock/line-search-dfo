@@ -1858,6 +1858,56 @@ so that
 \end{proof}
 
 
+\begin{lemma}
+\label{inner_cone_inside_each_cone}
+If $\dk \le 1$, the set $\fcki \subseteq \fik$ for all $i \in \activeconstraintsk$.
+\end{lemma}
+% \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
+
+
+\begin{proof}
+Fix some $i \in \activeconstraintsk$, and define $\gamma_i = -\left(\huk\right)^T\hgik$ as well as
+\begin{align*}
+S_1 = \left\{s\in\Rn | \quad s^T\huk\ge\bsk\|s\| \right\} \\
+S_2 = \left\{s\in\Rn | \quad s^T\huk\ge\left[\beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \left(\dk^{p_{\beta}}\beta\right)^2)\left(1 - \gamma_i^2\right)}\right]\|s\| \right\} \\
+S_3 = \left\{s\in\Rn | \quad s^T\left(-\hgik\right)\ge\beta\dk^{p_{\beta}}\|s\| \right\}
+\end{align*}
+We know that $S_1$ is that set of all feasible direction from $\xk$ for $\fcki$, and $S_3$ is that set of all feasible direction from $\wik$ for $\fik$.
+If $\xk \in \fik$ and $S_1 \subseteq S_3$, then it follows that $\fcki \subseteq \fik$.
+
+First, we show that $\xk \in \fik$.
+We see that:
+\begin{align*}
+\xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)
+\end{align*}
+where
+\begin{align*}
+\frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta \dk^{p_{\beta}}
+\end{align*}
+because $\dk \le 1$.
+
+% = -\frac{m_{c_i}(\xk)}{\|\gmcik\|}\frac{\|\gmcik\|}{m_{c_i}(\xk)}
+Now, we show that $S_1 \subseteq S_3$.
+By \cref{cone_subset_cone} with $u \gets \huk$, $v \gets -\hgik$, $\beta \gets \beta \dk^{p_{\beta}}$, we know that
+$S_2 \subseteq S_3$.
+But $\gamma_i \ge \thetamink$, so that
+\begin{align*}
+\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}
+\le \max_{i\in\activeconstraintsk} \left(\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}\right) \\
+\le \beta\dk^{p_{\beta}} \max_{i\in\activeconstraintsk}\left\{\gamma_i\right\} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\min_{i\in\activeconstraintsk}\left\{\gamma_i\right\}\right)^2\right)} \\
+\le \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} = \bsk
+\end{align*}
+
+and for any $s\in S_1$,
+\begin{align*}
+\left(\frac{s}{\|s\|}\right)^T\huk \ge \beta^{\star} 
+\ge \beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \gamma_i^2\right)}
+\Longrightarrow s \in S_2 \subseteq S_3.
+\end{align*}
+
+Thus, $\fcki \subseteq \fik$.
+\end{proof}
+
 
 
 \begin{lemma}
@@ -1952,6 +2002,7 @@ Because $\beta^{\star} \ge \bsk$ and $\beta^{\star} \ge \frac 1 2$, we know two 
 Thus, for any $x \in \unshiftedellipsoid$, we can let $x = \xk + ts$, $\|s\| = 1$, $s^T\huk \ge \frac 1 2$.
 Applying \cref{ellipse_fits_part_2} because $\frac 1 2 \dk \le \frac 1 2$, we know that $\|x - \xk\| = t \le \left(2 + \sqrt{2}\right)\frac 1 {2\gamma} \dk = \dk$.
 Thus, $x \in \tr$, and $\unshiftedellipsoid \subseteq \fcki \cap \tr$.
+By \cref{inner_cone_inside_each_cone}, $\fcki \subseteq \capcones$.
 
 For the third requirement, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 2 \dk, \frac 1 {\sqrt{2}}\dk, \beta^{\star}; \rotk\left(\xk - \xk\right)\right) = 0$, so that $\xk \in \scaledunshiftedellipsoid$.
@@ -2012,7 +2063,7 @@ the model function $m_f(x) = \hat m_f(T(x))$ will satisfy
 
 \begin{theorem}
 \label{accuracy_is_satisfied}
-Assume that \cref{lipschitz_gradients_assumption} and \cref{bounded_hessians_assumption} hold, and that $\dk \le \dacc$.
+Assume that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption} hold, and that $\dk \le \dacc$.
 Then, there exists a $\kappa_g>0$ and a $\kappa_h>0$ such that
 \begin{align*}
 \begin{array}{ccc}
@@ -2072,18 +2123,19 @@ In particular, $\xk \in \scaledunshiftedellipsoid$.
 
 
 \begin{lemma}
-\label{max_model_hessian_lemma}
-Assume that \label{bounded_hessians_assumption} and \label{minangleassumption} hold and that $\dk \le \dsr$.
+\label{bounded_model_hessian_lemma}
+Assume that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption} hold, and that $\dk \le \dacc$.
 Then there exists a $\maxmodelhessian > 0$ such that 
-
 \begin{align*}
-\| \hk \| \le \maxmodelhessian \quad \forall x \in \Omega \\
-\|\nabla^2  \| \le \maxmodelhessian \quad \forall x \in \Omega, \forall 1 \le i \le m
+\| \hk \| \le \maxmodelhessian \quad \forall x \in \feasible \\
+\|\nabla^2 m_{c_i}^{(k)}(\xk) \| \le \maxmodelhessian \quad \forall x \in \feasible, \forall 1 \le i \le m
 \end{align*}
-
 \end{lemma}
 
 \begin{proof}
+Using \cref{accuracy_is_satisfied} to define $\kappa_h$, we can let $\maxmodelhessian = \maxhessian + \kappa_h \dacc$.
+Then \cref{bounded_hessians_assumption} tells us that $\|\hk\| \le \maxhessian + \kappa_h\dacc = \maxmodelhessian$.
+The same applies to $\nabla^2 m_{c_i}^{(k)}(\xk)$.
 \end{proof}
 
 
@@ -2359,11 +2411,14 @@ c_0 = L + \kappa_{g} + \frac {\maxhessian} 2 \\
 
 \begin{lemma}
 \label{mathcal_k_subset_bar_s}
-Suppose that 
-\cref{lipschitz_gradients_assumption},
+
+
+
+Assume that 
+\cref{bounded_below_assumption},
 \cref{bounded_hessians_assumption},
-\cref{minangleassumption},
-and \cref{bounded_below_assumption} hold.
+\cref{lipschitz_gradients_assumption},
+and \cref{minangleassumption} hold.
 Then $\mathcal K \subset \bar{S}$.
 \end{lemma}
  
@@ -2375,7 +2430,7 @@ By the Mean Value Theorem, there exists a $t_k \in (0, 1)$ such that
 f(\xk + \sk) = f(\xk) + \gradf(\xk + t_k\sk)^T\sk
 \end{align*}
 
-By \cref{lipschitz_gradients_assumption}, \cref{bounded_hessians_assumption}, \cref{accuracy_is_satisfied},
+By \cref{lipschitz_gradients_assumption}, \cref{bounded_model_hessian_lemma}, \cref{accuracy_is_satisfied},
 \begin{align*}
 |f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)| \\
 = |-(\gradf(\xk + t_k\sk) - \gk)^T\sk + \frac 1 2 (\sk)^T \hk \sk| \\
@@ -2414,11 +2469,11 @@ so that $k \in \bar{S}$.
 
 \begin{lemma}
 \label{delta_to_zero}
-Suppose that 
-\cref{lipschitz_gradients_assumption},
+Assume that
+\cref{bounded_below_assumption},
 \cref{bounded_hessians_assumption},
-\cref{minangleassumption},
-and \cref{bounded_below_assumption} hold.
+\cref{lipschitz_gradients_assumption},
+and \cref{minangleassumption} hold.
 Then the sequence $(\dk)$ converges to zero.
 \end{lemma}
  
@@ -2536,11 +2591,12 @@ Thus, any $y \in\Rn$ with $y \in S$ must also have $y \in B$.
 
 \begin{lemma}
 \label{only_small_z_matters}
-Assume \cref{mingradassumption}, \cref{bounded_hessians_assumption} and the assumptions for \cref{bounded_gradients_lemma} and \cref{accuracy_is_satisfied} hold.
+Assume \cref{mingradassumption}, \cref{bounded_hessians_assumption}
+and the assumptions for \cref{bounded_gradients_lemma} and \cref{accuracy_is_satisfied} hold.
 Define
 \begin{align}
 \mingraddelta = \min\left\{
-1,
+\dacc,
 \sqrt{\frac 1 {2\kappa_g} \mingrad},
 \sqrt{\frac 1 {2\kappa_g} \maxgrad},
 \frac{\mingradepsilon}{\frac 3 2 \maxgrad\sqrt{n} + nM},
@@ -2553,7 +2609,6 @@ and suppose that
 \end{align}
 
 Then either $c_i(y) \le 0 \quad \forall y \in \tr$ or both $\zik \in \tr$ and $\left\|\gmcik\right\| > \frac 1 2 \mingrad$.
-
 \end{lemma}
 
 \begin{proof}
@@ -2766,57 +2821,18 @@ We have that $\cap_{i \in \activeconstraintsk} \fik \cap \tr \subseteq \feasible
 This follows directly from $x \in \fik \cap \tr \Longrightarrow c_i(x) \le 0$.
 \end{proof}
 
-\begin{lemma}
-\label{inner_cone_inside_each_cone}
-If $\dk \le 1$, the set $\fcki \subseteq \fik$ for all $i \in \activeconstraintsk$.
-\end{lemma}
-% \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
 
+\begin{lemma}
+\label{ellipsoid_is_feaisble}
+Assume the assumptions for \cref{each_constraints_cone_is_feasible} and \cref{ellsoid_is_suitable_theorem_p2} hold.
+If $\dk \le \dfeas$, then $\unshiftedellipsoid$ as defined in \cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_suitable_theorem_p2} satisfies
+$\unshiftedellipsoid \subseteq \feasible$.
+\end{lemma}
 
 \begin{proof}
-Fix some $i \in \activeconstraintsk$, and define $\gamma_i = -\left(\huk\right)^T\hgik$ as well as
-\begin{align*}
-S_1 = \left\{s\in\Rn | \quad s^T\huk\ge\bsk\|s\| \right\} \\
-S_2 = \left\{s\in\Rn | \quad s^T\huk\ge\left[\beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \left(\dk^{p_{\beta}}\beta\right)^2)\left(1 - \gamma_i^2\right)}\right]\|s\| \right\} \\
-S_3 = \left\{s\in\Rn | \quad s^T\left(-\hgik\right)\ge\beta\dk^{p_{\beta}}\|s\| \right\}
-\end{align*}
-We know that $S_1$ is that set of all feasible direction from $\xk$ for $\fcki$, and $S_3$ is that set of all feasible direction from $\wik$ for $\fik$.
-If $\xk \in \fik$ and $S_1 \subseteq S_3$, then it follows that $\fcki \subseteq \fik$.
-
-First, we show that $\xk \in \fik$.
-We see that:
-\begin{align*}
-\xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)
-\end{align*}
-where
-\begin{align*}
-\frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta \dk^{p_{\beta}}
-\end{align*}
-because $\dk \le 1$.
-
-% = -\frac{m_{c_i}(\xk)}{\|\gmcik\|}\frac{\|\gmcik\|}{m_{c_i}(\xk)}
-Now, we show that $S_1 \subseteq S_3$.
-By \cref{cone_subset_cone} with $u \gets \huk$, $v \gets -\hgik$, $\beta \gets \beta \dk^{p_{\beta}}$, we know that
-$S_2 \subseteq S_3$.
-But $\gamma_i \ge \thetamink$, so that
-\begin{align*}
-\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}
-\le \max_{i\in\activeconstraintsk} \left(\beta\dk^{p_{\beta}}\gamma_i + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \gamma_i^2\right)}\right) \\
-\le \beta\dk^{p_{\beta}} \max_{i\in\activeconstraintsk}\left\{\gamma_i\right\} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\min_{i\in\activeconstraintsk}\left\{\gamma_i\right\}\right)^2\right)} \\
-\le \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} = \bsk
-\end{align*}
-
-and for any $s\in S_1$,
-\begin{align*}
-\left(\frac{s}{\|s\|}\right)^T\huk \ge \beta^{\star} 
-\ge \beta\dk^{p_{\beta}}\gamma_i + \sqrt{(1 - \dk^{2p_{\beta}}\beta^2)\left(1 - \gamma_i^2\right)}
-\Longrightarrow s \in S_2 \subseteq S_3.
-\end{align*}
-
-Thus, $\fcki \subseteq \fik$.
+This is an immediate consequence of \cref{ellsoid_is_suitable_theorem_p2} and \cref{each_constraints_cone_is_feasible}:
+$\unshiftedellipsoid \subseteq \capcones \cap \tr \subseteq \feasible$.
 \end{proof}
-
-
 
 
 % Notice that Lemma 3.1 and Lemma 3.2 within \cite{doi:10.1080/10556788.2015.1026968} show that $\lim_{k\to\infty}\dk = 0$ without requiring the accuracy condition.
@@ -3068,18 +3084,6 @@ we see
 
 \subsubsection{Applying it}
 
-
-\begin{lemma}
-\label{hopefully_there_is_a_bound_for_this}
-We have that $\huff(A_k) \le M_{\Gamma_0} \forall k$
-\color{red}
-This follows from continuity?
-\color{black}
-\end{lemma}
-\begin{proof}
-\end{proof}
-
-
 \begin{lemma}
 \label{the_simple_bound_one}
 Given an $\epsilon > 0$ and $M > 0$, suppose that $u,v \in \Rn$ and $s,t \in \reals$ satisfy
@@ -3105,12 +3109,25 @@ We see that
 \end{align}
 \end{proof}
 
-We will define the following for the next three proofs:
+We will define the following for the next several proofs:
 
 \begin{align}
 \mathcal F^{(k)} = \{ y \in \Rn | c_i(\xk) + \gmcik^T(y - \xk) \le 0 \quad \forall 1 \le i \le m\} \label{def_two_proofs_fk} \\
-p^{(k)} = \argmin_{p \in \mathcal F^{(k)}} \|\xk - \gk - p\|^2 \label{def_two_proofs_pk} \\
-\mathcal A^{(k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \} \label{def_two_proofs_activeidx}
+p^{(l, k)} = \argmin_{p \in \mathcal F^{(l)}} \|\xk - \gk - p\|^2 \label{def_two_proofs_pk} \\
+\mathcal A^{(l, k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k, l)} - \xk) = 0 \}. \label{def_two_proofs_activeidx}
+\end{align}
+That is, $p^{(l, k)}$ is the projection of $\xk - \gk$ onto iterate $l$'s constraint's linearization,
+and $\mathcal A^{(k, l)}$ are the constraints which are active at this projection.
+
+Also, for any iterate $k$ and any $S \subseteq \activeconstraintsk$,
+define the $|S|\times n$ matrix $A^k_c(S)$ and vector $b^k_c(S) \in \mathbb R^{|S|}$ 
+to be the normalized, linearized constraints corresponding to $S$.
+That is, row $j$ of $A^k_c(S)$ is $\frac{\gmcik}{\left\|\gmcik\right\|}$ for some $i \in S\subseteq \activeconstraintsk$, 
+and $\left(b^k_c(S)\right)_j = \frac{-c_i(\xk)}{\left\|\gmcik\right\|}$. 
+This means that for any $x \in \Rn$,
+\begin{align}
+\gmcik^T x \le -c_i(\xk) \quad \forall i \in S \Longleftrightarrow A^k_c(S) x \le b^k_c(S), \quad \textrm{and} \quad \|\left(A^k_c(S)\right)_i\| = 1 \quad \forall i \in S.
+\label{define_normalized_constraints}
 \end{align}
 
 
@@ -3158,7 +3175,8 @@ Also assume
 \begin{align*}
 \dk \le \min\left\{\minactivegraddelta, \sqrt{\frac{\minactivegraddelta}{2\maxgrad\kappa_g}}\right\}.
 \end{align*}
-Use definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, and \cref{def_two_proofs_activeidx}, and let $\mathcal F_x, p_x, \mathcal A_x$ be defined as in \cref{define_projection_active}.
+Use definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, and \cref{def_two_proofs_activeidx}, 
+and let $\mathcal F_x, p_x, \mathcal A_x$ be defined as in \cref{define_projection_active}.
 Then $\mathcal A^{(k)} \subseteq \mathcal A_{\xk}$.
 \end{lemma}
 \begin{proof}
@@ -3186,9 +3204,30 @@ c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \\
 \end{proof}
 
 
-\begin{theorem}
-\label{bounded_projection_theorem}
-% Letting $M' = 4\huff(A_2)\left(1 + M + 2\huff(A_1)\left(1 + M\right)\right)$, we have that $\|x_1^{\star} - x_2^{\star}\| \le \left( M' + \sqrt{2MM'}\right)\sqrt{\epsilon}$.
+
+
+\begin{lemma}
+\label{maximum_constraint_value_lemma}
+Assume that \cref{max_norm_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_hessians_assumption} hold.
+Then there is exists a $M_c>0$ such that
+\begin{align*}
+c_i(x) \ge -M_c \quad \forall 1\le i \le m, x \in \feasible
+\end{align*}
+\end{lemma}
+\begin{proof}
+Because $x^{(0)} \in\feasible$, we know that
+by letting $M_c = -c_i(x^{(0)}) + \maxgrad\maxnorm + \maxhessian \maxnorm^2$, we have $M_c > 0$.
+But, for all $1 \le i \le m$ and all $x \in \feasible$ we have
+\begin{align*}
+c_i(x) \ge c_i(x^{(0)}) + \left(\nabla c_i(x^{(0)})\right)^T\left(x - x^{(0)}\right) - \maxhessian \left\|x - x^{(0)}\right\|^2 \\
+\ge c_i(x^{(0)}) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = -M_c
+\end{align*}
+\end{proof}
+
+
+
+\begin{lemma}
+\label{normalized_matrices_are_close}
 
 Assume that 
 \cref{max_norm_assumption}
@@ -3197,51 +3236,37 @@ and the assumptions for
 \cref{bounded_gradients_lemma},
 \cref{hopefully_there_is_a_bound_for_this},
 \cref{accuracy_is_satisfied},
-and \cref{accuracy_is_satisfied}
+and \cref{maximum_constraint_value_lemma}
 hold.
 
-% Assuming \cref{maxnormassumption}, \cref{hopefully_there_is_a_bound_for_this},
-% \cref{minactivegradassumption}, \cref{accuracy_assumption}
-
-
-
-% \mathcal F(k, S) = \left\{x \in \Rn | \left(\gmcik\right)^T\left(x - \xk\right) \le -c_i(\xk) \forall k \in S \right\} \\
-% p^{(k)} = \textrm{P}_{\mathcal F(k, \mathcal A_{k})}\left(x - \gk\right) \\
-% p^{(l)} = \textrm{P}_{\mathcal F(l, \mathcal A_{l})}\left(x - \gk\right) \\
-% \mathcal A_{P} = \left\{i \in \mathcal A_{k} | c_i(\xk) + \left(\gmcik\right)^T\left(p^{(k)} - \xk\right) = 0 \right\} \\
-
-
-% {A_2}_{i} = \frac{\nabla m_{c_i}^{(l)}\left(x^{(l)}\right)}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right)\right\|}, \quad {b_2}_i = \frac{-c_i(x^{(l)})}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right)\right\|} \forall i \in \mathcal A_{P} \\
-
-% Let $\mathcal F_x, p_x, \mathcal A_x$ be defined as in \cref{define_projection_active}.
-% \mathcal A_{l, k} = \mathcal A_{\xk} \cup \mathcal A^{(k)} \cup \mathcal A_{x^{(l)}} \cup \mathcal A^{(l)}\\
-
-% \mathcal F^{(k)} = \{ y \in \Rn | c_i(\xk) + \gmcik^T(y - \xk) \le 0 \forall 1 \le i \le m\} \\
-% p^{(k)} = \argmin_{p \in \mathcal F^{(k)}} \|\xk - \gk - p\|^2 \\
-% \mathcal A^{(k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(k)} - \xk) = 0 \} \\
-
-and using definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, and \cref{def_two_proofs_activeidx} also define
+Fix some integers $k, l \in \naturals$.
+Use definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, \cref{define_normalized_constraints}
+and \cref{def_two_proofs_activeidx} also define
 \begin{align}
-\mathcal A_{k, l} = \mathcal A^{(k)} \cup \mathcal A^{(l)}\\
-{A^{(k)}}_{i} = \frac{\gmcik}{\left\|\gmcik\right\|}, \quad {b^{(k)}}_i = \frac{-c_i(\xk)}{\left\|\gmcik\right\|} \forall i \in \mathcal A_{P} \\
-M' = 4M_{\Gamma_0}\left(1 + \maxnorm + 2\huff(A^{(k)})\left(1 + \maxnorm\right)\right)
+\mathcal A_{k, l} = \mathcal A^{(k)} \cup \mathcal A^{(l)} \label{define_common_constraints}
 \end{align}
 and let $\epsilon > 0$ be given.
-Then, if $\dk$ and $\|\xk - x^{(l)}\|$ are sufficiently small that
-\begin{align}
-\dk \le \minactivegraddelta \\
-\dk \le \sqrt{\frac{\minactivegraddelta}{\left(\maxgrad - \maxgrad\right) \kappa_g}} \\
-\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2 \le \frac 1 2 \minactivegrad \\
-\frac{1}{\mingrad^2} \left(L_g\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2\right)\left(\maxgrad + \kappa_g\dk^2\right) \le \epsilon_1 \\
-\epsilon_1 \le  \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + M_2},\left(2\huff(A_1)\right)^{-1}, \left(2\huff(A_2)\right)^{-1}\right\} \\
-\left( M' + \sqrt{2\maxnorm M'}\right)\sqrt{\epsilon_1} \le \epsilon
-\end{align}
+Then, if $\lim_{k\to\infty} \dk = 0$,
+we have that there is a $k_P \in \naturals$ such that if $k \ge k_P$, then 
+\begin{align*}
+\begin{array}{cc}
+\|A_c^k\left(\mathcal A_{k, l}\right) - A_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon & \|b_c^k\left(\mathcal A_{k, l}\right) - b_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon
+\end{array}
+\end{align*}
+
+% \begin{align}
+% \dk \le \minactivegraddelta \\
+% \dk \le \sqrt{\frac{\minactivegraddelta}{\left(\maxgrad - \maxgrad\right) \kappa_g}} \\
+% \lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2 \le \frac 1 2 \minactivegrad \\
+% \frac{1}{\mingrad^2} \left(L_g\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2\right)\left(\maxgrad + \kappa_g\dk^2\right) \le \epsilon_1 \\
+% \epsilon_1 \le  \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + M_2},\left(2\huff(A_1)\right)^{-1}, \left(2\huff(A_2)\right)^{-1}\right\} \\
+% \left( M' + \sqrt{2\maxnorm M'}\right)\sqrt{\epsilon_1} \le \epsilon
+% \end{align}
 and
 \begin{align}
 \frac{2}{2\minactivegrad^2} \max\left\{\maxgrad, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2\right\} \le \epsilon_1
 \end{align}
-we have that $\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon$.
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
 Fix some $i \in \mathcal A_{k, l}$.
@@ -3301,29 +3326,91 @@ so that either way, both
 \left\|\nabla m_{c_i}^{(k)}\left(x^{(k)}\right)\right\| \ge \frac 1 2 \minactivegrad, \quad
 \left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right)\right\| \ge \frac 1 2 \minactivegrad.
 \end{align*}
-
+and
 \begin{align*}
 \left\|\frac{\nabla m_{c_i}\left(x^{(k)}\right)}{\left\|\nabla m_{c_i}\left(x^{(k)}\right)\right\|} - \frac{\nabla m_{c_i}\left(x^{(l)}\right)}{\left\|\nabla m_{c_i}\left(x^{(l)}\right)\right\|}\right\| 
-\le \frac{1}{2\minactivegrad^2} \left(L_g\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2\right)\left(\maxgrad + \kappa_g\dk^2\right) \le \epsilon_1.
+\le \frac{1}{2\minactivegrad^2} \left(L_g\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2\right)\left(\maxgrad + \kappa_g\dk^2\right).
 \end{align*}
+Using the fact that $\lim_{k \to \infty}\dk = 0$, we know that there is a $k_1 \in \naturals$ such that right hand side is less than $\epsilon$ for any $k, l \ge k_1$.
 
 Also, using \cref{the_simple_bound_one},
 and $\left|c_i(\xk) - c_i(x^{(l)})\right| \le \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2$ 
 by \cref{lipschitz_gradients_assumption} and \cref{bounded_hessians_assumption},
 \begin{align*}
 \left|\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|c_i(\xk) - \left\|\gmcik\right\|c_i(x^{(l)})\right| \\
-\le 2 \max\left\{\maxgrad, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2\right\}
+\le 2 \max\left\{\maxgrad, |c_i(\xk)|, |c_i(x^{(l)}|)\right\}\max\left\{\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2\right\}.
 \end{align*}
-so that
-Get to
+Using \cref{maximum_constraint_value_lemma},
 \begin{align*}
-\left|\frac{c_i(\xk)}{\left\|\gmcik\right\|} - \frac{c_i(x^{(l)})}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|}\right| \\
-\le \frac{2}{2\minactivegrad^2} \max\left\{\maxgrad, c_i(\xk), c_i(x^{(l))}\right\}\max\left\{\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2\right\}
-\le \epsilon_1.
+\le 2 \max\left\{\maxgrad, M_c\right\}\max\left\{\lipgrad\left\|\xk - x^{(l)}\right\| + 4\kappa_{g}\dk^2, \lipgrad \|\xk - x^{(l)}\| + \maxhessian\|\xk - x^{(l)}\|^2\right\}
 \end{align*}
+which, for some $k_2 \in \naturals$,  will be less than $2\minactivegrad^2\epsilon$ for any $k, l \ge k_2$ as $\lim_{x\to\infty}\dk=0$.
+But then,
+\begin{align*}
+\left|\frac{c_i(\xk)}{\left\|\gmcik\right\|} - \frac{c_i(x^{(l)})}{\left\|\nabla m_{c_i}^{(l)}\left(x^{(l)}\right) \right\|}\right| \le \epsilon.
+\end{align*}
+We need only let $k_P = \max\{k_1, k_2\}$.
+\end{proof}
+
+
+
+\begin{lemma}
+\label{hopefully_there_is_a_bound_for_this}
+We have that $\huff(A^k_c(S) \le M_{\Gamma_0} \forall k$
+\end{lemma}
+\begin{proof}
+\color{red}
+This follows from continuity?
+\color{black}
+\end{proof}
+
+
+
+
+
+\begin{theorem}
+\label{bounded_projection_theorem}
+% Letting $M' = 4\huff(A_2)\left(1 + M + 2\huff(A_1)\left(1 + M\right)\right)$, we have that $\|x_1^{\star} - x_2^{\star}\| \le \left( M' + \sqrt{2MM'}\right)\sqrt{\epsilon}$.
+
+Assume that the assumptions for
+\cref{normalized_matrices_are_close}
+and \cref{hopefully_there_is_a_bound_for_this}
+hold.
+
+
+Use definitions
+\cref{def_two_proofs_fk},
+\cref{def_two_proofs_pk},
+\cref{def_two_proofs_activeidx},
+\cref{define_normalized_constraints},
+and \cref{define_common_constraints}.
+
+Let $\epsilon > 0$ be given.
+Then there is a $k_0$ such that whenever $k, l \ge k_0$,
+we will have $\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon$.
+\end{theorem}
+\begin{proof}
+Define
+\begin{align}
+M' = 4M_{\Gamma_0}\left(1 + \maxnorm + 2M_{\Gamma_0}\left(1 + \maxnorm\right)\right)
+M'' = M' + \sqrt{2\maxnorm M'}.
+\end{align}
+and let $\epsilon_1 = \min\left\{\frac 1 {M''} \epsilon^2, \frac 1 2 , \ldots  \right\}$. 
+\begin{comment}
+fill in the rest to match the requirements of \cref{2_2}.
+\end{comment}
+
+By \cref{normalized_matrices_are_close} we know that there is $k_P$ such that for any $k, l \ge k_P$, we have
+\begin{align*}
+\begin{array}{cc}
+\|A_c^k\left(\mathcal A_{k, l}\right) - A_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon_1 & \|b_c^k\left(\mathcal A_{k, l}\right) - b_c^l\left(\mathcal A_{k, l}\right)\| \le \epsilon_1
+\end{array}
+\end{align*}
+
+
 Thus, we can apply \cref{2_2} to find that
 \begin{align*}
-\left\|p^{(k)} - p^{(l)} \right\| \le \epsilon.
+\left\|p^{(k)} - p^{(l)} \right\| \le M''\sqrt{\epsilon_1} = \epsilon.
 \end{align*}
 
 \end{proof}
@@ -3382,18 +3469,42 @@ and therefore $k \in \bar S \subset S$.
 Given $k \in \naturals'$ with $k\ge k_0$, consider $l_k$ the first index such that $l_k > k$ and $\chi_{l_k} \le \frac{\epsilon} 2$.
 The existence of $l_k$ is ensured by \cref{liminf_chi_to_zero}.
 This means that $\chik - \chi_{l_k} \ge \frac {\epsilon} 2 $.
-Letting $\Omega_1 = \capcones \cap \tr$ and $\Omega_2 = {C^{(l_k)}_{\cap}} \cap B_{\infty}\left(x^{(l_k)}, \Delta_{(l_k)}\right) $
-Using the definition of $\chik$, the triangle inequality and the contraction property of projections and \cref{bounded_projection_theorem}, we have that
+
+We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied}
+\begin{align*}
+\left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+\le \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+\le \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right) + \lipgrad \left\|\xk - x^{(l_k)} \right\| \label{chi2zero2_comp1}
+\end{align*}
+
+Let $\Omega_1 = \capcones \cap \tr$ and $\Omega_2 = {C^{(l_k)}_{\cap}} \cap B_{\infty}\left(x^{(l_k)}, \Delta_{(l_k)}\right) $.
+
+
+
+
+
+
+
+
+
+
+Using the definition of $\chik$, the triangle inequality, the contraction property of projections,
+definitions \cref{def_two_proofs_fk}, \cref{def_two_proofs_pk}, \cref{accuracy_is_satisfied} we have that
 
 \begin{align*}
-\frac{\epsilon}{2} \le \left \|P_{\Omega_1}\left(\xk - \gk\right) - \xk\right \| - \left\|P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right) - x^{(l_k)}\right\| \\
-\le \left\|P_{\Omega_1}\left(\xk - \gk\right) - \xk - P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right) + x^{(l_k)}\right\| \\
-\le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(\xk - \gk\right)\right\| \\+ \left\|P_{\Omega_2}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right)\right\| \\
-\le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(\xk - \gk\right)\right\| \\+ \left\|\xk - \gk - x^{(l_k)} - g^{(l_k)}\right\| \\
-\le 2\left\|\xk - x^{(l_k)}\right\| + \left\|\gk - g^{(l_k)}\right\| \\
-=   2\left\|\xk - x^{(l_k)}\right\| + \left\|\gk - \gradf(\xk) + \gradf(\xk) - \gradf(x^{(l_k)}) + \gradf(x^{(l_k)}) - g^{(l_k)}\right\| \\
-\le 2\left\|\xk - x^{(l_k)}\right\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - g^{(l_k)}\right\|.
+\frac{\epsilon}{2} \le \left \|P_{\Omega_1}\left(\xk - \gk\right) - \xk\right \| - \left\|P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right) - x^{(l_k)}\right\| \\
+\le \left\|P_{\Omega_1}\left(\xk - \gk\right) - \xk - P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right) + x^{(l_k)}\right\| \\
+\le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(\xk - \gk\right)\right\| \\+ \left\|P_{\Omega_2}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right)\right\| \\
+\le\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\xk - \gk - x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+\le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(l)}\| + \left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|\\
+=   (2 + \lipgrad) \left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right)
 \end{align*}
+
+
+% \le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+% \le \left(2 + \lipgrad\right)\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|.
+
+\cref{bounded_projection_theorem}
 
 
 % \le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right)\right\| \\
