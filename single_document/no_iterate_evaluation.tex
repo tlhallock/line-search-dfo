@@ -1,0 +1,584 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[demo]{graphicx}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{cite}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsfonts}
+\usepackage{array,multirow}
+\usepackage{amssymb,amsthm}
+\usepackage[]{algorithmicx}
+\usepackage{algpseudocode} 
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage[capitalise,nameinlink,noabbrev]{cleveref}
+\usepackage{float}
+\usepackage{mathtools}
+\floatstyle{ruled}
+\newfloat{algorithm}{thp}{lop}
+\floatname{algorithm}{Algorithm}
+
+\newcounter{assumptioncounter}
+\newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
+\textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+\newcounter{criteriacounter}
+\newenvironment{criteria}[1][]{\refstepcounter{criteriacounter}\par\medskip
+\textbf{Criteria \thecriteriacounter} \rmfamily \itshape}{\medskip}
+
+\usepackage{framed}
+\newenvironment{comment}
+  {\par\medskip
+   \color{red}%
+   \begin{framed}
+   \textbf{Comment: }\ignorespaces}
+ {\end{framed}
+  \medskip}
+
+\crefname{criteriacounter}{Criteria}{criteria}
+\crefname{assumptioncounter}{Assumption}{assumption}
+\crefname{equation}{}{equations}
+
+
+%============================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{definition}{Definition}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+\theoremstyle{case}
+\newtheorem{case}{Case}
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+\newcommand{\naturals}{{\mathbb N}}
+
+
+\newcommand{\xk}{{x^k}}
+
+\newcommand{\qk}{{Q_k}}
+\newcommand{\ck}{{c_k}}
+\newcommand{\gk}{{g^k}}
+\newcommand{\hk}{{H_k}}
+\newcommand{\domain}{{\Omega}}
+
+\newcommand{\dk}{{\Delta_k}}
+\newcommand{\rk}{{\rho_k}}
+\newcommand{\pik}{{\pi_k}}
+\newcommand{\sk}{{s^k}}
+\newcommand{\errk}{{h_k}}
+\newcommand{\lip}{{L}}
+\newcommand{\fmin}{{f_{\text{min}}}}
+
+
+\newcommand{\xzero}{{x^{0}}}
+\newcommand{\dzero}{{\Delta_{0}}}
+\newcommand{\czero}{{c_{0}}}
+
+\newcommand{\xkpo}{{x^{k+1}}}
+\newcommand{\dkpo}{{\Delta_{k+1}}}
+\newcommand{\ckpo}{{c_{k+1}}}
+\newcommand{\ctrialk}{{\hat c_k}}
+
+\newcommand{\kappaf}{{\kappa_{f}}}
+\newcommand{\kappag}{{\kappa_{g}}}
+
+\newcommand{\gradfk}{{\nabla f \left(\xk\right)}}
+\newcommand{\maxhes}{{M_{\nabla^2}}}
+
+\newcommand{\kcrit}{{\kappa_{\pi}}}
+\newcommand{\tinc}{{\tau_{\text{inc}}}}
+\newcommand{\tdec}{{\tau_{\text{dec}}}}
+
+\newcommand{\egood}{{\eta_{\text{good}}}}
+\newcommand{\eugly}{{\eta_{\text{ugly}}}}
+\newcommand{\ebad}{{\eta_{\text{bad}}}}
+
+\newcommand{\accepting}{{S_{\text{accept}}}}
+\newcommand{\success}{{S_{\text{success}}}}
+\newcommand{\super}{{S_{\text{good}}}}
+\newcommand{\sriter}{{S_{\text{reduction}}}}
+\newcommand{\keff}{{\kappa_{\text{eff}}}}
+\newcommand{\dmax}{{\Delta_{\text{max}}}}
+
+
+\newcommand{\unsuccess}{{\bar S_{\text{success}}}}
+
+\begin{document}
+
+\section{Introduction}
+
+We wish to 
+\begin{align}
+\begin{array}{cc}
+\min & f(x) \\
+\textrm{subject to} & x \in \domain
+\end{array}
+\end{align}
+
+
+\section{Assumptions}
+
+\begin{assumption}
+\label{lipschitz_assumption}
+The function $f$ is differentirable and its gradient $\nabla f$ is Lipschitz continuous with constant $\lip > 0$ in $\domain$.
+That is,
+\begin{align}
+\left\|f(x) - f(y)\right\| \le \lip \left\|x - y\right\|\quad \forall x,y \in \domain
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{bounded_below_assumption}
+The function $f$ is bounded below in $\domain$.
+That is,
+\begin{align}
+f(x) \ge \fmin \quad \forall x \in \domain
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{bounded_hessians_assumption}
+The matrices $\hk$ are uniformly bounded.
+That is, there exists a $\maxhes > 0$ such that 
+\begin{align}
+\|\hk\| \le \maxhes \quad \forall  k \in \naturals.
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{accuracy_of_gradient_assumption}
+There exists a constant $\kappag$ such that the following accuracy condition is satisfied:
+\begin{align}
+\left\|\gk - \gradfk \right\| \le \kappag \dk \quad \forall k \in \naturals
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{accuracy_of_value_assumption}
+There exists a constant $\kappaf$ such that the following accuracy condition is satisfied:
+\begin{align}
+\left\|\ck - f\left(\xk\right) \right\| \le \kappaf \dk^2 \quad \forall k \in \naturals
+\end{align}
+\end{assumption}
+
+\begin{assumption}
+\label{efficiency_assumption}
+There exists a $\keff > 0$, such that we satisfy the efficiency condition
+\begin{align}
+\qk(0) - \qk(\sk) \ge \keff \pik \min\left\{ \frac{\pik}{1 + \|\hk\|}, \dk, 1\right\} \quad \forall k \in \naturals
+\end{align}
+\end{assumption}
+
+
+\begin{assumption}
+\label{projection_assumption}
+We assume
+\begin{align}
+P_{\domain}(x)
+\end{align}
+exists and is unique for any $x$.
+\end{assumption}
+
+
+\section{Definitions}
+We assume a quadratic model at the current iterate $\xk \in \domain$
+\begin{align}
+\qk(s) = \ck + \left(\gk\right)^Ts + \frac 1 2 s^T\hk s	\label{define_model}
+\end{align}
+
+We use the usual criticallity measure
+\begin{align}
+\pik = \left\|P_{\domain}(\xk - \gk) - \xk\right\|	\label{define_criticallity}
+\end{align}
+
+The trust region subproblem is given by
+\begin{align}
+\begin{array}{ccc}
+\sk = & \argmin & \qk(s) \\
+& \textrm{subject to} & \xk + s \in \domain \\
+& & \|s\| \le \dk \\
+\end{array} \label{define_trial}
+\end{align}
+
+The measure of progress is defined by 
+\begin{align}
+\rk = \frac{\ck - \ctrialk}{\qk(0) - \qk\left(\sk\right)} \label{define_rk}
+\end{align}
+
+The choice of $\ctrialk$ is arbitrary, as long as assumption \cref{accuracy_of_value_assumption} still holds.
+That is, if $\rk \ge \ebad$, we must also have that $\left\|\ctrialk - f(\xk + \sk) \right\| \le \kappaf \dkpo^2$.
+Of course, if the algorithm always assumes that  $\left\|\ctrialk - f(\xk + \sk) \right\| \le \kappaf \tdec^2 \dk^2$,
+then this will be satisified.
+
+Algorithm parameters
+\begin{align}
+\kcrit \ge 0 \label{define_kcrit} \\
+0 < \tdec < 1 \le \tinc \label{define_tr_manipulators} \\
+\eugly \in (0, 1), 0 \le \ebad < \eugly \le \egood \label{define_good_bad_ugly} \\
+\dmax > 0 \label{define_dmax}
+\end{align}
+
+
+The sets of iterates:
+\begin{align}
+\accepting = \left\{ k \in \naturals | \rk > \ebad \right\} \label{define_accepting} \\
+\success = \left\{ k \in \naturals | \rk > \eugly \right\} \label{define_successful} \\
+c = \frac {\kappaf + \kappaf\tinc^2 + \lip + \kappag + \frac 1 2 \maxhes}{\keff} \label{define_c}\\
+\sriter = \left\{ k \in \naturals | \dk \le \min\left\{\frac{\pik}{1 + \maxhes}, \frac{\pik\left(1 - \eugly\right)}{c}, \kcrit\pik, 1 \right\}\right\} \label{define_sriter} \\
+\super = \left\{ k \in \naturals | \rk > \egood, \|\sk\| = \dk \right\} \label{define_super}
+\end{align}
+Note that $\super \subseteq \success \subseteq \accepting$.
+
+
+\section{Algorithm}
+
+\begin{align*}
+\eta_1 = \eugly \\
+\eta = \ebad \\
+\eta_2 = \egood
+\end{align*}
+
+
+
+\begin{algorithm}[H]
+    \caption{Unconstrained Derivative Free Algorithm}
+    \label{unconstrained_dfo}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize initial iterate $\xzero \in \domain$, trust region radius $0 < \dzero \le \dmax$, and $\czero$. \\
+            Initialize algorithm parameters as in \cref{define_kcrit}, \cref{define_tr_manipulators}, and \cref{define_good_bad_ugly}
+            
+        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
+        	Construct the model $\qk$, using $\ck$.
+        
+        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+            Compute the criticality measure $\pik$ as in \cref{define_criticallity}. \\
+            If $\dk > \kcrit\pik$, then $\dkpo = \tinc\dk$, $\sk = 0$, and $\xkpo = \xk$.
+        
+        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+            Compute $\sk$ as in \cref{define_trial}.
+            
+        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+        	Construct a $\ctrialk$, and compute $\rk$ as in \cref{define_rk}\begin{itemize}
+	            \item[] If $\rk > \ebad$ then $\xkpo=\xk+\sk$ (accept) and create any new $\ckpo$.
+	            \item[] If $\rk \le \ebad$ then $\xkpo=\xk$ (reject) and $\ckpo = \ctrialk$
+	            \item[] If $\rk \le \eugly$ then $\dkpo = \tdec \dk$.
+	            \item[] If $\rk > \eugly$ and $\rk \le \egood$ then $\dkpo = \dk$.
+	            \item[] If $\rk > \egood$ and $\left\|\sk\right\| = \dk$ then $\dkpo = \min\left\{\tinc \dk, \dmax\right\}$.
+	            \item[] If $\rk > \egood$ and $\left\|\sk\right\| < \dk$ then $\dkpo = \dk$.
+            \end{itemize}
+            $k \gets k+1$ and go to Step 1.
+    \end{itemize}
+\end{algorithm}
+
+
+
+
+\section{Proof}
+
+\begin{lemma}
+\label{small_delta_means_reduction}
+Assume that
+\cref{lipschitz_assumption},
+\cref{bounded_hessians_assumption},
+\cref{efficiency_assumption},
+\cref{accuracy_of_gradient_assumption},
+and \cref{accuracy_of_value_assumption}
+are satisfied.
+
+Using definitions \cref{define_sriter} and \cref{define_accepting}, we have $\sriter \subseteq \success$.
+\end{lemma}
+
+\begin{proof}
+Fix a $k \in \sriter$.
+By the Mean Value Theorem, there exists a $t \in (0, 1)$ such that
+\begin{align*}
+f(\xk + \sk) = f(\xk) + \nabla f(\xk + t \sk)^T \sk
+\end{align*}
+But then by \cref{lipschitz_assumption} and \cref{bounded_hessians_assumption}:
+\begin{align*}
+\left| f(\xk) - f(\xk + \sk) - \qk(0) + \qk(\sk) \right| = \left| -\left(\nabla f\left(\xk + t \sk\right) - \gk \right)^T \sk + \frac 1 2 \left(\sk\right)^T\hk\sk\right| \\
+\le \left[\left\|\nabla f(\xk + t \sk) - \gradfk\right\| + \left\|\gradfk - \gk \right\|\right]\left\|\sk\right\| + \frac 1 2 \left\|\sk\right\|^2 \left\|\hk\right\| \\
+\le \left(t \lip \left\|\sk\right\| + \kappag \dk\right)\left\|\sk\right\| + \frac 1 2 \left\|\sk\right\|^2 \maxhes
+\end{align*}
+
+Because $\left\|\sk\right\| \le \dk$ and $t \in (0, 1)$, we have that
+\begin{align}
+\left| f(\xk) - f(\xk + \sk) - \qk(0) + \qk(\sk) \right|  \le \left(L + \kappag + \frac 1 2 \maxhes\right) \dk^2 \label{sdmr_one}
+\end{align}
+
+We know that one of the following will be true:
+\begin{align*}
+\dkpo = \dk \quad \textrm{or} \quad  \dkpo = \tdec\dk \quad \textrm{or} \quad \dkpo = \tinc\dk.
+\end{align*}
+In any of these cases, $\dkpo \le \tinc \dk$, so that by \cref{accuracy_of_value_assumption}, we have
+\begin{align*}
+\left| f(\xk) - \ck \right| \le \kappaf \dk^2 \\
+\left| f(\xk + \sk)  - \ckpo \right| \le \kappaf \dkpo^2 \le \kappaf \tinc^2 \dk^2.
+\end{align*}
+Adding these, we find
+\begin{align*}
+\left| f(\xk) - f(\xk + \sk) + \ck - \ckpo \right| \le \kappaf\left(1 + \tinc^2\right)\dk^2
+\end{align*}
+Combining this with \cref{sdmr_one} yields
+\begin{align}
+\left| \ck - \ctrialk - \qk(0) + \qk(\sk) \right| \le \left(\kappaf + \kappaf\tinc^2 + L + \kappag + \frac 1 2 \maxhes\right)\dk^2 \label{sdmr_two}
+\end{align}
+
+
+Because $k \in \sriter$, $\dk \le \kcrit \pik\Longrightarrow \pik > 0$.
+But then, by \cref{efficiency_assumption} we know that $\qk(0) - \qk(\sk) \ne 0$.
+Therefore, we can divide from \cref{sdmr_two} by $\qk(0) - \qk(\sk)$ and use \cref{define_c} so see
+% subtract $1 = \frac{\qk(0) - \qk(\sk)}{\qk(0) - \qk(\sk)}$
+
+\begin{align*}
+\left|\rk - 1 \right| = \left| \frac{\ck - \ctrialk - \qk(0) + \qk(\sk)}{\qk(0) - \qk(\sk)} \right| 
+\le \frac{\left(\kappaf + \kappaf\tinc^2 + L + \kappag + \frac 1 2 \maxhes\right)}{\keff \pik \min\left\{ \frac{\pik}{1 + \|\hk\|}, \dk, 1\right\}} \dk^2 \\
+= \frac{c \dk^2}{\pik \min\left\{ \frac{\pik}{1 + \|\hk\|}, \dk, 1\right\}}
+\end{align*}
+
+But then, by \cref{define_sriter}, we know that 
+$\dk = \min\left\{ \frac{\pik}{1 + \|\maxhes\|}, \dk, 1\right\}$ and
+$\frac{c\dk}{\pik} \le 1 - \eugly$
+so that
+\begin{align*}
+\left|\rk - 1 \right| \le 1 - \eugly \Longrightarrow \rk \ge \eugly
+\end{align*}
+and $k \in \success$.
+\end{proof}
+
+
+
+
+% 
+% \begin{lemma}
+% Assume
+% 
+% are satisfied.
+% There exists a $\dmax$ such that $\dk \le \dmax \forall k \in \naturals$.
+% \end{lemma}
+% 
+% \begin{proof}
+% 
+% \begin{align*}
+% \qk(0) - \qk\left(\sk\right) = \left(\gk\right)^T\sk + \frac 1 2 \left(\sk\right)^T \hk \sk \\
+% \ge \kappaf \pik = \kappaf \left\|P_{\domain}\left(\xk - \gk\right) - \xk\right\| \\
+% \left|\qk(0) - \qk\left(\sk\right)\right| = \left(\gk\right)^T\sk + \frac 1 2 \left(\sk\right)^T \hk \sk \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \rk \ge 1 \Longrightarrow \ck - \ctrialk \ge \qk(0) - \qk\left(\sk\right)
+% \end{align*}
+% 
+% If $\dk \ge \dmax$, then $\|\sk\| = \dk$.
+% 
+% 
+% \end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{lemma}
+\label{dk2zero}
+Suppose that \cref{bounded_below_assumption}, \cref{accuracy_of_value_assumption} and \cref{bounded_hessians_assumption} are satisfied.
+Then $\lim_{k\to\infty} \dk = 0$.
+\end{lemma}
+\begin{proof}
+If $\success$ is finite, then there exists a $k_0 \in \naturals$ such that for all $k_0$, $\dkpo \le \tdec \dk$.
+Thus, $\lim_{k\to\infty} \dk = 0$.
+From here on, we can assume $\success$ is infinite.
+From for any $k \in \success$, by \cref{efficiency_assumption} and \cref{bounded_hessians_assumption}, we know that
+\begin{align*}
+\ck - \ctrialk \ge \eugly \left(\qk(0) - \qk(\sk)\right) \ge \eugly \keff \pik \min\{\frac{\pik}{1 + \maxhes}, \dk 1\}
+\end{align*}
+Also, because $k \in \success$, we must have $\dk \le \kcrit \pik$ and $\ckpo = \ctrialk$, so that
+\begin{align*}
+\ck - \ckpo \ge \eugly \keff \frac{\dk}{\kcrit} \min\{\frac{\dk}{\kcrit\left(1 + \maxhes\right)}, \dk 1\}
+\end{align*}
+This means that for $k \in \success$, $\ck$ is a nonincreasing sequence.
+Also, by \cref{accuracy_of_value_assumption}, we know that $\ck \ge \fmin - \kappaf\dk^2 \ge \fmin - \kappaf\dmax^2$, so that it is bounded.
+Therefore, $\lim_{s \in \success} \ck - \ckpo = 0$ and 
+\begin{align}
+\lim_{s \in \success} \dk = 0. \label{dk2zero_the_important_ones}
+\end{align}
+Consider the set $\unsuccess = \left\{k \in \naturals | k \not \in \success \right\}$.
+If $\unsuccess$ is finite, then by \cref{dk2zero_the_important_ones}, $\lim_{k\to\infty} \dk = 0$.
+Suppose that $\unsuccess$ is infinite, and for each $k \in \unsuccess$, let $l_k$ be the last index in $\success$ before $k$.
+We know that $l_k$ is well defined, and that $\dk \le \tinc \Delta_{l_k}$.
+But this means that
+\begin{align}
+\lim_{k\in\unsuccess}\dk \le \tinc \lim_{k\in\unsuccess}\Delta_{l_k} = 0.
+\end{align}
+Combining this with \cref{dk2zero_the_important_ones} gives $\lim_{k\to\infty} \dk = 0$.
+\end{proof}
+
+
+
+
+
+\begin{lemma}
+\label{weak_convergence}
+Suppose that 
+\cref{lipschitz_assumption},
+\cref{bounded_below_assumption},
+\cref{bounded_hessians_assumption},
+\cref{accuracy_of_gradient_assumption},
+\cref{accuracy_of_value_assumption},
+and \cref{efficiency_assumption}
+are satisfied.
+Then $\liminf_{k\to\infty} \pik = 0$.
+\end{lemma}
+
+\begin{proof}
+Suppose for a constradiction that there exist a constant $\epsilon > 0$ and an integer $k_0 \in \naturals$ such that $\pik \ge \epsilon$ for any $k \ge k_0$.
+We can let $\hat \Delta = \min\left\{\frac{\epsilon}{1 + \maxhes}, \frac{\epsilon\left(1 - \eugly\right)}{c}, \kcrit\epsilon, 1 \right\}$,
+where
+$\maxhes$ is defined in \cref{bounded_hessians_assumption},
+$c$ is defined in \cref{define_c},
+$\eugly$ is defined in \cref{define_good_bad_ugly},
+and $\kcrit$ is defined in \cref{define_kcrit}.
+Consider $k \ge k_0$.
+If $\dk \le \hat \Delta$, then $k \in \sriter$ defined in \cref{define_sriter} so that by \cref{small_delta_means_reduction} $k \in \success$ and $\dkpo \ge \dk$.
+It follows $\dk$ can only decrease if $\dk > \hat \Delta$.
+But if $\dk > \hat \Delta$, then $\dkpo = \tdec \dk > \tdec \hat\Delta$.
+Either way, we know that for all $k \ge k_0$, we have
+$\dk \ge \min\left\{\tdec\hat\Delta, \Delta_{k_0}\right\}$.
+This contradicts \cref{dk2zero} and there is no such $k_0$ and $\epsilon$. Thus, $\liminf_{k\to\infty} \pik = 0$.
+\end{proof}
+
+
+
+\begin{lemma}
+\label{strong_convergence}
+Suppose that 
+\cref{lipschitz_assumption},
+\cref{bounded_below_assumption},
+\cref{bounded_hessians_assumption},
+\cref{accuracy_of_gradient_assumption},
+\cref{accuracy_of_value_assumption},
+and \cref{efficiency_assumption}
+are satisfied and $\ebad > 0$.
+Then $\lim_{k\to\infty} \pik = 0$.
+\end{lemma}
+
+\begin{proof}
+Suppose for a constradiction that there exist a constant $\epsilon > 0$ such that the set
+\begin{align}
+\naturals' = \left\{ k \in \naturals | \pik \ge \epsilon\right\} \label{sc_define_np}
+\end{align}
+is infinite.
+By \cref{dk2zero}, $\lim_{k\to\infty} \dk = 0$, so there exists a $k_0 \in naturals$ such that for all $k \ge k_0$,
+\begin{align*}
+\dk \le \min\left\{\frac{\epsilon}{1 + \maxhes}, \frac{\epsilon\left(1 - \eugly\right)}{c}, \kcrit\epsilon, 1 \right\}, \label{sc_define_two}
+\end{align*}
+where
+$\maxhes$ is defined in \cref{bounded_hessians_assumption},
+$c$ is defined in \cref{define_c},
+$\eugly$ is defined in \cref{define_good_bad_ugly},
+and $\kcrit$ is defined in \cref{define_kcrit}.
+By by \cref{sc_define_np}, we have that for any $k \ge k_0$, we have
+\begin{align}
+\dk \le \min\left\{\frac {\pik}{1 + \maxhes},\frac {(1 - \eugly)\pik}{c}, \keff\pik, 1 \right\},
+\end{align}
+so that by \cref{small_delta_means_reduction}, $k \in \success \subseteq  \accepting$.
+
+Now, given a $k\in\naturals'$ with $k \ge k_0$, consider $l_k$ the first index such that $l_k > k$ and $\pik \le \frac 1 2 \epsilon$.
+The existence of $l_k$ is ensured by \cref{weak_convergence}. But then $\pik - \pi_{l_k} \ge \frac 1 2 \epsilon$.
+Using the definition of $\pik$, the triangle inequality and the contraction property of projections, we have that
+\begin{align*}
+\frac 1 2 \epsilon \le \left\| P_{\domain}\left(\xk - \gk\right) - \xk \right\| - \left\|P_{\domain}\left(x^{l_k} - g^{l_k}\right) - x^{l_k}\right\| \\
+\le \left\|P_{\domain}\left(\xk - \gk\right) - \xk - P_{\domain}\left(x^{l_k} - g^{l_k}\right) + x^{l_k}\right\|
+\le 2 \left\|\xk - x^{l_k}\right\| + \left\|\gk - g^{l_k}\right\| \\
+\le 2 \left\|\xk - x^{l_k}\right\| + \left\|\gk - \nabla f(\xk) \right\| + \left\|\nabla f(\xk) - \nabla f(x^{l_k})\right\| + \left\|\nabla f(x^{l_k}) - g^{l_k}\right\|
+\end{align*}
+So that by \cref{lipschitz_assumption} and \cref{accuracy_of_gradient_assumption},
+\begin{align}
+\frac 1 2 \epsilon \le \left(2 + \lip\right) \left\|\xk - x^{l_k}\right\| + \kappag \left(\dk + \Delta_{l_k}\right) \label{sc_thats_not_right}
+\end{align}
+
+Let us consider $C_k = \left\{i \in \accepting | k \le i < l_k\right\}$.
+We know that $C_k \ne \emptyset$ because $k \in \accepting$.
+For each $i \in C_k \subseteq \accepting$, using \cref{efficiency_assumption} and \cref{bounded_hessians_assumption}, we have that
+\begin{align*}
+\ck - \ctrialk \ge \ebad\left(Q_i\left(0\right) - Q_i\left(\sk\right)\right) \ge \ebad \keff \pi_i \min\left\{\frac {\pi_i}{1 + \maxhes}, \Delta_i, 1\right\}
+\end{align*}
+By the definition of $l_k$, we have that $\pi_i > \frac 1 2 \epsilon$ for all $i \in C_k$.
+As $i \ge k$, by \cref{sc_define_two}, $\Delta_i \le \frac {\epsilon}{1 + \maxhes}$ and $\Delta_i \le 1$.
+Therefore
+\begin{align*}
+\frac 1 2 \Delta_i \le \frac 1 2 \frac {\epsilon}{1 + \maxhes} \le \frac {\pi_i}{1 + \maxhes}
+\end{align*}
+and hence, because $\hat c_i = c_{i+1}$
+\begin{align}
+c_i - c_{i+1} > \frac 1 4 \ebad \keff \epsilon \Delta_i \Longrightarrow \Delta_i < \frac 4 {\ebad \keff \epsilon} \left(\ck - \ctrialk\right) \label{sc_define_three}
+\end{align}
+On the other hand,
+\begin{align*}
+\left\|\xk - x^{l_k}\right\| \le \sum_{i \in C_k} \left\|x^i - x^{i+1}\right\| \le \sum_{i \in C_k} \Delta_i
+\end{align*}
+which, when combined with \cref{sc_define_three} provides
+\begin{align*}
+\left\|\xk - x^{l_k}\right\| < \frac 4 {\ebad \keff \epsilon} \left(\ck - c_{l_k} \right) 
+\end{align*}
+By \cref{bounded_below_assumption} and \cref{accuracy_of_value_assumption}, $\ck \ge \fmin - \kappaf\dmax^2$, and because it is non increasing for any $i \in \accepting$,
+$\left\|\ck - c_{l_k}\right\| \to 0$.
+Therefore, $\lim_{k \in \naturals', k \to \infty} \left\|\xk - x^{l_k}\right\|$ converges to zero, which together with \cref{dk2zero} contradicts \cref{sc_thats_not_right}.
+Therefore, $\lim_{k \to \infty} \pik = 0$.
+\end{proof}
+
+
+
+
+
+
+
+\begin{theorem}
+\label{convergence_theorem}
+Suppose that 
+\cref{lipschitz_assumption},
+\cref{bounded_below_assumption},
+\cref{bounded_hessians_assumption},
+\cref{accuracy_of_gradient_assumption},
+\cref{accuracy_of_value_assumption},
+and \cref{efficiency_assumption}
+are satisfied.
+Then we have
+\begin{itemize}
+\item If $\ebad = 0$, then $\liminf_{k\to\infty} \left\|P_{\domain}\left(\xk - \gradfk\right) - \xk\right\| = 0$.
+\item If $\ebad > 0$, then $\lim_{k\to\infty} \left\|P_{\domain}\left(\xk - \gradfk\right) - \xk\right\| = 0$.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+By the triangle inequality, the contraction property of projections and \cref{accuracy_of_gradient_assumption} we have that
+\begin{align*}
+\left\|P_{\domain}\left(\xk - \gradfk\right) - \xk\right\|
+= \left\|P_{\domain}\left(\xk - \gradfk\right) - P_{\domain}\left(\xk - \gk\right) + P_{\domain}\left(\xk - \gk\right) - \xk\right\| \\
+\le \left\|P_{\domain}\left(\xk - \gradfk\right) - P_{\domain}\left(\xk - \gk\right)\right\| + \left\|P_{\domain}\left(\xk - \gk\right) - \xk\right\| \\
+\le \left\|\gradfk - \gk\right\| + \left\|P_{\domain}\left(\xk - \gk\right) - \xk\right\| \\
+\le \kappaf \dk + \pik.
+\end{align*}
+The result follows after applying \cref{dk2zero}, \cref{weak_convergence}, and \cref{strong_convergence}.
+\end{proof}
+
+\end{document}
+
+
