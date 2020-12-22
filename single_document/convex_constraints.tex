@@ -196,6 +196,13 @@ Computational results are presented on a suite of test problems.
 define $\huff$
 \end{comment}
 
+
+\begin{comment}
+
+equation that he mentioned before
+
+\end{comment}
+
 \section{Introduction}
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
@@ -1591,27 +1598,6 @@ The same applies to each $c_i$.
 \end{proof}
 
 
-
-\begin{lemma}
-\label{bounded_gradients_lemma}
-Assume \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
-The functions $c_i$ for all $ 1 \le i \le m$ and $f$ have bounded gradient in $ \Omega $.
-That is, there exists an $\maxgrad > 0$ such that
-\begin{align}
-\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
-\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible \forall 1 \le i \le m
-\end{align}
-\end{lemma}
-\begin{proof}
-We are given a $x^{(0)} \in \feasible$, let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf(x^{(0)})|, \max_{1\le i\le m}\left\{\nabla c_i(x^{(0)})|\right\} \right\}$.
-Thus, for any $x \in \Omega$,
-\begin{align*}
-\gradf(x) \le |\gradf(x^{(0)})| + \lipgrad \left\|x - 0 - (x^{(0)} - 0)\right\| \le |\gradf(x^{(0)})| + 2\lipgrad \maxnorm \le \maxgrad.
-\end{align*}
-The same applies to each $c_i$.
-\end{proof}
-
-
 \begin{lemma}
 \label{maximum_constraint_value_lemma}
 Assume that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
@@ -1656,7 +1642,7 @@ Let $x$ be such that $f_e(\epsilon, \delta, \theta, x) \le 0$.
 First, note that
 \begin{align*}
 2(e_1^Tx - \frac 1 2 \epsilon )^2\ge 0
-\Longrightarrow 0 \le 2(e_1^Tx)^2 + 2e_1^Tx\epsilon  - \frac 1 2 \epsilon^2 \\
+\Longrightarrow 0 \le 2(e_1^Tx)^2 - 2e_1^Tx\epsilon + \frac 1 2 \epsilon^2 \\
 \Longrightarrow \frac 1 2 \epsilon^2 - \left((e_1^Tx)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) \le (e_1^Tx)^2
 \Longrightarrow \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2 \le (e_1^Tx)^2.
 \end{align*}
@@ -1664,14 +1650,14 @@ First, note that
 We use this inequality to show:
 \begin{align*}
 f_e(\epsilon, \delta, \theta, x) \le 0
-\Longrightarrow (x - \epsilon e_1)^T\bigg(\begin{pmatrix}
+\Longrightarrow (x - \epsilon e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{pmatrix}\bigg)(x - \epsilon e_1) \le \frac 1 2 \delta^2 \\
-\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1)^T\bigg(\begin{pmatrix}
+\end{pmatrix}(x - \epsilon e_1) \le \frac 1 2 \delta^2 \\
+\Longrightarrow (e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{pmatrix}\bigg)(e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1) \le \frac 1 2 \delta^2 \\
+\end{pmatrix}(e_1^Txe_1 + (x - e_1^Txe_1) - \epsilon e_1) \le \frac 1 2 \delta^2 \\
 \Longrightarrow 
 (e_1^Tx - \epsilon)^2 + \frac{\theta_1^2}{1 - \theta_1^2}\|x - e_1^Tx e_1\|^2 \le \frac 1 2 \delta^2.
 \end{align*}
@@ -3961,108 +3947,97 @@ Should actually be using $\mfk$.
 
 \section{Table of Notation}
 \begin{longtable}{| p{.20\textwidth} | p{.80\textwidth} |}
-These & are very general notations \\   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$ \naturals $ & are the natural numbers, $1, 2, \ldots$ \\
-$ \reals $ & are the real numbers \\
-$e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\
-$B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
-& $B_k(c;\Delta) = \{ x \in \mathbb{R}^n : \| x - c\|_k \le \Delta \}$ \\
-$\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\
-These & are in the problem definition \\   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$f$ & is the objective function \\
-$c_i$ & are the constraints $\forall 1 \le i \le m$ \\
-$\domain$ & is the domain \\
-$\feasible$ & is the feasible region \\
-These & are general things per iterate \\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\xk$ & is the current iterate in iteration $k$\\
-$\mfk$ & is the model of the objective $f$ during iteration $k$\\
-$\mcik$ & is the model of the $i$-th constraint $c_i$ during iteration $k$\\
-$\mck$ & is the model of the constraint $c$ during iteration $k$\\
-$\dk$ & is the outer trust region radius in iteration $k$ \\
-$\rk$ & is a measure of actual improvement over the predicted improvement, defined in \cref{define_rhok} \\
-$\sk$ & is the trial point in iteration $k$, defined in \cref{buffered_trust_region_subproblem} \\
-$\chik$ & is the criticality measure in iteration $k$, defined in \cref{define_criticallity_measure} \\
-$\outertrk $		& is the outer trust region, defined in \cref{define_outer_trust_region} \\
-$\sampletrk $		& is the sample trust region, defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\
-$\searchtrk $		& is the search trust region ($\capcones$), defined in \cref{buffered_trust_region_subproblem} \\
-$\feasiblek$ & is the feasible region during iteration $k$, defined in \cref{define_feasiblek} \\
-These & are things to create ellipsoids per iterate  \\ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\huk$ & is a feasible direction defined in \cref{define_u} \\
-$\rotk$ & a rotation matrix defined in \cref{define_rotation} \\
-$\zik$ & is a 0 of the linearized constraint, defined in \cref{define_z} \\
-$\wik$ & is the vertex of a constraint's buffering cone, defined in \cref{define_w} \\
-$ \fik $ & is the cone buffering the constraints, defined in \cref{define_fik} \\
-$ \fcki $ & is a cone feasible with respect to all constraint's buffering cones, defined in \cref{define_inner_cone} \\
-$\bsk $ & is defined in \cref{define_bsk} \\
-$\bs $ & is defined in \cref{define_bs} \\
-$\activeconstraintsk$ & the set of active constraints during iteration $k$, defined in \cref{define_activeconstraints} \\
-$\unshiftedellipsoid$ & is defined in \cref{ellipsoids_exist}, \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\
-$\scaledunshiftedellipsoid$ & is defined in \cref{ellipsoids_exist} \\
-$\qk, \ck, \sdk$ & are defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2} to satisfy \cref{ellipsoids_exist} \\
-$\capcones$ & is the intersection of all buffer cones, defined in \cref{define_capcones} \\
-$\thetamink$ & is the minimum angle between $\huk$ and a constraint, defined in \cref{define_thetamink} \\
-$\sigmamax$ & is a bound on the condition number of matrix defining the ellipsoid, used in \cref{ellipsoids_exist} \\
-These & are constants used in the assumptions \\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\fmin$ & is a lower bound on the objective function used in \cref{bounded_below_assumption}\\
-$\maxhessian$ & is a bound on the hessian of the functions used in \cref{bounded_hessians_assumption} \\
-$\maxnorm $ & A bound defined within \cref{max_norm_assumption} \\
-$\minactivegrad, \minactivegraddelta$ & are defined in \cref{min_active_gradient_lemma} \\
-$\mingradepsilon, \mingraddelta, \mingrad$ & are defined in \cref{mingradassumption} \\
-$ \lipgrad$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_gradients_assumption} \\
-$ \liphess$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_hessians_assumption} \\
-$\minangledelta, \minanglealpha, \minangleu$ & are constants, defined in \cref{minangleassumption} \\
-These & are useful constants for the lemmas \\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\maxmodelhessian$ & is a bound on the hessian of the model functions used in \cref{bounded_model_hessian_lemma} \\
-$\maxgrad$ & is the maximum norm of the gradient, used in \cref{bounded_gradients_lemma} \\
-$\huff$ & is a constant used within Huffman's theorem \cref{hoffman} \\
-$\kappa_{f},\kappa_{g},\kappa_{h}$ & are constants used to bound the model's error defined in \cref{accuracy_is_satisfied} \\
-These & are bounds on $\dk$  \\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\dacc$ & is a bound on $\dk$ defined in \cref{define_boundedbeta_deltasmall} \\
-$\dsr$ & is a bound on $\dk$ defined in \cref{define_delta_sufficient_reduction} \\
-$\dfeas $ & is a bound on $\dk$ defined in \cref{define_delta_feasible} \\
-$ \deltalargzik $ & is abound on $\dk$ defined in \cref{define_deltalargzik} \\
-These & are global algorithm constants  \\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\kappa_{\kappacrit}$ & is a constant in the efficiency condition defined in \cref{sufficient_reduction_theorem} \\
-$\kappa_{\chi}$ & is a constant used in the criticallity check, defined in \cref{define_kappa_chi} \\
-$p_{\Delta}$ & is a constant used in the criticallity check, defined in  \cref{define_p_delta} \\
-$p_{\alpha}, p_{\beta}$ & are cone parameters, defined in \cref{define_alpha_beta} \\
-$\gammasm,\gammabi$ & are thresholds on $\rk$, defined in \cref{define_the_gammas} \\
-$\omegadec, \omegainc$ & are used to manipulate the trust region radius, defined in \cref{define_the_omegas} \\
-$\tolcrit$ & is a threshold for the criticallity measure defined in \cref{define_algorithm_tolerances} \\
-$\tolrad$ & is a threshold for the trust region radius defined in \cref{define_algorithm_tolerances} \\
-These & are used in the bounded projection section \\
-$\minactivegrad$ & is a bound on how small gradients of the constraints can get, defined in \cref{define_minactivegrad} \\
-$\minactivegraddelta$ & is a bound on $\dk$ used in \cref{define_minactivedelta} \\
-$p^{(k \to l)}$ & is the projection of the $k$-th appoximation of $\nabla f$ projected on the the $l$-th feasible region, defined in \cref{bp_define_plk} \\
-$\mathcal A^{(l \to k)}$ & the set of active constraints at $p^{(k \to l)}$, defined in \cref{bp_define_activep} \\
-$\mathcal F_x$ & is the linearized feasible region at $x$, defined in \cref{bp_define_true_linearization} \\
-$p_x$ & is the projection of $-\nabla f(x)$ on to $\mathcal F_x$, defined in \cref{bp_define_true_projection} \\
-$\mathcal A_x$ & is the set of approximately active constraints at $p_x$, defined in \cref{define_projection_active} \\
-$p^{(k)}$ & is the projection of the true objective's negative gradient onto the $k$-th feasible region, defined in \cref{bp_define_pl} \\
-$\mathcal A^{(k)}$ & is the set of active constraints at $p^{(k)}$, defined in \cref{bp_define_yet_another_thing} \\
-These & are some other things in the introduction\\  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-$\phi_i$ & is a basis vector \\
-$Y$ & is the set of sample points \\
-$V$ & is a vander mode matrix \\
-$y^i$ & is a sample point \\
-$d$ & is the dimension of the space of model functions \\
-$\lambda_i$ & are the weights of a linear combination \\
-$\alpha_i$ & are the coefficients of a model function on its basis polynomials \\
-$\phi_i$ & are basis polynomials \\
-$p-1$ & is the size of the sample set \\
-$l_i$ & is a lagrange polynomial \\
-$\Lambda$ & is a constant bounding the poisedness of a sample set \\
-$s$ & is the decision variable within the trust region subproblem \\
-$\Delta$ & is the trust region radius \\
-$\tau$ & is a tolerance \\
-$\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\
-$T$ & is an affine transformation that brings the trust region back to the origin \\
-$Q$ & is the semi-definite matrix defining the affine transformation $T$ \\
-$\mu$ & is the center of the ellipse \\
-$\pi$ & is a scaling factor while finding the ellipse \\
-$d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\
-$M$ & is an upper bound \\
-$P$ & is a polyhedron \\
+$\minactivegrad$ & is a bound on how small gradients of the constraints can get, defined in \cref{define_minactivegrad} \\ % $ g_{\mathcal A$ & is a bound on how small gradients of the constraints can get, defined in \cref{define_minactivegrad} \\
+$\minactivegrad, \minactivegraddelta$ & are defined in \cref{min_active_gradient_lemma} \\ % $ g_{\mathcal A, \Delta_{\mathcal A$ & are defined in \cref{min_active_gradient_lemma} \\
+$B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\ % $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
+$\capcones$ & is the intersection of all buffer cones, defined in \cref{define_capcones} \\ % $C^{(k)$ & is the intersection of all buffer cones, defined in \cref{define_capcones} \\
+$\lipgrad$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_gradients_assumption} \\ % $L_{\nabla$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_gradients_assumption} \\
+$\liphess$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_hessians_assumption} \\ % $L_{\nabla^2$ & is a Lipschitz constant for all functions, defined in \cref{lipschitz_hessians_assumption} \\
+$M$ & is an upper bound \\ % $M$ & is an upper bound \\
+$\maxgrad$ & is the maximum norm of the gradient, used in \cref{bounded_gradients_lemma} \\ % $M_{\nabla$ & is the maximum norm of the gradient, used in \cref{bounded_gradients_lemma} \\
+$\maxmodelhessian$ & is a bound on the hessian of the model functions used in \cref{bounded_model_hessian_lemma} \\ % $M_{\nabla^2 m$ & is a bound on the hessian of the model functions used in \cref{bounded_model_hessian_lemma} \\
+$\maxhessian$ & is a bound on the hessian of the functions used in \cref{bounded_hessians_assumption} \\ % $M_{\nabla^2$ & is a bound on the hessian of the functions used in \cref{bounded_hessians_assumption} \\
+$\maxnorm $ & A bound defined within \cref{max_norm_assumption} \\ % $M_{\|\cdot\| $ & A bound defined within \cref{max_norm_assumption} \\
+$P$ & is a polyhedron \\ % $P$ & is a polyhedron \\
+$Q$ & is the semi-definite matrix defining the affine transformation $T$ \\ % $Q$ & is the semi-definite matrix defining the affine transformation $T$ \\
+$\qk, \ck, \sdk$ & are defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2} to satisfy \cref{ellipsoids_exist} \\ % $Q^{(k), c^{(k), \delta_k$ & are defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2} to satisfy \cref{ellipsoids_exist} \\
+$\rotk$ & a rotation matrix defined in \cref{define_rotation} \\ % $R^{(k)$ & a rotation matrix defined in \cref{define_rotation} \\
+$T$ & is an affine transformation that brings the trust region back to the origin \\ % $T$ & is an affine transformation that brings the trust region back to the origin \\
+$\sampletrk $           & is the sample trust region, defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\ % $T_{\text{interp $               & is the sample trust region, defined in \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\
+$\outertrk $            & is the outer trust region, defined in \cref{define_outer_trust_region} \\ % $T_{\text{out $           & is the outer trust region, defined in \cref{define_outer_trust_region} \\
+$\searchtrk $           & is the search trust region ($\capcones$), defined in \cref{buffered_trust_region_subproblem} \\ % $T_{\text{search $          & is the search trust region ($C^{(k)$), defined in \cref{buffered_trust_region_subproblem} \\
+$V$ & is a vander mode matrix \\ % $V$ & is a vander mode matrix \\
+$Y$ & is the set of sample points \\ % $Y$ & is the set of sample points \\
+$\Delta$ & is the trust region radius \\ % $\Delta$ & is the trust region radius \\
+$\dk$ & is the outer trust region radius in iteration $k$ \\ % $\Delta_k$ & is the outer trust region radius in iteration $k$ \\
+$\deltalargzik $ & is abound on $\dk$ defined in \cref{define_deltalargzik} \\ % $\Delta_{\alpha,\beta $ & is abound on $\Delta_k$ defined in \cref{define_deltalargzik} \\
+$\minangledelta, \minanglealpha, \minangleu$ & are constants, defined in \cref{minangleassumption} \\ % $\Delta_{\alpha^{\star,  \alpha^{\star, u_{\textrm{feas$ & are constants, defined in \cref{minangleassumption} \\
+$\minactivegraddelta$ & is a bound on $\dk$ used in \cref{define_minactivedelta} \\ % $\Delta_{\mathcal A$ & is a bound on $\Delta_k$ used in \cref{define_minactivedelta} \\
+$\dacc$ & is a bound on $\dk$ defined in \cref{define_boundedbeta_deltasmall} \\ % $\Delta_{\text{acc$ & is a bound on $\Delta_k$ defined in \cref{define_boundedbeta_deltasmall} \\
+$\dfeas $ & is a bound on $\dk$ defined in \cref{define_delta_feasible} \\ % $\Delta_{\text{feas $ & is a bound on $\Delta_k$ defined in \cref{define_delta_feasible} \\
+$\dsr$ & is a bound on $\dk$ defined in \cref{define_delta_sufficient_reduction} \\ % $\Delta_{\text{sr$ & is a bound on $\Delta_k$ defined in \cref{define_delta_sufficient_reduction} \\
+$\huff$ & is a constant used within Huffman's theorem \cref{hoffman} \\ % $\Gamma_0$ & is a constant used within Huffman's theorem \cref{hoffman} \\
+$\Lambda$ & is a constant bounding the poisedness of a sample set \\ % $\Lambda$ & is a constant bounding the poisedness of a sample set \\
+$\alpha_i$ & are the coefficients of a model function on its basis polynomials \\ % $\alpha_i$ & are the coefficients of a model function on its basis polynomials \\
+$\bsk $ & is defined in \cref{define_bsk} \\ % $\beta^{(\star, k) $ & is defined in \cref{define_bsk} \\
+$\bs $ & is defined in \cref{define_bs} \\ % $\beta^{\star $ & is defined in \cref{define_bs} \\
+$\chik$ & is the criticality measure in iteration $k$, defined in \cref{define_criticallity_measure} \\ % $\chi^{(k)$ & is the criticality measure in iteration $k$, defined in \cref{define_criticallity_measure} \\
+$\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\ % $\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\
+$\mingradepsilon, \mingraddelta, \mingrad$ & are defined in \cref{mingradassumption} \\ % $\epsilon_{\nabla c, \Delta_{\nabla c,  g_{\text{low$ & are defined in \cref{mingradassumption} \\
+$\gammasm,\gammabi$ & are thresholds on $\rk$, defined in \cref{define_the_gammas} \\ % $\gamma_{\text{min,\gamma_{\text{sufficient$ & are thresholds on $\rho_k$, defined in \cref{define_the_gammas} \\
+$\huk$ & is a feasible direction defined in \cref{define_u} \\ % $\hat u$ & is a feasible direction defined in \cref{define_u} \\
+$\kappa_{\chi}$ & is a constant used in the criticallity check, defined in \cref{define_kappa_chi} \\ % $\kappa_{\chi}$ & is a constant used in the criticallity check, defined in \cref{define_kappa_chi} \\
+$\kappa_{\kappacrit}$ & is a constant in the efficiency condition defined in \cref{sufficient_reduction_theorem} \\ % $\kappa_{\kappa_{\textrm{eff}$ & is a constant in the efficiency condition defined in \cref{sufficient_reduction_theorem} \\
+$\kappa_{f},\kappa_{g},\kappa_{h}$ & are constants used to bound the model's error defined in \cref{accuracy_is_satisfied} \\ % $\kappa_{f},\kappa_{g},\kappa_{h}$ & are constants used to bound the model's error defined in \cref{accuracy_is_satisfied} \\
+$\lambda_i$ & are the weights of a linear combination \\ % $\lambda_i$ & are the weights of a linear combination \\
+$\activeconstraintsk$ & the set of active constraints during iteration $k$, defined in \cref{define_activeconstraints} \\ % $\mathbb A_{k$ & the set of active constraints during iteration $k$, defined in \cref{define_activeconstraints} \\
+$\naturals $ & are the natural numbers, $1, 2, \ldots$ \\ % $\mathbb N $ & are the natural numbers, $1, 2, \ldots$ \\
+$\reals $ & are the real numbers \\ % $\mathbb R $ & are the real numbers \\
+$\mathcal A^{(k)}$ & is the set of active constraints at $p^{(k)}$, defined in \cref{bp_define_yet_another_thing} \\ % $\mathcal A^{(k)}$ & is the set of active constraints at $p^{(k)}$, defined in \cref{bp_define_yet_another_thing} \\
+$\mathcal A^{(l \to k)}$ & the set of active constraints at $p^{(k \to l)}$, defined in \cref{bp_define_activep} \\ % $\mathcal A^{(l \to k)}$ & the set of active constraints at $p^{(k \to l)}$, defined in \cref{bp_define_activep} \\
+$\mathcal A_x$ & is the set of approximately active constraints at $p_x$, defined in \cref{define_projection_active} \\ % $\mathcal A_x$ & is the set of approximately active constraints at $p_x$, defined in \cref{define_projection_active} \\
+$\unshiftedellipsoid$ & is defined in \cref{ellipsoids_exist}, \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\ % $\mathcal E^k_{\text{feasible$ & is defined in \cref{ellipsoids_exist}, \cref{ellsoid_is_suitable_theorem_p1}, \cref{ellsoid_is_suitable_theorem_p2}, and \cref{define_ellipsek} \\
+$\feasible$ & is the feasible region \\ % $\mathcal F$ & is the feasible region \\
+$\feasiblek$ & is the feasible region during iteration $k$, defined in \cref{define_feasiblek} \\ % $\mathcal F^{(k)$ & is the feasible region during iteration $k$, defined in \cref{define_feasiblek} \\
+$\mathcal F_x$ & is the linearized feasible region at $x$, defined in \cref{bp_define_true_linearization} \\ % $\mathcal F_x$ & is the linearized feasible region at $x$, defined in \cref{bp_define_true_linearization} \\
+$\fik $ & is the cone buffering the constraints, defined in \cref{define_fik} \\ % $\mathcal F_{i, k $ & is the cone buffering the constraints, defined in \cref{define_fik} \\
+$\domain$ & is the domain \\ % $\mathcal X$ & is the domain \\
+$\fcki $ & is a cone feasible with respect to all constraint's buffering cones, defined in \cref{define_inner_cone} \\ % $\mathcal {F $ & is a cone feasible with respect to all constraint's buffering cones, defined in \cref{define_inner_cone} \\
+$\scaledunshiftedellipsoid$ & is defined in \cref{ellipsoids_exist} \\ % $\mathcal {\hat E$ & is defined in \cref{ellipsoids_exist} \\
+$\mu$ & is the center of the ellipse \\ % $\mu$ & is the center of the ellipse \\
+$\omegadec, \omegainc$ & are used to manipulate the trust region radius, defined in \cref{define_the_omegas} \\ % $\omega_{\text{dec, \omega_{\text{inc$ & are used to manipulate the trust region radius, defined in \cref{define_the_omegas} \\
+$\phi_i$ & are basis polynomials \\ % $\phi_i$ & are basis polynomials \\
+$\phi_i$ & is a basis vector \\ % $\phi_i$ & is a basis vector \\
+$\pi$ & is a scaling factor while finding the ellipse \\ % $\pi$ & is a scaling factor while finding the ellipse \\
+$\rk$ & is a measure of actual improvement over the predicted improvement, defined in \cref{define_rhok} \\ % $\rho_k$ & is a measure of actual improvement over the predicted improvement, defined in \cref{define_rhok} \\
+$\sigmamax$ & is a bound on the condition number of matrix defining the ellipsoid, used in \cref{ellipsoids_exist} \\ % $\sigma_{\text{max$ & is a bound on the condition number of matrix defining the ellipsoid, used in \cref{ellipsoids_exist} \\
+$\tau$ & is a tolerance \\ % $\tau$ & is a tolerance \\
+$\tolrad$ & is a threshold for the trust region radius defined in \cref{define_algorithm_tolerances} \\ % $\tau_{\Delta$ & is a threshold for the trust region radius defined in \cref{define_algorithm_tolerances} \\
+$\tolcrit$ & is a threshold for the criticallity measure defined in \cref{define_algorithm_tolerances} \\ % $\tau_{\xi$ & is a threshold for the criticallity measure defined in \cref{define_algorithm_tolerances} \\
+$\thetamink$ & is the minimum angle between $\huk$ and a constraint, defined in \cref{define_thetamink} \\ % $\theta^k_{\text{min$ & is the minimum angle between $\hat u$ and a constraint, defined in \cref{define_thetamink} \\
+$\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\ % $\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\
+$c_i$ & are the constraints $\forall 1 \le i \le m$ \\ % $c_i$ & are the constraints $\forall 1 \le i \le m$ \\
+$d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\ % $d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\
+$d$ & is the dimension of the space of model functions \\ % $d$ & is the dimension of the space of model functions \\
+$e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\ % $e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\
+$f$ & is the objective function \\ % $f$ & is the objective function \\
+$\fmin$ & is a lower bound on the objective function used in \cref{bounded_below_assumption}\\ % $f_{\text{min$ & is a lower bound on the objective function used in \cref{bounded_below_assumption}\\
+$l_i$ & is a lagrange polynomial \\ % $l_i$ & is a lagrange polynomial \\
+$\mcik$ & is the model of the $i$-th constraint $c_i$ during iteration $k$\\ % $m$ & is the model of the $i$-th constraint $c_i$ during iteration $k$\\
+$\mck$ & is the model of the constraint $c$ during iteration $k$\\ % $m$ & is the model of the constraint $c$ during iteration $k$\\
+$\mfk$ & is the model of the objective $f$ during iteration $k$\\ % $m$ & is the model of the objective $f$ during iteration $k$\\
+$p-1$ & is the size of the sample set \\ % $p-1$ & is the size of the sample set \\
+$p^{(k \to l)}$ & is the projection of the $k$-th appoximation of $\nabla f$ projected on the the $l$-th feasible region, defined in \cref{bp_define_plk} \\ % $p^{(k \to l)}$ & is the projection of the $k$-th appoximation of $\nabla f$ projected on the the $l$-th feasible region, defined in \cref{bp_define_plk} \\
+$p^{(k)}$ & is the projection of the true objective's negative gradient onto the $k$-th feasible region, defined in \cref{bp_define_pl} \\ % $p^{(k)}$ & is the projection of the true objective's negative gradient onto the $k$-th feasible region, defined in \cref{bp_define_pl} \\
+$p_x$ & is the projection of $-\nabla f(x)$ on to $\mathcal F_x$, defined in \cref{bp_define_true_projection} \\ % $p_x$ & is the projection of $-\nabla f(x)$ on to $\mathcal F_x$, defined in \cref{bp_define_true_projection} \\
+$p_{\Delta}$ & is a constant used in the criticallity check, defined in  \cref{define_p_delta} \\ % $p_{\Delta}$ & is a constant used in the criticallity check, defined in  \cref{define_p_delta} \\
+$p_{\alpha}, p_{\beta}$ & are cone parameters, defined in \cref{define_alpha_beta} \\ % $p_{\alpha}, p_{\beta}$ & are cone parameters, defined in \cref{define_alpha_beta} \\
+$s$ & is the decision variable within the trust region subproblem \\ % $s$ & is the decision variable within the trust region subproblem \\
+$\sk$ & is the trial point in iteration $k$, defined in \cref{buffered_trust_region_subproblem} \\ % $s$ & is the trial point in iteration $k$, defined in \cref{buffered_trust_region_subproblem} \\
+$\wik$ & is the vertex of a constraint's buffering cone, defined in \cref{define_w} \\ % $w^{(i, k)$ & is the vertex of a constraint's buffering cone, defined in \cref{define_w} \\
+$\xk$ & is the current iterate in iteration $k$\\ % $x^{(k)$ & is the current iterate in iteration $k$\\
+$y^i$ & is a sample point \\ % $y^i$ & is a sample point \\
+$\zik$ & is a 0 of the linearized constraint, defined in \cref{define_z} \\ % $z^{(i, k)$ & is a 0 of the linearized constraint, defined in \cref{define_z} \\
 \label{tab:TableOfNotation}
 \end{longtable}
 
