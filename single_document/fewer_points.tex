@@ -1,0 +1,385 @@
+\documentclass{article}
+
+
+
+
+\usepackage[fleqn]{amsmath}
+\usepackage[demo]{graphicx}
+\usepackage{color}
+\usepackage{xspace}
+\usepackage{cite}
+\usepackage[margin=1in,paperheight=20in]{geometry}
+\usepackage{amsfonts}
+\usepackage{array,multirow}
+\usepackage{amssymb,amsthm}
+\usepackage[]{algorithmicx}
+\usepackage{algpseudocode} 
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage[capitalise,nameinlink,noabbrev]{cleveref}
+\usepackage{float}
+\usepackage{mathtools}
+\floatstyle{ruled}
+\newfloat{algorithm}{thp}{lop}
+\floatname{algorithm}{Algorithm}
+
+
+\newcounter{assumptioncounter}
+\newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
+\textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+\newcounter{criteriacounter}
+\newenvironment{criteria}[1][]{\refstepcounter{criteriacounter}\par\medskip
+\textbf{Criteria \thecriteriacounter} \rmfamily \itshape}{\medskip}
+
+
+
+\usepackage{framed}
+\newenvironment{comment}
+  {\par\medskip
+   \color{red}%
+   \begin{framed}
+   \textbf{Comment: }\ignorespaces}
+ {\end{framed}
+  \medskip}
+  
+  
+  
+
+\crefname{criteriacounter}{Criteria}{criteria}
+\crefname{assumptioncounter}{Assumption}{assumption}
+\crefname{equation}{}{equations}
+
+
+%============================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{definition}{Definition}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+\theoremstyle{case}
+\newtheorem{case}{Case}
+
+
+% idk about this:
+
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+
+\newcommand{\naturals}{\mathbb N}
+\newcommand{\natsd}{\naturals^d}
+\newcommand{\reals}{\mathbb R}
+\newcommand{\ximin}{{\xi_{\textrm{min}}}}
+\newcommand{\xiini}{{\xi_{\textrm{ini}}}}
+\newcommand{\lunonzero}{{E_{\textrm{nz}}}}
+\newcommand{\lusmall}{{E_{\epsilon}}}
+
+
+
+%=========================================
+
+\title{Derivative Free Model-Based Methods for Optimization with Partially Quantifiable Convex Constraints}
+\author{Trever Hallock}
+
+\makeatletter
+\def\BState{\State\hskip-\ALG@thistlm}
+\makeatother
+
+\let\oldref\ref
+\renewcommand{\ref}[1]{(\oldref{#1})}
+
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+We propose a model-based trust-region algorithm for constrained optimization problems with linear constraints in which derivatives of the objective function are not available and the objective function values outside the feasible region are not available.
+In each iteration, the objective function is approximated by an interpolation model, which is then minimized over a trust region.
+To ensure feasibility of all sample points and iterates, we consider two trust region strategies in which the trust regions are contained in the feasible region.
+Computational results are presented on a suite of test problems.
+
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
+
+
+\section{Notation}
+We let $\naturals$ denote the non-negative integers.
+
+For any fixed $d \in \naturals$, a multi-index cosists of an element $\alpha = (a_1, a_2, \ldots, a_d)$ of the $d$-dimensional product space $\natsd$.
+
+For some $\alpha \in \natsd $, where $\alpha = (a_1, a_2, \ldots, a_d)$, let $|\alpha| = \sum_{i=1}^d a_i$.
+
+Let $\alpha, \alpha' \in \natsd $, be given by $\alpha = (a_1, a_2, \ldots, a_d)$, $\alpha' = (a_1', a_2', \ldots, a_d')$.
+Then $\alpha = \alpha'$ when $a_i = a_i'$ for all $1 \le i \le d$.
+Also, we say $\alpha \prec \alpha'$ if
+\begin{itemize}
+\item $|\alpha| < |\alpha'|$, or
+\item $|\alpha| = |\alpha'|$ and $\alpha$ strictly precedes $\alpha'$ with respect to the lexicographic order.
+\end{itemize}
+This means that $\left(\natsd, \prec\right)$ is a totally ordered countable set.
+\begin{comment}
+Note that there are several different orderings based on lexicographic orderings of different permutations of $\alpha$.
+\end{comment}
+
+We can let 
+\begin{itemize}
+\item $\alpha \preceq \alpha'$ when either $\alpha = \alpha'$ or $\alpha \prec \alpha'$
+\item $\alpha \succ \alpha'$ when $\alpha' \prec \alpha$
+\item $\alpha \succeq \alpha'$ when $\alpha' \preceq \alpha$.
+\end{itemize}
+
+We can define addition as
+$\alpha + \alpha' = (a_1 + a_1', a_1 + a_1', \ldots, a_d + a_d')$.
+Subtraction is defined as
+$\alpha - \alpha' = (a_1 - a_1', a_1 - a_1', \ldots, a_d - a_d')$
+whenever $a_i \ge a_i'$ for all $1 \le i \le d$.
+We also have the factorial:
+$\alpha! = a_1!a_2!\ldots a_d!$.
+Also, we can raise a point to an index as
+$p^{\alpha} = x_1^{a_1}x_2^{a_2}\ldots a_dx_d^{a_d}$
+for any point $p = (x_1, x_2, \ldots, x_d$.
+Here, we not that $0^0 = 1$.
+We will also extend the kronecker delta function to $\delta_{\alpha}^{\alpha'} = 
+\bigg[
+\begin{matrix}
+1 & \textrm{if}\quad \alpha = \alpha' \\
+0 & \textrm{if}\quad \alpha \ne \alpha' \\
+\end{matrix}
+$
+
+For any $\alpha \prec \alpha'$, we define the range $[\alpha, \alpha']$ as $[\alpha, \alpha'] = \left\{ \beta \in \natsd | \alpha \preceq \beta \preceq \alpha'  \right\}$.
+
+Given a closed convex set $K \subset \mathbb R^d$, let $C(K)$ designate the class of all real functions on $K$ which admit a continuous real extension on some open neighborhood of $K$.
+We write $C^n(K)$ for the class of all $f \in C(K)$ extendable to a function $n$-times continuous differentiable on an open neighborhood of $K$.
+For any $\alpha = (a_1, \ldots, a_d) \in \natsd$ such that $0 \le |\alpha| \le n$
+we have the $D^{\alpha}$ operator defined on $C^n(K)$ by 
+\begin{align*}
+D^{\alpha} f(p) = \frac{\partial^{|\alpha|}}{\partial x_1^{a_1}\partial x_2^{a_2}\ldots\partial x_d^{a_d} } f(x_1, x_2, \ldots x_d), p = (x_1, x_2, \ldots, x_d)
+\end{align*}
+We will let $f^{\alpha}(p) = D^{\alpha} f(p)$ and $f^{(0)}(p) = f(p)$.
+
+We will let $\sigma$ be a set of base points $\{p^i\}_{i=0}^m \subset K$.
+For any $p^i \in \sigma$ let $f \in C^n(K)$ have known value $f(p^i)$.
+
+We will let 
+$L^{\alpha}_f(p; \sigma) = \sum_{i=0}^m f(p^i)l_i^{\alpha}(p; \sigma)$.
+
+
+\section{Theorems}
+From now on, we will fix some $n, d \in \mathbb N$.
+For any $k \in Z$, we let $\bar k = \frac{(k + d)!}{k!d!}$ so that $\bar k = \left|\left\{\alpha \in \natsd \big| \left|\alpha\right| \le k \right\}\right|$.
+We will fix some $\sigma = \{p^i\}^m_{i=0} \subset \mathbb R^d$ for some $m$ that satisfies 
+\begin{align}
+\bar{n-1} < m+1 \le \bar n. \label{m_standard}
+\end{align}
+
+
+\begin{theorem}{Taylor's Theorem}
+Choose a $K\subset \mathbb R^ d$ to be convex.
+For any $f \in C^{n+1}(K)$ and any $p, q \in K$, we have that there is some $s \in [0,1]$ such that
+\begin{align*}
+f(q) = \sum_{k=0}^n \sum_{|\alpha| = k} \frac{\left(q - p\right)^{\alpha}}{\alpha!}f^{(\alpha)}(p) + R_{n+1}(q; p) \\
+R_{n+1}(q; p) = \sum_{|\alpha|=n+1}\frac{\left(q - p\right)^{\alpha}}{\alpha!} f^{(\alpha)}(\tilde{pq})
+\tilde{pq} = (1-s)p + sq
+\end{align*}
+Also,
+\begin{align*}
+f(q) = \sum_{k=0}^m \frac{\left(q - p\right)^{\alpha_k}}{\alpha!}f^{(\alpha_k)}(p) + \Theta_{m+1}(q; p) \\
+\Theta_{m+1}(q; p) = R_{n+1}(q; p) + \sum_{k=j+1}^{\bar n - 1} \frac{\left(q - p\right)^{\alpha_k}}{\alpha!}f^{(\alpha_k)}(p) 
+\end{align*}
+\end{theorem}
+
+For each $m \in \naturals$ such that $m+1$ satisfies \cref{m_standard}, we construct the $(m+1) \times (m+1)$ matrix 
+\begin{align*}
+M(p; \sigma) = \begin{pmatrix}
+\left(p^0 - p\right)^{\alpha_0} & \ldots & \left(p^m - p\right)^{\alpha_0} \\
+&\ldots & \\
+\left(p^0 - p\right)^{\alpha_m} & \ldots & \left(p^m - p\right)^{\alpha_m} \\
+\end{pmatrix}
+\end{align*}
+where $0 = \alpha_0 \prec \alpha_1 \prec \ldots \prec \alpha_m$.
+
+Note that $p \to M(p; \sigma)$ is constant on $\mathbb R^d$, so that we can let $M(\sigma) = M(0, \sigma)$ and find $\det M(\sigma) = \det M(p; \sigma)$ for any $p$.
+
+\begin{theorem}
+The set $\sigma$ satisfies $M(\sigma) \ne 0$ if and only if for any $\alpha \in [0, \alpha_m]$, there exist 
+unique functions $l_i^{\alpha}(p; \sigma)$ for each $0\le i\le m$ that satisfy the system of $m+1$ equations:
+\begin{align*}
+\sum_{i=0}^m \left(p^i - p\right)^{\alpha'} l_i^{\alpha} = \alpha_i!\delta_{\alpha}^{\alpha'} \quad \forall \quad \alpha' \in [0, \alpha_m]
+\end{align*}
+\end{theorem}
+
+\begin{theorem}
+We have that
+\begin{align*}
+l_i^{\alpha}(p; \sigma) = l_i^{(\alpha)}(p; \sigma)
+\end{align*}
+where $l_i(p; \sigma) = l_i^{0}(p; \sigma)$.
+\end{theorem}
+
+\begin{theorem}
+$L_f^0$ is a polynomial of degree no greater than $\alpha_m$ and the error
+\begin{align*}
+E_f^{\alpha}(p; \sigma) = L_f^{\alpha}(p; \sigma) - f^{(\alpha)}(p)
+\end{align*}
+in approximating the derivative $f^{(\alpha)}(p)$ is given by
+\begin{align*}
+E_f^{\alpha}(p; \sigma) = \sum_{i=0}^m \Theta_{m+1}(p^i; p) l_i^{\alpha}(p; \sigma)
+\end{align*}
+\end{theorem}
+
+
+\section{References}
+
+
+\section{Algorithm}
+
+\newpage
+\begin{algorithm}[H]
+    \caption{Unconstrained Derivative Free Algorithm}
+    \label{full_pivot_model_improve}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize $\xi = \xiini$, $\ximin > 0$, $k=1$. \\
+            Start with a set $\sigma = \{p^1, p^2, \ldots, p^d\}$. \\
+            Let $V = M(p, \sigma)^T$, $\Phi = I_{m+1}$, so that $V_{i,j} = (p^i - p^0)^{\alpha_j}$
+            
+        \item[\textbf{Step 1}] \textbf{(Pivot)} \\
+        	Let $r \in \naturals$ be such that $k \le \bar r$. \\
+        	For each $1\le i \le m+1$, let $\phi_i(p) = \sum_{j=1}^{m+1} \Phi_{i, j} (p - p^0)^{\alpha_j}$. \\
+        	If $|V_{k,k}| \ge \xi$, go to Step 4 \\
+        	Let 
+\begin{align*}
+	i', j' \in \argmax_{k\le i \le m+1, \quad k \le j \le \bar r} |V_{i, j}|
+\end{align*}
+			If $i' = k$ and $j' = k$, go to Step 2. \\
+			Otherwise, swap row $k$ with row $i'$ and column $k$ with column $j'$:
+			\begin{itemize}
+				\item Swap $p^k$ for $p^{i'}$ in $\sigma$: \\
+					$\sigma \gets \{p^0, p^1, \ldots p^{k-1}, p^{i'}, p^{k+1}, \ldots, p^{i'-1}, p^{k}, p^{i'+1}, \ldots, p^m\}$ \\
+					In other words: $t \gets p^k$, $p^k \gets p^{i'}, p^{i'} \gets t$
+				\item Swap row $k$ with row $j'$ in $\Phi$: \\
+% 					For each $1 \le i \le m+1$: let $t_i = \Phi_{i, k}$, $\Phi^k_{i, k} \gets \Phi_{i, j'}$ and $\Phi_{i, j'} \gets t_i$. \\
+					For each $1 \le j \le m+1$: let $t_j = \Phi_{k, j}$, $\Phi^k_{k, j} \gets \Phi_{j', j}$ and $\Phi_{j', j} \gets t_j$.
+				\item Update $\phi_k$ and $\phi_{j'}$: \\
+					For each $j \in \{k, j'\}$: update $\phi_j(p) \gets \sum_{i=1}^{m+1} \Phi_{i, j} (p - p^0)^{\alpha_i}$
+				\item Swap rows and columns in $V^k$:\\
+					For each $1 \le i \le m+1$: let $V_{i, k} \gets \phi_k(p^i)$ and $V_{i, j'} \gets \phi_{j'}(p^i)$.\\ 
+					For each $1 \le j \le m+1$: let $V_{k, j} \gets \phi_j(p^k)$ and $V_{i', j} \gets \phi_{j}(p^{i'})$.
+			\end{itemize}
+			
+        \item[\textbf{Step 2}] \textbf{(Choose a replacement point)} \\
+        	If $|V_{k,k}| \ge \xi$, go to Step 4 \\
+\begin{align*}
+p', j' = \argmax_{p \subseteq K, \quad k \le j \le \bar{r}} |\phi_j(p) |
+\end{align*}
+			and replace $p^i$ with $p'$ and column $k$ with column $j'$:
+			\begin{itemize}
+				\item $\sigma^{k} \gets \{p^0, p^1, \ldots p^{k-1}, p', p^{k+1}, \ldots, p^m\}$ \\
+					In other words $p^k \gets p'$.
+				\item Swap row $k$ with row $j'$ in $\Phi$: \\
+					For each $1 \le j \le m+1$: let $t_j = \Phi^k_{k, j}$, $\Phi_{k, j} \gets \Phi_{j', j}$ and $\Phi_{j', j} \gets t_j$.
+				\item Update $\phi_k$ and $\phi_{j'}$: \\
+					For each $j \in \{k, j'\}$: update $\phi_j(p) \gets \sum_{i=1}^{m+1} \Phi_{i, j} (p - p^0)^{\alpha_i}$
+				\item Swap row and columns in $V$:\\
+					For each $1 \le i \le m+1$: let $V_{i, k} \gets \phi_k(p^i)$ and $V_{i, j'} \gets \phi_{j'}(p^i)$.\\ 
+					For each $1 \le j \le m+1$: let $V_{k, j} \gets \phi_j(p')$
+			\end{itemize}
+        	
+        
+        \item[\textbf{Step 3}] \textbf{(Decrease threshold)} \\
+        	If $|V_{k,k}| \ge \xi$, go to Step 4 \\
+        	Update $\xi \gets |V_{k, k}|$ \\
+        	If $\xi < \ximin$, return $\xi, \sigma, \Phi$ \\
+        \item[\textbf{Step 4}] \textbf{(Row reduce)} \\
+        	Reduce the $k$-th row of $V$.\\
+        	First, normalize $V_{k, k}$ by:
+        	\begin{itemize}
+        		\item Let $t = V_{k, k}$.
+        		\item For each $1 \le i \le m+1$: update $V_{i, k} \gets \frac 1 t V_{i, k}$.
+        		\item For each $1 \le j \le m+1$: update $\Phi_{k, j} \gets \frac 1 t \Phi_{k, j}$.
+        	\end{itemize}
+        	Then, zero column $k$ of $V$ by, for each $1 \le i \le m+1$ with $i \ne k$:
+        	\begin{itemize}
+        		\item Let $t_j = V_{k, j}$.
+        		\item For each $1\le j \le m+1$: update $V_{i, j} \gets V_{i, j} - t_j V_{i, k}$.
+        		\item For each $1\le i \le m+1$: update $\Phi_{i, j} \gets V_{i, j} - t_j V_{i, k}$.
+        	\end{itemize}
+        	
+        	
+        \item[\textbf{Step 5}] \textbf{(Iterate)} \\
+        	Increment $k \gets k + 1$. \\
+        	If $k \le m+1$, Go to Step 1 \\
+        	Otherwise, return $\xi, \sigma, \Phi$
+    \end{itemize}
+\end{algorithm}
+
+
+After the result of running \cref{full_pivot_model_improve} we are left with a system:
+\begin{align*}
+V = \begin{pmatrix}
+I & 0 \\
+\lunonzero  & \lusmall \\
+\end{pmatrix}, \quad \Phi = \begin{pmatrix}
+\Phi_1 \\
+\Phi_2 \\
+\end{pmatrix}
+\end{align*}
+
+To zero the $\lunonzero$ portion of this matrix, we can let
+
+\begin{align*}
+Z = \begin{pmatrix}
+0 & 0 \\
+\lunonzero & 0 \\
+\end{pmatrix} \\
+\Phi \gets \Phi - M(\sigma)^{-1}Z \\
+V \gets (I - Z) V
+\end{align*}
+
+
+
+
+\section{Table of Notation}
+\begin{longtable}{| p{.20\textwidth} | p{.80\textwidth} |}
+These & are very general notations \\   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+$\alpha, \alpha'$ & is a \\
+$K$ & a closed convex set \\
+$C^n(K)$ & the set of functions that are differentiable on $K$ \\
+$D^{\alpha}$ & a differentiation operator \\
+$ \naturals $ & are the natural numbers, $1, 2, \ldots$ \\
+$ \natsd $ & is obvious \\
+$ \reals $ & are the real numbers \\
+$e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\
+$B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
+& $B_k(c;\Delta) = \{ x \in \mathbb{R}^n : \| x - c\|_k \le \Delta \}$ \\
+$\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\
+$\ximin$ & is a minimum tolerance on $\xi$ \\
+$\xiini$ & is an initial tolerance on $\xi$ \\
+\label{tab:TableOfNotation}
+\end{longtable}
+
+
+\newpage
+
+
+\bibliography{bibliography}
+\bibliographystyle{ieeetr}
+
+\end{document}
+
+
