@@ -1316,9 +1316,9 @@ Thus, we can replace the trust region subproblem with
 \label{capcones_tr_subproblem}
 \begin{array}{ccc}
 \min_{s^{(i)},x\in\Rn,t_i>0} & m_f(x) & \\
- & x = \wik + t _i s^{(i)} & 1 \le i \le m \\
- & \|s^{(i)}\| = 1 & 1 \le i \le m \\
- -\left(s^{(i)}\right)^T\hgik \ge \beta \dk^{\frac 1 2 } & 1 \le i \le m \\
+ & x = \wik + t _i s^{(i)} & \quad  i \in \activeconstraintsk \\
+ & \|s^{(i)}\| = 1 & \quad i \in \activeconstraintsk \\
+ & -\left(s^{(i)}\right)^T\hgik \ge \beta \dk^{\frac 1 2 } & \quad  i \in \activeconstraintsk \\
 \end{array}
 \end{align}
 We will later show that a point within the feasible set for this optimization problem satisfies the efficiency condition.
@@ -2071,9 +2071,8 @@ Note that the criteria is satisfied by assumptions \cref{lipschitz_gradients_ass
 
 \begin{lemma}
 \label{change_radius} 
-Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$.
-Also assume that $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$.
-Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
+Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
 \begin{align*}
@@ -2284,29 +2283,51 @@ Finally, we have
 
 \end{proof}
 
+
 \begin{theorem}
 \label{sufficient_reduction_theorem}
-Assume
-\cref{minangleassumption}
-and define 
+Suppose that
+\cref{max_norm_assumption},
+\cref{minangleassumption},
+\cref{bounded_hessians_assumption},
+and 
+\cref{lipschitz_gradients_assumption} hold.
+
+Let
+$p_{\alpha}$, $p_{\beta}$, $p_{\Delta}$
+be defined as in \cref{define_p_alpha}, \cref{define_p_beta}, and \cref{define_p_delta} respectively.
+We will also use
+$\kappa_{\chi}$,
+$\maxhessian$, and
+$\maxgrad$ as defined in
+\cref{define_kappa_chi},
+\cref{bounded_hessians_assumption},
+and \cref{bounded_gradients_lemma}.
+Let $\alpha$ and $\beta$ be defined as in \cref{define_alpha_beta}.
+Let $\minanglealpha$ and $\minangledelta$ be defined as in \cref{minangleassumption}.
+We will also use $\dacc$, $\deltalargzik$ and defined in \cref{define_boundedbeta_deltasmall} and \cref{define_deltalargzik}.
+Also, define $\feasiblek$ as in \cref{define_feasiblek}.
+
+Define
 \begin{align}
 u_l = P_{\feasiblek}(\xk - \gk) \\
-u_c = P_{\capcones\cap\tr}(\xk-\gk) \label{sr_define_u_c} \\
 u_{GC} = P_{\feasiblek\cap\tr}(\xk-\gk) \\
-p = 1 + \frac 1 2 \left(p_{\Delta} + \min\{p_{\alpha}, p_{\beta}\}\right) \label{sr_def_p}\\
-\epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
+p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
 \dsr = \min\left\{
 \dacc,
 \deltalargzik,
 \minangledelta,
 \left(\frac{\delta \minanglealpha}{\left(\delta + 2\sqrt{n}\right)\left(\beta +\alpha\right)}\right)^{\frac 1 {\epsilon_{\Delta}}}
-\right\} \label{define_delta_sufficient_reduction}
+\right\} \label{define_delta_sufficient_reduction} \\
+\epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta}
 \end{align}
-where
+and
 \begin{align}
-\delta = \min\left\{\frac 1 {4\maxgrad(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}, \sqrt{\frac{\kappa_f \kappa_{\chi}}{4\left(\maxhessian - 1\right)\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}}\right\} \label{sr_define_delta}
+\delta = \min\left\{
+\frac 1 {4\maxgrad(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\},
+\sqrt{\frac{\kappa_f \kappa_{\chi}}{16\maxhessian\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\}}
+\right\} \label{sr_define_delta}
 \end{align}
-and $\deltalargzik$ is as defined in \cref{define_deltalargzik}.
 If, during iteration $k$, we have
 \begin{align}
 \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \label{sr_chi_big_enough}
@@ -2315,7 +2336,6 @@ and
 \begin{align}
 \dk \le \dsr \label{sr_delta_small_enough}
 \end{align}
-
 then there exists a $v \in \capcones \cap \tr$ such that
 \begin{align*}
 m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \ge \left(\frac{\kappa_f}{2} \right)\chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
@@ -2323,55 +2343,92 @@ m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{
 \end{theorem}
 
 \begin{proof}
-By \cref{sr_delta_small_enough}, $\dk \le \minangledelta$ so that \cref{minangleassumption}
-tells us there is a $u$ with $-\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha$ for any $i$ with $\zik \in \tr$.
+By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption}
+tells us there is a $\minangleu$ with $-\frac {\gmcik}{\|\gmcik\|} ^T\minangleu \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
+By letting $\huk$ be defined as in \cref{define_u},
+we also know that $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
 
-Also, note that by \cref{sr_def_p}, \cref{sr_def_epsilon_delta}, \cref{define_p_delta}, \cref{define_p_alpha}, and \cref{define_p_beta} we have
+Note that by \cref{sr_def_p}, we have that
 \begin{align}
-1 + p_{\Delta} < p < 2p\label{sr_p_big} \\
+p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2 \min\{p_{\alpha}, p_{\beta} \} \Longrightarrow 1 + p_{\Delta} < p \nonumber \\
+\Longrightarrow 1 + p_{\Delta} < p < 2p \label{sr_p_big}
+\end{align}
+From \cref{sr_def_p} it also follows that
+\begin{align}
 p < 1 + p_{\alpha} \Longrightarrow 1 - p + p_{\alpha} > 0  \label{sr_p_small_alpha} \\
-p < 1 + p_{\beta}\Longrightarrow 1 - p + p_{\beta} > 0 \label{sr_p_small_beta} \\
-\Longrightarrow \epsilon_{\Delta} = \min\{1 - p + p_{\alpha}, 1 - p + p_{\beta} \} > 0 \label{sr_epsilon_delta_positive}
+p < 1 + p_{\beta}\Longrightarrow 1 - p + p_{\beta} > 0 \label{sr_p_small_beta}.
+\end{align}
+We can combine these with \cref{sr_def_epsilon_delta} to find
+\begin{align}
+\Longrightarrow \epsilon_{\Delta} = \min\{1 - p + p_{\alpha}, 1 - p + p_{\beta} \} > 0 \label{sr_epsilon_delta_positive}.
 \end{align}
 
 We will consider the point 
 \begin{align}
-v = \zeta \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta)\xk \label{define_v} \\
-\zeta = \max_{\left\{\zeta' \le 1 | \zeta' \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta')\xk \in \tr\right\}} \zeta' \label{define_zeta}.
+v = \zeta \left(u_{GC} - \delta \dk^{p} \huk \right) + (1-\zeta)\xk \label{define_v} \\
+\zeta = \max_{\left\{\zeta' \le 1 | \zeta' \left(u_{GC} - \delta \dk^{p} \huk\right) + (1-\zeta')\xk \in \tr\right\}} \zeta' \label{define_zeta}.
 \end{align}
-We know that when $\zeta' = 0,  \zeta' \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
-Also, if $v\in\tr$, then $\zeta' = 1$ implies that $\zeta' \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta')\xk = v \in \tr$.
-When $v\not\in\tr$, then $\zeta' = 1$ is not feasible, but $\zeta' = 0$ still is.
-Thus, because $\tr$ is a convex set, there is a well defined value $\zeta \in (0, 1]$ to define $v$.
+Observe that $\zeta \ge 0$ because $\xk \in \tr$.
+% We know that when $\zeta' = 0,  \zeta' \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
+Also, if $u_{GC} - \delta \dk^{p} \huk\in\tr$, then $\zeta' = 1 \Longrightarrow v \in \tr$.
+When $u_{GC} - \delta \dk^{p} \huk \not\in\tr$, then because $\tr$ is a convex set, there is a unique, well defined value of $\zeta \in (0, 1)$.
+This means that $v \in \tr$ is well defined.
+
+% then $\zeta' = 1$ is not feasible, but $\zeta' = 0$ still is.
+% Thus, because $\tr$ is a convex set, there is a well defined value $\zeta \in (0, 1]$ to define $v$.
 
 Note that because $u_{GC} \in \tr$, 
 \begin{align}
-\|u_{GC} - v\| \le \left\|u_{GC} - \left(u_{GC} - \delta \dk^{p} u\right)\right\| + \left\|v - \left(u_{GC} - \delta \dk^{p} u\right)\right\| 
-\le \delta\left(1 + \sqrt{n}\right) \dk^{p} \label{sr_v_close_u}
+\|u_{GC} - v\| \le \left\|u_{GC} - \left(u_{GC} - \delta \dk^{p} \huk\right)\right\| + \left\|\left(u_{GC} - \delta \dk^{p} \huk\right) - v\right\| \nonumber \\
+\le \delta 2\dk^{p} + \left\|v - \xk \right\| + \left\|\xk - u_{GC}\right\|
+\le 2 \delta\left(1 + \sqrt{n}\right) \dk^{p} \label{sr_v_close_u}
 \end{align}
 
-Because $u_{GC}$ is the Cauchy point, and using \cref{sr_chi_big_enough}, \cref{sr_delta_small_enough} we know that
+Because $u_{GC}$ is the Cauchy point, it satisfies
+\begin{align*}
+\mfk(\xk) - \mfk(u_{GC}) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
+\end{align*}
+\begin{comment}
+include reference
+\end{comment}
+After using \cref{sr_chi_big_enough}, this becomes
 \begin{align*}
 \mfk(\xk) - \mfk(u_{GC})
- \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\} \\
- \ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
- \ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}.
+\ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
+\ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\}.
 \end{align*}
-
-
-Using this, \cref{sr_define_delta}, \cref{sr_p_big}, and \cref{sr_v_close_u} we know that
+But then \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \frac 1 2 \dk^p + \frac 1 2 \dk^{2p}$
+so that \cref{sr_define_delta} implies
 \begin{align*}
-m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) = 
-\left(\gk\right)^T(u_{GC} - v) + \left(u_{GC} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \\
-\le \left\|\gk\right \|  \left\|u_{GC}- v\right\|  + \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
-\le \delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p}  + \delta^2 \left(\maxhessian - 1\right)\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
-\le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}
-\le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC}) \\
+\kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
+\ge 4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p}.
 \end{align*}
+Combined this with \cref{sr_v_close_u}, \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption} to see that
+\begin{align*}
+4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
+\ge 2\left\|\gk\right \|  \left\|u_{GC}- v\right\| + 4 \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
+\ge \left|2\left(\gk\right)^T(u_{GC} - v) + 4\left(u_{GC} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \right|\\
+= 2 \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right|
+\end{align*}
+Putting these inequalities together yields
+\begin{align*}
+\mfk(\xk) - \mfk(u_{GC}) \ge 2\left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right| \\
+\Longrightarrow -\left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right| \ge -\frac 1 2 \left(\mfk(\xk) - \mfk(u_{GC})\right)
+\end{align*}
+% Using this, \cref{sr_define_delta}, \cref{sr_p_big}, and \cref{sr_v_close_u} we know that
+% \begin{align*}
+% m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) = 
+% \left(\gk\right)^T(u_{GC} - v) + \left(u_{GC} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \\
+% \le \left\|\gk\right \|  \left\|u_{GC}- v\right\|  + \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
+% \le \delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p}  + \delta^2 \left(\maxhessian - 1\right)\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
+% \le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}
+% \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC}) \\
+% \end{align*}
 so that
 \begin{align}
-m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) \right| \nonumber \\
-\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(v)\right) \label{sr_sr}
+m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left[m_f^{(k)}(v) - m_f^{(k)}(u_{GC})\right] \nonumber \\
+ \ge \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) \right| \nonumber \\
+\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \label{sr_sr}
 \end{align}
 and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
 
