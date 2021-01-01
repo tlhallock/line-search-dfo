@@ -2279,9 +2279,78 @@ Finally, we have
 = t\frac{\left(\xk - \wik\right)^T\left(\xk - \wik\right)}{\left\|\xk - \wik\right\|\left\|y - \wik\right\|} = t \frac{\left\|\xk - \wik\right\|}{\left\|y - \wik\right\|}
 \ge \frac 1 3 \ge \beta \dk^{p_{\beta}}.
 \end{align*}
+\end{proof}
 
+
+
+\begin{lemma}
+Suppose that we are give some points $u, p, \xk \in \Rn$ and $\dk, \delta > 0$ such that
+$\|p - \xk\|_{\infty} \le \dk$ and
+$\|p - u \| \le \delta$.
+Define $v = (1 - t^{\star})\xk + t^{\star}u$ where
+\begin{align*}
+\begin{array}{ccc}
+t^{\star} =& \max_{t\in \reals} &t \\
+& \textrm{s.t. }& \| (1-t) \xk + tu \|_{\infty} \le \dk \\
+& & t \le 1
+\end{array}
+\end{align*}
+Then $\|v - p\| \le 2\delta + (\sqrt{n} - 1)\dk$.
+\end{lemma}
+
+\begin{proof}
+If $\| u - x \|_{\infty} \le r$, then $t^{\star} = 1$ so that $|(1 - t^{\star})\xk + t^{\star}u - p\| = \| u - p\| \le \delta \le 2\delta + (\sqrt{n} - 1)\dk$.
+Otherwise, by choosing $s \in \reals$ to be $s = \frac{\|u - \xk\|}{\|u - x^{(k)}\|_{\infty}}$, we see that
+\begin{align}
+\label{dumb_lemma_eqn1}
+1 \le s \le \sqrt{n}, \quad \textrm{and} \quad -\dk \le \dk s \frac {u_i - x^{(k)}_i}{\|u - \xk\|} \le \dk \quad \forall 1 \le i \le n.
+\end{align}
+so that $\|\xk + \dk\frac {u - \xk}{\|u - \xk\|}s - \xk\|_{\infty} \le \dk$.
+If $s$ were to increase, then there would be an $i$ for which \cref{dumb_lemma_eqn1} would not be satisfied, implying
+\begin{align*}
+v = \xk + \dk \frac {u - \xk}{\|u - \xk\|}s.
+\end{align*}
+We can combine this with $\|u - \xk\| \le \|u - v\| + \|v - \xk\| \le \delta + \sqrt{n}\dk $
+to see that
+\begin{align*}
+\|u - v\| = \|u - \xk\| - \|v - \xk\| \le \delta + \sqrt{n}\dk - \dk s \le \delta + (\sqrt{n} - 1)\dk
+\end{align*}
+which then implies
+\begin{align*}
+\|v - p\| \le \|v - u\| + \|u - p\| \le 2\delta + (\sqrt{n} - 1)\dk
+\end{align*}
+
+
+
+
+
+% 
+% Otherwise, notice that the optimization program defining $t^{\star}$ can be written as
+% \begin{align*}
+% \begin{array}{cccc}
+% t^{\star} =& \max_{t\in \reals} &t & \\
+% & \textrm{s.t. }& -e_i^T\left((1-t) c + tu\right) + e_i^T\left(c - \dk\right) \le 0 & \forall 1 \le i \le n \\
+% &               & e_i^T\left((1-t) c + tu\right) -  e_i^T\left(c + \dk\right) \le 0 & \forall 1 \le i \le n \\
+% & & t \le 1 & 
+% \end{array}.
+% \end{align*}
+% Because $t^{\star}$ must satisfy the first order critical conditions, we know that there are some subset $P, N \subseteq {i \in \naturals | 1 \le i \le n }$
+% and some $\mu \in \mathbb R^{|P|}_+$, and $\pi \in \mathbb R^{|N|}_+$
+% such that
+% \begin{align*}
+% 1 = \sum_{i \in |P|} \mu_i \left[u_i - c_i\right] + \sum_{i \in |N|} \mu_i \left[c_i - u_i\right]
+% \end{align*}
+% 
+% 
+% Otherwise, there is some set of active constraints
+% \begin{align*}
+% x + e_i
+% \end{align*}
 
 \end{proof}
+
+
+
 
 
 \begin{theorem}
@@ -2311,7 +2380,7 @@ Also, define $\feasiblek$ as in \cref{define_feasiblek}.
 Define
 \begin{align}
 u_l = P_{\feasiblek}(\xk - \gk) \\
-u_{GC} = P_{\feasiblek\cap\tr}(\xk-\gk) \\
+u_{GC} = P_{\feasiblek\cap B_{\infty}\left(\dk\right)(\xk-\gk) \\
 p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
 \dsr = \min\left\{
 \dacc,
@@ -2323,8 +2392,9 @@ p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_
 \end{align}
 and
 \begin{align}
+\delta_2 = \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} \\
 \delta = \min\left\{
-\frac 1 {8\maxgrad(1 + \sqrt{n})} \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\},
+\frac 1 {8\maxgrad(1 + \sqrt{n})} \delta_2,
 \sqrt{\frac{\kappa_f \kappa_{\chi}}{32\maxhessian\left(1 + \sqrt{n}\right)^2} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\}}
 \right\} \label{sr_define_delta}
 \end{align}
@@ -2394,18 +2464,51 @@ include reference
 After using \cref{sr_chi_big_enough}, this becomes
 \begin{align*}
 \mfk(\xk) - \mfk(u_{GC})
-\ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\}
-\ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\}.
+\ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \dk \right\} \\
+\ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
+= \delta_2 \dk^{1 + p_{\Delta}}.
 \end{align*}
-But then \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \frac 1 2 \dk^p + \frac 1 2 \dk^{2p}$
-so that \cref{sr_define_delta} implies
+% But then \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \frac 1 2 \dk^p + \frac 1 2 \dk^{2p}$
+% so that \cref{sr_define_delta} implies
+% \begin{align*}
+% \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
+% \ge 4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p}.
+% \end{align*}
+
+\begin{comment}
+If we could have:
+% 4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
+\begin{align}
+\frac {\delta_2} 6 \dk^{1 + p_{\Delta}} \ge 4\maxgrad \delta 
+\end{align}
+\begin{align}
+\frac {\delta_2} 6 \dk^{1 + p_{\Delta}} \ge 2\maxgrad\left(\sqrt{n} - 1\right)\dk
+\end{align}
+\begin{align}
+\frac {\delta_2} 6 \dk^{1 + p_{\Delta}} \ge16\maxhessian\delta^2
+\end{align}
+\begin{align}
+\frac {\delta_2} 6 \dk^{1 + p_{\Delta}} \ge16\maxhessian\delta \left(\sqrt{n} - 1\right)\dk
+\end{align}
+\begin{align}
+\frac {\delta_2} 6 \dk^{1 + p_{\Delta}} \ge4\maxhessian \left(\sqrt{n} - 1\right)^2\dk^2
+\end{align}
+\end{comment}
+
+
+% \begin{align*}
+% \dk^{2 - 1 - p_{\Delta}} \le \frac{\delta_2}{5 \cdot 4\maxhessian \left(\sqrt{n} - 1\right)^2} \\
+% \frac {\delta_2} 5 \dk^{} \ge 16\maxhessian\delta \left(\sqrt{n} - 1\right)\dk^{1 + p_{\Delta}}
+% \end{align*}
+
+
+Combining this with \cref{sr_v_close_u}, \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption} to see that
 \begin{align*}
-\kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
-\ge 4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p}.
-\end{align*}
-Combined this with \cref{sr_v_close_u}, \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption} to see that
-\begin{align*}
-4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
+4\maxgrad \delta + 2\maxgrad\left(\sqrt{n} - 1\right)\dk + 
+16\maxhessian\delta^2 +
+16\maxhessian\delta \left(\sqrt{n} - 1\right)\dk + 
+4\maxhessian \left(\sqrt{n} - 1\right)^2\dk^2 \\
+= 2\maxgrad \left[2\delta + \left(\sqrt{n} - 1\right)\dk\right] + 4\maxhessian\left[2\delta + \left(\sqrt{n} - 1\right)\dk\right]^2 \\
 \ge 2\left\|\gk\right \|  \left\|u_{GC}- v\right\| + 4 \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
 \ge \left|2\left(\gk\right)^T(u_{GC} - v) + 2\left(u_{GC} - v\right) ^T 2\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \right|\\
 = 2 \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right|
@@ -2434,12 +2537,12 @@ and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
 
 Next, we will show that $v \in \capcones$.
 By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $\zik \not \in B_{\infty}(\xk, 2\dk)$, then $v \in \tr \Longrightarrow v \in \fik$.
-Therefore, we only consider the case that $\zik \in B_{\infty}(\xk, 2\dk)$, and we will first prove that $v' = u_{GC} + \delta \dk^{p} u \in \capcones$.
+Therefore, we only consider the case that $\zik \in B_{\infty}(\xk, 3\dk)$, and we will first prove that $v' = u_{GC} + \delta \dk^{p} \huk \in \capcones$.
 First, we need some identities for constraint $c_i$.
 
 Because $\zik \in B_{\infty}(\xk, 3\sqrt{n} \dk)$, \cref{sr_delta_small_enough} and \cref{minangleassumption}, 
 \begin{align}
--\frac {\gmcik}{\|\gmcik\|} ^Tu \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^Tu \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
+-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
 \end{align}
 Also, because $u_{GC}$ is feasible with respect to the linearization of the constraints, we also know that
 \begin{align}
