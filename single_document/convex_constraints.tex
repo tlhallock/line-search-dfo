@@ -2359,8 +2359,10 @@ Suppose that
 \cref{max_norm_assumption},
 \cref{minangleassumption},
 \cref{bounded_hessians_assumption},
-and 
-\cref{lipschitz_gradients_assumption} hold.
+\cref{lipschitz_gradients_assumption}
+and the assumptions for
+\cref{bounded_model_hessian_lemma}
+hold.
 
 Let
 $p_{\alpha}$, $p_{\beta}$, $p_{\Delta}$
@@ -2409,8 +2411,8 @@ m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{
 \begin{proof}
 By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption}
 tells us there is a $\minangleu \in \Rn$ with $-\frac {\gmcik}{\|\gmcik\|} ^T\minangleu \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
-By letting $\huk$ be defined as in \cref{define_u},
-we also know that $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
+Let $\huk$ be defined as in \cref{define_u},
+Then $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
 
 Note that by \cref{sr_def_p}, we have that
 \begin{align}
@@ -2461,7 +2463,7 @@ Because $u_{GC}$ is the Cauchy point for the trust region subproblem with $\frac
 \begin{comment}
 include reference
 \end{comment}
-After using \cref{sr_chi_big_enough}, \cref{bounded_hessians_assumption}, and $\dk \le 1$, this becomes
+After using \cref{sr_chi_big_enough}, \cref{bounded_model_hessian_lemma}, and $\dk \le 1$, this becomes
 \begin{align*}
 \mfk(\xk) - \mfk(u_{GC})
 \ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk \right\}
@@ -2749,7 +2751,7 @@ Define
 \dacc,
 \sqrt{\frac 1 {2\kappa_g} \mingrad},
 \sqrt{\frac 1 {2\kappa_g} \maxgrad},
-\frac{\mingradepsilon}{\frac 3 2 \maxgrad\sqrt{n} + nM},
+\frac{\mingradepsilon}{\frac 3 2 \maxgrad\sqrt{n} + n\maxmodelhessian},
 \sqrt{\frac{2\mingradepsilon}{\mingrad}}
 \right\} \label{define_mingraddelta}
 \end{align}
@@ -2770,7 +2772,7 @@ By \cref{accuracy_is_satisfied}, we know that there exists a $\kappa_g$ such tha
 Using \cref{bounded_hessians_assumption}, we also know that
 \begin{align*}
 c_i(y) \le c_i(\xk) + \left(\gmcik\right)^T(y - \xk) + \frac 1 2 \left(y - \xk\right)^T\nabla^2{c_i}(\xk)\left(y - \xk\right) \\
-\le c_i(\xk) + \|\gmcik\|\sqrt{n}\dk +nM\dk^2.
+\le c_i(\xk) + \|\gmcik\|\sqrt{n}\dk +n\maxmodelhessian\dk^2.
 \end{align*}
 
 \emph{Case 1}
@@ -2779,9 +2781,9 @@ Then  by \cref{bounded_gradients_lemma} and \cref{szm_delta_small}, we know that
 $\| \gmcik \| \le \left\|\nabla c_i(\xk)\right\| + \kappa_g \dk^2 \le \frac 3 2 \maxgrad$.
 But by \cref{szm_delta_small}, we have that
 \begin{align*}
-\frac 3 2 \maxgrad\sqrt{n}\dk + nM\dk^2 \le \left(\frac 3 2 \maxgrad\sqrt{n} + nM\right)\dk \le \mingradepsilon \\
-\Longrightarrow \|\gmcik\|\sqrt{n}\dk + nM\dk^2 \le \frac 3 2 \maxgrad\sqrt{n}\dk + nM\dk^2 \le \mingradepsilon \le -c_i(\xk)\\
-\Longrightarrow c(y) \le c_i(\xk) + \|\gmcik\|\sqrt{n}\dk + nM\dk^2 \le 0.
+\frac 3 2 \maxgrad\sqrt{n}\dk + nM\dk^2 \le \left(\frac 3 2 \maxgrad\sqrt{n} + n\maxmodelhessian\right)\dk \le \mingradepsilon \\
+\Longrightarrow \|\gmcik\|\sqrt{n}\dk + nM\dk^2 \le \frac 3 2 \maxgrad\sqrt{n}\dk + n\maxmodelhessian\dk^2 \le \mingradepsilon \le -c_i(\xk)\\
+\Longrightarrow c(y) \le c_i(\xk) + \|\gmcik\|\sqrt{n}\dk + n\maxmodelhessian\dk^2 \le 0.
 \end{align*}
 
 \emph{Case 2}
