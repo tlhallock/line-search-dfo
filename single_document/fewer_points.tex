@@ -71,12 +71,25 @@
 
 
 \newcommand{\naturals}{\mathbb N}
-\newcommand{\natsd}{\naturals^d}
+\newcommand{\natsn}{\naturals^n}
 \newcommand{\reals}{\mathbb R}
+\newcommand{\Rn}{\mathbb R^n}
+\newcommand{\Rm}{\mathbb R^m}
 \newcommand{\ximin}{{\xi_{\textrm{min}}}}
 \newcommand{\xiini}{{\xi_{\textrm{ini}}}}
 \newcommand{\lunonzero}{{E_{\textrm{nz}}}}
 \newcommand{\lusmall}{{E_{\epsilon}}}
+\newcommand{\domain}{{X}}
+\newcommand{\dmax}{{\Delta_{\textrm{max}}}}
+\newcommand{\amax}{{\alpha_{\textrm{max}}}}
+\newcommand{\preceed}{{\textrm{Preceed}}}
+\newcommand{\ltl}{{\prec_{L}}}
+\newcommand{\lte}{{\prec_{e}}}
+\newcommand{\Adeg}{{A_{\textrm{deg}}}}
+\newcommand{\idx}{{\textrm{Idx}}}
+\newcommand{\bidx}{{\mathcal I}}
+\newcommand{\bsub}{{B(\bidx)}}
+\newcommand{\ridx}{{\mathcal I^e}}
 
 
 
@@ -117,99 +130,1149 @@ Computational results are presented on a suite of test problems.
 
 
 \section{Notation}
+\large
+\subsection{}
 We let $\naturals$ denote the non-negative integers.
+For any fixed $n \in \naturals$, a multi-index consists of an element $\alpha = (a_1, a_2, \ldots, a_n)$ of the $n$-dimensional product space $\natsn$.
+For some $\alpha \in \natsn $, where $\alpha = (a_1, a_2, \ldots, a_n)$, let $|\alpha| = \sum_{i=1}^n a_i$.
 
-For any fixed $d \in \naturals$, a multi-index cosists of an element $\alpha = (a_1, a_2, \ldots, a_d)$ of the $d$-dimensional product space $\natsd$.
-
-For some $\alpha \in \natsd $, where $\alpha = (a_1, a_2, \ldots, a_d)$, let $|\alpha| = \sum_{i=1}^d a_i$.
-
-Let $\alpha, \alpha' \in \natsd $, be given by $\alpha = (a_1, a_2, \ldots, a_d)$, $\alpha' = (a_1', a_2', \ldots, a_d')$.
-Then $\alpha = \alpha'$ when $a_i = a_i'$ for all $1 \le i \le d$.
-Also, we say $\alpha \prec \alpha'$ if
+Let $\alpha, \alpha' \in \natsn $, be given by $\alpha = (a_1, a_2, \ldots, a_n)$, $\alpha' = (a_1', a_2', \ldots, a_n')$.
+We can define addition as
+$\alpha + \alpha' = (a_1 + a_1', a_1 + a_1', \ldots, a_n + a_n')$.
+Subtraction is defined as
+$\alpha - \alpha' = (a_1 - a_1', a_1 - a_1', \ldots, a_n - a_n')$
+whenever $a_i \ge a_i'$ for all $1 \le i \le n$.
+We have the factorial:
+$\alpha! = a_1!a_2!\ldots a_n!$.
+We can raise a point $x = (x_1, x_2, \ldots, x_n) \in \Rn$ to a multi index as
+$x^{\alpha} = x_1^{a_1}x_2^{a_2}\ldots x_d^{a_n}$.
+Here, we note that $0^0 = 1$.
+We say $\alpha = \alpha'$ when $a_i = a_i'$ for all $1 \le i \le n$.
+We say $\alpha \ltl \alpha'$ if
 \begin{itemize}
 \item $|\alpha| < |\alpha'|$, or
 \item $|\alpha| = |\alpha'|$ and $\alpha$ strictly precedes $\alpha'$ with respect to the lexicographic order.
 \end{itemize}
-This means that $\left(\natsd, \prec\right)$ is a totally ordered countable set.
+This means that $\left(\natsn, \ltl\right)$ is a totally ordered countable set.
 \begin{comment}
-Note that there are several different orderings based on lexicographic orderings of different permutations of $\alpha$.
+With this order, we define the function $\idx$ on $\natsn = \{\alpha_0, \alpha_1, \alpha_2, \ldots\}$ to be $\idx(\alpha_i) = i$.
 \end{comment}
 
-We can let 
+We say $\alpha \lte \alpha'$ if
 \begin{itemize}
-\item $\alpha \preceq \alpha'$ when either $\alpha = \alpha'$ or $\alpha \prec \alpha'$
-\item $\alpha \succ \alpha'$ when $\alpha' \prec \alpha$
-\item $\alpha \succeq \alpha'$ when $\alpha' \preceq \alpha$.
+\item $|\alpha| < |\alpha'|$, or
+\item $|\alpha| = |\alpha'|$ and $\alpha_i \le \alpha_i'$ for all $1 \le i \le n$.
 \end{itemize}
-
-We can define addition as
-$\alpha + \alpha' = (a_1 + a_1', a_1 + a_1', \ldots, a_d + a_d')$.
-Subtraction is defined as
-$\alpha - \alpha' = (a_1 - a_1', a_1 - a_1', \ldots, a_d - a_d')$
-whenever $a_i \ge a_i'$ for all $1 \le i \le d$.
-We also have the factorial:
-$\alpha! = a_1!a_2!\ldots a_d!$.
-Also, we can raise a point to an index as
-$p^{\alpha} = x_1^{a_1}x_2^{a_2}\ldots a_dx_d^{a_d}$
-for any point $p = (x_1, x_2, \ldots, x_d$.
-Here, we not that $0^0 = 1$.
-We will also extend the kronecker delta function to $\delta_{\alpha}^{\alpha'} = 
+This means that $\left(\natsn, \lte\right)$ is a partially ordered countable set.
+For any $d \in \naturals$, define
+\begin{align}
+\Adeg(d) = \left\{ \alpha \in \natsn \; \big| \; |\alpha| \le d \right\}
+\end{align}
+For any $\alpha \in \natsn$, with $\alpha = (a_1, a_2, \ldots, a_n)$ define 
+\begin{align*}
+\preceed(\alpha) = \left\{ \alpha' = (a_1', a_2', \ldots, a_n') \in \natsn \; | \; a_i' \le a_i \quad \forall 1 \le i \le n \right\}.
+\end{align*}
+We also extend the kronecker delta function to $\delta_{\alpha}^{\alpha'} = 
 \bigg[
 \begin{matrix}
 1 & \textrm{if}\quad \alpha = \alpha' \\
 0 & \textrm{if}\quad \alpha \ne \alpha' \\
 \end{matrix}
-$
+$.
+We let the set of basis monomials be denoted by $\theta_i(x) = \frac{x^{\alpha_i}}{\alpha_i!}$.
+We will let $e_i = (0, 0, \ldots, 0, 1, 0, \ldots 0)^T \in \Rn$ be the vector of zeros with a one in the $i$-th component.
 
-For any $\alpha \prec \alpha'$, we define the range $[\alpha, \alpha']$ as $[\alpha, \alpha'] = \left\{ \beta \in \natsd | \alpha \preceq \beta \preceq \alpha'  \right\}$.
+% We can let 
+% \begin{itemize}
+% \item $\alpha \preceq \alpha'$ when either $\alpha = \alpha'$ or $\alpha \prec \alpha'$
+% \item $\alpha \succ \alpha'$ when $\alpha' \prec \alpha$
+% \item $\alpha \succeq \alpha'$ when $\alpha' \preceq \alpha$.
+% \end{itemize}
+
+
+For any $\alpha \ltl \alpha'$, we define the range $[\alpha, \alpha']_L$ as $[\alpha, \alpha']_L = \left\{ \beta \in \natsn | \alpha \ltl \beta \ltl \alpha'  \right\}$.
 
 Given a closed convex set $K \subset \mathbb R^d$, let $C(K)$ designate the class of all real functions on $K$ which admit a continuous real extension on some open neighborhood of $K$.
-We write $C^n(K)$ for the class of all $f \in C(K)$ extendable to a function $n$-times continuous differentiable on an open neighborhood of $K$.
-For any $\alpha = (a_1, \ldots, a_d) \in \natsd$ such that $0 \le |\alpha| \le n$
-we have the $D^{\alpha}$ operator defined on $C^n(K)$ by 
+We write $C^d(K)$ for the class of all $f \in C(K)$ extendable to a function $d$-times continuous differentiable on an open neighborhood of $K$.
+For any $\alpha = (a_1, \ldots, a_n) \in \natsn$ such that $a \in \Adeg(d)$
+we have the $D^{\alpha}$ operator defined on $C^d(K)$ by, for any $x = (x_1, x_2, \ldots, x_n)$:
 \begin{align*}
-D^{\alpha} f(p) = \frac{\partial^{|\alpha|}}{\partial x_1^{a_1}\partial x_2^{a_2}\ldots\partial x_d^{a_d} } f(x_1, x_2, \ldots x_d), p = (x_1, x_2, \ldots, x_d)
+D^{\alpha} f(x) = \frac{\partial^{|\alpha|}}{\partial x_1^{a_1}\partial x_2^{a_2}\ldots\partial x_n^{a_n} } f(x_1, x_2, \ldots x_n)
 \end{align*}
-We will let $f^{\alpha}(p) = D^{\alpha} f(p)$ and $f^{(0)}(p) = f(p)$.
+We will let $f^{(\alpha)}(x) = D^{\alpha} f(x)$ and $f^{(0)}(x) = f(x)$.
 
-We will let $\sigma$ be a set of base points $\{p^i\}_{i=0}^m \subset K$.
-For any $p^i \in \sigma$ let $f \in C^n(K)$ have known value $f(p^i)$.
+\subsection{}
+For the remainder of the paper, we let $n \in \naturals$ be fixed as well as some closed convex set $K \subset \mathbb R^n$.
+% We will let $\sigma$ be a set of base points $\{y^i\}_{i=0}^m \subset K$.
+For any $d \in \naturals$, we let $\overline d = \frac{(d + n)!}{d!n!}$ so that
+$\overline d = \left|\Adeg(d)\right|$.
 
-We will let 
-$L^{\alpha}_f(p; \sigma) = \sum_{i=0}^m f(p^i)l_i^{\alpha}(p; \sigma)$.
+Given some maximum degree $d \in \naturals$, we will 
+use $m \in \naturals$ with $m \le \overline d$ to denote a sample size of a sample set
+\begin{align}
+\sigma = \{y^i\}^m_{i=1} \subset \Rn. \label{define_sigma}
+\end{align}
+% \begin{align}
+% m \le m' \quad \textrm{and} \quad
+% \overline {d-1} < m' \le \overline d \label{define_m_prime}
+% \end{align}
+% be given.
+Lastly, given some degree $d$, the set indices $\bidx \subset \naturals$, $|\bidx| = m$ will refer to some subset of the natural numbers:
+\begin{align}
+\bidx = \{b_1, b_2, \ldots, b_m\} \subseteq \{i \in \naturals | i \le \overline d \}. \label{define_bidx}
+\end{align}
+The corresponding sample set basis is then given by
+$\bsub = \left\{\alpha_i \in \natsn | i \in \bidx\right\} = \{\beta_1 = \alpha_{b_1}, \beta_2 = \alpha_{b_2}, \ldots, \beta_m = \alpha_{b_m}\}$.
+We will let the remaining $r = \bar d - m$ indices be denoted by
+\begin{align}
+\ridx = \{b^e_1, b^e_2, \ldots, b^e_r\} = \{i \in \naturals | i \not \in \bidx, i \le \overline d\}. \label{define_ridx}
+\end{align}
+% whose size is also $,
+% and whose elements $b_i \le \overline d$ for all $1 \le i \le m$.
+% \begin{comment}
+% $\bidx \subset \{i \in \naturals | i \le \overline d \}$ with $|\bidx| = m$, and name its elements as
+% $\bidx = $.
+% \end{comment}
+\begin{definition}
+For a given degree $d$, let some sample set indices $\bidx \subset \naturals$ be given as in \cref{define_bidx} corresponding sample set basis $\bsub$.
+We say that $\bidx$ is \emph{interpolatable} if 
+% $\subset \{i \in \naturals | i \le \overline d \}$ be given.
+% and let some $B \subset [\alpha_0, \alpha_d]_L$, be given.
+% Let $m = |\bidx|$ and .
+% Then 
+\begin{align}
+\preceed(\alpha_i) \subseteq \bsub \quad \forall i \in \bidx \label{interpolatable}
+\end{align}
+Without loss of generality, we can let $b_1 = 0$ for any interpolatable indices.
+\end{definition}
+
+For any sample set indices $\bidx$, we define
+
+\begin{align}
+M(x; \sigma, \bidx) = \begin{bmatrix}
+\left(y^1 - x\right)^{\beta_1} & \ldots & \left(y^m - x\right)^{\beta_1} \\
+\vdots &\ddots & \vdots\\
+\left(y^1 - x\right)^{\beta_m} & \ldots & \left(y^m - x\right)^{\beta_m} \\
+\end{bmatrix}. \label{define_m}
+\end{align}
+
+% \begin{align*}
+% M(x; \sigma, \bidx) = \begin{bmatrix}
+% \theta_{b_1}\left(y^1 - x\right) & \ldots & \theta_{b_1}\left(y^m - x\right) \\
+% \vdots &\ddots & \vdots\\
+% \theta_{b_m}\left(y^1 - x\right) & \ldots & \theta_{b_m}\left(y^m - x\right) \\
+% \end{bmatrix} = \begin{bmatrix}
+% \frac{\left(y^1 - x\right)^{\beta_1}}{\beta_1!} & \ldots & \frac{\left(y^m - x\right)^{\beta_1}}{\beta_1!} \\
+% \vdots &\ddots & \vdots\\
+% \frac{\left(y^1 - x\right)^{\beta_m}}{\beta_m!} & \ldots & \frac{\left(y^m - x\right)^{\beta_m}}{\beta_m!} \\
+% \end{bmatrix}
+% \end{align*}
+
+
+
+
+For convenience, we let $M(\sigma, \bidx) = M(0; \sigma, \bidx)$.
+
+If $\bidx$ is interpolatable, then because the partial of any $\theta_i$ is a constant multiple of another $\theta_j$ with $\alpha_j \in \preceed(\alpha_i)$,
+we know that the partial of any row is equal to a constant times another row unless it is the constant row $\theta_0$ in which case the partial is zero.
+Thus, the determinant of the matrix consisting of $M(x; \sigma, \bidx)$ for one of the rows replaced by any of its first partial derivatives is necessarily zero.
+But any first partial derivative of the function $x \to \det M(x; \sigma, \bidx)$ is equal to the sum of such determinants.
+Hence, $x \to \det M(x; \sigma, \bidx)$ is constant on all $\Rn$, and we can write
+\begin{align*}
+\det M(x; \sigma, \bidx) = \det M(\sigma, \bidx).
+\end{align*}
+
+Notice that the system of equations \cref{define_lagrange_alpha} is well conditioned for any $x \in \Rn$ precisely when
+\begin{align}
+\det M(\sigma, \bidx) \ne 0 \label{poised}
+\end{align}
+
+
+\begin{lemma}
+\label{lagrange_are_unique}
+For a given degree $d$, $\sigma$ as in \cref{define_sigma}, a $\bidx$ as in \cref{define_bidx} that satisfies \cref{interpolatable} and \cref{poised}, 
+and for any given $\alpha \in \Adeg(d)$,
+there is a set of $m$ functions $l^{\alpha}_i(x; \sigma, \bidx)$ for $1 \le i \le m$ that can be uniquely defined by:
+\begin{itemize}
+\item If $\alpha \in \bsub$, then $l^{\alpha}_i(x; \sigma, \bidx)$ is defined by the $m$ equations
+\begin{align}
+\sum_{i = 1}^m (y^i - x)^{\alpha'}l^{\alpha}_i(x; \sigma, \bidx) = \alpha! \delta_{\alpha}^{\alpha'} \quad \forall x\in\Rn,\alpha' \in \bsub \label{define_lagrange_alpha}
+\end{align}
+\item If $\alpha \in \natsn(d) \setminus \bsub$, then $l^{\alpha}_i(x; \sigma, \bidx) = 0$ for all $x \in \Rn$, $1 \le i \le m$.
+\end{itemize}
+\end{lemma}
+
+
+We see that by defining
+\begin{align*}
+\Phi(\sigma, \bidx) = M^{-1}(\sigma, \bidx) \\
+l_i(x; \sigma, \bidx) = l^{0}_i(x; \sigma, \bidx) = \sum_{j=1}^m \Phi_{i, j}(\sigma, \bidx) x^{\beta_j} \quad \forall 1 \le i \le m,
+\end{align*}
+we satisfy \cref{define_lagrange_alpha} with $\alpha = 0$.
+
+% We can extend this notation by letting $l^{\alpha}(x; \sigma, \bidx) = 0 \; \forall \; \alpha \not \in \bsub$.
+
+% Letting $\ridx$ be defined as in \cref{define_ridx},
+% we have that 
+% \begin{align*}
+% l^{\alpha}_i(x; \sigma, \bidx) = \sum_{j=1}^m \Phi_{i, j} x^{\beta_j} \quad \forall 1 \le i \le m
+% \end{align*}
+% where $\Phi^{\alpha}_{\sigma, \bidx}$ the $m \times m$ matrix that solves
+% \begin{align*}
+% \begin{bmatrix}
+% \Phi^{\alpha}_{\sigma, \bidx} & 0
+% \end{bmatrix}
+% \begin{bmatrix}
+% M(\sigma, \bidx) \\
+% M(x; \sigma, \ridx)
+% \end{bmatrix}
+% =\alpha!I
+% \end{align*}
+% for all $x \in \Rn$.
+
+% there exists an $m \times m$ matrix $\Phi$ such that
+% l^{\alpha}_i(x; \sigma, \bidx) = \sum_{j=1}^m \Phi_{i, j} \theta_{b_j}(x) \quad \forall 1 \le i \le m \quad \textrm{and} \quad
+% l^{\alpha}_i(y^j; \sigma, \bidx) = \delta_i^j \quad \forall 1 \le i, j \le m. \\
+
+Differentiating \cref{define_lagrange_alpha} by $e_j \in \natsn$ for some $1 \le j \le n$, we find that for all $\alpha' \in \bsub, \alpha \in \natsn$,
+\begin{align*}
+\sum_{i = 1}^m D^{e_j}(y^i - x)^{\alpha'}l^{\alpha}_i(x; \sigma, \bidx) + \sum_{i = 1}^m (y^i - x)^{\alpha'}D^{e_j}l^{\alpha}_i(x; \sigma, \bidx) = 0.
+\end{align*}
+We can use \cref{define_lagrange_alpha} to simplify this:
+\begin{align*}
+\sum_{i = 1}^m D^{e_j}(y^i - x)^{\alpha'}l^{\alpha}_i(x; \sigma, \bidx) =
+\begin{cases}
+-\alpha'!\delta^{\alpha'}_{\alpha+e_j} & \textrm{if} \quad \alpha' - e_j \in \natsn \\
+0 & \textrm{if} \quad \alpha' - e_j \not \in \natsn
+\end{cases}.
+\end{align*}
+Now, if $\alpha + e_j \in \bsub$, we know by the uniqueness in \cref{lagrange_are_unique} that
+\begin{align}
+D^{e_j}l_i^{\alpha}(x; \sigma, \bidx) = l_i^{\alpha + e_j}(x; \sigma, \bidx).
+\end{align}
+for all $1 \le i \le m$.
+Notice that $l^0_i$ only includes terms $x^{\beta}$ where $\beta \in \bsub$, and
+differentiation of any monomial in the form $x^{\beta}$ yields another monomial whose power is in $\bsub$.
+By induction, any $l_i^{\alpha}$ only has monomials whose power is in $\bsub$.
+
+If $\alpha + e_j \not \in \bsub$ with $\alpha + e_j = (a_1, a_2, \ldots a_n)$, 
+then, for each $\beta \in \bsub$ with $\beta = (b_1, b_2, \ldots b_n)$,
+there will be some $1 \le k \le n$ such that $a_k > b_k$ as otherwise $\alpha + e_j \lte \beta \Longrightarrow \alpha + e_j \in \preceed(\beta) \subseteq \bsub$.
+However, this means that $D^{e_j}l_i^{\alpha}(x; \sigma, \bidx) = 0 = l_i^{\alpha + e_j}(x; \sigma, \bidx)$.
+By induction, we have that 
+\begin{align}
+D^{\beta}l_i^{\alpha}(x; \sigma, \bidx) = l_i^{\alpha + \beta}(x; \sigma, \bidx) \quad \forall \; \alpha, \beta \in \natsn \label{addative_derivatives}
+\end{align}
+
+For any $\alpha \in \bidx$, let $M^{\alpha}_i(x; \sigma, \bidx)$ denote the matrix $M(x; \sigma, \bidx)$ with the column for $y^i \in \sigma$ replaced by zeros except at the 
+intersection with the row corresponding to $\beta$ where the entry is $1$.
+That is
+\begin{align}
+M_i^{\alpha}(x; \sigma, \bidx) = \begin{bmatrix}
+\left(y^1 - x\right)^{\beta_1} & \ldots & \left(y^{i-1} - x\right)^{\beta_1} & \delta^{\beta_1}_{\alpha} & \left(y^{i+1} - x\right)^{\beta_1} & \ldots &\left(y^m - x\right)^{\beta_1} \\
+\vdots                         & \ddots & \vdots                             & \vdots                    & \vdots                             & \ddots & \vdots                         \\
+\left(y^1 - x\right)^{\beta_m} & \ldots & \left(y^{i-1} - x\right)^{\beta_m} & \delta^{\beta_m}_{\alpha} & \left(y^{i+1} - x\right)^{\beta_m} & \ldots & \left(y^m - x\right)^{\beta_m} \\
+\end{bmatrix}. \label{define_m}
+\end{align}
+
+Consider the subsystem of equations of \cref{define_lagrange_alpha} given by
+\begin{align*}
+\sum_{i = 1}^m (y^i - x)^{\alpha'}l^{\alpha}_i(x; \sigma, \bidx) = \alpha! \delta_{\alpha}^{\alpha'} \quad \forall x\in\Rn,\alpha' \in \bidx
+\end{align*}
+which can be used to solve for $\Phi^{\alpha}_{\sigma, \bidx}$:
+\begin{align*}
+\Phi^{\alpha}_{\sigma, \bidx}
+M(\sigma, \bidx)
+=\alpha!I
+\end{align*}
+If \cref{poised} holds, then Cramer's rule gives
+\begin{align*}
+l_i^{\alpha}(x; \sigma, \bidx) = \alpha! \frac{\det M_i^{\alpha}(x; \sigma, \bidx)}{\det M(x; \sigma, \bidx)}
+\end{align*}
+
+
+
+\subsection{}
+
+\begin{definition}
+Suppose a degree $d$, a $\sigma$ as defined in \cref{define_sigma}, a set of indices $\bidx$ as in \cref{define_bidx} satisfying \cref{poised}, and 
+a set of remaining indices $\ridx$ as in \cref{define_ridx} are given.
+There exists a unique set of $r = \overline d - m$ polynomials 
+$l^e_i(x; \sigma, \bidx)$ for $1 \le i \le r$ determined by the $r \times m$ matrix 
+$\Phi^e(\sigma, \bidx) = -M(x; \sigma, \ridx)M^{-1}(\sigma, \bidx)$ with
+\begin{align*}
+l^e_i(x; \sigma, \bidx) = x^{\beta^e_i} + \sum_{j = 1}^{m} \Phi_{i, j}^e(\sigma, \bidx)x^{b_j} \quad \forall 1 \le i \le r \\
+l^e_i(y^j; \sigma, \bidx) = 0 \quad \forall 1 \le i \le r, 1 \le j \le m.
+\end{align*}
+\end{definition}
+
+
+
+Notice that if $\Phi(\sigma, \bidx)$ is the $m \times m$ matrix determined by the lagrange polynomials:
+\begin{align*}
+l_i^0(x; \sigma, \bidx) = \sum_{j=1}^m \Phi_{i, j}(\sigma, \bidx) x^{\beta_j},
+\end{align*}
+then $\Phi^e(\sigma, \ridx)$ solves:
+\begin{align*}
+\begin{bmatrix}
+\Phi(\sigma, \bidx) & 0 \\
+\Phi^e(\sigma, \bidx) & I
+\end{bmatrix}
+\begin{bmatrix}
+M(\sigma, \bidx) \\
+M(x; \sigma, \ridx)
+\end{bmatrix}
+=
+\begin{bmatrix}
+I \\ 0
+\end{bmatrix}.
+\end{align*}
+
+If we let 
+\begin{align*}
+p_i(x) = \sum_{j=1}^m \Phi^e_{i, j}(\sigma, \bidx) x^{\beta_j}
+\end{align*}
+then
+\begin{align*}
+l_i^e(x; \sigma, \bidx) = x^{\beta_i^e} + p_i(x).
+\end{align*}
+However, 
+\begin{align*}
+l_i^e(y^j; \sigma, \bidx) = \left(y^j\right)^{\beta_i^e} + p_i(y^j) = 0,
+\end{align*}
+so that
+\begin{align*}
+p_i(y^j) = -\left(y^j\right)^{\beta_i^e}
+\end{align*}
+and we get the formulas
+\begin{align}
+p_i(x) = \sum_{j=1}^m p_i(y^j) l_j(x; \sigma, \bidx) = -\sum_{j=1}^m \left(y^j\right)^{\beta_i^e} l_j(x; \sigma, \bidx) \nonumber \\
+l_i^e(x; \sigma, \bidx) = x^{\beta_i^e} -\sum_{j=1}^m \left(y^j\right)^{\beta_i^e} l_j(x; \sigma, \bidx) \nonumber \\
+l_i^e(y^j - x; \sigma, \bidx) = \left(y^j - x\right)^{\beta_i^e} -\sum_{j=1}^m \left(y^j\right)^{\beta_i^e} l_j(y^j - x; \sigma, \bidx) \nonumber \\
+\left(y^j - x\right)^{\beta_i^e} = l_i^e(y^j - x; \sigma, \bidx) + \sum_{j=1}^m \left(y^j\right)^{\beta_i^e} l_j(y^j - x; \sigma, \bidx) \label{the_formula}
+\end{align}
+
+
+
+% \begin{align*}
+% l_j(y^j - x; \sigma, \bidx) = \sum_{k=1}^m l_j(y^j - y^k; \sigma, \bidx)l_k(x; \sigma, \bidx)
+% (y^i - x)^{\beta_i^e} + \sum_{j=1}^m (y^j - x)^{\beta_j} l^e_j(x; \sigma, \bidx) = 0 \quad \forall 1 \le i \le r
+% \sum_{j=1}^m (y^j - x)^{\beta_j}[ l^e_j(x; \sigma, \bidx) - (y^j - x)^{\beta_i^e}] = 0 \quad \forall 1 \le i \le r
+% \end{align*}
+
+There is a unique permutation matrix $P$ that maps $(0, 1, 2, \ldots, \overline{d}) \to (b_1, b_2, \ldots, b_m, b^e_1, b^e_2, \ldots b^e_r)^T$.
+
+
+
+
+
+
+\begin{theorem}{Taylor's Theorem.}
+For any $x, y \in K$, we have that there is some $s \in [0,1]$ with a $\tilde{xy} = (1-s)x + sy$  such that
+% \begin{align}
+% R_{d+1}(x; y) = \sum_{|\alpha|=d+1}\frac{\left(x - y\right)^{\alpha}}{\alpha!} f^{(\alpha)}(\tilde{xy}) \\
+% f(x) = \left[\sum_{k=0}^d \sum_{|\alpha| = k} \frac{\left(x - y\right)^{\alpha}}{\alpha!}f^{(\alpha)}(y)\right] + R_{d+1}(x; y) \label{taylors_theorem}
+% \end{align}
+
+\begin{align*}
+f(x) = \sum_{k=0}^{d-1} \sum_{|\alpha| = k} \frac{\left(x - y\right)^{\alpha}}{\alpha!}f^{(\alpha)}(y) + \sum_{|\alpha|=d}\frac{\left(x - y\right)^{\alpha}}{\alpha!} f^{(\alpha)}(\tilde{xy}) \\
+\sum_{k=0}^{d} \sum_{|\alpha| = k} \frac{\left(x - y\right)^{\alpha}}{\alpha!}f^{(\alpha)}(y) + \sum_{|\alpha|=d}\frac{\left(x - y\right)^{\alpha}}{\alpha!} \left[f^{(\alpha)}(\tilde{xy}) - f^{(\alpha)}(y)\right]
+\end{align*}
+
+We can let $H^{\alpha}(y) = f^{(\alpha)}(\tilde{xy}) - f^{(\alpha)}(y)$ to see that this becomes
+\begin{align}
+f(x) = \sum_{k=0}^{d} \sum_{|\alpha| = k} \frac{\left(x - y\right)^{\alpha}}{\alpha!}f^{(\alpha)}(y) + \sum_{|\alpha|=d}\frac{\left(x - y\right)^{\alpha}}{\alpha!} H^{(\alpha)}(y) \label{taylors_theorem}
+\end{align}
+
+% Furthermore, we have that if $\overline{d-1} < m \le \overline d$, then
+% \begin{align}
+% \Theta_{m+1}(x; y) = R_{d+1}(x; y) + \sum_{k=m+1}^{\overline d - 1} \frac{\left(x - y\right)^{\alpha_k}}{\alpha_k!}f^{(\alpha_k)}(y) \label{define_Theta}\\
+% f(x) = \sum_{k=0}^{m} \frac{\left(x - y\right)^{\alpha_k}}{\alpha_k!}f^{(\alpha_k)}(y) + \Theta_{m+1}(x; y) \label{taylors_theorem}
+% \end{align}
+\end{theorem}
+
+
+
+
+For some degree $d$, we assume that $f : \Rn \to \reals$ is fixed, satisfies $f \in C^{d+1}(K)$,
+and has some known values $f(y^i)$ for all $1 \le i \le m$.
+We will let $f^{\sigma} \in \Rm$ be defined by $f^{\sigma}_i = f(y^i)$.
+\begin{comment}
+Now might be a good time to make the Lipschitz assumption
+\end{comment}
+
+
+\begin{theorem}
+\label{theorem_10}
+Let a degree $d$ be fixed, and a sample set $\sigma$ as in \cref{define_sigma}, and let $\bidx$ as in \cref{define_bidx} satisfy \cref{interpolatable}, and suppose that
+\cref{poised} holds.
+For each $\alpha \in \bidx$, define the polynomials
+\begin{align}
+L_f^{\alpha}(x; \sigma, \bidx) = \sum_{i=1}^m f(y^i) l_i^{\alpha}(x; \sigma, \bidx). \label{define_L} \\
+E(x) = \sum_{j=1}^m \sum_{|\alpha|=d}\frac{\left(y^j - x\right)^{\alpha}}{\alpha!} H^{(\alpha)}(x)l_j^{\alpha}(x; \sigma, \bidx) \\
+R^e(x) = \sum_{j=1}^m\sum_{i=1}^r \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx)
+\end{align}
+Then 
+\begin{align}
+D^{\beta}L_f^{\alpha}(x; \sigma, \bidx) = L_f^{\alpha + \beta}(x; \sigma, \bidx) \label{linear_in_differentiation} \\
+\textrm{and}\quad L_f^{\alpha}(x; \sigma, \bidx) = f^{(\alpha)}(x) + E(x) + R^e(x) \label{error_bound_formula}
+\end{align}
+\end{theorem}
+
+\begin{proof}
+The linearity of $D^{\beta}$ and \cref{addative_derivatives} immediately provide \cref{linear_in_differentiation}.
+For \cref{error_bound_formula} we can substitute \cref{taylors_theorem} for $f(y^i)$ into \cref{define_L} to see that
+\begin{align*}
+L_f^{\alpha}(x; \sigma, \bidx) = \sum_{j=1}^m \left[
+\sum_{k=0}^{d} \sum_{|\alpha| = k} \frac{\left(y^j - x\right)^{\alpha}}{\alpha!}f^{(\alpha)}(x) + \sum_{|\alpha|=d}\frac{\left(y^j - x\right)^{\alpha}}{\alpha!} H^{(\alpha)}(x)
+\right] l_j^{\alpha}(x; \sigma, \bidx) \\
+= \sum_{j=1}^m \left[
+\sum_{i=1}^m \frac{\left(y^j - x\right)^{\beta_i}}{\beta_i!}f^{(\beta_i)}(x) +
+\sum_{i=1}^r \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)
+\right] l_j^{\alpha}(x; \sigma, \bidx)  \\
++ \sum_{j=1}^m \sum_{|\alpha|=d}\frac{\left(y^j - x\right)^{\alpha}}{\alpha!} H^{(\alpha)}(x)l_j^{\alpha}(x; \sigma, \bidx)  \\
+=
+\sum_{i=1}^m \sum_{j=1}^m\frac{\left(y^j - x\right)^{\beta_i}}{\beta_i!}l_j^{\alpha}(x; \sigma, \bidx)f^{(\beta_i)}(x) +
+\sum_{j=1}^m\sum_{i=1}^r \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx)
++ E(x)  \\
+\end{align*}
+We can then use \cref{define_lagrange_alpha} to show that the first of these terms is
+\begin{align*}
+\sum_{i=1}^m \left[\sum_{j=1}^m \frac{\left(y^j - x\right)^{\beta_i}}{\beta_i!}l_j^{\alpha}(x; \sigma, \bidx) \right]f^{(\beta_i)}(x)
+= \sum_{i=1}^m \frac{\beta_i! \delta_{\alpha}^{\beta_i}}{\beta_i!}f^{(\beta_i)}(x)
+= f^{\alpha}(x).
+\end{align*}
+so that
+\begin{align*}
+L_f^{\alpha}(x; \sigma, \bidx) = f^{\alpha}(x) + E(x) + R^e(x)
+\end{align*}
+
+
+% so that 
+% \begin{align*}
+% L_f^{\alpha}(x; \sigma, \bidx) = f^{\alpha}(x) + E(x) + R^e(x)
+% \end{align*}
+% \end{proof}
+
+
+% 
+% \sum_{i=1}^r \left[\sum_{j=1}^m \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}l_j^{\alpha}(x; \sigma, \bidx) \right]f^{(\beta^e_i)}(x)
+\end{proof}
+
+% \begin{definition}
+% A polynomial on $\Rn$ is of degree $\beta \in \natsn$ if it can be written as $\sum_{0 }
+% \end{definition}
+
+
+\begin{theorem}
+Assume,
+\begin{align}
+\|x - y\| \le \Delta \forall x, y \in K \\
+\max_{x\in K}\max_{1 \le j \le m} |l_j^{\alpha}(x; \sigma, \bidx)| \le \Lambda_{\alpha} \label{max_lagrange} \\
+\max_{x\in K}\max_{1 \le j \le r} |l_j^e(x; \sigma, \bidx)| \le \epsilon \label{small_pivots} \\
+\left |\left[  \sum_{|\alpha| = k} f^{(\alpha)}(x)\right] - \left[\sum_{|\alpha| = k} f^{(\alpha)}(y) \right]\right| \le L_k \|x - y\| \quad  \forall x, y \in K, 1 \le k \le d + 1 \label{lipschitz_derivatives} \\
+|f^{(\alpha)}| \le M \quad \forall \alpha \in \Adeg(d+1)
+\end{align}
+
+Then
+\begin{align*}
+\left| f^{\alpha}(x) - L_f^{\alpha}(x) \right| \le \kappa_i \Delta^{k - i + 1},
+\quad \forall x \in K
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+By \cref{theorem_10}
+\begin{align*}
+\left| f^{\alpha}(x) - L_f^{\alpha}(x) \right| \le |E(x)| + |R^e(x)|.
+\end{align*}
+
+
+Let $\dot d = \begin{pmatrix}n + d - 1 \\ d\end{pmatrix} = |\{\alpha \in \natsn | |\alpha| = d\}|$?
+
+\begin{align*}
+E(x) = \sum_{j=1}^m \sum_{|\alpha|=d}\frac{\left(y^j - x\right)^{\alpha}}{\alpha!} H^{(\alpha)}(x)l_j^{\alpha}(x; \sigma, \bidx)
+\le \sum_{j=1}^m \sum_{|\alpha|=d}\frac{\Delta^{d}}{\alpha!} \Delta L_d \Lambda_{\alpha} = m\dot d L_d \Lambda_{\alpha} \Delta^{d+1}
+\end{align*}
+
+\begin{align*}
+R^e(x) = \sum_{j=1}^m\sum_{i=1}^r \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx) \\
+= \sum_{j=1}^m\sum_{i=1}^r \frac{f^{(\beta^e_i)}(x)}{\beta^e_i!}\left[l^e_i(y^j- x)l_j^{\alpha}(x; \sigma, \bidx) - \sum_{k=1}^m \Phi^e_{i,k}(y^j - x)^{\beta_k}l_j^{\alpha}(x; \sigma, \bidx) \right] \\
+= \sum_{j=1}^m\left[\sum_{i=1}^r \frac{f^{(\beta^e_i)}(x)}{\beta^e_i!}l^e_i(y^j- x)l_j^{\alpha}(x; \sigma, \bidx) - \sum_{i=1}^r \sum_{k=1}^m \frac{f^{(\beta^e_i)}(x)}{\beta^e_i!}\Phi^e_{i,k}(y^j - x)^{\beta_k}l_j^{\alpha}(x; \sigma, \bidx) \right] \\
+\end{align*}
+
+Letting $v \in \mathbb R^r$ and $u$ be a $r \times m$ matrix
+\begin{align*}
+v_i = \frac{f^{(\beta^e_i)}(x)}{\beta^e_i!}\\
+u_{k,j} = (y^j - x)^{\beta_k}l_j^{\alpha}(x; \sigma, \bidx) \\
+\sum_{k=1}^m u_{k,j} = \alpha!\delta^{\alpha}_{\beta_k}
+\end{align*}
+
+
+Using \cref{the_formula} this is
+\begin{align*}
+R^e(x) = \sum_{j=1}^m\sum_{i=1}^r \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx) \\
+= \sum_{j=1}^m\sum_{i=1}^r \frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx)\left[l_i^e(y^j - x; \sigma, \bidx) + \sum_{k=1}^m \left(y^k\right)^{\beta_i^e} l_k(y^k - x; \sigma, \bidx)\right] \\
+= 
+\sum_{j=1}^m\sum_{i=1}^r \frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx)l_i^e(y^j - x; \sigma, \bidx) + \\
+\sum_{j=1}^m\sum_{i=1}^r \sum_{k=1}^m\frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx) \left(y^k\right)^{\beta_i^e} l_k(y^k - x; \sigma, \bidx) \\
+\end{align*}
+
+Using \cref{attempt_to_shorten}, the second term is
+\begin{align*}
+\sum_{j=1}^m\sum_{i=1}^r \sum_{k=1}^m\frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx) \left(y^k\right)^{\beta_i^e} l_k(y^k - x; \sigma, \bidx) 
+= \alpha! \sum_{i=1}^r \sum_{k=1}^m\left(y^k\right)^{\beta_i^e} \Phi^{\alpha}_{k,i_{\alpha}} \frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)
+\end{align*}
+
+
+In general, for any $c_k$:
+\begin{align*}
+l_i^{\alpha}(x) = \sum_{j=1}^m \Phi^{\alpha}_{i,j}(\sigma, \bidx) x^{\beta_j} \\
+\sum_{j=1}^m\sum_{k=1}^m c_k l_k(y^k - x; \sigma, \bidx)l_j^{\alpha}(x; \sigma, \bidx) 
+= \sum_{k=1}^mc_k \sum_{i=1}^m \Phi^{\alpha}_{k,i}\sum_{j=1}^m (y^k - x)^{\beta_i}l_j^{\alpha}(x; \sigma, \bidx) \\
+= \sum_{k=1}^mc_k \sum_{i=1}^m \Phi^{\alpha}_{k,i} \alpha! \delta_{\alpha}^{\beta_i} 
+= \sum_{k=1}^mc_k \Phi^{\alpha}_{k,i_{\alpha}} \alpha! \label{attempt_to_shorten}
+\end{align*}
+where $\beta_{i_{\alpha}} = \alpha$.
+
+% \begin{align*}
+% R^e(x) = \sum_{j=1}^m\sum_{i=1}^r  \frac{\left(y^j - x\right)^{\beta^e_i}}{\beta^e_i!}f^{(\beta^e_i)}(x)l_j^{\alpha}(x; \sigma, \bidx) \\
+% = \sum_{i=1}^r \sum_{j=1}^m \frac{1}{\beta^e_i!}l_j^{\alpha}(x; \sigma, \bidx)f^{(\beta^e_i)}(x)\left[l_i^e(y^j - x) - \sum_{k=1}^m \phi^e_{i,k}(\sigma, \bidx)(y^j - x)^{\beta_k}\right] \\
+% = \sum_{i=1}^r \sum_{j=1}^m \frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)\left[l_i^e(y^j - x)l_j^{\alpha}(x; \sigma, \bidx) - \sum_{k=1}^m \phi^e_{i,k}(\sigma, \bidx)(y^j - x)^{\beta_k}l_j^{\alpha}(x; \sigma, \bidx)\right] \\
+% \le \sum_{i=1}^r \sum_{j=1}^m \frac{1}{\beta^e_i!}f^{(\beta^e_i)}(x)\left[l_i^e(y^j - x)l_j^{\alpha}(x; \sigma, \bidx) + \beta_i^e!\|\phi^e_{i,k}(\sigma, \bidx)\|\right] \\
+% \le \sum_{i=1}^r \sum_{j=1}^m f^{(\beta^e_i)}(x)\left[\frac{\epsilon}{\beta^e_i!}\Lambda_{\alpha} + \|\phi^e_{i,k}(\sigma, \bidx)\|\right] \\
+% \le rmM\left[\frac{\epsilon}{\beta^e_i!}\Lambda_{\alpha} + \|\phi^e_{i,k}(\sigma, \bidx)\|\right] \\
+% \end{align*}
+
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{lemma}
+Let a degree $d$ be fixed, some $\bidx$ as in \cref{define_bidx}, and a $\sigma$ as in \cref{define_sigma}.
+Let polynomials $l_i(x)$ for $1\le i\le \bar d$ be defined as 
+$l_i(x) = \sum_{j=1}^m\Phi_{i, j}x^{\beta_j}$ for some $m\times m$ matrix $\Phi$ such that
+$l_i(y^j) = \delta_i^j$.
+Then for any polynomial
+\begin{align*}
+p(x) = \sum_{i=1}^m c_i (y^i - x)^{\beta_i},
+\end{align*}
+we have that 
+\begin{align*}
+p(x) = \sum_{i=1}^m c_i (y^i - x)^{\beta_i} l_i(x).
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+
+\begin{align*}
+\sum_{i=1}^m c_i (y^i - x)^{\beta_i} l_i(x)
+= \sum_{j=1}^m\sum_{i=1}^m c_i \delta_j^i(y^i - x)^{\beta_i} l_i(x) 
+\end{align*}
+
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{}
+
+
+
+
+
+\subsection{}
+
+\begin{definition}
+Given a set of coefficients $\rho \in \Rm$, a sample set $\sigma$ with interpolatable sample set indices $\bidx$,
+a polynomial
+\begin{align*}
+m(x; \rho) = \sum_{i\in \bidx} \rho_i \theta_i(x)
+\end{align*}
+interpolates the function $f$ on $K$ with indices $\bidx$ if
+\begin{align*}
+m(y^i; \rho) = f(y^i) \quad \forall y^i \in \sigma
+\end{align*}
+\end{definition}
+
+\begin{lemma}
+\label{unique_model}
+% For any $y^i \in \sigma$ let $f \in C^n(K)$ have known values $f_{\sigma}$, where $f_{\sigma}_i = f(y^i)$ for all $1 \le i \le m$.
+If $\det(M(\sigma, \bidx)) \ne 0$, then there exists a unique set of coefficients $\rho \in \Rm$ such that $m(x; \rho)$ interpolates $f$.
+\end{lemma}
+
+
+\begin{lemma}
+For some indices $\bidx$, if $\det(M(\sigma, \bidx)) \ne 0$, then the set of Lagrange polynomials for $\sigma$ is unique, well defined, and determined by
+\begin{align*}
+\Phi = M(\sigma, \bidx)^{-1}I
+\end{align*}
+\end{lemma}
+\begin{proof}
+\end{proof}
+
+
+\begin{lemma}
+The model function given in \cref{unique_model} satisfies
+\begin{align*}
+m(x) = \sum_{i \in \bidx} f(y^i) l_i(x)
+\end{align*}
+\end{lemma}
+
+
+
+\begin{theorem}
+We have
+$m \le m'$, and 
+$\overline{d-1} \le m' \le \overline{d}$.
+\begin{align*}
+m^{(\alpha)}(x) = f^{(\alpha)}(x) + 
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+We have by \cref{talors_theorem} that 
+\begin{align*}
+m^{(\alpha)}(x) = \sum_{i=1}^m f(y^i) l^{(\alpha)}(x)
+\end{align*}
+
+\end{proof}
+
+% We will let 
+% $L^{\alpha}_f(p; \sigma) = \sum_{i=0}^m f(p^i)l_i^{\alpha}(p; \sigma)$.
+
+
+
+
 
 
 \section{Theorems}
 From now on, we will fix some $n, d \in \mathbb N$.
-For any $k \in Z$, we let $\bar k = \frac{(k + d)!}{k!d!}$ so that $\bar k = \left|\left\{\alpha \in \natsd \big| \left|\alpha\right| \le k \right\}\right|$.
-We will fix some $\sigma = \{p^i\}^m_{i=0} \subset \mathbb R^d$ for some $m$ that satisfies 
-\begin{align}
-\bar{n-1} < m+1 \le \bar n. \label{m_standard}
-\end{align}
 
 
-\begin{theorem}{Taylor's Theorem}
-Choose a $K\subset \mathbb R^ d$ to be convex.
-For any $f \in C^{n+1}(K)$ and any $p, q \in K$, we have that there is some $s \in [0,1]$ such that
-\begin{align*}
-f(q) = \sum_{k=0}^n \sum_{|\alpha| = k} \frac{\left(q - p\right)^{\alpha}}{\alpha!}f^{(\alpha)}(p) + R_{n+1}(q; p) \\
-R_{n+1}(q; p) = \sum_{|\alpha|=n+1}\frac{\left(q - p\right)^{\alpha}}{\alpha!} f^{(\alpha)}(\tilde{pq})
-\tilde{pq} = (1-s)p + sq
-\end{align*}
-Also,
-\begin{align*}
-f(q) = \sum_{k=0}^m \frac{\left(q - p\right)^{\alpha_k}}{\alpha!}f^{(\alpha_k)}(p) + \Theta_{m+1}(q; p) \\
-\Theta_{m+1}(q; p) = R_{n+1}(q; p) + \sum_{k=j+1}^{\bar n - 1} \frac{\left(q - p\right)^{\alpha_k}}{\alpha!}f^{(\alpha_k)}(p) 
-\end{align*}
-\end{theorem}
 
 For each $m \in \naturals$ such that $m+1$ satisfies \cref{m_standard}, we construct the $(m+1) \times (m+1)$ matrix 
 \begin{align*}
-M(p; \sigma) = \begin{pmatrix}
+M(p; \sigma) = \begin{bmatrix}
 \left(p^0 - p\right)^{\alpha_0} & \ldots & \left(p^m - p\right)^{\alpha_0} \\
 &\ldots & \\
 \left(p^0 - p\right)^{\alpha_m} & \ldots & \left(p^m - p\right)^{\alpha_m} \\
-\end{pmatrix}
+\end{bmatrix}
 \end{align*}
 where $0 = \alpha_0 \prec \alpha_1 \prec \ldots \prec \alpha_m$.
 
@@ -259,12 +1322,12 @@ E_f^{\alpha}(p; \sigma) = \sum_{i=0}^m \Theta_{m+1}(p^i; p) l_i^{\alpha}(p; \sig
             Let $V = M(p, \sigma)^T$, $\Phi = I_{m+1}$, so that $V_{i,j} = (p^i - p^0)^{\alpha_j}$
             
         \item[\textbf{Step 1}] \textbf{(Pivot)} \\
-        	Let $r \in \naturals$ be such that $k \le \bar r$. \\
+        	Let $r \in \naturals$ be such that $k \le \overline r$. \\
         	For each $1\le i \le m+1$, let $\phi_i(p) = \sum_{j=1}^{m+1} \Phi_{i, j} (p - p^0)^{\alpha_j}$. \\
         	If $|V_{k,k}| \ge \xi$, go to Step 4 \\
         	Let 
 \begin{align*}
-	i', j' \in \argmax_{k\le i \le m+1, \quad k \le j \le \bar r} |V_{i, j}|
+	i', j' \in \argmax_{k\le i \le m+1, \quad k \le j \le \overline r} |V_{i, j}|
 \end{align*}
 			If $i' = k$ and $j' = k$, go to Step 2. \\
 			Otherwise, swap row $k$ with row $i'$ and column $k$ with column $j'$:
@@ -285,7 +1348,7 @@ E_f^{\alpha}(p; \sigma) = \sum_{i=0}^m \Theta_{m+1}(p^i; p) l_i^{\alpha}(p; \sig
         \item[\textbf{Step 2}] \textbf{(Choose a replacement point)} \\
         	If $|V_{k,k}| \ge \xi$, go to Step 4 \\
 \begin{align*}
-p', j' = \argmax_{p \subseteq K, \quad k \le j \le \bar{r}} |\phi_j(p) |
+p', j' = \argmax_{p \subseteq K, \quad k \le j \le \overline{r}} |\phi_j(p) |
 \end{align*}
 			and replace $p^i$ with $p'$ and column $k$ with column $j'$:
 			\begin{itemize}
@@ -331,25 +1394,131 @@ p', j' = \argmax_{p \subseteq K, \quad k \le j \le \bar{r}} |\phi_j(p) |
 
 After the result of running \cref{full_pivot_model_improve} we are left with a system:
 \begin{align*}
-V = \begin{pmatrix}
+V = \begin{bmatrix}
 I & 0 \\
 \lunonzero  & \lusmall \\
-\end{pmatrix}, \quad \Phi = \begin{pmatrix}
+\end{bmatrix}, \quad \Phi = \begin{bmatrix}
 \Phi_1 \\
 \Phi_2 \\
-\end{pmatrix}
+\end{bmatrix}
 \end{align*}
 
 To zero the $\lunonzero$ portion of this matrix, we can let
 
 \begin{align*}
-Z = \begin{pmatrix}
+Z = \begin{bmatrix}
 0 & 0 \\
 \lunonzero & 0 \\
-\end{pmatrix} \\
+\end{bmatrix} \\
 \Phi \gets \Phi - M(\sigma)^{-1}Z \\
 V \gets (I - Z) V
 \end{align*}
+
+
+
+
+
+
+
+
+
+\section{Copying Steve and Larson}
+\subsection{}
+
+Let $d \in \naturals$ be fixed.
+Let $k \in \naturals$ be fixed.
+For any $m \in \naturals$, define
+\begin{align}
+A(m) = \left\{ \alpha \in \natsn \; \big| \; |\alpha| = m \right\}
+\end{align}
+For any $\alpha \in \natsn$, with $\alpha = (a_1, a_2, \ldots, a_d)$ define 
+\begin{align*}
+\preceed(\alpha) = \left\{ \alpha' = (a_1', a_2', \ldots, a_d') \in \natsn \; | \; a_i' \le a_i \quad \forall 1 \le i \le d \right\}
+\end{align*}
+
+
+Fix some $B \subset [\alpha_0, \alpha_k]$, and let $m = |B|$.
+Let $B = \left\{\beta_1, \beta_2, \ldots, \beta_m\right\}$.
+Let $B$ be such that for any $1 \le i \le m$, $\preceed(\beta_i) \subseteq B$.
+
+
+
+
+% Let $\amax$ be such that $\amax = \overline k$ for some integer $k$.
+% Given any subset $A \subseteq [0\alpha_k]$
+
+
+\begin{assumption}
+\label{fully_quadratic_assumption}
+Suppose that a set of points $S\subset \reals^n$, a radius $\dmax$, and a constant $k$ are given.
+Let $\domain$ be an open domain containg $\dmax$ neighborhood $\cup_{x \in S} B(x; \dmax)$
+of the set $S$. Assume that $f \in LC^k(\domain)$ with Lipschitz constant $L_f$.
+\end{assumption}
+
+\begin{definition}
+\label{fully_quadratic_definition}
+Let $f$ satisfy \cref{fully_quadratic_assumption}, and let $k\in\naturals$, $\kappa \in \mathbb R^k_+$, $\Delta>0$, $L_m>0$ be given constants.
+A model function $m \in C^k$ is $\kappa$-fully quadratic on $B(x, \Delta)$ with constant $L_m$ if
+\color{red}
+$m$ has a Lipschitz continuous Hessian with corresponding Lipschitz constant $L_m$
+\color{black}
+and, for each $0 \le i \le k$, we have that
+
+\begin{align*}
+\left| \left[\sum_{\alpha \in A(i)} D^{\alpha} f(y)\right] - \left[\sum_{\alpha \in A(i)} D^{\alpha} m(y) \right] \right| \le \kappa_i \Delta^{k - i + 1},
+\quad \forall y \in B(x; \Delta)
+\end{align*}
+\end{definition}
+
+Define the fully quadratic class of models...
+
+
+
+
+
+
+
+
+
+\subsection{}
+
+\begin{lemma}
+\label{change_radius_lemma}
+You can change the radius of the poisedness.
+\end{lemma}
+
+
+\begin{definition}
+\label{lambda_poised_definition}
+Lambda poised.
+\end{definition}
+
+\begin{lemma}
+\label{lambda_poised_to_norm}
+The norm of $M$ is bounded if and only if $\sigma $ is lambda poised.
+\end{lemma}
+
+\begin{proof}
+Uses 4.2
+\end{proof}
+
+\begin{theorem}{Proposition 4.10}
+\label{lambda_poised_to_fully_quadratic}
+If $\sigma$ is lambda poised, then $m$ is fully quadratic.
+\end{theorem}
+\begin{proof}
+Uses \cref{change_radius_lemma}, lemma 4.2, \cref{lambda_poised_to_norm}
+\end{proof}
+
+
+\begin{theorem}
+The set returned from the algorithm is lambda poised for some $\Lambda$ proportional to the growth factor.
+Uses equation 5.3.
+\end{theorem}
+
+\begin{proof}
+\end{proof}
+
 
 
 
@@ -362,7 +1531,7 @@ $K$ & a closed convex set \\
 $C^n(K)$ & the set of functions that are differentiable on $K$ \\
 $D^{\alpha}$ & a differentiation operator \\
 $ \naturals $ & are the natural numbers, $1, 2, \ldots$ \\
-$ \natsd $ & is obvious \\
+$ \natsn $ & is obvious \\
 $ \reals $ & are the real numbers \\
 $e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\
 $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
@@ -370,6 +1539,9 @@ $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $
 $\delta_{i,j}$ & is the kronecker delta function, $\delta_{i,i} = 1$, $\delta_{i,j} = 0$ if $i\ne j$ \\
 $\ximin$ & is a minimum tolerance on $\xi$ \\
 $\xiini$ & is an initial tolerance on $\xi$ \\
+$\dmax$ & \\
+$\domain$ & \\
+$LC^2$ & \\
 \label{tab:TableOfNotation}
 \end{longtable}
 
