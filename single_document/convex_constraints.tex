@@ -60,6 +60,7 @@
 \newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
 \theoremstyle{case}
 \newtheorem{case}{Case}
+\numberwithin{theorem}{subsection}
 
 
 % idk about this:
@@ -71,40 +72,40 @@
 
 \newcommand{\abuf}{{\alpha_{\text{buffer}}}}
 \newcommand{\activeconstraintsk}{{\mathbb A_{k}}}
-\newcommand{\atr}{{A_{\text{TR}}}}
-\newcommand{\atrk}{{A^{(k)}_{\text{TR}}}}
-\newcommand{\bs}{{\beta^{\star}}}
-\newcommand{\bsk}{{\beta^{(\star, k)}}}
+\newcommand{\atr}{{A_{\textrm{TR}}}}
+\newcommand{\atrk}{{A^{(k)}_{\textrm{TR}}}}
+\newcommand{\bs}{{\beta^{(\star, k)}}}
+\newcommand{\bsk}{{\beta_0^{(\star, k)}}}
 \newcommand{\btr}{{b_{\text{TR}}}}
-\newcommand{\btrk}{{b^{(k)}_{\text{TR}}}}
+\newcommand{\btrk}{{b^{(k)}_{\textrm{TR}}}}
 \newcommand{\capcones}{{C^{(k)}_{\cap}}}
 \newcommand{\chik}{{\chi^{(k)}}}
 \newcommand{\ck}{{c^{(k)}}}
 \newcommand{\ckmo}{{c^{(k-1)}}}
-\newcommand{\dacc}{{\Delta_{\text{acc}}}}
-\newcommand{\dacco}{{\Delta_{\text{a}}}}
+\newcommand{\dacc}{{\Delta_{\textrm{acc}}}}
+\newcommand{\dacco}{{\Delta_{\textrm{a}}}}
 \newcommand{\deltalargzik}{{\Delta_{\alpha,\beta}}}
-\newcommand{\dfeas}{{\Delta_{\text{feas}}}}
+\newcommand{\dfeas}{{\Delta_{\textrm{feasible}}}}
 \newcommand{\dk}{\Delta_k}
 \newcommand{\dkpo}{\Delta_{k+1}}
-\newcommand{\dmax}{\Delta_{\text{max}}}
+\newcommand{\dmax}{\Delta_{\textrm{max}}}
 \newcommand{\domain}{{\mathcal X}}
-\newcommand{\dsr}{{\Delta_{\text{sr}}}}
+\newcommand{\dsr}{{\Delta_{\textrm{sr}}}}
 \newcommand{\ellipsek}{{E^{(k)}}}
-\newcommand{\fcki}{{\mathcal {F}^{\text{inner}}_k}}
+\newcommand{\fcki}{{\mathcal {F}^{(k)}_{\textrm{inner}}}}
 \newcommand{\feasdir}{{u_{\text{feas}}}}
 \newcommand{\feasiblek}{{\mathcal F^{(k)}}}
 \newcommand{\feasible}{{\mathcal F}}
 \newcommand{\fik}{{\mathcal F_{i, k}}}
 \newcommand{\fmin}{f_{\text{min}}}
-\newcommand{\gammabi}{\gamma_{\text{sufficient}}}
-\newcommand{\gammasm}{\gamma_{\text{min}}}
-\newcommand{\gcik}{{\nabla c_i (\xk)}}
+\newcommand{\gammabi}{\gamma_{\textrm{sufficient}}}
+\newcommand{\gammasm}{\gamma_{\textrm{min}}}
+\newcommand{\gcik}{{\nabla c_i \left(\xk\right)}}
 \newcommand{\gk}{{\nabla m_f^{(k)}(x^{(k)})}}
 \newcommand{\gmcik}{{\nabla m_{c_i}^{(k)}\left(\xk\right)}}
 \newcommand{\gradf}{\nabla f}
 \newcommand{\gradmodelk}{\nabla{{m}_f}^{(k)}}
-\newcommand{\hfeasdir}{{\hat{u}_{\text{feas}}}}
+\newcommand{\hfeasdir}{{\hat{u}_{\textrm{feas}}}}
 \newcommand{\hgik}{{\frac{\nabla m^{(k)}_{c_i}(\xk)}{\|\nabla m^{(k)}_{c_i}(\xk)\|}}}
 \newcommand{\hk}{{\nabla^2m_f^{(k)}(x^{(k)})}}
 \newcommand{\huff}{{\Gamma_0}}
@@ -126,7 +127,7 @@
 \newcommand{\minangledelta}{{\Delta_{\alpha^{\star}}}}
 \newcommand{\mingraddelta}{{\Delta_{\nabla c}}}
 \newcommand{\mingradepsilon}{{\epsilon_{\nabla c}}}
-\newcommand{\mingrad}{{ g_{\text{low}} }}
+\newcommand{\mingrad}{{ g_{\textrm{low}} }}
 \newcommand{\naturals}{\mathbb N}
 \newcommand{\oalpha}{\tau_{\Delta}}
 \newcommand{\omegadec}{\omega_{\text{dec}}}
@@ -136,7 +137,7 @@
 \newcommand{\qk}{{Q^{(k)}}}
 \newcommand{\qkmo}{{Q^{(k-1)}}}
 \newcommand{\reals}{\mathbb R}
-\newcommand{\reg}{{\delta_{\text{regularity}}}}
+\newcommand{\reg}{{\delta_{\textrm{reg}}}}
 \newcommand{\rk}{\rho_k}
 \newcommand{\Rm}{\mathbb R^m}
 \newcommand{\Rn}{\mathbb R^n}
@@ -146,24 +147,25 @@
 \newcommand{\sdk}{{\delta_k}}
 \newcommand{\sdkmo}{{\delta_{k-1}}}
 \newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
-\newcommand{\sigmamax}{{\sigma_{\text{max}}}}
+\newcommand{\sigmamax}{{\sigma_{\textrm{max}}}}
 \newcommand{\sk}{{{s}^{(k)}}}
-\newcommand{\thetamink}{{\theta^k_{\text{min}}}}
+\newcommand{\thetamink}{{\theta^k_{\textrm{min}}}}
 \newcommand{\tolcrit}{\tau_{\xi}}
 \newcommand{\tolrad}{\tau_{\Delta}}
 \newcommand{\tr}{{ B_{\infty}\left(\xk, \dk\right) }}
-\newcommand{\trsinfset}{{E_\text{infeasible}}}
-\newcommand{\trstol}{{\delta_\text{infeasible}}}
-\newcommand{\unshiftedellipsoid}{{\mathcal E^k_{\text{feasible}}}}
+\newcommand{\trsinfset}{{E_\textrm{infeasible}}}
+\newcommand{\trstol}{{\delta_\textrm{infeasible}}}
+\newcommand{\unshiftedellipsoid}{{\mathcal E^k_{\textrm{feasible}}}}
 \newcommand{\wik}{{w^{(i, k)}}}
 \newcommand{\xik}{{\xi^{(k)}}}
 \newcommand{\ximin}{\xi_{\text{min}}}
 \newcommand{\xkpo}{{{x}^{(k+1)}}}
 \newcommand{\xk}{{x^{(k)}}}
+\newcommand{\xl}{{x^{(l)}}}
 \newcommand{\zik}{{z^{(i, k)}}}
 
 
-
+\newcommand{\image}{{\textrm{im}}}
 
 
 \newcommand{\minangleu}{{replace me}}
@@ -203,17 +205,6 @@ Computational results are presented on a suite of test problems.
 
 \newpage
 
-
-\begin{comment}
-define $\huff$
-\end{comment}
-
-
-\begin{comment}
-
-equation that he mentioned before
-
-\end{comment}
 
 \section{Introduction}
 
@@ -660,6 +651,7 @@ Although an approach for avoiding one of these two function evaluations can work
 
 
 \subsection{Infeasible Sample Points: Ensuring a Feasible Sample Region}
+\label{possible_ellipsoids}
 
 We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
 This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
@@ -715,8 +707,6 @@ For convenience, we will define the set within each of these cones as
 \end{align}
 
 
-
-
 We can now state our requirements of the ellipsoids.
 Note that other conditions may work, but we have chosen \cref{ellipsoids_notation_definitions} for our convergence analysis.
 
@@ -725,11 +715,12 @@ Note that other conditions may work, but we have chosen \cref{ellipsoids_notatio
 For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
 Then we have the following definitions.
 \begin{itemize}
-\item The tuples $(\qk, \ck, \dk)$ are \emph{bounded} if the condition numbers of $\qk$ are bounded: there exists a $\sigmamax \ge 1$ with
+\item The tuples $(\qk, \ck, \sdk)$ are \emph{bounded} if the condition numbers of $\qk$ are bounded:
+there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
 \begin{align}
-\sigma(Q^{(k)}) \le \sigmamax \quad \forall k \in \naturals \label{define_suitable_condition_numbers}
+\sigma(Q^{(k)}) \le \sigmamax. \label{define_suitable_condition_numbers}
 \end{align}
-\item The tuple $(\qk, \ck, \dk)$ is \emph{trusted} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the trust region:
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{trusted} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the trust region:
 \begin{align}
 \unshiftedellipsoid \subseteq \capcones \cap \tr  \label{define_suitable_in_tr}
 \end{align}
@@ -737,12 +728,12 @@ where
 \begin{align}
 \unshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck \right)^T \qk \left(x - \ck\right) \le \frac 1 2 {\sdk}^2 \right\} \label{define_unshifed_ellipsoid}
 \end{align}
-\item The tuple $(\qk, \ck, \dk)$ is \emph{feasible} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the feasible region:
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{feasible} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the feasible region:
 \begin{align}
 \unshiftedellipsoid \subseteq \feasible.
 \end{align}
 where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}
-\item The tuple $(\qk, \ck, \dk)$ is \emph{adjacent} if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{adjacent} if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
 \begin{align}
 \xk \in \scaledunshiftedellipsoid \label{define_suitable_close_to_iterate}
 \end{align}
@@ -750,7 +741,7 @@ where
 \begin{align}
 \scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\sdk}^2 \right\}
 \end{align}
-\item The tuple $(\qk, \ck, \dk)$ are \emph{non-empty} if
+\item The tuple $(\qk, \ck, \sdk)$ are \emph{non-empty} if
 \begin{align}
 \unshiftedellipsoid \ne \emptyset
 \end{align}
@@ -1008,6 +999,10 @@ However, there is an efficient, binary-search algorithm to solve this \cite{proj
 Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
 One very simple random-search algorithm can be used to show this.
 
+\begin{comment}
+Dramatically simplify this algorithm...
+\end{comment}
+
 \begin{algorithm}[H]
     \caption{Search for feasible ellipsoid}
     \label{numerical_ellipsoid_algorithm}
@@ -1182,17 +1177,29 @@ we have the following optimization problem:
 Notice that this optimization problem is not convex.
 Although more efficient formulations may exist, this leads us to believe that it may sometimes be difficult to even compute the maximum volume sphere within our buffering cones.
 
-
-
 \subsubsection{Conservative Ellipsoid}
-\paragraph{Definition}
-We were able to find another ellipsoid contained within each \cref{define_fik} that may, in general, be smaller than the largest possible ellipsoid.
-However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
-Here we show how to construct the ellipsoid, and that it satisfies \cref{ellipsoids_notation_definitions}.
+Throughout \cref{possible_ellipsoids} we have considered several inner trust regions.
+However, we have not been able to show that these satisfied the requirements stated in \cref{ellipsoids_notation_definitions}.
+We were able to find an ellipsoid contained within each \cref{define_fik} that may, in general, be smaller than the largest possible ellipsoid.
+Because we analyse this in more depth, we dedicate \cref{conservative_ellipsoid_section} to this.
+
+\subsection{Conservative Ellipsoid Derivation}
+\label{conservative_ellipsoid_section}
+\subsubsection{Definition}
+
+% However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
+Here we show how to construct the ellipsoid, and that it is 
+trusted and adjacent
+according to \cref{ellipsoids_notation_definitions}.
 Later, in \cref{ellipsoid_is_feasible_section}, we show that it is feasible for small enough $\dk$.
 
-First, we define the set of active constraints as in \cref{define_activeconstraints}
-and then, if $\activeconstraintsk \ne \emptyset$, compute a feasible direction for these active constraints:
+First, we define the set of active constraints as in \cref{define_activeconstraints}.
+If there are no active constraints, $\activeconstraintsk = \emptyset$, then we simply let
+\begin{align}
+\qk = I, \quad \ck = \xk, \quad \sdk = \sqrt{2} \dk. \label{define_trivial_ellipsek}
+\end{align}
+
+However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction for these active constraints:
 \begin{align}
 \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|} \label{define_u}
 \end{align}
@@ -1203,7 +1210,7 @@ The angle between this direction and the nearest direction that is infeasible is
 \thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{define_thetamink}.
 \end{align}
 
-The vector $\huk$ and and value $\thetamink$ can be easily computed with the following program:
+The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
 \begin{align*}
 \begin{array}{ccc}
 \huk \in \argmax_{u\in\Rn, \theta\in\reals} & \theta \\
@@ -1236,15 +1243,22 @@ and rotation matrix
 by defining
 \begin{align}
 \gamma = 1 + \frac 1 {\sqrt{2}} \label{define_the_constant_gamma} \\
-\sampletrk = \unshiftedellipsoid = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dk, \frac 1 {2\gamma} \dk, \max\left\{\frac 1 2 , \bsk\right\}; \rotk(x - \xk)\right) \le 0\right\}. \label{define_ellipsek}
+\bs = \max\left\{\frac 1 2 , \bsk\right\} \label{accuracy_small_delta} \\
+\sampletrk = \unshiftedellipsoid = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dk, \frac 1 {2\gamma} \dk,\bs; \rotk(x - \xk)\right) \le 0\right\}. \label{define_ellipsek}
 \end{align}
-During iteration $k$, if $\activeconstraintsk = \emptyset$, then we simply let
-\begin{align}
-\qk = I, \quad \ck = \xk, \quad \sdk = \sqrt{2} \dk. \label{define_trivial_ellipsek}
-\end{align}
-\cref{ellsoid_is_suitable_theorem_p2} tells us that this ellipsoid satisfies \cref{ellipsoids_notation_definitions}.
+Note that within \cref{define_ellipsek} we have defined the components $\qk$, $\ck$, $\sdk$ as
+\begin{align*}
+\qk = \rotk^T \begin{pmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
+\end{pmatrix} \rotk, \quad
+\ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
+\sdk = \frac 1 {2\gamma} \dk.
+\end{align*}
+% \cref{ellsoid_is_suitable_theorem_p2} tells us that this ellipsoid satisfies \cref{ellipsoids_notation_definitions}.
+% Which part? Trusted and adjacent
 
-\paragraph{Suitability}
+\subsubsection{Suitability}
 \label{feasible_ellipsoid_analysis}
 
 In this section, we show that our construction of the set $\sampletrk$ as given in 
@@ -1269,7 +1283,7 @@ First, note that a square is non-negative, so
 0 \le 2(e_1^Tx - \frac 1 2 \epsilon )^2
 = 2(e_1^Tx)^2 - 2e_1^Tx\epsilon + \frac 1 2 \epsilon^2.
 \end{align*}
-By moving the second and third terms over, we find
+By moving the second and third terms to the right hand side, we find
 \begin{align}
 (e_1^Tx)^2 \ge \frac 1 2 \epsilon^2 - \left((e_1^Tx)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) 
 = \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2. \label{ellipse_in_cone_eqn1}
@@ -1297,7 +1311,6 @@ This can be simplified to
 For a contradiction, suppose that $e_1^Tx < 0$, then $(e_1^Tx - \epsilon)^2 \ge \epsilon^2 \ge \delta^2$.
 However, the previous line shows $(e_1^Tx - \epsilon)^2 \le \frac 1 2 \delta^2$.
 Thus, $e_1^Tx \ge 0$.
-
 Therefore,
 \begin{align*}
 (e_1^Tx - \epsilon)^2 + \frac{\theta^2}{1 - \theta^2}\left(\|x\|^2 - (e_1^Tx)^2\right) 
@@ -1316,7 +1329,7 @@ where we can take the square root because $e_1^Tx \ge 0$.
 \begin{lemma}
 \label{ellipse_fits}
 Define $f_e$ by \cref{define_ellipse_function}.
-We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$.
+We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ for any $\delta, \theta > 0$.
 \end{lemma}
 \begin{proof}
 We compute
@@ -1341,7 +1354,7 @@ f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\begin{pmatrix}
 \begin{lemma}
 \label{ellipse_fits_part_2}
 Define $f_e$ by \cref{define_ellipse_function}.
-Suppose that $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2, 1\right]$, $\delta \in [0, \frac 1 2]$ and $f_e(\delta, \delta, \theta; ts) \le 0$.
+Suppose that for some $s \in \Rn$ with $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2, 1\right]$, $\delta \in [0, \frac 1 2]$ and $f_e(\delta, \delta, \theta; ts) \le 0$.
 Then $t \le \left(2 + \sqrt{2}\right) \delta$.
 \end{lemma}
 \begin{proof}
@@ -1367,84 +1380,135 @@ But,
 \end{align*}
 \end{proof}
 
+
+
+
 \begin{lemma}
-\label{boundbeta}
-Let $\bsk$ and $\fcki$ be defined by \cref{define_bsk} and \cref{define_inner_cone}, as well as
-$\minanglealpha$ be definedby \cref{minangleassumption}.
-If \cref{minangleassumption} holds,
-then there exists a $\dacc > 0$ such that $\bsk \le 1 - \frac 1 4 (\minanglealpha)^2$ whenever $\dk \le \dacc$.
+\label{boundbsk}
+% Let $\bsk$ and $\fcki$ be defined as in \cref{define_bsk} and \cref{define_inner_cone}.
+Let $\bsk$ and $\thetamink$ be defined by \cref{define_bsk} and \cref{define_thetamink}.
+For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
+$\bsk \le 1 - \frac 1 4 \epsilon^2$.
 \end{lemma}
 
 \begin{proof}
 Let $\alpha$, $\beta$ be defined by \cref{define_alpha_beta},
 and $p_{\alpha}$, $p_{\beta}$ be defined by \cref{define_p_alpha} and \cref{define_p_beta}.
-Also, let $\minangledelta$ be defined by \cref{minangleassumption}.
-Then we can let $\dacc$ be defined by
+% Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
+Then we can let $\dacc(\epsilon)$ be defined by
+% \minangledelta,
+% 1,
 \begin{align}
-\dacc =\min\left\{
-1,
-\minangledelta,
-\left(\frac 1 {4\beta} \left(\minanglealpha\right)^2\right)^{\frac 1 {p_{\beta}}},
+\dacco(\epsilon) < \min\left\{
+\left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
 \left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
-\right\}\label{define_delta_accuracy}.
+\right\}\label{define_delta_accuracy_old}.
 \end{align}
-If $\dk \le \dacc$, then
+If $\dk \le \dacco(\epsilon)$, then
 \begin{align}
-\dk \le \minangledelta \label{boundedbeta_deltasmall_1} \\
-\beta\dk^{p_{\beta}} \le \frac 1 {4} \left(\minanglealpha\right)^2 \label{boundedbeta_deltasmall_2} \\
+\beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
 2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
 \end{align}
-
-By \cref{boundedbeta_deltasmall_2}, we know $-\left(\minanglealpha\right)^2 \le -4\beta\dk^{p_{\beta}}$,
-so that because $\left(\minanglealpha\right)^2 \le 1$:
+Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
+which combined with $\epsilon ^2 \le 1 \le 5$ shows
 \begin{align*}
--\left[5- \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \left(\minanglealpha\right)^2 \le -4\beta\dk^{p_{\beta}}.
+-\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
 \end{align*}
 But this means
 \begin{align*}
-\left(1 - \left(\minanglealpha\right)^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
-= 1 - \left(\minanglealpha\right)^2 - \left[5 - \left(\minanglealpha\right)^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
+\left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
+= 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
 \le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
 \end{align*}
-Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see that because of \cref{boundedbeta_deltasmall_3}
-% 1 - \left(\minanglealpha\right)^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
+% 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
 % \Longrightarrow
-\begin{align} \frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\begin{align}
+\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
 = \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
 \end{align}
+Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
 Also,
 \begin{align*}
-1 - \left(\minanglealpha\right)^2 \le 1 - \left(\minanglealpha\right)^2 + \frac 1 4 \left(\minanglealpha\right)^4 
-= \left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2 
-\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2}{1 - \left(\minanglealpha\right)^2}
+1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
+= \left(1 - \frac 1 2 \epsilon^2 \right)^2 
+\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
 \end{align*}
 so that
 \begin{align*}
-1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \left(\minanglealpha\right)^2\right)^2}{1 - \left(\minanglealpha\right)^2} 
-\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\minanglealpha\right)^2} } 
-\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{1 - \frac 1 2 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
+1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
+\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
+\Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
 \end{align*}
 Dividing by $2$ yields:
 \begin{align}
-\frac 1 2 \sqrt{1 - \left(\minanglealpha\right)^2} \le \frac{\frac 1 2 - \frac 1 4 \left(\minanglealpha\right)^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
 \label{boundedbeta_eqn2}.
 \end{align}
 
 We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
 \begin{align*}
-\Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} = \frac{1 -  \frac 1 4 \left(\minanglealpha\right)^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \left(\minanglealpha\right)^2.
+\sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
 \end{align*}
-But by \cref{theta_min_is_bounded} and \cref{boundedbeta_deltasmall_1}, 
-$\thetamink \ge \minanglealpha \Longrightarrow \sqrt{1 - \left(\minanglealpha\right)^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
+Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
 so that
 \begin{align*}
 \bsk 
 = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
-\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \left(\minanglealpha\right)^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\le 1 -  \frac 1 4 \left(\minanglealpha\right)^2.
+\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+\le 1 -  \frac 1 4 \epsilon^2.
 \end{align*}
 \end{proof}
+
+
+
+\begin{lemma}
+\label{boundbeta}
+Let $\thetamink$ and $\qk$ be defined by \cref{define_thetamink} and \cref{define_ellipsek} respectively.
+For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qk) \le \frac{12}{\epsilon^2}$.
+\end{lemma}
+
+\begin{proof}
+Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma} respectively.
+Also, during iteration $k$, let $\bs$ be defined by \cref{accuracy_small_delta}.
+Definition \cref{define_ellipsek} states
+\begin{align*}
+\qk = \rotk^T \begin{pmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
+\end{pmatrix} \rotk, \quad
+\ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
+\sdk = \frac 1 {2\gamma} \dk.
+\end{align*}
+
+First note that by \cref{accuracy_small_delta} and \cref{boundbsk}, there exists $\dacco(\epsilon) > 0$ such that if 
+$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, then
+$\frac {1} 2 \le \bs \le 1 - \frac 1 4 \epsilon^2$.
+Squaring this yields
+\begin{align}
+\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \epsilon^2\right)^2 \le 1 - \frac 1 4 \epsilon^2 \label{p2_numerator}
+\end{align}
+so that
+\begin{align}
+\frac 1 4 \epsilon^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
+\end{align}
+Dividing \cref{p2_numerator} by \cref{p2_denominator}, we see that
+\begin{align*}
+\frac 1 3
+\le \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}
+\le \frac {4 - \epsilon^2}{\epsilon^2} \le \frac {4}{\epsilon^2}
+\Longrightarrow 
+\kappa(\qk) 
+= \frac{\max\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}}{\min\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}} 
+\le \frac {12}{\epsilon^2}
+\end{align*}
+as $\det(\rotk) = 1$.
+\end{proof}
+
+
 
 
 \begin{lemma}
@@ -1602,8 +1666,8 @@ Finally, \cref{define_suitable_close_to_iterate} is satisfied because $(\xk - \x
 
 \begin{lemma}
 \label{ellsoid_is_suitable_theorem_p2}
-Let $\activeconstraintsk$, and $\dacc$ be defined by \cref{define_activeconstraints}, and \cref{define_delta_accuracy} respectively.
-If $\activeconstraintsk \ne \emptyset$ and $\dk \le \dacc$, then the ellipsoids defined by \cref{define_ellipsek} are trusted and adjacent according to \cref{ellipsoids_notation_definitions}.
+Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.
+If $\activeconstraintsk \ne \emptyset$ and $\dk \le 1$, then the ellipsoids defined by \cref{define_ellipsek} are trusted and adjacent according to \cref{ellipsoids_notation_definitions}.
 
 % There exsists $\dacc > 0$ such that if $\dk \le \dacc$
 % and $\activeconstraintsk \ne \emptyset$
@@ -1616,11 +1680,7 @@ If $\activeconstraintsk \ne \emptyset$ and $\dk \le \dacc$, then the ellipsoids 
 % as in \cref{define_ellipsek}.
 \end{lemma}
 \begin{proof}
-Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma} respectively.
-Also, during iteration $k$, let
-\begin{align}
-\bs = \max\left\{\frac 1 2, \bsk\right\}. \label{accuracy_small_delta}
-\end{align}
+Let $\rotk$, $\gamma$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{accuracy_small_delta} respectively.
 Definition \cref{define_ellipsek} states
 \begin{align*}
 \qk = \rotk^T \begin{pmatrix}
@@ -1666,8 +1726,7 @@ Thus, for any $x \in \unshiftedellipsoid$, we can let $x = \xk + ts$, $\|s\| = 1
 Because $\frac 1 2 \dk \le \frac 1 2$, we can apply \cref{ellipse_fits_part_2} to conclude $\|x - \xk\| = t \le \left(2 + \sqrt{2}\right)\frac 1 {2\gamma} \dk = \dk$.
 Thus, $x \in \tr$, and $\unshiftedellipsoid \subseteq \fcki \cap \tr$.
 By \cref{inner_cone_inside_each_cone}, $\fcki \subseteq \capcones$.
-
-For \cref{define_suitable_close_to_iterate}, we have \cref{ellipse_fits} tells us that
+For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 2 \dk, \frac 1 {\sqrt{2}}\dk, \bs; \rotk\left(\xk - \xk\right)\right) = 0$, so that $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
 
@@ -1994,60 +2053,60 @@ The following assumptions let us know that the functions $f$ and $c_i \quad \for
 \begin{assumption}
 \label{lipschitz_gradients_assumption}
 The functions $c_i$ for all $1 \le i \le m$ and $f$ are differentiable and their gradients are Lipschitz continuous with constant $\lipgrad > 0$ in $ \Omega $:
-\begin{align}
+\begin{align*}
 \|\gradf(x) - \gradf(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \Omega, \\
 \|\nabla c_i(x) - \nabla c_i(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \Omega, \forall 1 \le i \le m.
-\end{align}
+\end{align*}
 \end{assumption}
 
 
 \begin{assumption}
 \label{lipschitz_hessians_assumption}
 The functions $c_i$ for all $1 \le i \le m$ and $f$ are twice differentiable and their Hessians are Lipschitz continuous with constant $\liphess > 0$ in $ \Omega $:
-\begin{align}
+\begin{align*}
 \|\nabla^2 f(x) - \nabla^2 f(y)\| \le \liphess \|x - y\| \quad \forall x,y \in \Omega, \\
 \|\nabla^2 c_i(x) - \nabla^2 c_i(y)\| \le \liphess \|x - y\| \quad \forall x,y \in \Omega, \forall 1 \le i \le m.
-\end{align}
+\end{align*}
 \end{assumption}
 
 
 \paragraph{Regularity Assumptions}
 
-\begin{definition}
-Let $\epsilon > 0$ be a given constant.
-A constraint $c_i(x) \le 0$ is said to be $\epsilon$-nearly active at $x \in \feasible$ if $|c_i(x)| \le \epsilon$.
-\end{definition}
-
-\begin{definition}
-Let $\epsilon > 0$ be given.
-Define the set of indices of $\epsilon$ active constraints at a point $x \in \feasible$ by
-\begin{align}
-\epsactive(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |c_i(x)| \le \epsilon \bigg\} \label{define_epsactive}
-\end{align}
-\end{definition}
-
-\begin{definition}
-Let $\epsilon > 0$ be given.
-Define the set of indices of $\epsilon$ active model constraints at a point $x \in \feasible$ by
-\begin{align}
-\epsactivemodels(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |m_{c_i}(x)| \le \epsilon  \bigg\} \label{define_epsactivemodels}
-\end{align}
-\end{definition}
-
-
-
 We use the following assumptions as our regularity assumptions.
 
 The following is similar to the Mangasarian Fromovitz constraint qualifications with only inequality constraints.
 However, this provides a uniform bound across all points, not just a critical point.
+
+For alternative assumptions, please see \cref{alternative_assumptions_section}.
+
 \begin{assumption}
-\label{minangleassumption_alt}
-There exists a $\minanglealpha$ and $\epsilon > 0$ such that for every $x \in \feasible$, 
-there is a unit vector $\minanglediralt(x)$ such that
+\label{minangleassumption}
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $x \in \Omega$ there exists a $\minangledir(\xk) \in \Rn$ with $\|\minangledir(\xk)\| = 1$ such that 
+if $\dk \le \minangledelta$ and $i$ is such that 
+$\zik \in B_{\infty}(\xk, \dk)$
+then
 \begin{align*}
-\nabla c_i(x)^T\minanglediralt(x) > \minanglealpha\quad \forall i \in \epsactive(x; \epsilon).
+-\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha.
+\end{align*}
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
+\end{assumption}
+
+
+
+\begin{assumption}
+\label{mingradassumption}
+Suppose that 
+\cref{minangleassumption_alt} holds.
+There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
+\begin{align*}
+\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
 \end{align*}
 \end{assumption}
+
+
+
+
+
 
 
 % \paragraph{}
@@ -2145,55 +2204,67 @@ c_i(x) \ge c_i(x^{(0)}) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = -M_c.
 \end{proof}
 
 
+
+\subsection{Bounded Condition Numbers}
+
+
 \begin{lemma}
-\label{mingradassumption}
-Suppose that 
-\cref{minangleassumption_alt} holds.
-There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
-\begin{align*}
-\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
-\end{align*}
+\label{theta_min_is_bounded}
+Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption}, and
+define $\thetamink$ by \cref{define_thetamink}.
+Suppose that \cref{minangleassumption} holds.
+% Let $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption} and 
+If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \end{lemma}
+
 \begin{proof}
-Let $x \in \Omega$ be arbitrary.
-By \cref{minangleassumption_alt} we know there are some constants $\minanglealpha>0$ and $\epsilon>0$ and unit vector $\minanglediralt(x)$ such that for all $i \in \epsactive(x; \epsilon)$,
-$\nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha$.
-Letting $\mingradepsilon = \epsilon$ and $\mingrad = \minanglealpha$, we see that for all $i \in \epsactive(x; \mingraddelta)$,
+If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
+Otherwise, by \cref{minangleassumption}, there is a $\minangledir(\xk)$ such that 
+$-\minangledir(\xk)^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
+But, by definition of $\huk$ in \cref{define_u}:
+$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\frac{\gmcik}{\left\|\gmcik\right\|}$
+so that for all $i \in \activeconstraintsk$,
 \begin{align*}
-\|\nabla c_i(x)\| = \|\nabla c_i(x)\| \|\minanglediralt(x)\| \ge \nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha = \mingrad.
+-\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -\left(\minangledir(\xk)\right)^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
 \end{align*}
+Therefore, $\thetamink \ge \minanglealpha$.
 \end{proof}
 
-\color{red}
 \begin{lemma}
-\label{minanglelemmap1}
-Suppose that \cref{minangleassumption_alt}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
-There exists $\minangledelta > 0$ and $\minanglealpha$ such that for each $x \in \feasible$, there is a unit vector $\minangledir(x)$ such that
-\begin{align*}
--\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir(x) \ge \minanglealpha.
-\end{align*}
+\label{bounded_condition_numbers}
+Let $\qk$ and $\minanglealpha$ be defined by \cref{define_ellipsek} and \cref{minangleassumption} respectively.
+Suppose that \cref{minangleassumption} holds.
+Then, $\qk$ is bounded as defined within \cref{ellipsoids_notation_definitions}.
+Namely, there exists a $\dacc > 0$, such that $\sigma(\qk) \le \frac {12}{\minanglealpha}$ whenever $\dk \le \dacc$.
 \end{lemma}
 \begin{proof}
-By \cref{bounded_gradients_lemma}, there exists $\maxgrad$ with $\|\nabla c_i(x) \| \le \maxgrad$ for any $x \in \feasible$.
-Let \cref{minangleassumption_alt} hold with constants $\minanglealpha'$ and $\epsilon$, so that for any $x \in \feasible$, there is a unit vector $\minanglediralt(x)$ with
-\begin{align*}
-\nabla c_i(x)\minanglediralt(x) \ge \minanglealpha'.
-\end{align*}
-Also, by \cref{mingradassumption}, there exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
-\begin{align*}
-\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
-\end{align*}
-By letting $\minangledir(x) = -\minanglediralt(x)$, $\minanglealpha = \minanglealpha'\maxgrad$, $\minangledelta = \min\{\epsilon, \minangledelta\}$, 
-we see that for all $x \in \feasible$ and $i \in \epsactive(x; \minangledelta)$,
-\begin{align*}
--\nabla c_i(x) \minanglediralt(x) \ge \minanglealpha'\maxgrad \ge \minanglealpha'\|\nabla c_i(x)\|.
-\end{align*}
-Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla c_i(x) \|$ to find
-\begin{align*}
--\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir(x) \ge \minanglealpha.
-\end{align*}
+Letting $\activeconstraintsk$ be defined by \cref{define_activeconstraints}, we see that the case when $\activeconstraintsk = \emptyset$ is handled within \cref{ellsoid_is_suitable_theorem_p1}.
+If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{theta_min_is_bounded} and \cref{boundbeta} by letting
+\begin{align}
+\dacc = \min\left\{\minangledelta, \dacco(\minanglealpha) \right\} \label{define_delta_accuracy}
+\end{align}
+where $\minangledelta$ is defined by \cref{minangleassumption} and $\dacco(\epsilon)$ is defined by \cref{define_delta_accuracy_old}.
 \end{proof}
-\color{black}
+
+
+\begin{comment}
+Use this lemma
+\end{comment}
+\begin{lemma}
+Let $\dacc$ be defined by \cref{define_delta_accuracy}.
+Suppose that \cref{minangleassumption} holds.
+If $\dk \le \dacc$, then the tuple $(\qk, \ck, \sdk)$ defined in \cref{define_ellipsek}
+is non-empty according to \cref{ellipsoids_notation_definitions}.
+\end{lemma}
+\begin{proof}
+\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that $\bsk < 1$.
+Using \cref{accuracy_small_delta}, \cref{define_inner_cone},
+$\fcki \ne \emptyset$.
+% , we see that \cref{actually_define_qk}
+\begin{comment}
+Finish this thought...
+\end{comment}
+\end{proof}
 
 
 \subsection{Accuracy}
@@ -2309,272 +2380,6 @@ In particular, $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
 
 
-
-
-
-
-
-
-\begin{lemma}
-\label{boundbsk}
-% Let $\bsk$ and $\fcki$ be defined as in \cref{define_bsk} and \cref{define_inner_cone}.
-Let $\bsk$ and $\thetamink$ be defined by \cref{define_bsk} and \cref{define_thetamink}.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \le \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
-$\bsk \le 1 - \frac 1 4 \epsilon^2$.
-\end{lemma}
-
-\begin{proof}
-Let $\alpha$, $\beta$ be defined by \cref{define_alpha_beta},
-and $p_{\alpha}$, $p_{\beta}$ be defined by \cref{define_p_alpha} and \cref{define_p_beta}.
-% Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
-Then we can let $\dacc(\epsilon)$ be defined by
-% \minangledelta,
-% 1,
-\begin{align}
-\dacco(\epsilon) < \min\left\{
-\left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
-\left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
-\right\}\label{define_delta_accuracy}.
-\end{align}
-If $\dk \le \dacco(\epsilon)$, then
-\begin{align}
-\beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
-2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
-\end{align}
-Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
-which combined with $\epsilon ^2 \le 1 \le 5$ shows
-\begin{align*}
--\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
-\end{align*}
-But this means
-\begin{align*}
-\left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
-= 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
-\le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
-\end{align*}
-Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
-% 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
-% \Longrightarrow
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
-\end{align}
-Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
-Also,
-\begin{align*}
-1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
-= \left(1 - \frac 1 2 \epsilon^2 \right)^2 
-\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
-\end{align*}
-so that
-\begin{align*}
-1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
-\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
-\Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
-\end{align*}
-Dividing by $2$ yields:
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\label{boundedbeta_eqn2}.
-\end{align}
-
-We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
-\begin{align*}
-\sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
-\end{align*}
-Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
-so that
-\begin{align*}
-\bsk 
-= \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
-\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\le 1 -  \frac 1 4 \epsilon^2.
-\end{align*}
-\end{proof}
-
-
-
-
-\begin{lemma}
-\label{boundbeta}
-Let $\thetamink$ and $\qk$ be defined by \cref{define_thetamink} and \cref{define_ellipsek} respectively.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \le \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qk) \le \frac{12}{\epsilon^2}$.
-\end{lemma}
-
-\begin{proof}
-Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma} respectively.
-Also, during iteration $k$, let $\bs$ be defined by \cref{accuracy_small_delta}.
-Definition \cref{define_ellipsek} states
-\begin{align*}
-\qk = \rotk^T \begin{pmatrix}
-1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
-\end{pmatrix} \rotk, \quad
-\ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
-\sdk = \frac 1 {2\gamma} \dk.
-\end{align*}
-
-First note that by \cref{accuracy_small_delta} and \cref{boundbsk}, there exists $\dacco(\epsilon) > 0$ such that if 
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, then
-$\frac {1} 2 \le \bs \le 1 - \frac 1 4 \epsilon^2$.
-Squaring this yields
-\begin{align}
-\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \epsilon^2\right)^2 \le 1 - \frac 1 4 \epsilon^2 \label{p2_numerator}
-\end{align}
-so that
-\begin{align}
-\frac 1 4 \epsilon^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
-\end{align}
-Dividing \cref{p2_numerator} by \cref{p2_denominator}, we see that
-\begin{align*}
-\frac 1 3
-\le \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}
-\le \frac {4 - \epsilon^2}{\epsilon^2} \le \frac {4}{\epsilon^2}
-\Longrightarrow 
-\kappa(\qk) 
-= \frac{\max\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}}{\min\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}} 
-\le \frac {12}{\epsilon^2}
-\end{align*}
-as $\det(\rotk) = 1$.
-\end{proof}
-
-
-\begin{lemma}
-Suppose \cref{minangleassumption_alt}
-and the assumptions for \cref{accuracy_is_satisfied_lemma} and \cref{bounded_gradients_lemma} are satisfied.
-There exists $\dacc > 0$ and $\sigma_0 \ge 1$ such that if $\dk \le \dacc$, and
-\begin{align}
-\sigma\left( Q^{(k-1)} \right) \le \sigma_0 \label{idk_alt_proof_statement1}
-\end{align}
-then 
-\begin{align}
-\sigma\left( \qk \right) \le \sigma_0. \label{idk_alt_proof_statement2}
-\end{align}
-\end{lemma}
-
-
-\begin{proof}
-Let $\epsilon, \minanglealpha > 0$ be defined by \cref{minangleassumption_alt}, and $\maxgrad$ be defined by \cref{bounded_gradients_lemma}.
-Define
-\begin{align}
-&M = \frac 1 {\maxgrad + \frac 1 2 \minanglealpha} & \\
-&\textrm{and} \quad \sigma_0 = \max\left\{1, \frac{48}{M^2\left(\minanglealpha\right)^2}\right\}.&
-\end{align}
-By \cref{boundbeta}, there exists $\dacco \left(\frac {M \minanglealpha} 2\right) > 0$ such that if
-$\thetamink \ge \frac {M \minanglealpha} 2$ and $\dk \le \dacco \left(\frac {M \minanglealpha} 2\right)$,
-then $\sigma\left(\qk\right) \le \frac{12}{\left(\frac{M\minanglealpha}{2}\right)^2} = \sigma_0$.
-Define 
-\begin{align}
-\dacc = \min\left\{
-\dacco \left(\frac {M \minanglealpha} 2\right), 
-\sqrt{\frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}},
-\frac{M \epsilon}{\sqrt{n}}
-\right\} \label{define_delta_accuracy2}
-\end{align}
-and suppose that \cref{idk_alt_proof_statement1} and $\dk \le \dacc$ hold.
-By \cref{boundbeta}, \cref{idk_alt_proof_statement2} follows from $\thetamink \ge \frac {M \minanglealpha} 2$.
-
-% then
-% \begin{align}
-% \sqrt{\sigma\left(\qk \right)} \le \frac{48}{M^2\left(\minanglealpha\right)^2}
-% \end{align}
-% Suppose that $\epsactive(\xk; \epsilon) = \emptyset$.
-% for all $y \in \tr$, we have
-% \begin{align*}
-% \left\|\gradf\left(y\right) - \nabla \mfk\left(y\right) \right\| \le \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2.
-% \end{align*}
-% In particular, there exists $u \in \Rn$ with $\|u\| \le 1$ such that
-
-By \cref{accuracy_is_satisfied_lemma}, there exists $\kappa_{g} > 0$ and $u\in\Rn$ with $\|u\|\le 1$ such that
-\begin{align}
-\nabla c_i\left(\xk\right) = \gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u. \label{idk_alt_proof_eqn2}
-\end{align}
-Taking the square root of \cref{idk_alt_proof_statement1} and multiplying by $\dk^2 \le \frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}$, we see
-\begin{align}
-\sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \frac {\minanglealpha} {2\kappa_g}. \label{idk_alt_proof_ass1}
-\end{align}
-We see that by the triangle inequality, \cref{bounded_gradients_lemma}, \cref{idk_alt_proof_eqn2}, and \cref{idk_alt_proof_ass1} that
-\begin{align}
-\left\|\gmcik\right\| \le \left\| \nabla c_i\left(x\right)\right\| + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \maxgrad + \frac 1 2 \minanglealpha = \frac 1 M \nonumber \\
-\Longrightarrow \frac 1 {\left\|\gmcik\right\|} \ge M. \label{idk_alt_proof_eqn4}
-\end{align}
-
-Let $\activeconstraintsk$ and $\epsactive(x; \epsilon)$
-% and $\epsactivemodels(x; \epsilon)$
-be defined by
-\cref{define_activeconstraints} and \cref{define_epsactive}
-% , and \cref{define_epsactivemodels}
-respectively.
-If $\activeconstraintsk = \emptyset$, then $\sigma\left(\qk\right) = 1$.
-Otherwise, let $i \in \activeconstraintsk$ be arbitrary,
-so that $\zik \in \tr$. By \cref{define_z}
-\begin{align*}
-M \left|m_{c_i}\left(\xk\right)\right| \le \frac{\left|m_{c_i}\left(\xk\right)\right|}{\left\|\gmcik\right\|} \le \sqrt{n} \dk \Longrightarrow
-\left|c_i\left(\xk\right)\right| \le \frac{\sqrt{n}\dk}{M} \le \epsilon
-\end{align*}
-by \cref{define_delta_accuracy2}.
-This means that $i \in \epsactive(\xk; \epsilon)$, so that by \cref{minangleassumption_alt} there exists a unit vector $\minanglediralt(\xk)$ with
-\begin{align}
-\nabla c_i\left(\xk\right)^T\minanglediralt\left(\xk\right) > \minanglealpha \label{idk_alt_proof_eqn1}
-\end{align}
-Substituting \cref{idk_alt_proof_eqn2} into \cref{idk_alt_proof_eqn1} yields:
-\begin{align*}
-\left(\gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u\right)^T \minanglediralt(x) > \minanglealpha
-\end{align*}
-Using \cref{idk_alt_proof_ass1}, $\|u\|\le 1$, and $\|\minanglediralt(x)\| = 1$, this becomes
-\begin{align}
-\gmcik^T\minanglediralt(x) > \minanglealpha - \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u^T\minanglediralt(x) \ge \frac 1 2 \minanglealpha \label{idk_alt_proof_eqn3}
-\end{align}
-Multiplying \cref{idk_alt_proof_eqn3} and \cref{idk_alt_proof_eqn4} yields
-\begin{align}
-\frac{\gmcik}{\left\|\gmcik\right\|}^T  \minanglediralt(x) \ge \frac M 2 \minanglealpha. \label{idk_alt_proof_eqn5}
-\end{align}
-Let $\huk$ be defined by \cref{define_u}, 
-% \begin{align*}
-% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}
-% \end{align*}
-and $\thetamink$ be defined by \cref{define_thetamink}.
-Then \cref{idk_alt_proof_eqn5} tells us 
-\begin{align*}
-\thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \ge \frac{\gmcik}{\left\|\gmcik\right\|}^T \minanglediralt(x) \ge \frac M 2 \minanglealpha.
-\end{align*}
-% Then by \cref{boundbeta}, there exists $\dacc(\epsilon) > 0$ such that if $\thetamink >$
-% \begin{align*}
-% \sigma\left(\qk\right) \le \frac{48}{M^2\left(\minanglealpha\right)^2}
-% \end{align*}
-% Now,
-% \begin{align*}
-% \sigma_2 = \frac{\max\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}{\min\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}
-% \end{align*}
-
-% We know that the next trial point $\xkpo$ must also lie within the trust region, so that we have both
-% \begin{align*}
-% \left\|\gradf\left(\xk\right) - \nabla \mfk\left(\xk\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
-% \left\|\gradf\left(\xkpo\right) - \nabla \mfk\left(\xkpo\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
-% \end{align*}
-% 
-% \begin{align*}
-% \nabla \mfk\left(\xk\right)  = \gradf\left(\xk\right) + \kappa_g \sqrt{\sigma_1}\dk^2 \\
-% \end{align*}
-% 
-% 
-% 
-% Let $\bsk$ be defined by \cref{define_bsk}.
-% Let $\alpha$ and $\beta$ be defined by \cref{define_alpha_beta}.
-% Let $p_{\alpha}$ and $p_{\beta}$ be defined by \cref{define_p_alpha} and \cref{define_p_beta} respectively.
-% \begin{align}
-% \end{align}
-% 
-% \begin{align*}
-% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|} \\
-% \bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)} \\
-% \end{align*}
-\end{proof}
-
-
 \begin{theorem}
 \label{accuracy_is_satisfied}
 Let $\activeconstraintsk$ and $\dacc$ be defined by \cref{define_activeconstraints}, and \cref{define_delta_accuracy}.
@@ -2592,7 +2397,7 @@ There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 whenever $\dk \le \dacc$.
 \end{theorem}
 \begin{proof}
-This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoid_is_suitable_theorem_p1}, and \cref{ellsoid_is_suitable_theorem_p1}.
+This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoid_is_suitable_theorem_p1}, and \cref{bounded_condition_numbers}.
 \end{proof}
 
 \begin{lemma}
@@ -2613,183 +2418,6 @@ $\|\nabla^2 f(\xk)\| \le \maxhessian$, so that by \cref{accuracy_is_satisfied},
 $\|\hk\| \le \|\nabla^2 f(\xk)\| + \kappa_h\dacc = \maxmodelhessian$.
 The same applies to $\nabla^2 m_{c_i}^{(k)}(\xk)$.
 \end{proof}
-
-
-
-\subsection{Bounded Condition Numbers}
-
-In this section we show that ellipsoids are bounded as in \cref{ellipsoids_notation_definitions}.
-Notice that this is required in the proof of \cref{accuracy_is_satisfied}.
-Although \cref{minangleassumption} can be proven from \cref{minangleassumption_alt} as done within \cref{minanglelemmap2},
-the proof also requires \cref{accuracy_is_satisfied}.
-To circumvent this circular dependency, we introduce \cref{minangleassumption}.
-
-\begin{comment}
-We believe this is not actually needed.
-\end{comment}
-
-\begin{assumption}
-\label{minangleassumption}
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $x \in \Omega$ there exists a $\minangledir(\xk) \in \Rn$ with $\|\minangledir(\xk)\| = 1$ such that 
-if $\dk \le \minangledelta$ and $i$ is such that 
-$\zik \in B_{\infty}(\xk, \dk)$
-then
-\begin{align*}
--\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha.
-\end{align*}
-Without loss of generality, $\minanglealpha \le \frac 1 2$.
-\end{assumption}
-
-\color{red}
-\begin{lemma}
-\label{theta_min_is_bounded}
-% Let $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption} and 
-Define $\thetamink$ by \cref{define_thetamink}.
-% Assume that \cref{minangleassumption} holds.
-% If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
-\end{lemma}
-
-\begin{proof}
-If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
-Otherwise, by \cref{minangleassumption}, there is a $\minangledir(\xk)$ such that 
-$-\minangledir(\xk)^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
-But, by definition of $\huk$ in \cref{define_u}:
-$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\frac{\gmcik}{\left\|\gmcik\right\|}$
-so that for all $i \in \activeconstraintsk$,
-\begin{align*}
--\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -\left(\minangledir(\xk)\right)^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
-\end{align*}
-Therefore, $\thetamink \ge \minanglealpha$.
-\end{proof}
-\color{black}
-
-% 
-% \begin{lemma}
-% Let $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption} and define $\fcki$ by \cref{define_inner_cone}.
-% Assume that \cref{minangleassumption} holds.
-% If $\dk \le \minangledelta$, then $\fcki \ne \emptyset$.
-% \end{lemma}
-% 
-% \begin{proof}
-% This follows directly from \cref{theta_min_is_bounded} and \cref{define_inner_cone}.
-% \end{proof}
-
-
-
-
-
-\begin{lemma}
-\label{ellsoid_is_bounded_lemma}
-Let $\activeconstraintsk$, and $\dacc$ be defined by \cref{define_activeconstraints}, and \cref{define_delta_accuracy} respectively.
-Suppose that \cref{minangleassumption} holds.
-If $\activeconstraintsk \ne \emptyset$ and $\dk \le \dacc$, then the ellipsoids defined by \cref{define_ellipsek}
-are bounded according to \cref{ellipsoids_notation_definitions}.
-\end{lemma}
-\begin{proof}
-
-\end{proof}
-
-
-
-\color{red}
-
-\begin{lemma}
-\label{this_is_probably_not_worthy_of_being_a_lemma}
-Suppose that $x\in\reals$ is such that $0 \le x \le 1$.
-Then $1 - x \le \sqrt{1-x^2}$.
-\end{lemma}
-\begin{proof}
-We can multiply by $2x$ to get
-$0 \le 2x^2 \le 2x$,
-and add $1 - 2x - x^2$ to find
-$1 - 2x + x^2 = (1 - x)^2 \le 1-x^2$.
-The result is the square root of these positive numbers.
-\end{proof}
-
-\begin{lemma}
-\label{bound_bsk_by_theta_lemma}
-Let $\beta$, $\thetamink$, and $\bsk$
-be defined by 
-\cref{define_alpha_beta}, \cref{define_thetamink}, and \cref{define_bsk}
-respectively.
-There exists $\dacc > 0$ such that for any $\epsilon > 0$, if $\thetamink \le \epsilon$ and $\dk \le \dacc$, then $\bsk \le 1 - ?$.
-\end{lemma}
-\begin{proof}
-By defining $\dacc$ to be 
-\begin{align}
-\dacc = \left(\frac 1 {4\beta}\right)^{\frac 1 {p_{\beta}}}
-\end{align}
-we see that 
-\begin{align*}
-\beta \dk^{p_{\beta}} \le \frac 1 4
-\end{align*}
-whenever $\dk \le \dacc$.
-This means that 
-\begin{align*}
-\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)}
-\ge 
-\end{align*}
-\end{proof}
-\color{black}
-
-
-% 
-% \begin{lemma}
-% Let
-% be defined by
-% \cref{define_epsactive} and \cref{define_epsactivemodels}
-% respectively.
-% Then $\epsactivemodels(x; \epsilon) \subseteq \epsactive(x; \epsilon)$.
-% \end{lemma}
-% \begin{proof}
-% \end{proof}
-% 
-% 
-
-
-
-\color{red}
-\begin{lemma}
-\label{minanglelemmap2}
-Suppose that \cref{minangleassumption_alt}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $x \in \feasible$, there is a unit vector $\minangledir(x)$ such that
-if $\dk \le \minangledelta$ and $i$ is such that $\zik \in B_{\infty}(\xk, \dk)$
-then
-\begin{align*}
--\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha.
-\end{align*}
-Without loss of generality, $\minanglealpha \le \frac 1 2$.
-\end{lemma}
-\begin{proof}
-By \cref{minanglelemmap1}, there exist $\minangledelta' > 0$ and $\minanglealpha'$ such that for each $x \in \feasible$, 
-there is a unit vector $\minangledir'(x)$ such that
-\begin{align*}
--\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir'(x) \ge \minanglealpha'
-\Longrightarrow -\nabla c_i(x)^T \minangledir'(x) \ge \minanglealpha' \|\nabla c_i(x)\|
-\end{align*}
-
-\begin{comment}
-Need to show:
-\begin{align*}
--\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir'(x) \ge \minanglealpha' \Longrightarrow -\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha
-\end{align*}
-and
-\begin{align*}
-\zik \in B_{\infty}(\xk, \dk) \Longrightarrow i \in \epsactivemodels(x, \minangledelta)
-\end{align*}
-
-
-\begin{align*}
-\zik \in B_{\infty}(\xk, \dk) \\
-\Longrightarrow \|\zik - \xk\| \le \sqrt{n}\dk \\
-\Longrightarrow \left\|\frac{m^{(k)}_{c_i}(\xk)}{\left\|\gmcik\right\|^2} \gmcik\right\| \le \sqrt{n}\dk \\
-\Longrightarrow \frac{|m^{(k)}_{c_i}(\xk)|}{\left\|\gmcik\right\|}  \le \sqrt{n}\dk \\
-\Longrightarrow i \in \epsactivemodels(x, \minangledelta)
-\end{align*}
-
-\end{comment}
-\end{proof}
-\color{black}
 
 \subsection{Sample Region Feasibility}
 \label{ellipsoid_is_feasible_section}
@@ -3494,6 +3122,7 @@ and \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \dk^p$ so that
 2\left(\maxgrad + 2\maxhessian\right)\delta\dk^{1 + p_{\Delta}}
 \ge \left(2\maxgrad + 4\maxhessian\right)\delta\dk^{p}
 \end{align*}
+
 % \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
 % \ge 4\delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p} + 16\delta^2 \maxhessian\left(1 + \sqrt{n}\right)^2\dk^{2p}.
 
@@ -3780,13 +3409,66 @@ x_1^{\star} = \argmin_{x\in P_1}\|x\|^2, &\textrm{and} & x_2^{\star} = \argmin_{
 \end{align*}
 
 We assume that there is some $\hat x \in P_1$ and $h > 0$ such that $A_1 \hat x \le b_1 - h$.
-\begin{comment}
-We also use definitions \cref{define_norm_changers}.
-\end{comment}
+% \begin{comment}
+% We also use definitions \cref{define_norm_changers}.
+% \end{comment}
 
-First, we will state some well known theorems without proof.
+% First, we will state some well known theorems without proof.
+We rely on results found within \cite{pena2020new}.
+We use the following terminology to state their results.
+Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
+We define the image of an $m\times n$ matrix $A$ to be
+\begin{align*}
+% \image(A; X) = \left\{Ax \;|\; x \in X\right\}
+\image(A) = \left\{Ax \;|\; x \in \Rn \right\}
+\end{align*}
+and for any $J \subseteq \left\{1, 2, \ldots, m \right\}$, we define $A_J$ to be the $|J| \times n$ submatrix of $A$ 
+formed by the rows indexed by $J$.
+Also, $S(A)$ is the collection of subsets $J \subseteq \left\{1, 2, \ldots, m \right\}$ such that 
+$\image(A_J) + \reals_+^J = \reals^J$.
+
+\begin{lemma}
+For a given $j \times n$ matrix $A_J$, we have that 
+$\image(A_J) + \reals_+^J = \reals^J$
+if and only if there exists an $x \in \Rn$ such that
+$A_J x < 0$.
+\end{lemma}
+
+\begin{theorem}
+\label{hoffman_theorem}
+Let $A \in \mathbb R^{m \times n}$ be given.
+Define $H(A)$, called the Hoffman constant of $A$ to be
+\begin{align*}
+H(A) = \max_{J \in \mathcal S(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+ = \max_{J \in \mathcal S(A)} \max_{\|y\| \le 1} \min_{A_Jx \le y_J} \|x\|.
+\end{align*}
+Then we have that for any $b \in \image(A; \Rn) + \reals^m_+$, and any $x \in \Rn$
+\begin{align*}
+\left\|x - x_0\right\| \le H(A) \left\|\left(Ax - b\right)_+\right\|
+\end{align*}
+where
+\begin{align*}
+\begin{array}{ccc}
+x_0 = & \argmin_{y \in \Rn} & \|x - y\| \\
+      & \textrm{s.t.}    & Ay \le b
+\end{array}.
+\end{align*}
+\end{theorem}
 
 
+\begin{lemma}
+Define $H(A)$ as in \cref{hoffman_theorem}.
+Suppose that \cref{minangleassumption} holds.
+There exists a $\Gamma$ such that for each iteration $k$,
+with $\dk \le ?$ we have that $H(A) \le \Gamma$.
+\end{lemma}
+\begin{proof}
+If we know from \cref{minangleassumption} that for \emph{each} $1 \le i \le m$, there 
+
+\begin{align*}
+H(A)
+\end{align*}
+\end{proof}
 
 
 
@@ -3806,7 +3488,6 @@ This $\huff(A,b)$ is defined as follows, where $i_1, i_2, \ldots, i_r$ are the l
 {\huff(A)} \le \phi_{\infty, 2}\sqrt{\frac{\sum_{1 < j_1 < \ldots < j_k \le n} \|\Lambda^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}{\sum_{1 < j_1 < \ldots < j_k \le n} \|A^{j_1,\ldots,j_r}_{i_1,\ldots, i_r}\|_{\infty}^2}}.
 \end{align*}
 \end{theorem}
-\color{black}
 
 
 
@@ -3831,9 +3512,7 @@ This constant can be computed as
 Here, $A_J \in \mathbb R^{J \times n}$ is the submatrix of $A$ formed from the rows in $J$, and $\textrm{rank}(A)$ is the row rank of $A$.
 \end{theorem}
 
-\begin{comment}
-Is $\|\cdot\|_0$ the dual norm of $\|\cdot\|_{\infty}$?
-\end{comment}
+\color{black}
 
 
 % \begin{lemma}[Theorem 1.1 of \cite{dummy:continuity_of_inverse}]
@@ -3844,6 +3523,11 @@ Is $\|\cdot\|_0$ the dual norm of $\|\cdot\|_{\infty}$?
 % \|B^{\dagger} - A^{\dagger} \|_\infty \le \frac{1 + \sqrt{5}}{2} \|A^{\dagger}\|_\infty\|B^{\dagger}\|_\infty\|E\|_\infty.
 % \end{align*}
 % \end{lemma}
+
+
+
+
+
 
 
 
@@ -4741,7 +4425,11 @@ Letting $\epsilon''$ be small enough, we know $\left\|p^{(k\to l)} - p^{(k\to k)
 
 
 
-
+\begin{align*}
+\|\xk - x^{(l)}\| \le \epsilon_1 \\
+\|\xk - x^{(l)}\| \le \epsilon_2 \\
+\left\|p^{(k\to l)} - p^{(k\to k)}\right\| \le \epsilon
+\end{align*}
 
 
 
@@ -4810,15 +4498,12 @@ Letting $\epsilon''$ be small enough, we know $\left\|p^{(k\to l)} - p^{(k\to k)
 \end{proof}
 
 
-
-
-
 \subsubsection{Applying it, Second Attempt}
 
 
-
-
-
+\begin{align*}
+\left\|\xk - \xl \right\|
+\end{align*}
 
 
 \subsection{Convergence Proof}
@@ -4980,6 +4665,284 @@ By the triangle inequality, the contraction property of projections and \cref{ac
 \le \kappa_{g} \Delta_k + \chik
 \end{align*}
 \end{proof}
+
+\section{Future Work}
+\label{alternative_assumptions_section}
+
+We have made \cref{minangleassumption}, which is an assumption about the constraint's models.
+We would have preferred to make an assumption about the true constraints: \cref{minangleassumption_alt}.
+However, the boundededness of the ellipsoids according to \cref{ellipsoids_notation_definitions} shown in \cref{bounded_condition_numbers}
+is required to show prove \cref{accuracy_is_satisfied}.
+Yet, \cref{accuracy_is_satisfied} is key to applying results about true constraints to results about their models.
+In this section, we discuss some progress towards replacing \cref{minangleassumption} with \cref{minangleassumption_alt}.
+In the process, we are also able to remove \cref{mingradassumption}.
+
+
+
+
+
+
+\begin{definition}
+Let $\epsilon > 0$ be a given constant.
+A constraint $c_i(x) \le 0$ is said to be $\epsilon$-nearly active at $x \in \feasible$ if $|c_i(x)| \le \epsilon$.
+\end{definition}
+
+\begin{definition}
+Let $\epsilon > 0$ be given.
+Define the set of indices of $\epsilon$ active constraints at a point $x \in \feasible$ by
+\begin{align}
+\epsactive(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |c_i(x)| \le \epsilon \bigg\} \label{define_epsactive}
+\end{align}
+\end{definition}
+
+\begin{definition}
+Let $\epsilon > 0$ be given.
+Define the set of indices of $\epsilon$ active model constraints at a point $x \in \feasible$ by
+\begin{align}
+\epsactivemodels(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |m_{c_i}(x)| \le \epsilon  \bigg\} \label{define_epsactivemodels}
+\end{align}
+\end{definition}
+
+\begin{assumption}
+\label{minangleassumption_alt}
+There exists a $\minanglealpha$ and $\epsilon > 0$ such that for every $x \in \feasible$, 
+there is a unit vector $\minanglediralt(x)$ such that
+\begin{align*}
+\nabla c_i(x)^T\minanglediralt(x) > \minanglealpha\quad \forall i \in \epsactive(x; \epsilon).
+\end{align*}
+\end{assumption}
+
+
+\begin{lemma}
+\label{mingradassumption}
+Suppose that 
+\cref{minangleassumption_alt} holds.
+There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
+\begin{align*}
+\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
+\end{align*}
+\end{lemma}
+\begin{proof}
+Let $x \in \Omega$ be arbitrary.
+By \cref{minangleassumption_alt} we know there are some constants $\minanglealpha>0$ and $\epsilon>0$ and unit vector $\minanglediralt(x)$ such that for all $i \in \epsactive(x; \epsilon)$,
+$\nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha$.
+Letting $\mingradepsilon = \epsilon$ and $\mingrad = \minanglealpha$, we see that for all $i \in \epsactive(x; \mingraddelta)$,
+\begin{align*}
+\|\nabla c_i(x)\| = \|\nabla c_i(x)\| \|\minanglediralt(x)\| \ge \nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha = \mingrad.
+\end{align*}
+\end{proof}
+
+The following result is close to showing a bound the condition numbers of $\qk$.
+However, it relies on $\dk \to 0$.
+\begin{lemma}
+Suppose \cref{minangleassumption_alt}
+and the assumptions for \cref{accuracy_is_satisfied_lemma} and \cref{bounded_gradients_lemma} are satisfied.
+There exists $\dacc > 0$ and $\sigma_0 \ge 1$ such that if $\dk \le \dacc$, and
+\begin{align}
+\sigma\left( Q^{(k-1)} \right) \le \sigma_0 \label{idk_alt_proof_statement1}
+\end{align}
+then 
+\begin{align}
+\sigma\left( \qk \right) \le \sigma_0. \label{idk_alt_proof_statement2}
+\end{align}
+\end{lemma}
+
+
+\begin{proof}
+Let $\epsilon, \minanglealpha > 0$ be defined by \cref{minangleassumption_alt}, and $\maxgrad$ be defined by \cref{bounded_gradients_lemma}.
+Define
+\begin{align}
+&M = \frac 1 {\maxgrad + \frac 1 2 \minanglealpha} & \\
+&\textrm{and} \quad \sigma_0 = \max\left\{1, \frac{48}{M^2\left(\minanglealpha\right)^2}\right\}.&
+\end{align}
+By \cref{boundbeta}, there exists $\dacco \left(\frac {M \minanglealpha} 2\right) > 0$ such that if
+$\thetamink \ge \frac {M \minanglealpha} 2$ and $\dk \le \dacco \left(\frac {M \minanglealpha} 2\right)$,
+then $\sigma\left(\qk\right) \le \frac{12}{\left(\frac{M\minanglealpha}{2}\right)^2} = \sigma_0$.
+Define 
+\begin{align}
+\dacc = \min\left\{
+\dacco \left(\frac {M \minanglealpha} 2\right), 
+\sqrt{\frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}},
+\frac{M \epsilon}{\sqrt{n}}
+\right\} \label{define_delta_accuracy2}
+\end{align}
+and suppose that \cref{idk_alt_proof_statement1} and $\dk \le \dacc$ hold.
+By \cref{boundbeta}, \cref{idk_alt_proof_statement2} follows from $\thetamink \ge \frac {M \minanglealpha} 2$.
+
+% then
+% \begin{align}
+% \sqrt{\sigma\left(\qk \right)} \le \frac{48}{M^2\left(\minanglealpha\right)^2}
+% \end{align}
+% Suppose that $\epsactive(\xk; \epsilon) = \emptyset$.
+% for all $y \in \tr$, we have
+% \begin{align*}
+% \left\|\gradf\left(y\right) - \nabla \mfk\left(y\right) \right\| \le \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2.
+% \end{align*}
+% In particular, there exists $u \in \Rn$ with $\|u\| \le 1$ such that
+
+By \cref{accuracy_is_satisfied_lemma}, there exists $\kappa_{g} > 0$ and $u\in\Rn$ with $\|u\|\le 1$ such that
+\begin{align}
+\nabla c_i\left(\xk\right) = \gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u. \label{idk_alt_proof_eqn2}
+\end{align}
+Taking the square root of \cref{idk_alt_proof_statement1} and multiplying by $\dk^2 \le \frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}$, we see
+\begin{align}
+\sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \frac {\minanglealpha} {2\kappa_g}. \label{idk_alt_proof_ass1}
+\end{align}
+We see that by the triangle inequality, \cref{bounded_gradients_lemma}, \cref{idk_alt_proof_eqn2}, and \cref{idk_alt_proof_ass1} that
+\begin{align}
+\left\|\gmcik\right\| \le \left\| \nabla c_i\left(x\right)\right\| + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \maxgrad + \frac 1 2 \minanglealpha = \frac 1 M \nonumber \\
+\Longrightarrow \frac 1 {\left\|\gmcik\right\|} \ge M. \label{idk_alt_proof_eqn4}
+\end{align}
+
+Let $\activeconstraintsk$ and $\epsactive(x; \epsilon)$
+% and $\epsactivemodels(x; \epsilon)$
+be defined by
+\cref{define_activeconstraints} and \cref{define_epsactive}
+% , and \cref{define_epsactivemodels}
+respectively.
+If $\activeconstraintsk = \emptyset$, then $\sigma\left(\qk\right) = 1$.
+Otherwise, let $i \in \activeconstraintsk$ be arbitrary,
+so that $\zik \in \tr$. By \cref{define_z}
+\begin{align*}
+M \left|m_{c_i}\left(\xk\right)\right| \le \frac{\left|m_{c_i}\left(\xk\right)\right|}{\left\|\gmcik\right\|} \le \sqrt{n} \dk \Longrightarrow
+\left|c_i\left(\xk\right)\right| \le \frac{\sqrt{n}\dk}{M} \le \epsilon
+\end{align*}
+by \cref{define_delta_accuracy2}.
+This means that $i \in \epsactive(\xk; \epsilon)$, so that by \cref{minangleassumption_alt} there exists a unit vector $\minanglediralt(\xk)$ with
+\begin{align}
+\nabla c_i\left(\xk\right)^T\minanglediralt\left(\xk\right) > \minanglealpha \label{idk_alt_proof_eqn1}
+\end{align}
+Substituting \cref{idk_alt_proof_eqn2} into \cref{idk_alt_proof_eqn1} yields:
+\begin{align*}
+\left(\gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u\right)^T \minanglediralt(x) > \minanglealpha
+\end{align*}
+Using \cref{idk_alt_proof_ass1}, $\|u\|\le 1$, and $\|\minanglediralt(x)\| = 1$, this becomes
+\begin{align}
+\gmcik^T\minanglediralt(x) > \minanglealpha - \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u^T\minanglediralt(x) \ge \frac 1 2 \minanglealpha \label{idk_alt_proof_eqn3}
+\end{align}
+Multiplying \cref{idk_alt_proof_eqn3} and \cref{idk_alt_proof_eqn4} yields
+\begin{align}
+\frac{\gmcik}{\left\|\gmcik\right\|}^T  \minanglediralt(x) \ge \frac M 2 \minanglealpha. \label{idk_alt_proof_eqn5}
+\end{align}
+Let $\huk$ be defined by \cref{define_u}, 
+% \begin{align*}
+% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}
+% \end{align*}
+and $\thetamink$ be defined by \cref{define_thetamink}.
+Then \cref{idk_alt_proof_eqn5} tells us 
+\begin{align*}
+\thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \ge \frac{\gmcik}{\left\|\gmcik\right\|}^T \minanglediralt(x) \ge \frac M 2 \minanglealpha.
+\end{align*}
+% Then by \cref{boundbeta}, there exists $\dacc(\epsilon) > 0$ such that if $\thetamink >$
+% \begin{align*}
+% \sigma\left(\qk\right) \le \frac{48}{M^2\left(\minanglealpha\right)^2}
+% \end{align*}
+% Now,
+% \begin{align*}
+% \sigma_2 = \frac{\max\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}{\min\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}
+% \end{align*}
+
+% We know that the next trial point $\xkpo$ must also lie within the trust region, so that we have both
+% \begin{align*}
+% \left\|\gradf\left(\xk\right) - \nabla \mfk\left(\xk\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \left\|\gradf\left(\xkpo\right) - \nabla \mfk\left(\xkpo\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \end{align*}
+% 
+% \begin{align*}
+% \nabla \mfk\left(\xk\right)  = \gradf\left(\xk\right) + \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \end{align*}
+% 
+% 
+% 
+% Let $\bsk$ be defined by \cref{define_bsk}.
+% Let $\alpha$ and $\beta$ be defined by \cref{define_alpha_beta}.
+% Let $p_{\alpha}$ and $p_{\beta}$ be defined by \cref{define_p_alpha} and \cref{define_p_beta} respectively.
+% \begin{align}
+% \end{align}
+% 
+% \begin{align*}
+% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|} \\
+% \bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)} \\
+% \end{align*}
+\end{proof}
+
+
+
+\color{red}
+\begin{lemma}
+\label{minanglelemmap2}
+Suppose that \cref{minangleassumption_alt}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $x \in \feasible$, there is a unit vector $\minangledir(x)$ such that
+if $\dk \le \minangledelta$ and $i$ is such that $\zik \in B_{\infty}(\xk, \dk)$
+then
+\begin{align*}
+-\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha.
+\end{align*}
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
+\end{lemma}
+\begin{proof}
+By \cref{minanglelemmap1}, there exist $\minangledelta' > 0$ and $\minanglealpha'$ such that for each $x \in \feasible$, 
+there is a unit vector $\minangledir'(x)$ such that
+\begin{align*}
+-\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir'(x) \ge \minanglealpha'
+\Longrightarrow -\nabla c_i(x)^T \minangledir'(x) \ge \minanglealpha' \|\nabla c_i(x)\|
+\end{align*}
+
+\begin{comment}
+Need to show:
+\begin{align*}
+-\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir'(x) \ge \minanglealpha' \Longrightarrow -\frac {\gmcik}{\|\gmcik\|} ^T\minangledir(\xk) \ge \minanglealpha
+\end{align*}
+and
+\begin{align*}
+\zik \in B_{\infty}(\xk, \dk) \Longrightarrow i \in \epsactivemodels(x, \minangledelta)
+\end{align*}
+
+
+\begin{align*}
+\zik \in B_{\infty}(\xk, \dk) \\
+\Longrightarrow \|\zik - \xk\| \le \sqrt{n}\dk \\
+\Longrightarrow \left\|\frac{m^{(k)}_{c_i}(\xk)}{\left\|\gmcik\right\|^2} \gmcik\right\| \le \sqrt{n}\dk \\
+\Longrightarrow \frac{|m^{(k)}_{c_i}(\xk)|}{\left\|\gmcik\right\|}  \le \sqrt{n}\dk \\
+\Longrightarrow i \in \epsactivemodels(x, \minangledelta)
+\end{align*}
+
+\end{comment}
+\end{proof}
+\color{black}
+
+
+
+\color{red}
+\begin{lemma}
+\label{minanglelemmap1}
+Suppose that \cref{minangleassumption_alt}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
+There exists $\minangledelta > 0$ and $\minanglealpha$ such that for each $x \in \feasible$, there is a unit vector $\minangledir(x)$ such that
+\begin{align*}
+-\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir(x) \ge \minanglealpha.
+\end{align*}
+\end{lemma}
+\begin{proof}
+By \cref{bounded_gradients_lemma}, there exists $\maxgrad$ with $\|\nabla c_i(x) \| \le \maxgrad$ for any $x \in \feasible$.
+Let \cref{minangleassumption_alt} hold with constants $\minanglealpha'$ and $\epsilon$, so that for any $x \in \feasible$, there is a unit vector $\minanglediralt(x)$ with
+\begin{align*}
+\nabla c_i(x)\minanglediralt(x) \ge \minanglealpha'.
+\end{align*}
+Also, by \cref{mingradassumption}, there exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
+\begin{align*}
+\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
+\end{align*}
+By letting $\minangledir(x) = -\minanglediralt(x)$, $\minanglealpha = \minanglealpha'\maxgrad$, $\minangledelta = \min\{\epsilon, \minangledelta\}$, 
+we see that for all $x \in \feasible$ and $i \in \epsactive(x; \minangledelta)$,
+\begin{align*}
+-\nabla c_i(x) \minanglediralt(x) \ge \minanglealpha'\maxgrad \ge \minanglealpha'\|\nabla c_i(x)\|.
+\end{align*}
+Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla c_i(x) \|$ to find
+\begin{align*}
+-\frac {\nabla c_i(x)}{\|\nabla c_i(x)\|}^T \minangledir(x) \ge \minanglealpha.
+\end{align*}
+\end{proof}
+\color{black}
 
 
 \appendix
