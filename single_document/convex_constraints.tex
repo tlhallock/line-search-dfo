@@ -393,13 +393,13 @@ To address the rise in these applications, new algorithms are being developed su
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
 
 \paragraph{Reviews}
-Within \cite{DUMMY:intro_book} derivative-free methods are developed in detail.
+Within \cite{introduction_book} derivative-free methods are developed in detail.
 This is the first text book devoted to derivative free optimization.
 It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
 
-A good review of derivative free algorithms and software libraries can be found in \cite{DUMMY:review}.
+A good review of derivative free algorithms and software libraries can be found in \cite{miguel_review}.
 This compares several software libraries, and reviews the development of derivative free optimization since it started.
-Another recent review can be found in \cite{DUMMY:review2} and \cite{larson_menickelly_wild_2019}.
+Another recent review can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
 
 \subsection{Sample Set Geometry}
@@ -493,7 +493,7 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 \Lambda \ge \max_{0\le i\le p}\max_{x\in B}|l_i(x)|.
 \end{align}
 
-% This can be shown to be equivalent to the following condition \cite{DUMMY:intro_book}.
+% This can be shown to be equivalent to the following condition \cite{introduction_book}.
 % For any $x \in B_2(0, 1)$ there is a $\lambda \in \reals ^ {p+1}$ such that 
 % \begin{align}
 % \sum_{i=0}^p\lambda_i\phi_i(y^i) = \phi(x) \\
@@ -501,7 +501,7 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 % \end{align}
 
 % This can ensure that the Vandermonde matrix is well conditioned.
-This is useful because of \cref{quadratic_errors}, which is shown in \cite{DUMMY:intro_book}.
+This is useful because of \cref{quadratic_errors}, which is shown in \cite{introduction_book}.
 
 \begin{theorem}
 \label{quadratic_errors}
@@ -519,7 +519,7 @@ Then, if $m$ is a quadratic model function for $f$ constructed as in \cref{reg},
 \end{theorem}
 
 
-Also, \cite{DUMMY:intro_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
+Also, \cite{introduction_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
 In particular, these bounds ensure that the following accuracy condition is satisfied, which we can adapt a proof from \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
 \begin{align}
 \label{accuracy}
@@ -533,12 +533,12 @@ A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296},
 
 \subsubsection{Geometry Ensuring Algorithms}
 
-Sample points are chosen by a geometry ensuring algorithm from \cite{DUMMY:intro_book}.
+Sample points are chosen by a geometry ensuring algorithm from \cite{introduction_book}.
 At any given time, the algorithm has evaluated 1 or more sample points.
 Initially, only the starting point $x_0$ is evaluated, so that points must be added to the sample set.
 Evaluated points within the trust region should be reused when possible, but the algorithm may have to replace some points to ensure a well poised set on the new trust region.
 We call the algorithm that adds points, replacing where necessary, the \emph{model improvement algorithm}.
-One classic such algorithm is presented in \cite{DUMMY:intro_book}.
+One classic such algorithm is presented in \cite{introduction_book}.
 
 The idea behind this algorithm is to perform an LU factorization with partial pivoting on the Vandermonde matrix.
 As we have seen, this computes the basis for the Lagrange polynomials corresponding to $Y$.
@@ -585,7 +585,7 @@ We choose a threshold
 
 
 % At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
-The following result is shown in \cite{DUMMY:intro_book} through Theorem 6.5, Theorem 3.14, and 6.7 Exercise 3.
+The following result is shown in \cite{introduction_book} through Theorem 6.5, Theorem 3.14, and 6.7 Exercise 3.
 \begin{theorem}
 \label{set_is_poised}
 After running \cref{model_improving_algorithm}, the resulting set $Y$ is Lambda poised for some $\Lambda > 0$ that depends on $\xi_{\text{min}}$.
@@ -637,7 +637,7 @@ which measures the actual improvement over the predicted improvement.
 A small $\rk$ implies the model functions are not sufficiently accurate.
 Values of $\rk$ close to $1$ imply that the model accurately predicted the new objective value.
 A large $\rk$ implies progress minimizing the objective although the model was not accurate.
-This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{DUMMY:intro_book}.
+This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
 The user supplies fixed constants
 \begin{align}
 0 < \gammasm < \gammabi \le 1	\label{define_the_gammas}
@@ -1877,7 +1877,7 @@ We use this optimization problem as a subroutine of the trust region subproblem 
 	    If the feasible set is empty, \textbf{Fail}
         
         \item[\textbf{Step 2}] \textbf{(Check feasibility)} \\
-            Evaluate the objective and constraints $s$.
+            Evaluate the objective and constraints $s$. \\
             If $s\in\feasible$, \textbf{return} $s$.
             Otherwise, if $s\in\feasible$ and $s \in \sampletrk$, \textbf{Fail}
 	    Otherwise, if $s\in\feasible$ and $s \not \in \sampletrk$ \begin{itemize}
@@ -3959,7 +3959,7 @@ Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x}
 
 
 
-\begin{lemma}[Theorem 4.2 of \cite{dummy:perturbations}]
+\begin{lemma}[Theorem 4.2 of \cite{perturbations_of_linear_inequalities}]
 \label{4_2}
 Suppose that $\epsilon\le \min\left\{\frac{\min_i h_i}{1 + M},\left(2\huff(A_1)\right)^{-1}\right\}$.
 Then, for every $s_1 \in P_1$,
@@ -4020,7 +4020,7 @@ Lastly, $s_2$ solves $A_1s_2 \le b_2 + (A_1 - A_2)s_2$ so that $A_2s_2 \le b_2$ 
 
 
 
-\begin{lemma}[Theorem 2.2 of \cite{dummy:continuity}]
+\begin{lemma}[Theorem 2.2 of \cite{continuity_of_metric_projections}]
 \label{2_2}
 Suppose that $\epsilon\le \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + M},\left(2\huff(A_1)\right)^{-1}, \left(2\huff(A_2)\right)^{-1}\right\}$.
 Letting $M' = 4\huff(A_2)\left(1 + M + 2\huff(A_1)\left(1 + M\right)\right)$, we have that $\|x_1^{\star} - x_2^{\star}\| \le \left( M' + \sqrt{2MM'}\right)\sqrt{\epsilon}$.
@@ -4709,7 +4709,7 @@ Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla
 
 
 \color{red}
-\begin{theorem}[Hoffman's theorem of \cite{dummy:hoffman}]
+\begin{theorem}[Hoffman's theorem of \cite{hoffman_theorem}]
 \label{hoffman_old}
 Suppose that the system $Ax \le b$ is consistent and $A$ is normalized so that $\sum_{i = 0}^n{A}_{i,j}^2 = 1$ for all $1 \le j \le m$.
 Then there exists a value $\huff(A) > 0$ such that for any such $x$, there exists an $x_0$ with
@@ -4751,7 +4751,7 @@ Here, $A_J \in \mathbb R^{J \times n}$ is the submatrix of $A$ formed from the r
 \color{black}
 
 
-% \begin{lemma}[Theorem 1.1 of \cite{dummy:continuity_of_inverse}]
+% \begin{lemma}[Theorem 1.1 of \cite{continuity_of_inverse}]
 % \label{inverse_is_continuous}
 % For two matrices $A$ and $B$, if $B = A + E$ and $\text{rank}(A) = \text{rank}(B)$, then
 % 
@@ -5506,7 +5506,7 @@ Should actually be using $\mfk$.
 
 
 \section{Table of Notation}
-\begin{longtable}{| p{.20\textwidth} | p{.80\textwidth} |}
+\begin{longtable}{| p{.20\textwidth} | p{.60\textwidth} |}
 $\minactivegrad$ & is a bound on how small gradients of the constraints can get, defined in \cref{define_minactivegrad} \\ % $ g_{\mathcal A$ & is a bound on how small gradients of the constraints can get, defined in \cref{define_minactivegrad} \\
 $\minactivegrad, \minactivegraddelta$ & are defined in \cref{min_active_gradient_lemma} \\ % $ g_{\mathcal A, \Delta_{\mathcal A$ & are defined in \cref{min_active_gradient_lemma} \\
 $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\ % $B_k(c; \Delta)$ & is the ball of radius $\Delta$ centered at point $c$ in the $k$ norm\\
