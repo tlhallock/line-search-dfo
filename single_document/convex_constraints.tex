@@ -221,6 +221,14 @@
 
 \newcommand{\zikthresh}{{ K_{\textrm{active}} }}
 
+
+
+
+\newcommand{\huffeps}{{\epsilon_h}}
+\newcommand{\huffalpha}{{\alpha_h}}
+\newcommand{\huffdir}{{u_h}}
+\newcommand{\huffdirk}{{u^{(k)}_h}}
+
 %=========================================
 
 \title{Derivative Free Model-Based Methods for Optimization with Partially Quantifiable Convex Constraints}
@@ -2175,7 +2183,7 @@ The algorithm is as follows:
             
         \item[\textbf{Step 5}] \textbf{(Construct next sample region)} \\
         	Compute $\rotk$, according to \cref{define_rotation}.
-        	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
+%         	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
         	If $\activeconstraintskpo \ne \emptyset$, define $\sampletrkpo$ according to \cref{define_ellipsek}.
         	Otherwise, use \cref{define_trivial_ellipsek}. \\
             $k \gets k+1$ and go to Step 1.
@@ -3596,59 +3604,204 @@ $\left\|\gmcik\right\| \le \maxmodelgrad\quad \forall 1\le i\le m$ and $\left\| 
 
 \subsubsection{Bound on Huffman Constant, with stronger assumption}
 
+We will make the following definitions for this section.
 \begin{align}
-[m] = \left\{i \in \naturals | 1 \le i \le m \right\} \\
-\forall S \subseteq [m], \feasiblek(S) =  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \forall i \in S \right\} \\
-\projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|\xk - \gk\right\| \\
-\activeprojk = \left\{ i \in [m] \bigg| \mcik\left(\xk\right) + \gmcik^T \left(\projkk([m]) - \xk\right) = 0 \right\} \\
-A^{(k)} = \nabla m_c\left(\xk\right).
+[m] = \left\{i \in \naturals | 1 \le i \le m \right\} \label{sha_m}\\
+\forall S \subseteq [m], \feasiblek(S) =  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \forall i \in S \right\} \label{sha_fks} \\
+\projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|\xk - \gk\right\| \label{sha_projkl} \\
+\activeprojk = \left\{ i \in [m] \bigg| \mcik\left(\xk\right) + \gmcik^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_proj_indices} \\
+A^{(k)} = \nabla m_c\left(\xk\right) \label{sha_jacobian}.
 \end{align}
+
 
 
 \begin{assumption}
 \label{huffman_assumption}
-There exist $\epsilon, \alpha > 0$ such that
+There exist $\huffeps, \huffalpha > 0$ such that
 for each $x \in \Omega$ and unit vector $y \in \Rn$,
-there exists a unit vector $u(x, y) \in \Rn$ such that
+there exists a unit vector $\huffdir(x, y) \in \Rn$ such that
 if $1 \le i \le m$ is such that 
 \begin{align*}
-y^T \nabla c_i \left(x\right) \ge - \epsilon
+y^T \nabla c_i \left(x\right) \ge - \huffeps
 \end{align*}
 then
 \begin{align*}
-u(x, y)^T \nabla c_i \left(x\right) \ge \alpha.
+\huffdir(x, y)^T \nabla c_i \left(x\right) \ge \huffalpha.
 \end{align*}
 \end{assumption}
 
 
+
 \begin{lemma}
-Suppose that $i \in \activeprojk \cup \activeprojl$ and $k, l \ge k_0$.
-There exists a unit vector $ u \in \Rn $ with
+\label{bound_dot_product}
+Suppose that $u_1, u_2, v_1, v_2 \in Rn$ and $\epsilon, M > 0$ are such that
 \begin{align*}
- u^T \gmcik \ge \frac 1 2 \alpha
+\|u_1 - u_2\| \le \epsilon, \quad
+\|v_1 - v_2\| \le \epsilon, \quad
+\|u_1\| \le M, \quad \textrm{and} \quad
+\|v_2\| \le M.
+\end{align*}
+Then
+\begin{align*}
+\left|u_1^Tv_1 - u_2^Tv_2\right| \le 2M\epsilon.
+\end{align*}
+\end{lemma}
+\begin{proof}
+We have
+\begin{align*}
+\left|u_1^Tv_1 - u_2^Tv_2\right|
+\le \left|u_1^Tv_1 - u_1^Tv_2\right\| + \left\|u_1^Tv_2 - u_2^Tv_2\right|
+= \left|u_1^T\left(v_1 - v_2\right)\right| + \left|\left(u_1 - u_2\right)^Tv_2\right|  \\
+\le \left\|u_1\right\|\left\|v_1 - v_2\right\| + \left\|u_1 - u_2\right\|\left\|v_2\right\|
+\le 2M\epsilon.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+Let $\activeprojk$ and $\huffalpha$ be defined by \cref{sha_proj_indices} and \cref{huffman_assumption}.
+Assume that \cref{huffman_assumption}, \cref{lipschitz_gradients_assumption} and the assumptions for
+\cref{model_gradients_are_cauchy}, \cref{delta_to_zero}, \cref{bounded_gradients_lemma}, \cref{i_thought_i_proved_this_already}, and \cref{accuracy_is_satisfied} hold.
+There exists $k_0 \in \naturals$ such that if $k, l \ge k_0$ and $i \in \activeprojk \cup \activeprojl$
+then there is a unit vector $ \huffdirk \in \Rn $ with
+\begin{align*}
+\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha.
 \end{align*}
 %  \quad \textrm{and} \quad
 %  u^T \gmcil \ge \frac 1 4 \alpha.
 \end{lemma}
 \begin{proof}
+Let $i \in \activeprojk \cup \activeprojl$.
+Let 
+$\huffeps$, $\maxgrad$, and $\maxmodelgrad$
+be defined by \cref{huffman_assumption}, \cref{bounded_gradients_lemma}, and \cref{i_thought_i_proved_this_already}
+respectively.
+Define
+\begin{align}
+M = \max\left\{\maxgrad, \maxmodelgrad\right\} \label{til_define_m} \\
+\epsilon = \frac 1 {4M} \huffeps. \label{til_define_eps}
+\end{align}
 
-If $i \in \activeprojl$, then
-\begin{align*}
--\gl^T \gmcil \ge 0 \\
-\Longrightarrow -\gk^T \gmcik \ge - \frac 1 2 \epsilon
-\end{align*}
-which is a case of the following.
+From \cref{accuracy_is_satisfied}, there exists $\kappa_g$ and $k_1$ such that if $k, l \ge k_1$, then
+\begin{align}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
+\left\|\gmcil - \nabla c_i\left(\xl\right)\right\| \le \kappa_g \dl^2 \label{til_acc_const} \\
+\left\|\gk - \nabla f\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
+\left\|\gl - \nabla f \left(\xl\right)\right\| \le \kappa_g \dl^2. \label{til_acc_obj}
+\end{align}
 
-If $i \in \activeprojk$, then
+By \cref{lipschitz_gradients_assumption}, we know that there exists $\lipgrad$ such that
+\begin{align}
+\label{til_lip}
+\left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\| \\
+\quad \textrm{and} \quad
+\left\|\nabla f\left(\xk\right) - \nabla f\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\|.
+\end{align}
+ 
+\cref{bounded_gradients_lemma}, \cref{i_thought_i_proved_this_already}, and \cref{til_define_m} tell us
+\begin{align}
+\label{til_upper_bounds}
+\left\|\gk\right\| \le M 
+\quad \textrm{and} \quad
+\left\|\gmcil \right\| \le M
+\quad \textrm{and} \quad
+\left\|\nabla c_i \left(\xk\right)\right\| \le M.
+\end{align}
+
+% \begin{align}
+% \label{til_upper_bounds}
+% \begin{array}{rrrr}
+% \left\|\gmcik\right\| \le M, & \left\|\gmcil\right\| \le M, &
+% \left\|\gk\right\| \le M, & \left\|\gl\right\| \le M, \\
+% \left\|\nabla c_i\left(\xk\right) \right\| \le M, & \left\|\nabla c_i\left(\xl\right) \right\| \le M, &
+% \left\|\nabla f\left(\xk\right) \right\| \le M, & \left\|\nabla f\left(\xl\right) \right\| \le M.
+% \end{array}
+% \end{align}
+
+
+By \cref{delta_to_zero}, we know that there exists $k_2 \in \naturals$ such that if $k, l \ge k_2$, then
+\begin{align}
+\label{til_bound_dk}
+\left\|\xk - \xl \right\| \le \frac{\epsilon}{2\lipgrad}
+\quad \textrm{and} \quad
+\dk \le \min\left\{
+\sqrt{\frac{\epsilon}{4\kappa_g}},
+\sqrt{\frac{\huffalpha}{2\kappa_g}}
+\right\} \quad \textrm{and} \quad
+\dl \le \sqrt{\frac{\epsilon}{4\kappa_g}}.
+\end{align}
+
+By the triangle inequality, \cref{til_acc_obj}, \cref{til_lip}, and \cref{til_bound_dk} we have
+\begin{align}
+\left\| \gk - \gl \right\|
+\le \left\| \gk - \nabla f\left(\xk\right) \right\|
++   \left\| \nabla f\left(\xk\right) - \nabla f\left(\xl\right) \right\| \nonumber \\
++   \left\| \nabla f\left(\xl\right) - \gl \right\|
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmf_close}
+\end{align}
+
+Likewise, \cref{til_acc_const}, \cref{til_lip}, and \cref{til_bound_dk} provide
+\begin{align}
+\left\| \gmcik - \gmcil \right\|
+\le \left\| \gmcik - \nabla c_i\left(\xk\right) \right\|
++   \left\| \nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right) \right\| \nonumber \\
++   \left\| \nabla c_i\left(\xl\right) - \gmcil \right\|
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmc_close}
+\end{align}
+
+Using \cref{til_gmf_close}, \cref{til_gmc_close}, \cref{til_upper_bounds}, \cref{bound_dot_product}, and \cref{til_define_eps} we find
+\begin{align}
+\left\|\gk^T \gmcik - \gl^T \gmcil\right\| \le 2M\epsilon \le \frac 1 2 \huffeps. \label{til_case_one}
+\end{align}
+
+
+
+
+
+If $i \in \activeprojl$, then $-\gl^T \gmcil \ge 0$ so that \cref{til_case_one} implies $-\gk^T \gmcik \ge - \frac 1 2 \huffeps$.
+On the other hand, if $i \in \activeprojk$, $-\gk^T \gmcik \ge 0 \ge - \frac 1 2 \huffeps$.
+Either way, we have
 \begin{align*}
--\gk^T \gmcik \ge 0 \ge - \frac 1 2 \epsilon \\
-\Longrightarrow -\gk^T \nabla c_i \left(\xk\right) \ge -\epsilon \\
-\Longrightarrow u\left(\xk, -\gk\right)^T \nabla c_i \left(\xk\right) \ge \alpha \\
-\Longrightarrow u\left(\xk, -\gk\right)^T \gmcik \ge \frac 1 2 \alpha
-.
+-\gk^T \gmcik \ge - \frac 1 2 \huffeps.
 \end{align*}
-%  \\
-% \Longrightarrow u\left(\xk, -\gk\right)^T \gmcil \ge \frac 1 4 \alpha
+Combining this with \cref{til_define_eps}, \cref{til_acc_const}, \cref{til_upper_bounds}, \cref{til_bound_dk} we see
+\begin{align*}
+\left\| \gk^T \gmcik - \gk^T \nabla c_i \left(\xk\right)\right\| 
+\le M\kappa_g\dk^2 
+\le M\epsilon \le \frac 1 2 \huffeps
+\end{align*}
+so that
+\begin{align*}
+-\gk^T \nabla c_i \left(\xk\right) \ge -\huffeps.
+\end{align*}
+By \cref{huffman_assumption} there exists a unit vector $\huffdirk = \huffdir\left(\xk, -\gk\right) \in \Rn$ such that
+\begin{align*}
+\huffdirk^T \nabla c_i \left(\xk\right) \ge \huffalpha.
+\end{align*}
+By \cref{til_acc_const} and \cref{til_bound_dk}
+\begin{align*}
+\left\|
+\left(\huffdirk\right)^T \nabla c_i \left(\xk\right) -
+\left(\huffdirk\right)^T \gmcik
+\right\|
+\le ( 1 ) \kappa_g \dk^2 
+\le \frac 1 2 \huffalpha
+\end{align*}
+so that
+\begin{align*}
+\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha.
+\end{align*}
+Thus, we only need to let $k_0 = \min\left\{k_1, k_2\right\}$.
+% 
+% 
+% \paragraph{Case 2}
+% If $i \in \activeprojk$, then
+% \begin{align*}
+% \Longrightarrow  \\
+% \Longrightarrow u\left(\xk, -\gk\right)^T \gmcik \ge \frac 1 2 \alpha
+% .
+% \end{align*}
+% %  \\
+% % \Longrightarrow u\left(\xk, -\gk\right)^T \gmcil \ge \frac 1 4 \alpha
 
 \end{proof}
 
@@ -4315,7 +4468,7 @@ Thus, we can choose $k_0 = \max\left\{k_1, k_2, k_3\right\}$, and $u_f^{(k,l)} =
 
 \color{red}
 
-Using \cref{aciteqn2} and \cref{aciteqn1}, we find that for any $i \in \activeconstraintsk$
+% Using \cref{aciteqn2} and \cref{aciteqn1}, we find that for any $i \in \activeconstraintsk$
 
 
 Suppose that $i \in \activeconstraintsl$.
