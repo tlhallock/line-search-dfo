@@ -194,6 +194,9 @@
 \newcommand{\scaledunshiftedellipsoidpo}{{{\mathcal {\hat E}_{\text{feasible}}}^{k+1}}}
 
 
+\newcommand{\unshiftedellipsoidkpo}{{\mathcal E^{k+1}_{\textrm{feasible}}}}
+
+
 \newcommand{\image}{{\textrm{im}}}
 
 
@@ -209,6 +212,8 @@
 \newcommand{\epsactivemodels}{{\mathbb A_{m}}}
 
 \newcommand{\deltaacit}{{\Delta_{\textrm{smh}}}}
+
+\newcommand{\zikthresh}{{ K_{\textrm{active}} }}
 
 %=========================================
 
@@ -752,8 +757,13 @@ These half-cones have a vertex between the current iterate and the nearest point
 For convenience, while discussing the construction of the feasible ellipsoid, we define them here.
 The definition of these cones depends on user defined parameters of 
 \begin{align}
-\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1). \label{define_abpab}
+\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1) \label{define_abpab}
 \end{align}
+and 
+\begin{align}
+(2 + \omegainc)\sqrt{n} < \zikthresh \label{define_zikthresh}
+\end{align}
+where $\omegainc$ is defined in \cref{define_the_omegas}.
 
 We do not construct cones for each of our constraints, as some may have $\|\gmcik\| = 0$.
 For each $1\le i\le m$, if $\|\gmcik\| \ne 0$, we first compute the zero of the linearized constraint
@@ -762,7 +772,7 @@ For each $1\le i\le m$, if $\|\gmcik\| \ne 0$, we first compute the zero of the 
 \end{align}
 We let the set of ``active" constraints be defined by 
 \begin{align}
-\activeconstraintsk = \left\{1 \le i \le m | \zik \in B_{\infty}(\xk, \dk)\right\} \label{define_activeconstraints}
+\activeconstraintsk = \left\{1 \le i \le m | \zik \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\} \label{define_activeconstraints}
 \end{align}
 % \|\gmcik\| \ne 0, \quad 
 The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameters $\alpha, p_{\alpha}$:
@@ -793,9 +803,9 @@ there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, t
 \begin{align}
 \sigma(Q^{(k)}) \le \sigmamax. \label{define_suitable_condition_numbers}
 \end{align}
-\item The tuple $(\qk, \ck, \sdk)$ is \emph{trusted} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the trust region:
+\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within the trust region:
 \begin{align}
-\unshiftedellipsoid \subseteq \capcones \cap \tr  \label{define_suitable_in_tr}
+\unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
 \end{align}
 where
 \begin{align}
@@ -812,7 +822,7 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}
 \end{align}
 where
 \begin{align}
-\scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\sdk}^2 \right\}
+\scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\sdk}^2 \right\} \label{define_scaledunshiftedellipsoid}
 \end{align}
 \item The tuple $(\qk, \ck, \sdk)$ are \emph{non-empty} if
 \begin{align}
@@ -1273,17 +1283,17 @@ Later, in \cref{ellipsoid_is_feasible_section}, we show that it is feasible for 
 
 First, we define the set of active constraints as in \cref{define_activeconstraints}.
 Note that during iteration $k$, we construct the ellipsoid for the next iteration $k+1$.
-Until the $k$-th models are computed, this will initially be an approximation from the previous iteration:
-\begin{align}
-\approxactiveconstraintskpo = \left\{1 \le i \le m | \zik \in B_{\infty}(\xkpo, \dkpo)\right\}. \label{define_active_approximation}
-\end{align}
+% Until the $k$-th models are computed, this will initially be an approximation from the previous iteration:
+% \begin{align}
+% \approxactiveconstraintskpo = \left\{1 \le i \le m | \zik \in B_{\infty}(\xkpo, \dkpo)\right\}. \label{define_active_approximation}
+% \end{align}
 
-If there are no active constraints, $\approxactiveconstraintskpo = \emptyset$, then we simply let
+If there are no active constraints, $\activeconstraintsk = \emptyset$, then we simply let
 \begin{align}
 \qkpo = I, \quad \ckpo = \xkpo, \quad \sdkpo = \sqrt{2} \dkpo. \label{define_trivial_ellipsek}
 \end{align}
 
-However, if $\approxactiveconstraintskpo \ne \emptyset$, we compute a feasible direction for these active constraints:
+However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction for these active constraints:
 \begin{align}
 \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|} \label{define_u}
 \end{align}
@@ -1670,6 +1680,76 @@ Thus, any $y \in\Rn$ with $y \in S$ must also have $y \in B$.
 
 
 \begin{lemma}
+\label{large_zik_means_means_no_intersection}
+Let
+$\zik$ and $\fik$
+be defined by
+\cref{define_z} and \cref{define_fik} respectively.
+For any $R > 0$ and $K > R\sqrt{n}$, there exists $\deltalargzik > 0$ such that if $\dk \le \deltalargzik$ and 
+\begin{align*}
+\zik \not \in B_{\infty}\left(\xk, (1+K) \dk\right),
+\end{align*}
+then $B_{\infty}\left(\xk, R \dk\right) \subseteq \fik$.
+\end{lemma}
+\begin{proof}
+Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
+We can define
+\begin{align}
+\deltalargzik = \min\left\{
+\left(\frac 1 {\beta }\frac {K - R\sqrt{n}}{K + R\sqrt{n}}\right)^{\frac 1 {p_{\beta }}},
+\left(\frac 1 {(1+K)\alpha}\right)^{\frac 1 {p_{\alpha}}}
+\right\} \label{define_deltalargzik}
+\end{align}
+and suppose that $\|\xk - \zik\| \ge (1+K) \dk$.
+
+First, note that by \cref{define_w}
+\begin{align*}
+\|\xk - \wik\| = (1 - \alpha\dk^{p_{\alpha}}) \|\xk - \zik\| \ge \frac {K} {(1+K)} (1+K)\dk = K\dk.
+\end{align*}
+
+Let $y \in B_{\infty}\left(\xk, R \dk\right)$, so that $\|y - \xk\| \le \sqrt{n}R\dk$.
+Also, define
+\begin{align*}
+t  = \frac{(y - \wik)^T(\xk - \wik)}{\left(\xk - \wik\right)^T(\xk - \wik)} \\
+p = \wik + t\left(\xk - \wik\right)
+\end{align*}
+so that
+\begin{align*}
+\|y - \wik\| \le \|y - \xk\| + \|\xk - \wik\| \\
+\Longrightarrow \frac{\|y - \wik\|}{\|\xk - \wik\|} \le 1 +  \frac{\|y - \xk\|}{\|\xk - \wik\|} 
+\le 1 + \frac{\sqrt{n}R\dk}{K \dk} = \frac {K+R\sqrt{n}}{K} \\
+\Longrightarrow \frac{\|\xk - \wik\|}{\|y - \wik\|} \ge \frac {K}{K+R\sqrt{n}}
+\end{align*}
+and
+\begin{align*}
+\left(y - p\right)^T\left(\xk - \wik\right) = 
+\left(y - \wik - t\left(\xk - \wik\right)\right)^T\left(\xk - \wik\right) \\
+= \left(y - \wik\right)^T\left(\xk - \wik\right) - t\left(\xk - \wik\right)^T\left(\xk - \wik\right) = 0.
+\end{align*}
+Because
+\begin{align*}
+\|\xk - p\| = \|\xk - \wik + \wik - p\| = \left\|\xk - \wik - t\left(\xk - \wik\right)\right\| \\
+= (1-t)\|\xk - \wik\| \ge (1-t)K\dk
+\end{align*}
+we have
+\begin{align*}
+nR^2\dk^2 \ge \|\xk - y\|^2 = \|\xk - p\|^2 + \|y - p\|^2 \ge K^2(1-t)^2\dk^2 
+\Longrightarrow 1-t \le \frac {R\sqrt{n}} {K} 
+\Longrightarrow t \ge \frac {K - R\sqrt{n}}{K}
+\end{align*}
+
+Putting this together, we see
+\begin{align*}
+\frac{\xk - \wik}{\left\|\xk - \wik\right\|}^T\frac{y - \wik}{\left\|y - \wik\right\|} 
+= \frac{\left(\xk - \wik\right) ^T\left(y - p\right) + \left(\xk - \wik\right)^T\left(p - \wik\right)}{\left\|\xk - \wik\right\|\left\|y - \wik\right\|} \\
+= t\frac{\left(\xk - \wik\right)^T\left(\xk - \wik\right)}{\left\|\xk - \wik\right\|\left\|y - \wik\right\|}
+= t \frac{\left\|\xk - \wik\right\|}{\left\|y - \wik\right\|}
+= \frac {K - R\sqrt{n}}{K + R\sqrt{n}} \ge \beta \dk^{p_{\beta}}.
+\end{align*}
+% \ge \frac {K - \sqrt{n}}{K} \frac {K}{K+\sqrt{n}}
+\end{proof}
+
+\begin{lemma}
 \label{inner_cone_inside_each_cone}
 Let $\fcki$ and $\capcones$ be defined by \cref{define_inner_cone} and \cref{define_capcones} respectively.
 If 
@@ -1718,39 +1798,49 @@ Thus, $\fcki \subseteq \fik$.
 \end{proof}
 
 
-\color{red}
-The red is no longer needed.
-First, we show that $\xk \in \fik$.
-We see that:
-\begin{align*}
-\xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)
-\end{align*}
-where
-\begin{align*}
-\frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta \dk^{p_{\beta}}
-\end{align*}
-because $\dk \le 1$.
-\color{black}
+% \color{red}
+% The red is no longer needed.
+% First, we show that $\xk \in \fik$.
+% We see that:
+% \begin{align*}
+% \xk = \xk + \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk) - \left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)
+% \end{align*}
+% where
+% \begin{align*}
+% \frac{-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)}{\left\|-\left(1 - \alpha\dk^{p_{\alpha} }\right)(\zik - \xk)\right\|}^T\hgik = 1 \ge \beta \dk^{p_{\beta}}
+% \end{align*}
+% because $\dk \le 1$.
+% \color{black}
 
 \begin{lemma}
 \label{ellsoid_is_suitable_theorem_p1}
-The ellipsoids defined by \cref{define_trivial_ellipsek} 
+Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
+If $\activeconstraintsk = \emptyset$ and $\dkpo \le \omegainc\dk$, 
+then there exists $\deltalargzik>0$ such that if $\dk \le \deltalargzik$ the
+ellipsoids defined by \cref{define_trivial_ellipsek} 
 are bounded, trusted, and adjacent according to \cref{ellipsoids_notation_definitions}.
 
 % satisfy \cref{ellipsoids_notation_definitions}.
 \end{lemma}
 \begin{proof}
-Clearly, \cref{define_suitable_condition_numbers} is satisfied because $\kappa(\qk) = 1$.
-Also, \cref{define_suitable_in_tr} is satisfied because 
+Clearly, \cref{define_suitable_condition_numbers} is satisfied because $\kappa(\qkpo) = 1$.
+Also, \cref{define_suitable_close_to_iterate} is satisfied because $(\xkpo - \xkpo)^T\qkpo(\xkpo - \xkpo) = 0 \le \sdkpo^2$.
+Let $\omegainc$, $\capcones$, and $\zikthresh$ be defined by \cref{define_the_omegas}, \cref{define_capcones}, and \cref{define_zikthresh} respectively.
+Because $\activeconstraintsk = \emptyset$, we can use 
+\cref{large_zik_means_means_no_intersection} with $R = (2 + \omegainc)\sqrt{n}$, $K = \zikthresh$ to conclude the existence of $\deltalargzik > 0$ such that 
+if $\dk \le \deltalargzik$, then for each 
+$1\le i\le m$, $\trkpo \subseteq \fik$.
+Thus, \cref{define_suitable_in_tr} is satisfied because 
 \begin{align*}
-\unshiftedellipsoid = \left\{x \in \Rn | \|x - \xk\|^2 \le \dk^2 \right\} \subseteq \tr = \capcones.
+\unshiftedellipsoidkpo = \left\{x \in \Rn \bigg| \|x - \xkpo\|^2 \le \dkpo^2 \right\} \subseteq \trkpo \subseteq \capcones.
 \end{align*}
-Finally, \cref{define_suitable_close_to_iterate} is satisfied because $(\xk - \xk)^T\qk(\xk - \xk) = 0 \le \sdk^2$.
 \end{proof}
 
 
 \begin{lemma}
 \label{ellsoid_is_suitable_theorem_p2}
+Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
+If $\activeconstraintsk \ne \emptyset$ and $\dkpo \le \omegainc\dk$, 
 If $\dk \le 1$, then the ellipsoids defined by \cref{define_ellipsek} are trusted and adjacent according to \cref{ellipsoids_notation_definitions}.
 
 % There exsists $\dacc > 0$ such that if $\dk \le \dacc$
@@ -1764,7 +1854,7 @@ If $\dk \le 1$, then the ellipsoids defined by \cref{define_ellipsek} are truste
 % as in \cref{define_ellipsek}.
 \end{lemma}
 \begin{proof}
-Let $\rotk$, $\gamma$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{define_bs} respectively.
+Let $\rotk$, $\gamma$, $f_e$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{define_ellipse_function}, and \cref{define_bs} respectively.
 % Definition \cref{define_ellipsek} states
 % \begin{align*}
 % \qk = \rotk^T \begin{pmatrix}
@@ -1777,11 +1867,11 @@ Let $\rotk$, $\gamma$, and $\bs$ be defined as in \cref{define_rotation}, \cref{
 Because $\rotk\huk = e_1$, we have for any $\delta > 0$:
 \begin{align*}
 \left(x - \ckpo\right)^T\qkpo\left(x - \ckpo\right) - \frac 1 2 \delta^2 \\
-= \left(\rotk(x-\xkpo) - \frac 1 2 \dkpo e_1\right)^T\begin{pmatrix}
+= \left(\rotk(x-\xkpo) - \frac 1 {2\gamma} \dkpo e_1\right)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2} \boldsymbol I \\
-\end{pmatrix} \left(\rotk(x-\xkpo) - \frac 1 2 \dkpo e_1\right) - \frac 1 2 \delta^2 \\
-= f_e\left(\frac 1 2 \dkpo, \delta, \bs; \rotk\left(x - \xkpo\right)\right).
+\end{pmatrix} \left(\rotk(x-\xkpo) - \frac 1 {2\gamma} \dkpo e_1\right) - \frac 1 2 \delta^2 \\
+= f_e\left(\frac 1 {2\gamma} \dkpo, \delta, \bs; \rotk\left(x - \xkpo\right)\right).
 \end{align*}
 
 % This used to be a line, but it was too long...
@@ -1791,33 +1881,39 @@ Because $\rotk\huk = e_1$, we have for any $\delta > 0$:
 % \end{pmatrix} \rotk\left(x - \left(\xkpo + \frac 1 2 \dkpo \huk\right)\right) - \frac 1 2 \delta^2 \\
 
 
-In particular, letting $\delta = \sdkpo$ and $\delta = \sqrt{2}\sdkpo$, we see that
+In particular, with definitions \cref{define_unshifed_ellipsoid} and \cref{define_scaledunshiftedellipsoid},
+we can let $\delta = \sdkpo$ and $\delta = \sqrt{2}\sdkpo$ to see that with $s = x - \xkpo$
 \begin{align*}
-\unshiftedellipsoidpo = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo, \bs; \rotk\left(x - \xkpo\right)\right) \le 0 \right\} \\
-\scaledunshiftedellipsoidpo = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \sqrt{2} \frac {1}{2\gamma}\dkpo, \bs; \rotk\left(x - \xkpo\right)\right) \le 0 \right\}.
+\unshiftedellipsoidpo = \left\{\xkpo + s \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo, \bs; \rotk s \right) \le 0 \right\} \\
+\scaledunshiftedellipsoidpo = \left\{\xkpo + s \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \sqrt{2} \frac {1}{2\gamma}\dkpo, \bs; \rotk s\right) \le 0 \right\}.
 \end{align*}
-We can use \cref{ellipse_in_cone} to conclude
+With $y = \rotk s$,  we can use \cref{ellipse_in_cone} to conclude
 \begin{align*}
-\unshiftedellipsoidpo \subseteq \left\{t y \in \Rn | e_1^TR\left(y - \xkpo\right) \ge \bs, \|R\left(y - \xkpo\right)\| = 1, t > 0 \right\},
+\unshiftedellipsoidpo
+\subseteq \xkpo + \rotk\left\{y \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo, \bs; y \right) \le 0 \right\} \\
+\subseteq  \xkpo + \rotk \left\{t y \in \Rn \bigg| e_1^Ty \ge \bs, \left\|y\right\| = 1, t > 0 \right\} \\
+= \xkpo + \left\{t s \in \Rn \bigg| e_1^T\rotk s \ge \bs, \left\|\rotk s\right\| = 1, t > 0 \right\} \\
+= \left\{x  \in \Rn \bigg| x = \xkpo + ts, s^T\huk \ge \bs, \|s\| = 1, t > 0 \right\}
 \end{align*}
-because $\bs \ge \bsk$ and $\frac 1 {2\gamma} \dkpo \le \frac 1 {2\gamma} \dkpo$.
-With a change of variables $s \gets y - \xkpo, x \gets \xkpo + t s$, we see that
-\begin{align*}
-\unshiftedellipsoidpo \subseteq \left\{t y \in \Rn | e_1^T\rotk\left(y - \xkpo\right) \ge \bs, \|\rotk\left(y - \xkpo\right)\| = 1, t > 0 \right\} \\
-= \left\{x \in \Rn | x = \xkpo + ts, e_1^T\rotk s = s^T\huk \ge \bs, \|s\| = \|Rs\| = 1, t > 0 \right\}
-\end{align*}
+% .
+% \end{align*}
+% % because $\bs \ge \bsk$ and $\frac 1 {2\gamma} \dkpo \le \frac 1 {2\gamma} \dkpo$.
+% % With a change of variables $s \gets x - \xkpo$, we see that
+% \begin{align*}
+
 as $\rotk = \rotk^T$.
 Because $\bs \ge \bsk$ and $\bs \ge \frac 1 2$, we know two things:
 \begin{align*}
-\unshiftedellipsoidpo \subseteq \left\{x \in \Rn | x = \xkpo + ts, s^T\huk \ge \frac 1 2, \|s\|, t > 0 \right\} \\
-\textrm{and} \quad \unshiftedellipsoid \subseteq \left\{x \in \Rn | x = \xkpo + ts, s^T\huk \ge \bsk, \|s\|, t > 0 \right\} = \fcki.
+\unshiftedellipsoidpo \subseteq \left\{x \in \Rn | x = \xkpo + ts, s^T\huk \ge \frac 1 2, \|s\|= 1, t > 0 \right\} \\
+\textrm{and} \quad \unshiftedellipsoidpo \subseteq \left\{x \in \Rn | x = \xkpo + ts, s^T\huk \ge \bsk, \|s\|= 1, t > 0 \right\} = \fcki
 \end{align*}
+where $\fcki$ is defined by \cref{define_inner_cone}.
 Thus, for any $x \in \unshiftedellipsoidpo$, we can let $x = \xkpo + ts$, $\|s\| = 1$, $s^T\huk \ge \frac 1 2$.
 Because $\frac 1 2 \dkpo \le \frac 1 2$, we can apply \cref{ellipse_fits_part_2} to conclude $\|x - \xkpo\| = t \le \left(2 + \sqrt{2}\right)\frac 1 {2\gamma} \dkpo = \dkpo$.
-Thus, $x \in \trkpo$, and $\unshiftedellipsoid \subseteq \fcki \cap \trkpo$.
-By \cref{inner_cone_inside_each_cone}, $\fcki \subseteq \capcones$.
+Thus, $x \in \trkpo$, and $\unshiftedellipsoidpo \subseteq \fcki \cap \trkpo$.
+By \cref{inner_cone_inside_each_cone}, $\fcki \subseteq \capcones$ and \cref{define_suitable_in_tr} is satisfied.
 For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
-$f_e\left(\frac 1 2 \dkpo, \frac 1 {\sqrt{2}}\dkpo, \bs; \rotk\left(\xk - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
+$f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\left(\xkpo - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
 \end{proof}
 
 
@@ -2905,74 +3001,7 @@ However, we show that this is not required during every iteration, but those ite
 
 We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
 This statement is formalized in \cref{sufficient_reduction_theorem}.
-First we show the following lemma:
 
-\begin{lemma}
-\label{large_zik_means_means_no_intersection}
-Let
-$\zik$ and $\fik$
-be defined by
-\cref{define_z} and \cref{define_fik} respectively.
-There exists $\deltalargzik > 0$ such that if $\dk \le \deltalargzik$ and 
-\begin{align*}
-\zik \not \in B_{\infty}(\xk, 3\sqrt{n}\dk),
-\end{align*}
-then $\tr \subseteq \fik$.
-\end{lemma}
-\begin{proof}
-Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
-We can define
-\begin{align}
-\deltalargzik = \min\left\{
-\left(\frac 1 {3\beta }\right)^{\frac 1 {p_{\beta }}},
-\left(\frac 1 {3\alpha}\right)^{\frac 1 {p_{\alpha}}}
-\right\} \label{define_deltalargzik}
-\end{align}
-and suppose that $\|\xk - \zik\| \ge 3 \sqrt{n} \dk$.
-
-First, note that by \cref{define_w}
-\begin{align*}
-\|\xk - \wik\| = (1 - \alpha\dk^{p_{\alpha}}) \|\xk - \zik\| \ge \left(\frac 2 3\right) \left(3\sqrt{n}\dk\right).
-\end{align*}
-
-Let $y \in \tr$, so that $\|y - \xk\| \le \sqrt{n}\dk$.
-Also, define
-\begin{align*}
-t  = \frac{(y^T - \wik)^T(\xk - \wik)}{\left(\xk - \wik\right)^T(\xk - \wik)} \\
-p = \wik + t\left(\xk - \wik\right)
-\end{align*}
-so that
-\begin{align*}
-\|y - \wik\| \le \|y - \xk\| + \|\xk - \wik\| \\
-\Longrightarrow \frac{\|y - \wik\|}{\|\xk - \wik\|} \le 1 +  \frac{\|y - \xk\|}{\|\xk - \wik\|} \le 1 + \frac{\sqrt{n}\dk}{2 \sqrt{n}\dk} = \frac 3 2\\
-\Longrightarrow \frac{\|\xk - \wik\|}{\|y - \wik\|} \ge \frac 2 3
-\end{align*}
-and
-\begin{align*}
-\left(y - p\right)^T\left(\xk - \wik\right) = 
-\left(y - \wik - t\left(\xk - \wik\right)\right)^T\left(\xk - \wik\right) \\
-= \left(y - \wik\right)^T\left(\xk - \wik\right) - t\left(\xk - \wik\right)^T\left(\xk - \wik\right) = 0.
-\end{align*}
-
-But,
-\begin{align*}
-\|x - p\| = \|x - \wik + \wik - p\| = \left\|x - \wik - t\left(x - \wik\right)\right\| \\
-= (1-t)\|x - \wik\| \ge (1-t)2\sqrt{n}\dk
-\end{align*}
-means that
-\begin{align*}
-n\dk^2 \ge \|x - y\|^2 = \|x - p\|^2 + \|y - p\|^2 \ge 4(1-t)^2n\dk^2 
-\Longrightarrow 1-t \le \frac 1 2 \Longrightarrow t \ge \frac 1 2.
-\end{align*}
-
-Finally, we have
-\begin{align*}
-\frac{\xk - \wik}{\left\|\xk - \wik\right\|}^T\frac{y - \wik}{\left\|y - \wik\right\|} 
-= \frac{\left(\xk - \wik\right) ^T\left(y - p\right) + \left(\xk - \wik\right)^T\left(p - \wik\right)}{\left\|\xk - \wik\right\|\left\|y - \wik\right\|} \\
-= t\frac{\left(\xk - \wik\right)^T\left(\xk - \wik\right)}{\left\|\xk - \wik\right\|\left\|y - \wik\right\|} = t \frac{\left\|\xk - \wik\right\|}{\left\|y - \wik\right\|}
-\ge \frac 1 3 \ge \beta \dk^{p_{\beta}}.
-\end{align*}
-\end{proof}
 % 
 % 
 % 
@@ -4788,7 +4817,7 @@ Suppose for a contradiction that for some $\epsilon > 0$ the set $\mathcal U = \
 By \cref{delta_to_zero}, there exists a $k_0 \in \naturals$ such that for all $k \ge k_0$,
 
 \begin{align*}
-\dk \le \min\{\frac{\epsilon}{\maxhessian}, \frac{(1-\eta_1)\epsilon}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}.
+\dk \le \min\left\{\frac{\epsilon}{\maxhessian}, \frac{(1-\eta_1)\epsilon}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\right\}.
 \end{align*}
 
 Then if $k \in \naturals '$ with $k \ge k_0$:
