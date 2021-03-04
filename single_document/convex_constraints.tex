@@ -727,7 +727,8 @@ while $\chik$ is defined by \cref{define_criticality_measure}.
 
 \subsection{Trust Regions}
 
-Our algorithm maintains up to three trust regions:  \replace{}{a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.  }
+Our algorithm maintains up to three trust regions: 
+a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 \begin{align}
 \outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall 1\le i \le n\}. \label{define_outer_trust_region}
@@ -735,20 +736,22 @@ The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 
 Note that the outer trust region may include infeasible points.
 To ensure feasibility of all sample points, we construct an inner trust region  $ \sampletrk $  satisfying 
-$\sampletrk \subset \outertrk \cap \replacemath{\feasible}{\feasiblek}$.
-\replace{and $\xk \in \sampletrk $.    Of course,   it may only be the case that $\sampletrk \subset \feasiblek$ rather than $\sampletrk \subset \feasible$.}{     Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on  $\sampletrk$ to ensure that it is entirely contained within the feasible region $\feasible$.}   
-\replace{However, we show that for sufficiently small $\dk$, this can not happen in Lemma 6.4.4.  }{These restrictions will be described in \cref{ellipsoid_requirements}}  
-
+$\sampletrk \subset \outertrk \cap \feasiblek$.
+Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on $\sampletrk$
+to ensure that it is entirely contained within the feasible region $\feasible$.
+These restrictions will be described in \cref{ellipsoid_requirements}, 
+and we show that these restrictions ensure $\sampletrk \subset \feasible$ in \cref{ellipsoid_is_feasible} and \cref{searchtrk_is_feasible}.
 
 %\cref{ellipsoid_is_feasible}
 
 % However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
-\replace{This means we introduce another trust region $ \searchtrk $ that also satisfies 
-$ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.}{The third trust region is the search trust region, which  could either be $\sampletrk$ itself, or a larger region satisfying $ \sampletrk \subset \searchtrk \subset \outertrk \cap \feasible$.}  The search trust region is used in defining the trust region subproblem.
+The third trust region $\searchtrk$ is the search trust region, which could either be $\sampletrk$ itself, 
+or a larger region satisfying $ \sampletrk \subset \searchtrk \subset \outertrk \cap \feasible$.
+The search trust region is used in defining the trust region subproblem.
 
-\replace{
-Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
-This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
+% \replace{
+% Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
+% This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
 \subsection{Extensions from Linear Constraints}
 In the last paper, we showed convergence of our algorithm for linear constraints.
