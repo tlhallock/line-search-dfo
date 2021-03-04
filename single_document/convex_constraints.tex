@@ -155,7 +155,7 @@
 \newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
 \newcommand{\sigmamax}{{\sigma_{\textrm{max}}}}
 \newcommand{\sk}{{{s}^{(k)}}}
-\newcommand{\thetamink}{{\theta^k_{\textrm{min}}}}
+\newcommand{\thetamink}{{\pi^k_{\textrm{min}}}}
 \newcommand{\tolcrit}{\tau_{\xi}}
 \newcommand{\tolrad}{\tau_{\Delta}}
 \newcommand{\tr}{{ B_{\infty}\left(\xk, \dk\right) }}
@@ -947,7 +947,7 @@ Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu + E \s
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
 
 Because $Q$ is positive definite, $f$ has a unique minimum on each hyper-plane $A_i d = b_i$.
-Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i=1,\ldots,m$.
+Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i \in [m]$.
 By the first order optimality conditions, there exists a $\lambda \in \Rm$ such that
 \begin{align*}
 \gradf(d^{(i)}) = Q d^{(i)} = \lambda_i A_i 
@@ -961,7 +961,7 @@ A_i^T \lambda_i Q^{-1}A_i = \bar{b_i} \Longrightarrow
 \end{align*}
 so that
 \begin{align*}
-d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
+d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall i \in [m].
 \end{align*}
 
 Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
@@ -1003,11 +1003,11 @@ where
 In row form, this is
 \begin{align*}
 e_i ^T x \le e_i^T\xk + \dk, \quad \textrm{and} \quad
--e_i ^T x \le -e_i^T\xk + \dk \quad \forall 1 \le i \le n,
+-e_i ^T x \le -e_i^T\xk + \dk \quad \forall i \in [n],
 \end{align*}
 so that to ensure $\unshiftedellipsoid \subseteq \tr$, we must only constrain the diagonal elements of the inverse of $\qk$:
 \begin{align}
-e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall 1 \le i \le n.
+e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall i \in [n].
 \label{ellipsoids_trust_region_constraints}
 \end{align}
 
@@ -1062,10 +1062,10 @@ If they were to trace all possible lines through the boundary of the ellipsoid o
 First, we compute the projection of the cone, which is simply its intersection with the hyperplane:
 \begin{align*}
 H_i \cap A_i 
-= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, -\frac{\left(x - v^{(i)}\right)^T}{\|x - v^{(i)}\|}\frac{v^{(i)}}{\|v^{(i)}\|}\ge \beta \right\} \\
-= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|v^{(i)}\|\ge \beta\|x - v^{(i)}\| \right\} \\
-= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|x - v^{(i)}\|^2 \le \frac 1 {\beta^2}\|v^{(i)}\|^2 \right\} \\
-= \left\{x \in \Rn \bigg| {v^{(i)}}^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\} \\
+= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, -\frac{\left(x - v^{(i)}\right)^T}{\|x - v^{(i)}\|}\frac{v^{(i)}}{\|v^{(i)}\|}\ge \beta \right\} \\
+= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|v^{(i)}\|\ge \beta\|x - v^{(i)}\| \right\} \\
+= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x - v^{(i)}\|^2 \le \frac 1 {\beta^2}\|v^{(i)}\|^2 \right\} \\
+= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\} \\
 \end{align*}
 
 Then, we can compute the perspective projection of the ellipsoid, similar to \cite{eberly_2013}.
@@ -1307,21 +1307,21 @@ l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \la
 After taking the gradient of the Lagrangian, we find that for some $\lambda$:
 \begin{align*}
 x - y - \lambda x = 0, & \quad s - t + \lambda {\beta'}^2 s = 0 \\
-x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 } \\
+x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 }
 \end{align*}
 
 We can substitute this into the constraint to solve for $\lambda$:
 \begin{align*}
 \|x\| = {\beta'} s \\
 \left\|\frac {y}{1 - \lambda}\right\| = {\beta'} \frac {t}{1 + \lambda {\beta'}^2 } \\
-\left(1 + \lambda {\beta'}^2\right) \left\|y\right\| = {\beta'}  {t} \left|1 - \lambda\right|\\
+\left(1 + \lambda {\beta'}^2\right) \left\|y\right\| = {\beta'}  {t} \left|1 - \lambda\right|
 \end{align*}
 
 \begin{align*}
 \left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} - t {\beta'} \lambda          &   \quad
 \left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} \lambda - t {\beta'}					\\
 \left\|y\right\|-t {\beta'} +\left( {\beta'}^2\left\|y\right\| + t {\beta'} \right)\lambda = 0  &		\\
-\lambda = \frac{t {\beta'} - \|y\|}{{\beta'}^2\|y\| + t {\beta'}}                               &		\\
+\lambda = \frac{t {\beta'} - \|y\|}{{\beta'}^2\|y\| + t {\beta'}}                               &		
 \end{align*}
 
 
@@ -1362,16 +1362,18 @@ with squared distance
 After a shift and rotation from the vertex point $\wik$ and going direction $-\wik$:
 
 \begin{align*}
-\hat w^{(i,k)} = \frac {\wik} {\|\wik\|} & \quad 1 \le i \le m\\
-R^j = 2 \frac{(e_1 + \hat w^{(i,k)})(e_1 + \hat w^{(i,k)})^T}{(e_1 + \hat w^{(i,k)})^T(e_1 + \hat w^{(i,k)})} - I  & \quad 1 \le j \le m,
+\hat w^{(i,k)} = \frac {\wik} {\|\wik\|} & \quad \forall i \in [m] \\
+R^j = 2 \frac{(e_1 + \hat w^{(i,k)})(e_1 + \hat w^{(i,k)})^T}{(e_1 + \hat w^{(i,k)})^T(e_1 + \hat w^{(i,k)})} - I  & \quad \forall j \in [m],
 \end{align*}
 we have the following optimization problem:
 \begin{align*}
+\begin{array} {ccc}
 \max_{r \ge 0, c, t^i}	& r & \\
-					& t^i = R^j\left(\hat w^{(i,k)} - c\right) 									& \quad 1 \le i \le m \\
-					& \beta^2 \left(\beta' e_1^T t^i - \left\|t^i - e_1^T t^j\right\|\right)^2 \ge r			& \quad 1 \le i \le m \\
-					& \left(\left(c - w^j\right)^T\hat w^{(i,k)}\right)^2 \ge \beta^2 \|c - \wik\|^2		& \quad 1 \le i \le m \\
+					& t^i = R^j\left(\hat w^{(i,k)} - c\right) 									& \quad \forall i \in [m] \\
+					& \beta^2 \left(\beta' e_1^T t^i - \left\|t^i - e_1^T t^j\right\|\right)^2 \ge r			& \quad \forall i \in [m] \\
+					& \left(\left(c - w^j\right)^T\hat w^{(i,k)}\right)^2 \ge \beta^2 \|c - \wik\|^2		& \quad \forall i \in [m] \\
 					& c \in \tr &
+\end{array}
 \end{align*}
 
 % 
@@ -1431,12 +1433,8 @@ If there are no active constraints, $\activeconstraintsk = \emptyset$, then we s
 
 However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction for these active constraints:
 \begin{align}
-\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}. \label{define_u}
+\huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}. \label{define_u}
 \end{align}
-
-\color{red}
-remove the in
-\color{black}
 
 
 The angle between this direction and the nearest direction that is infeasible is then measured by
@@ -1447,8 +1445,8 @@ The angle between this direction and the nearest direction that is infeasible is
 The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
 \begin{align*}
 \begin{array}{ccc}
-\huk \in \argmax_{u\in\Rn, \theta\in\reals} & \theta \\
-& -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \theta & \forall i \in \activeconstraintsk \\
+\huk \in \argmax_{u\in\Rn, \pi \in\reals} & \pi \\
+& -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \pi & \forall i \in \activeconstraintsk \\
 & \|u \| = 1& 
 \end{array}.
 \end{align*}
@@ -1487,13 +1485,13 @@ and rotation matrix
 \end{align}
 by defining
 \begin{align}
-\gamma = 1 + \frac 1 {\sqrt{2}} \label{define_the_constant_gamma} \\
-\bs = \max\left\{\frac 1 2 , \bsk\right\} \label{define_bs} \\
-\sampletrkpo = \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo,\bs; \rotk(x - \xkpo)\right) \le 0\right\}. \label{define_ellipsek}
+\gamma &= 1 + \frac 1 {\sqrt{2}} \label{define_the_constant_gamma} \\
+\bs &= \max\left\{\frac 1 2 , \bsk\right\} \label{define_bs} \\
+\sampletrkpo &= \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo,\bs; \rotk(x - \xkpo)\right) \le 0\right\}. \label{define_ellipsek}
 \end{align}
 Note that within \cref{define_ellipsek} we have defined the components $\qkpo$, $\ckpo$, $\sdkpo$ as
 \begin{align*}
-\qkpo = \rotk^T \begin{pmatrix}
+\qkpo = \left(\rotk\right)^T \begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
 \end{pmatrix} \rotk, \quad
