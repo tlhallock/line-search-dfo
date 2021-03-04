@@ -168,7 +168,7 @@
 \newcommand{\xik}{{\xi^{(k)}}}
 \newcommand{\ximin}{\xi_{\text{min}}}
 \newcommand{\xkpo}{{{x}^{(k+1)}}}
-\newcommand{\xk}{{x^{(k)}}}
+\newcommand{\xk}{x^{(k)}}
 \newcommand{\xl}{{x^{(l)}}}
 \newcommand{\xinit}{{x^{(0)}}}
 \newcommand{\zik}{{z^{(i, k)}}}
@@ -226,6 +226,22 @@
 \newcommand{\epsactivemodels}{{\mathbb A_{m}}}
 
 \newcommand{\deltaacit}{{\Delta_{\textrm{smh}}}}
+
+
+%=======================================
+% Steve's definitions for marking up
+%=======================================
+\usepackage[normalem]{ulem}	% For color comments
+
+\newcommand{\new}[1]{{\color{blue}#1}}
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1} {\rule{\wd0}{1pt}}}}#2} 
+\newcommand{\replace}[2]{{\color{red}\sout{#1}\color{black}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replace}[2]{{{\color{red}#2\color{black}}}} %TeX source markup.
+\newcommand{\replaceb}[2]{{\color{blue}\sout{#1}\color{black}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\replacemath}[2]{{\hcancel[red]{#1}{}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replacemath}[2]{{\color{red}#2\color{black}}} %TeX source markup.
+\newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
+\newcommand{\sbnote}[1]{\textsf{{\color{cyan}{ SCB note:}   #1} }\marginpar{{\textbf{Comment}}}}
 
 \newcommand{\zikthresh}{{ K_{\textrm{active}} }}
 
@@ -710,26 +726,29 @@ while $\chik$ is defined by \cref{define_criticality_measure}.
 \section{Algorithm}
 
 \subsection{Trust Regions}
-Our algorithm maintains up to three trust regions.
+
+Our algorithm maintains up to three trust regions:  \replace{}{a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.  }
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 \begin{align}
-\outertrk = \tr = \{x\in \Rn | \; {\xk}_i - \dk \le x_i \le {\xk}_i + \dk \quad \forall 1\le i \le n\}. \label{define_outer_trust_region}
+\outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall 1\le i \le n\}. \label{define_outer_trust_region}
 \end{align}
 
 Note that the outer trust region may include infeasible points.
-To ensure feasibility of all sample points, we construct an inner trust region for sample points $ \sampletrk $  satisfying 
-$\sampletrk \subset \outertrk \cap \feasible$.
-% and $\xk \in \sampletrk $.
-Of course, it may only be the case that $\sampletrk \subset \feasiblek$ rather than $\sampletrk \subset \feasible$.
-However, we show that for sufficiently small $\dk$, this can not happen in \cref{ellipsoid_is_feaisble}.
+To ensure feasibility of all sample points, we construct an inner trust region  $ \sampletrk $  satisfying 
+$\sampletrk \subset \outertrk \cap \replacemath{\feasible}{\feasiblek}$.
+\replace{and $\xk \in \sampletrk $.    Of course,   it may only be the case that $\sampletrk \subset \feasiblek$ rather than $\sampletrk \subset \feasible$.}{     Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on  $\sampletrk$ to ensure that it is entirely contained within the feasible region $\feasible$.}   
+\replace{However, we show that for sufficiently small $\dk$, this can not happen in Lemma 6.4.4.  }{These restrictions will be described in \cref{ellipsoid_requirements}}  
+
+
+%\cref{ellipsoid_is_feasible}
 
 % However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
-This means we introduce another trust region $ \searchtrk $ that also satisfies 
-$ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.
+\replace{This means we introduce another trust region $ \searchtrk $ that also satisfies 
+$ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.}{The third trust region is the search trust region, which  could either be $\sampletrk$ itself, or a larger region satisfying $ \sampletrk \subset \searchtrk \subset \outertrk \cap \feasible$.}  The search trust region is used in defining the trust region subproblem.
 
-
+\replace{
 Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
-This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.
+This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
 \subsection{Extensions from Linear Constraints}
 In the last paper, we showed convergence of our algorithm for linear constraints.
@@ -2037,7 +2056,7 @@ We use this optimization problem as a subroutine of the trust region subproblem 
 
 Another option is to simply decrease the trust region radius.
 However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
-In \cref{ellipsoid_is_feaisble}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
+In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
 Thus, we set $\searchtrk = \capcones$ by defining the trust region subproblem as
 \begin{align}
 \label{capcones_tr_subproblem}
@@ -2317,6 +2336,10 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 \end{align*}
 % \| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
 \end{assumption}
+
+
+
+
 
 
 
@@ -2953,7 +2976,7 @@ This follows directly from the definitions and \cref{each_constraints_cone_is_fe
 
 
 \begin{lemma}
-\label{ellipsoid_is_feaisble}
+\label{ellipsoid_is_feasible}
 Let $\dfeas$ and $\feasible$
 be defined by
 \cref{each_constraints_cone_is_feasible} and
@@ -3273,7 +3296,7 @@ v = u_{GC} - \delta \dk^{p} \huk \label{define_v} \\
 
 \color{red}
 Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
-Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feaisble} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
+Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
 These along with \cref{sr_chi_big_enough} ensure that the algorithm reaches Step 3.
 This is because the only way to quit iteration $k$ without reaching Step 3 is
 \begin{itemize}
@@ -3932,6 +3955,7 @@ There exists $k_0 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_0$, t
 H\left(\jackkl\right) \le \huff.
 \end{align*}
 \end{lemma}
+
 \begin{proof}
 Let $\huffalpha$ be defined by \cref{huffman_assumption}, and define $\huff = \frac 2 {\huffalpha}$.
 We know by \cref{bp_combining_several} that there exists
@@ -4549,7 +4573,6 @@ Thus, the result follows by letting $k_0 = \max\left\{k_1, k_2, k_3\right\}$.
 Suppose that \cref{criteria_from_contradiction}.
 
 \begin{align*}
-
 \end{align*}
 \end{theorem}
 
