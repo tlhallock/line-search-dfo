@@ -304,15 +304,15 @@ In such applications, function evaluations are expensive, so it is sensible to i
 
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
 \[ \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-\mbox{subject to} & c_i(x) \le 0 & 1 \le i \le m,
+\mbox{subject to} & c_i(x) \le 0 & i \in [m],
 \end{array}
 \]
 where 
 % $\domain$ is a subset of $\Rn$, and
-$f$ and $c_i, 1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+$f$ and $c_i, i \in [m]$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
 We will let the feasible set be represented as 
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}. \label{define_feasible}
+\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall i \in [m] \}. \label{define_feasible}
 \end{align}
 
 We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
@@ -323,16 +323,16 @@ For example, the trust-region subproblem might have the form
 
 \[ \begin{array}{ccl} \min_{\|s\| \le \dk}
  & \mfk (\xk+s) \\
-\mbox{subject to} & \mcik(\xk + s) \le 0 & 1 \le i \le m, \\
+\mbox{subject to} & \mcik(\xk + s) \le 0 & i \in [m], \\
 & \|s\| \le \dk \\
 \end{array}
 \]
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
-and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
+and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall i \in [m]$, and $\dk$ is the radius of the trust-region.
 The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
 We are using the models of the constraints to approximate the feasible region during each iteration:
 \begin{align}
-\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \} \label{define_feasiblek}
+\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall i \in [m] \} \label{define_feasiblek}
 \end{align}
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
@@ -380,7 +380,7 @@ a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end
 \|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2}
 \end{align*}
 
-For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
+For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | i \in [m]\right\}$.
 
 \subsection{Model-based Trust Region Methods}
 
@@ -1135,7 +1135,7 @@ Thus, the ellipsoid is contained in cone $A_i$ if and only if
 = \{x \in \Rn | {v^{(i)}}^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta_i^2} - 1\right)\|v^{(i)}\|^2 \}.
 \end{align*}
 
-For each $1 \le i \le m$, define
+For each $i \in [m]$, define
 \begin{align*}
 \hat v^{(i)} = \frac{v^{(i)}}{\|v^{(i)}\|} \\
 R^i = 2\frac{(\hat v^{(i)} + e_1)(\hat v^{(i)} + e_1)^T}{(\hat v^{(i)} + e_1)^T(\hat v^{(i)} + e_1)} - I
@@ -1423,7 +1423,7 @@ First, we define the set of active constraints as in \cref{define_activeconstrai
 Note that during iteration $k$, we construct the ellipsoid for the next iteration $k+1$.
 % Until the $k$-th models are computed, this will initially be an approximation from the previous iteration:
 % \begin{align}
-% \approxactiveconstraintskpo = \left\{1 \le i \le m | \zik \in B_{\infty}(\xkpo, \dkpo)\right\}. \label{define_active_approximation}
+% \approxactiveconstraintskpo = \left\{i \in [m] | \zik \in B_{\infty}(\xkpo, \dkpo)\right\}. \label{define_active_approximation}
 % \end{align}
 
 If there are no active constraints, $\activeconstraintsk = \emptyset$, then we simply let
@@ -1978,7 +1978,7 @@ Let $\omegainc$, $\capcones$, $\fik$, and $\zikthresh$ be defined by \cref{defin
 Because $\activeconstraintsk = \emptyset$, we can use 
 \cref{large_zik_means_means_no_intersection} with $R = (2 + \omegainc)\sqrt{n}$, $K = \zikthresh$ to conclude the existence of $\deltalargzik > 0$ such that 
 if $\dk \le \deltalargzik$, then for each 
-$1\le i\le m$, $\trkpo \subseteq \fik$.
+$i \in [m]$, $\trkpo \subseteq \fik$.
 Thus, \cref{define_suitable_in_tr} is satisfied because 
 \begin{align*}
 \unshiftedellipsoidkpo = \left\{x \in \Rn \bigg| \|x - \xkpo\|^2 \le \dkpo^2 \right\} \subseteq \trkpo \subseteq \capcones.
@@ -2106,10 +2106,10 @@ we arrive at the following optimization problem with $\sampletrk = \capcones$:
 \label{buffered_trust_region_subproblem}
 \begin{array}{ccc}
 \min_{s, d^{(k)} \in \Rn, b_i \in \reals}	& \mfk(x) & 	\\
- \mbox{subject to}  & n_k^Td^{(k)} \ge b_k + \trstol \dk& \forall 1 \le k \le |\trsinfset | \\
- & s^T d^{(k)} \le b_k &   \forall 1 \le k \le |\trsinfset |  \\
- & \|d^{(k)}\| = 1 & \forall 1 \le k \le |\trsinfset |	\\
- & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall 1 \le i \le m\\
+ \mbox{subject to}  & n_k^Td^{(k)} \ge b_k + \trstol \dk& \forall k \in \left[ |\trsinfset |\right] \\
+ & s^T d^{(k)} \le b_k &   \forall k \in \left[|\trsinfset |\right]  \\
+ & \|d^{(k)}\| = 1 & \forall k \in \left[|\trsinfset |	\right]\\
+ & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall i \in [m] \\
  & \|s - \xk \|_{\infty} \le \dk & \\
 \end{array}
 \end{align}
@@ -2195,7 +2195,7 @@ In \cref{sufficient_reduction_theorem} we show how to compute a point within $\c
 %  \mbox{subject to}  & d_k^T n_k \ge b_i + \trstol & \forall 1 \le k \le |\trsinfset | \\
 %  & d_k^T s \le b_i &   \forall 1 \le k \le |\trsinfset |  \\
 %  & \|d_k\| = 1 & \forall 1 \le k \le |\trsinfset |	\\
-%  & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall 1 \le i \le m\\
+%  & \nabla \mcik(\xk) ^T s \le \mcik(\xk) & \forall i \in [m]\\
 %  & \|s - \xk \|_{\infty} \le \dk & \\
 % \end{array}
 % \end{align}
@@ -2329,7 +2329,7 @@ We will let $\Omega$ be some open region containing $\feasible$.
 
 \begin{assumption}
 \label{constraints_are_convex}
-The functions $c_i$ for all $1 \le i \le m$ are convex in $ \Omega $. That is, 
+The functions $c_i$ for all $i \in [m]$ are convex in $ \Omega $. That is, 
 % c_i(x) \le 0 \wedge c_i(y) \le 0 \Longrightarrow
 \begin{align*}
 c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \Omega, \zeta \in [0, 1].
@@ -2338,7 +2338,7 @@ c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \Omega, \zeta \in [0, 
 
 
 \paragraph{Bounded functions}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $1 \le i \le m$ are bounded functions.
+The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
 
 
 
@@ -2352,10 +2352,10 @@ f(x) \ge \fmin \quad  \forall x \in \Omega.
 
 \begin{assumption}
 \label{bounded_hessians_assumption}
-Each function $c_i$ for $1 \le i \le m$ and $f$ has bounded Hessian. That is, there exists $ \maxhessian > 0$ such that:
+Each function $c_i$ for $i \in [m]$ and $f$ has bounded Hessian. That is, there exists $ \maxhessian > 0$ such that:
 \begin{align*}
 \|\nabla^2 f(x) \| \le \maxhessian \quad \forall x \in \Omega \\
-\|\nabla^2 c_i(x) \| \le \maxhessian \quad \forall x \in \Omega, \forall 1 \le i \le m
+\|\nabla^2 c_i(x) \| \le \maxhessian \quad \forall x \in \Omega, \forall i \in [m]
 \end{align*}
 \end{assumption}
 
@@ -2379,24 +2379,24 @@ The set $\feasible$ is bounded. That is, there exists $\maxnorm > 0$ such that
 
 
 \paragraph{All functions are smooth}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $1 \le i \le m$ are smooth functions.
+The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
 
 \begin{assumption}
 \label{lipschitz_gradients_assumption}
-The functions $c_i$ for all $1 \le i \le m$ and $f$ are differentiable and their gradients are Lipschitz continuous with constant $\lipgrad > 0$ in $ \Omega $:
+The functions $c_i$ for all $i \in [m]$ and $f$ are differentiable and their gradients are Lipschitz continuous with constant $\lipgrad > 0$ in $ \Omega $:
 \begin{align*}
 \|\gradf(x) - \gradf(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \Omega, \\
-\|\nabla c_i(x) - \nabla c_i(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \Omega, \forall 1 \le i \le m.
+\|\nabla c_i(x) - \nabla c_i(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \Omega, \forall i \in [m].
 \end{align*}
 \end{assumption}
 
 
 \begin{assumption}
 \label{lipschitz_hessians_assumption}
-The functions $c_i$ for all $1 \le i \le m$ and $f$ are twice differentiable and their Hessians are Lipschitz continuous with constant $\liphess > 0$ in $ \Omega $:
+The functions $c_i$ for all $i \in [m]$ and $f$ are twice differentiable and their Hessians are Lipschitz continuous with constant $\liphess > 0$ in $ \Omega $:
 \begin{align*}
 \|\nabla^2 f(x) - \nabla^2 f(y)\| \le \liphess \|x - y\| \quad \forall x,y \in \Omega, \\
-\|\nabla^2 c_i(x) - \nabla^2 c_i(y)\| \le \liphess \|x - y\| \quad \forall x,y \in \Omega, \forall 1 \le i \le m.
+\|\nabla^2 c_i(x) - \nabla^2 c_i(y)\| \le \liphess \|x - y\| \quad \forall x,y \in \Omega, \forall i \in [m] .
 \end{align*}
 \end{assumption}
 
@@ -2495,11 +2495,11 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 \begin{lemma}
 \label{bounded_gradients_lemma}
 Suppose \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
-The functions $f$ and $c_i$ for all $ 1 \le i \le m$ have bounded gradient in $ \feasible $.
+The functions $f$ and $c_i$ for all $ i \in [m]$ have bounded gradient in $ \feasible $.
 That is, there exists $\maxgrad > 0$ such that
 \begin{align}
 \|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
-\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible \quad \forall 1 \le i \le m
+\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible, \quad \forall i \in [m]
 \end{align}
 \end{lemma}
 \begin{proof}
@@ -2523,7 +2523,7 @@ c_i(x) \ge -M_c \quad \forall 1\le i \le m, x \in \feasible
 \begin{proof}
 Let $M_c = -c_i\left(\xinit\right) + \maxgrad\maxnorm + \maxhessian \maxnorm^2$.
 Because $\xinit \in\feasible$, $M_c > 0$.
-But, for all $1 \le i \le m$ and all $x \in \feasible$ we have by 
+But, for all $i \in [m]$ and all $x \in \feasible$ we have by 
 \cref{constraints_are_convex} and \cref{bounded_hessians_assumption}
 \begin{align*}
 c_i(x) \ge c_i\left(\xinit\right) + \left(\nabla c_i\left(\xinit\right)\right)^T\left(x - \xinit\right) - \maxhessian \left\|x - \xinit\right\|^2
@@ -2658,8 +2658,8 @@ There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 \begin{align*}
 \|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \sqrt{\sigma \left(\qkmo\right)} \dk^2, \\
 \|\nabla^2 f(\xk) - \hk \| \le \kappa_h \sigma \left(\qkmo\right) \dk,  \\
-\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \sqrt{\sigma \left(\qkmo\right)} \dk^2 \quad \forall 1 \le i \le m, \quad \textrm{and}\\
-\|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \sigma \left(\qkmo\right) \dk \quad \forall 1 \le i \le m. \\
+\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \sqrt{\sigma \left(\qkmo\right)} \dk^2 \quad \forall i \in [m], \quad \textrm{and}\\
+\|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \sigma \left(\qkmo\right) \dk \quad \forall i \in [m]. \\
 \end{align*}
 \end{lemma}
 
@@ -2670,7 +2670,7 @@ As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \begin{align*}
 \begin{array}{ccc}
 \hat {m}_f(u) = m_f(T^{-1}(u)),&  \hat f (u) = f(T^{-1}(u)) &\\
-\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \hat c_i (u) = c(T^{-1}(u))& \forall 1 \le i \le m
+\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \hat c_i (u) = c(T^{-1}(u))& \forall i \in [m]
 \end{array}
 \end{align*}
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
@@ -2701,9 +2701,9 @@ Notice that because $\sigma_{\textrm{min}} = 1$, we have that $\sigmamax = \sigm
 \begin{align*}
 \left\|\gradf\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le 
 \kappa'_g  \dk^2 \sqrt{\kappa\left(\frac 2 {\sdk} \qkmo\right)} \le \kappa'_g \sqrt{\sigma\left(\qkmo\right)}\dk^2 \\
-\left\|\nabla {c_i}\left(x_0 \right) - \nabla m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_g\sqrt{\sigma\left(\qkmo\right)} \dk^2 \quad \forall 1 \le i \le m \\
+\left\|\nabla {c_i}\left(x_0 \right) - \nabla m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_g\sqrt{\sigma\left(\qkmo\right)} \dk^2 \quad \forall i \in [m] \\
 \left\|\nabla^2\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le \kappa'_h\sigma\left(\qkmo\right)\dk, \\
-\left\|\nabla^2 {c_i}\left(x_0 \right) - \nabla^2 m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_h\sigma\left(\qkmo\right)\dk \quad \forall 1 \le i \le m
+\left\|\nabla^2 {c_i}\left(x_0 \right) - \nabla^2 m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_h\sigma\left(\qkmo\right)\dk \quad \forall i \in [m]
 \end{align*}
 In particular, $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
@@ -2720,7 +2720,7 @@ There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 \begin{align*}
 \begin{array}{ccc}
 \|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \dk^2, & \|\nabla^2 f(\xk) - \hk \| \le \kappa_h \dk, & \\
-\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2, & \|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \dk & \forall 1 \le i \le m. \\
+\|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \dk^2, & \|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \dk & \forall i \in [m]. \\
 \end{array}
 \end{align*}
 whenever $\dk \le \dacc$.
@@ -2735,7 +2735,7 @@ Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assum
 Then there exists a $\maxmodelhessian > 0$ such that 
 \begin{align*}
 \| \hk \| \le \maxmodelhessian \quad \forall x \in \feasible \\
-\|\nabla^2 m_{c_i}^{(k)}(\xk) \| \le \maxmodelhessian \quad \forall x \in \feasible, \forall 1 \le i \le m
+\|\nabla^2 m_{c_i}^{(k)}(\xk) \| \le \maxmodelhessian \quad \forall x \in \feasible, \forall i \in [m]
 \end{align*}
 whenever $\dk \le \dacc$.
 \end{lemma}
@@ -2767,14 +2767,14 @@ Suppose that
 \cref{lipschitz_gradients_assumption},
 \cref{minangleassumption},
 and \cref{mingradassumption} hold.
-There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for all $1 \le i \le m$ either
+There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for all $i \in [m]$ either
 \begin{itemize}
 \item $c_i(y) \le 0 \quad \forall y \in \left[\tr \cup \trkpo\right]$ or
 \item both $\zik \in \tr$ and $\left\|\gmcik\right\| > \frac 1 2 \mingrad$.
 \end{itemize}
 \end{lemma}
 \begin{proof}
-Fix an $1 \le i \le m$.
+Fix an $i \in [m]$.
 Let
 $\dacc$,
 $\maxgrad$,
@@ -3542,6 +3542,10 @@ m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left[m_
 \end{align}
 and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
 
+\begin{comment}
+Update the 3 here...
+\end{comment}
+
 Next, we will show that $v \in \capcones$.
 By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $\zik \not \in B_{\infty}(\xk, 3\sqrt{n}\dk)$, then $v \in \tr \Longrightarrow v \in \fik$.
 Therefore, we only consider the case that $\zik \in B_{\infty}(\xk, 3\sqrt{n}\dk)$.
@@ -3787,7 +3791,7 @@ The first definition should be removed, or used everywhere.
 
 We make the following definitions:
 \begin{align}
-[m] = \left\{i \in \naturals | 1 \le i \le m \right\} \label{sha_m}\\
+[m] = \left\{i \in \naturals | i \in [m] \right\} \label{sha_m}\\
 \forall S \subseteq [m], \feasiblek(S) =  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \forall i \in S \right\} \label{sha_fks} \\
 \projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_projkl} \\
 \activeprojkl = \left\{ i \in [m] \bigg| \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0 \right\} \label{sha_proj_indices} \\
@@ -3802,7 +3806,7 @@ We leave removing this assumption as future work, which is discussed in \cref{re
 There exist $\huffeps, \huffalpha > 0$ such that
 for each $x \in \Omega$ and unit vector $y \in \Rn$,
 there exists a unit vector $\huffdir(x, y) \in \Rn$ such that
-if $1 \le i \le m$ is such that 
+if $i \in [m]$ is such that 
 \begin{align*}
 y^T \nabla c_i \left(x\right) \ge - \huffeps
 \end{align*}
@@ -4454,7 +4458,7 @@ By our choice of $N_0$, we see that
 
 
 
-% [m] = \left\{i \in \naturals | 1 \le i \le m \right\} \label{sha_m}\\
+% [m] = \left\{i \in \naturals | i \in [m] \right\} \label{sha_m}\\
 % \forall S \subseteq [m], \feasiblek(S) =  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \forall i \in S \right\} \label{sha_fks} \\
 % \projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|\xk - \gk\right\| \label{sha_projkl} \\
 % \activeprojkk = \left\{ i \in [m] \bigg| \mcik\left(\xk\right) + \gmcik^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_proj_indices} \\
@@ -4545,7 +4549,7 @@ With $s = x - \left(\xk - \gk \right)$, we see
 =
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) & \forall 1 \le i \le m
+\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) & \forall i \in [m]
 \end{array} \\
 =
 \argmin_{x \in \fik} \left\|x - \left(\xk - \gk\right)\right\| = \projk\left([m]\right).
@@ -4570,7 +4574,7 @@ by
 =
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) & \forall 1 \le i \le m
+\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) & \forall i \in [m]
 \end{array} \\
 =
 \argmin_{x \in \feasiblel([m])} \left\|x - \left(\xk - \gk\right)\right\| = \projkl\left([m]\right).
@@ -4916,7 +4920,7 @@ A constraint $c_i(x) \le 0$ is said to be $\epsilon$-nearly active at $x \in \fe
 Let $\epsilon > 0$ be given.
 Define the set of indices of $\epsilon$ active constraints at a point $x \in \feasible$ by
 \begin{align}
-\epsactive(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |c_i(x)| \le \epsilon \bigg\} \label{define_epsactive}
+\epsactive(x; \epsilon) = \bigg\{ i \in [m] \bigg | |c_i(x)| \le \epsilon \bigg\} \label{define_epsactive}
 \end{align}
 \end{definition}
 
@@ -4924,7 +4928,7 @@ Define the set of indices of $\epsilon$ active constraints at a point $x \in \fe
 Let $\epsilon > 0$ be given.
 Define the set of indices of $\epsilon$ active model constraints at a point $x \in \feasible$ by
 \begin{align}
-\epsactivemodels(x; \epsilon) = \bigg\{ 1 \le i \le m \bigg | |m_{c_i}(x)| \le \epsilon  \bigg\} \label{define_epsactivemodels}
+\epsactivemodels(x; \epsilon) = \bigg\{ i \in [m] \bigg | |m_{c_i}(x)| \le \epsilon  \bigg\} \label{define_epsactivemodels}
 \end{align}
 \end{definition}
 
@@ -5957,7 +5961,7 @@ with $\dk \le ?$ we have that $H(A) \le \Gamma$.
 \end{theorem}
 
 \begin{proof}
-If we know from \cref{minangleassumption} that for \emph{each} $1 \le i \le m$, there 
+If we know from \cref{minangleassumption} that for \emph{each} $i \in [m]$, there 
 \begin{align*}
 H(A)
 \end{align*}
@@ -6072,12 +6076,12 @@ We will define the following for the next several proofs, using definitions in \
 \minactivegrad = \min\left\{\mingrad, \frac {\mingradepsilon} {2 \maxgrad}  \right\} \label{define_minactivegrad_orig} \\
 \minactivegraddelta = \frac 1 2 \mingradepsilon \label{define_minactivedelta_orig} \\
 p^{(k \to l)} = \argmin_{p \in \mathcal F^{(l)}} \|\xk - \gk - p\|^2 \label{bp_define_plk_orig} \\
-\mathcal A^{(l \to k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(l\to k)} - \xk) = 0 \} \label{bp_define_activep} \\
-\mathcal F_x = \{ y \in \Rn | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \quad \forall 1 \le i \le m\}, \label{bp_define_true_linearization} \\
+\mathcal A^{(l \to k)} = \{i \in [m] | c_i(\xk) + \gmcik^T(p^{(l\to k)} - \xk) = 0 \} \label{bp_define_activep} \\
+\mathcal F_x = \{ y \in \Rn | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \quad \forall i \in [m]\}, \label{bp_define_true_linearization} \\
 p_x = \argmin_{p \in \mathcal F_x} \|x - \gradf(x) - p\|^2, \label{bp_define_true_projection} \\
-\mathcal A_x = \left\{1 \le i \le m | \left|c_i(x) + \nabla c_i(x)^T(p_x - x)\right| \le \minactivegraddelta \right\}, \label{define_projection_active} \\
+\mathcal A_x = \left\{i \in [m] | \left|c_i(x) + \nabla c_i(x)^T(p_x - x)\right| \le \minactivegraddelta \right\}, \label{define_projection_active} \\
 p^{(k)} = \argmin_{p \in \feasiblek} \left\| \xk - \nabla f\left(\xk\right) - p \right\|, \label{bp_define_pl} \\
-\mathcal A^{(k)} = \left\{1 \le i \le m | c_i(x) + \gmcik^T\left(p^{(k)} - \xk\right) = 0 \right\}. \label{bp_define_yet_another_thing}
+\mathcal A^{(k)} = \left\{i \in [m] | c_i(x) + \gmcik^T\left(p^{(k)} - \xk\right) = 0 \right\}. \label{bp_define_yet_another_thing}
 \end{align}
 That is, $p^{(l, k)}$ is the projection of $\xk - \gk$ onto iterate $l$'s constraint's linearization,
 and $\mathcal A^{(l, k)}$ are the constraints which are active at this projection.
@@ -6109,7 +6113,7 @@ and for any $\epsilon' > 0$ there exists a $k_0 \in \naturals$ such that $\|\xk 
 
 \begin{lemma}
 \label{hopefully_there_is_a_bound_for_this}
-Let $S \subset \{ i | 1 \le i \le m \}$.
+Let $S \subset \{ i | i \in [m] \}$.
 We have that $\huff\left(A^k_c(S)\right) \le M_{\Gamma_0} \forall k$
 \end{lemma}
 \begin{proof}
@@ -6123,7 +6127,7 @@ This follows from continuity?
 \label{rename_2_2}
 Assume \cref{minangleassumption}.
 
-Define $\mathbb I_m = \{ i  \in \naturals | 1 \le i \le m \}$
+Define $\mathbb I_m = \{ i  \in \naturals | i \in [m] \}$
 and, for any $S \subseteq \mathbb I_m$, let
 \begin{align*}
 \Omega_k(S) = \left\{x\in\Rn | A^k_m\left(S\right) x \le b^k_m\left(S\right)\right\}.
@@ -6789,12 +6793,12 @@ Letting $\epsilon''$ be small enough, we know $\left\|p^{(k\to l)} - p^{(k\to k)
 For any $k, l \in \naturals$, let 
 \begin{align}
 p^{(k \to l)} = \argmin_{p \in \mathcal F^{(l)}} \|\xk - \gk - p\|^2 \label{bp2_define_plk} \\
-\mathcal A^{(l \to k)} = \{1 \le i \le m | c_i(\xk) + \gmcik^T(p^{(l\to k)} - \xk) = 0 \} \label{bp_define_activep_not_used} \\
-\mathcal F_x = \{ y \in \Rn | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \quad \forall 1 \le i \le m\}, \label{bp_define_true_linearization_not_used} \\
+\mathcal A^{(l \to k)} = \{i \in [m] | c_i(\xk) + \gmcik^T(p^{(l\to k)} - \xk) = 0 \} \label{bp_define_activep_not_used} \\
+\mathcal F_x = \{ y \in \Rn | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \quad \forall i \in [m]\}, \label{bp_define_true_linearization_not_used} \\
 p_x = \argmin_{p \in \mathcal F_x} \|x - \gradf(x) - p\|^2, \label{bp_define_true_projection_not_used} \\
-\mathcal A_x = \left\{1 \le i \le m | \left|c_i(x) + \nabla c_i(x)^T(p_x - x)\right| \le \minactivegraddelta \right\}, \label{define_projection_active_not_used} \\
+\mathcal A_x = \left\{i \in [m] | \left|c_i(x) + \nabla c_i(x)^T(p_x - x)\right| \le \minactivegraddelta \right\}, \label{define_projection_active_not_used} \\
 p^{(k)} = \argmin_{p \in \feasiblek} \left\| \xk - \nabla f\left(\xk\right) - p \right\|, \label{bp_define_pl_not_used} \\
-\mathcal A^{(k)} = \left\{1 \le i \le m | c_i(x) + \gmcik^T\left(p^{(k)} - \xk\right) = 0 \right\}. \label{bp_define_yet_another_thing_not_used}
+\mathcal A^{(k)} = \left\{i \in [m] | c_i(x) + \gmcik^T\left(p^{(k)} - \xk\right) = 0 \right\}. \label{bp_define_yet_another_thing_not_used}
 \end{align}
 That is, $p^{(l, k)}$ is the projection of $\xk - \gk$ onto iterate $l$'s constraint's linearization,
 and $\mathcal A^{(l, k)}$ are the constraints which are active at this projection.
@@ -6900,7 +6904,7 @@ $\tolrad$ & is a threshold for the trust region radius defined in \cref{define_a
 $\tolcrit$ & is a threshold for the criticality measure defined in \cref{define_algorithm_tolerances} \\ % $\tau_{\xi$ & is a threshold for the criticality measure defined in \cref{define_algorithm_tolerances} \\
 $\thetamink$ & is the minimum angle between $\huk$ and a constraint, defined in \cref{define_thetamink} \\ % $\theta^k_{\text{min$ & is the minimum angle between $\hat u$ and a constraint, defined in \cref{define_thetamink} \\
 $\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\ % $\xi_{\text{min}}$ & is a tolerance within the LU pivoting algorithm \\
-$c_i$ & are the constraints $\forall 1 \le i \le m$ \\ % $c_i$ & are the constraints $\forall 1 \le i \le m$ \\
+$c_i$ & are the constraints $\forall i \in [m]$ \\ % $c_i$ & are the constraints $\forall i \in [m]$ \\
 $d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\ % $d$ & are the differences between the center of the ellipse and where the ellipse intersect the constraints? \\
 $d$ & is the dimension of the space of model functions \\ % $d$ & is the dimension of the space of model functions \\
 $e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\ % $e_i$ & is the $i$-th unit vector, $e_i = (0, \ldots, 0, 1, 0, \ldots, 0)$ \\
