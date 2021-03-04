@@ -101,7 +101,6 @@
 \newcommand{\feasiblek}{{\mathcal F^{(k)}}}
 \newcommand{\feasiblel}{{\mathcal F^{(l)}}}
 \newcommand{\feasible}{{\mathcal F}}
-\newcommand{\fik}{{\mathcal F_{i, k}}}
 \newcommand{\fmin}{f_{\text{min}}}
 \newcommand{\gammabi}{\gamma_{\textrm{sufficient}}}
 \newcommand{\gammasm}{\gamma_{\textrm{min}}}
@@ -226,6 +225,9 @@
 \newcommand{\epsactivemodels}{{\mathbb A_{m}}}
 
 \newcommand{\deltaacit}{{\Delta_{\textrm{smh}}}}
+
+
+\newcommand{\fik}{{C^{(i, k)}}}
 
 
 %=======================================
@@ -377,6 +379,8 @@ a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end
 \|x\|_{\infty} = \max_{1\le i\le n}|x_i| \\
 \|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2}
 \end{align*}
+
+For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
 \subsection{Model-based Trust Region Methods}
 
@@ -562,7 +566,7 @@ This is useful because of \cref{quadratic_errors}, which is shown in \cite{intro
 \begin{theorem}
 \label{quadratic_errors}
 Assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
-poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{1\le i \le p} \|y^0 - y^i\|$.
+poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{i \in [p]} \|y^0 - y^i\|$.
 Further, assume that the function $f$ is twice continuously differentiable in an open domain $\Sigma$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
 is Lipschitz continuous in $\Omega$ with constant $L_h > 0$.
 
@@ -731,7 +735,7 @@ Our algorithm maintains up to three trust regions:
 a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 \begin{align}
-\outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall 1\le i \le n\}. \label{define_outer_trust_region}
+\outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall i \in [n]\}. \label{define_outer_trust_region}
 \end{align}
 
 Note that the outer trust region may include infeasible points.
@@ -787,6 +791,9 @@ Although an approach for avoiding one of these two function evaluations can work
 \label{possible_ellipsoids}
 
 We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
+\begin{comment}
+Steve wants me to delete most of this...
+\end{comment}
 This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
 Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
 while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
@@ -795,51 +802,87 @@ There is a well known algorithm for constructing poised sets over spheres, and t
 Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
-\subsubsection{Requirements of the Interpolation Region}
+\subsubsection{Buffering Cones}
 \label{ellipsoid_requirements}
-We construct a set of requirements $\sampletrk$ must satisfy.
-During iteration $k$, we let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$.
-We define 
+% We construct a set of requirements $\sampletrk$ must satisfy.
+During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
 \begin{align*}
 \sampletrk = \left \{x \in \Rn | (x - \ck)^T \qk(x - \ck) \le \frac 1 2 \sdk^2 \right \}.
 \end{align*}
-In order to define the requirements of this ellipsoid, we first construct cones that buffer the ellipsoid from the constraints.
-These half-cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
-For convenience, while discussing the construction of the feasible ellipsoid, we define them here.
-The definition of these cones depends on user defined parameters of 
-\begin{align}
-\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1) \label{define_abpab}
-\end{align}
-and 
-\begin{align}
-(2 + \omegainc)\sqrt{n} < \zikthresh \label{define_zikthresh}
-\end{align}
-where $\omegainc$ is defined in \cref{define_the_omegas}.
+To ensure this ellipsoid is feasible, we construct cones that buffer the ellipsoid from the constraint boundaries.
+These cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
+We define these cones within here.
 
-We do not construct cones for each of our constraints, as some may have $\|\gmcik\| = 0$.
-For each $1\le i\le m$, if $\|\gmcik\| \ne 0$, we first compute the zero of the linearized constraint
+The first step is to identify the set of constraints that are leary active relative to the size of the current trust region.
+Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
+Specifically, for each $i$ with $\|\gmcik\| \ne 0$, define
 \begin{align}
 \zik = \xk - \frac{m^{(k)}_{c_i}(\xk)}{\left\|\gmcik\right\|^2} \gmcik. \label{define_z}
 \end{align}
-We let the set of ``active" constraints be defined by 
+If $\zik$ lies sufficiently near the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
+Specifically, the set of nearly active constraints is defined by
 \begin{align}
-\activeconstraintsk = \left\{1 \le i \le m | \zik \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\} \label{define_activeconstraints}
+\activeconstraintsk = \left\{i \in [m] \bigg| \zik \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}, \label{define_activeconstraints}
 \end{align}
-% \|\gmcik\| \ne 0, \quad 
-The vertex of the cone is then positioned a distance along the ray towards this zero, determined by the trust region radius and the parameters $\alpha, p_{\alpha}$:
+where $\zikthresh$ is a user defined parameter that must satisfy the following identity involving $\omegainc$ (which is defined by \cref{define_the_omegas}):
+\begin{align}
+(2 + \omegainc)\sqrt{n} < \zikthresh. \label{define_zikthresh}
+\end{align}
+For each nearly active constraint, we define a buffering cone with user defined parameters
+\begin{align}
+\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1). \label{define_abpab}
+\end{align}
+The vertex $\wik$ of this cone is located along the line segment connecting $\xk$ to $\zik$:
 \begin{align}
 \wik = \xk + \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right). \label{define_w}
 \end{align}
-The cone for constraint $i$ is then defined using the $\beta$ and $p_{\beta}$ parameters by
+The cone for constraint $i$ is then defined by
 \begin{align}
 \fik = \left\{x \in \Rn | x = \wik + t s,t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{p_{\beta}} \right\}. \label{define_fik}
 \end{align}
-For convenience, we will define the set within each of these cones as
+This cone is illustrated in \cref{explanation_2}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=150px]{images/explanation_2.png}
+    \includegraphics[width=150px]{images/explanation_3.png}
+    \caption{
+    	The current iterate is the green star;
+    	the true constraint is black;
+    	the vertex, $\wik$, is the red star;
+    	the linearization of the constraint boundary is blue;
+    	the cone buffering cone $\fik$ is in red.
+    	As the trust region goes to zero the buffering cone better approximates the linearization of the constraint and becomes locally feasible.
+	}
+    \label{explanation_2}
+\end{figure}
+The intersection of these cones is the set
 \begin{align}
-\label{define_capcones}
-\capcones = \{x\in\Rn | x \in \fik \quad \forall i \in \activeconstraintsk \}.
+\capcones = \{x\in\Rn | \; x \in \fik \quad \forall i \in \activeconstraintsk \} \label{define_capcones}
 \end{align}
+which is depicted in \cref{completed_2}.
+In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrk \subseteq \feasible$.
+\color{red}
+Therefore, to obtain feasible sample points, we require that 
+\begin{align*}
+\sampletrk \subset \capcones \cap \outertrk.
+\end{align*}
+\color{black}
 
+
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=150px]{images/completed_2.png}
+    \caption{
+    	After constructing 
+    	the linearization of the constraints in black;
+    	the buffering cones in blue;
+    	the trusted region $\capcones$ in yellow;
+    	we seek to find an ellipsoid within cap cones, such as the one in red/pink.
+	}
+    \label{completed_2}
+\end{figure}
 
 We can now state our requirements of the ellipsoids.
 Note that other conditions may work, but we have chosen those in \cref{ellipsoids_notation_definitions} for our convergence analysis.
@@ -849,12 +892,13 @@ Note that other conditions may work, but we have chosen those in \cref{ellipsoid
 For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
 We have the following definitions.
 \begin{itemize}
-\item The tuples $(\qk, \ck, \sdk)$ are \emph{bounded} if the condition numbers of $\qk$ are bounded:
-there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
+\item The sequence $(\qk, \ck, \sdk)$ is \emph{bounded} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
+That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
 \begin{align}
 \sigma(Q^{(k)}) \le \sigmamax. \label{define_suitable_condition_numbers}
 \end{align}
-\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within the trust region:
+\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within $ \capcones \cap \trkpo $.
+That is,
 \begin{align}
 \unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
 \end{align}
@@ -972,13 +1016,19 @@ e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk
 \label{ideal_ellipsoid_in_polyhedron}
 
 One solution would be to create the largest possible ellipsoid that is contained within each of the cones $\fik$ defined in \cref{define_fik}.
-Although this sounds appealing, we were not able to formulate this problem as an optimization problem.
-However, it is possible to formulate the problem of checking if an ellipsoid is contained within any particular cone.
+Although this sounds appealing, we were only able to formulate this problem as a multilevel problem.
+However, it is possible to formulate the problem of checking whether an ellipsoid is contained within any particular cone.
 This admits a search over possible ellipsoids, with an algorithmic check that is efficient.
 We discuss this here.
-Throughout, we will assume that the constraints found in \cref{ellipsoids_trust_region_constraints} are included, to ensure the ellipsoid is within the trust region.
 
-Notice that because the cone for each constraint opens toward the current iterate, and opens at the same rate, the cones can be uniquely defined by their vertices.
+Throughout, we will assume that the constraints found in \cref{ellipsoids_trust_region_constraints} are included, to ensure the ellipsoid is within the trust region.
+% \begin{align*}
+% \max_{\qk, \ck, \sk} \det\left(\qk^{-1}\right) \\
+% \end{align*}
+
+Notice that because the cone for each constraint opens toward the current iterate,
+and each cone uses the same threshold $\beta \dk^{p_\beta}$ for feasible directions for the vertex,
+the cones can be uniquely defined by their vertices.
 This means that for an iteration $k$, after a change of variables
 \begin{align}
 x \gets x - \xk \\
@@ -991,13 +1041,23 @@ A_i = \fik - \xk = \left\{x\in\Rn\bigg|\;-\frac{(x - v^{(i)})^T}{\|x - v^{(i)}\|
 \end{align*}
 Now, the ellipsoid $\sampletrk$ is contained in each a cone $A_i$ if and only if the \emph{perspective projection} from $v^{(i)}$ of the ellipsoid onto the hyper-plane 
 \begin{align*}
-H_i = \{x|{v^{(i)}}^Tx = 0\}
+H_i = \{x|\left(v^{(i)}\right)^Tx = 0\}
 \end{align*}
-is contained in the projection the cone.
+is contained in the projection of the cone.
 The perspective projection onto $v^{(i)}$ is the shape drawn onto a hyperplane as if a viewer were positioned at $v^{(i)}$.
-That is, imagine someone is positioned at $v^{(j)}$, and viewing the ellipsoid.
+That is, imagine someone is positioned at $v^{(j)}$, and viewing the ellipsoid as in \cref{perspective_projection_depiction}.
 They create a line from $v^{(j)}$ to the hyperplane by looking past the outer edge of the ellipsoid onto the hyper plane.
 If they were to trace all possible lines through the boundary of the ellipsoid onto the hyperplane, these lines intersect the hyperplane on the ellipsoid's perspective projection.
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/perspective_projection.png}
+    \caption{
+    	A depiction of the perspective projection.
+	}
+    \label{perspective_projection_depiction}
+\end{figure}
 
 First, we compute the projection of the cone, which is simply its intersection with the hyperplane:
 \begin{align*}
@@ -1133,6 +1193,31 @@ This is the well known optimization problem of projecting a point onto the surfa
 No explicit solution exists, which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
 However, there is an efficient, binary-search algorithm to solve this \cite{projecttoellipsoid}.
 
+
+Namely, given 
+$p \in \Rn$ and a positive definite, symmetric, $n \times n$ matrix $Q$,
+we can consider how to project the point $p$ onto the ellipsoid $\left\{x \in \Rn \bigg | x^TQx \le 1 \right\}$:
+\begin{align*}
+\begin{array}{ccc}
+x^{\star} = &\argmin_{x \in \Rn} & \|x - p\|^2 \\
+& \textrm{s.t.} & x^TQx \le 1.
+\end{array}
+\end{align*}
+If $p^TQp \le 1$, then clearly $x^{\star} = p$.
+Otherwise, the first order optimality conditions imply the existence of a $\lambda > 0$ such that
+% x^{\star} - p = \lambda Qx^{\star} \Longleftrightarrow \left(Q - \frac 1 {\lambda} I\right)x^{\star} = -\frac 1 {\lambda}p \\
+\begin{align*}
+x^{\star} - p = \lambda Qx^{\star} %\Longleftrightarrow \left(\lambda Q - I\right)x^{\star} = -p
+\Longleftrightarrow x^{\star} = -\left(\lambda Q - I\right)^{-1}p
+\end{align*}
+provided the inverse exists.
+Using $\left(x^{\star}\right)^TQx^{\star} = 1$, the problem reduces to finding zeros of the function $f : \reals_+ \to \reals$ defined by
+\begin{align*}
+f(\lambda) = p^T\left(\lambda Q - I\right)^{-1}Q\left(\lambda Q - I\right)^{-1}p - 1.
+\end{align*}
+Notice that $f(0) = p^TQp - 1 > 0$, and the presence of inverses suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$.
+The authors show that a binary search on $\lambda$ can find the zeros of $f$.
+
 \subsubsection{Numerical Solution}
 
 Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
@@ -1214,12 +1299,12 @@ The projection gives the following optimization problem:
 \min_{x \in \mathbb R^{n-1}, s \in \mathbb R} & \quad \frac 1 2 \|x - y\|^2 + \frac 1 2 (s - t)^2 \\
 			& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2
 \end{align*}
-which gives us the Lagranian:
+which gives us the Lagrangian:
 \begin{align*}
 l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \lambda \frac 1 2 \left(\|x\|^2 - {\beta'}^2 s^2\right)
 \end{align*}
 
-After taking the gradient of the lagrangian, we find that for some $\lambda$:
+After taking the gradient of the Lagrangian, we find that for some $\lambda$:
 \begin{align*}
 x - y - \lambda x = 0, & \quad s - t + \lambda {\beta'}^2 s = 0 \\
 x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 } \\
@@ -1378,6 +1463,17 @@ so that the cone
 \fcki = \left\{x \in \Rn \bigg| \quad x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
 \end{align}
 is feasible with respect to all active constraints.
+This cone is depicted in \cref{feasible_direction}.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/feasible_direction.png}
+    \caption{
+    	At times, the conservative ellipsoid may be much smaller than desired.
+    	Here each cone $\fik$ is in blue, and $\fcki$ is in green.
+	}
+    \label{feasible_direction}
+\end{figure}
+
 We then define an ellipsoid within this cone with a helper function
 \begin{align}
 f_e(\epsilon, \delta, \theta; x) = (x - \epsilon e_1)^T\begin{pmatrix}
