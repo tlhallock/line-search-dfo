@@ -96,7 +96,7 @@
 \newcommand{\domain}{{\mathcal X}}
 \newcommand{\dsr}{{\Delta_{\textrm{sr}}}}
 \newcommand{\ellipsek}{{E^{(k)}}}
-\newcommand{\fcki}{{\mathcal {F}^{(k)}_{\textrm{inner}}}}
+\newcommand{\fcki}{{C^{(k)}_{\textrm{in}}}}
 \newcommand{\feasdir}{{u_{\text{feas}}}}
 \newcommand{\feasiblek}{{\mathcal F^{(k)}}}
 \newcommand{\feasiblel}{{\mathcal F^{(l)}}}
@@ -112,8 +112,8 @@
 \newcommand{\gradf}{\nabla f}
 \newcommand{\gradmodelk}{\nabla{{m}_f}^{(k)}}
 \newcommand{\hfeasdir}{{\hat{u}_{\textrm{feas}}}}
-\newcommand{\hgik}{{\frac{\nabla m^{(k)}_{c_i}(\xk)}{\|\nabla m^{(k)}_{c_i}(\xk)\|}}}
-\newcommand{\hk}{{\nabla^2m_f^{(k)}(x^{(k)})}}
+\newcommand{\hgik}{{\frac{\nabla m^{(k)}_{c_i}(\xk)}{\|\nabla m^{(k)}_{c_i}\left(\xk\right)\|}}}
+\newcommand{\hk}{{\nabla^2m_f^{(k)}\left(\xk\right)}}
 \newcommand{\huff}{{\Gamma_0}}
 \newcommand{\huk}{{{\hat u}^{(k)}}}
 \newcommand{\kappacrit}{{\kappa_{\textrm{eff}}}}
@@ -228,6 +228,14 @@
 
 
 \newcommand{\fik}{{C^{(i, k)}}}
+
+
+
+\newcommand{\suffiterates}{{\mathcal K_{\textrm{suff}}}}
+\newcommand{\miniterates}{{\mathcal K_{\textrm{min}}}}
+\newcommand{\reduceiterates}{{\mathcal K_{\textrm{sr}}}}
+\newcommand{\theircnot}{{\kappa_1}}
+\newcommand{\theirc}{{\kappa_2}}
 
 
 %=======================================
@@ -951,7 +959,7 @@ Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i \in [m]$.
 By the first order optimality conditions, there exists a $\lambda \in \Rm$ such that
 \begin{align*}
 \gradf(d^{(i)}) = Q d^{(i)} = \lambda_i A_i 
-\Longrightarrow d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall 1\le i\le m
+\Longrightarrow d^{(i)} = \lambda_i Q^{-1}A_i \quad \forall i \in [m]
 \end{align*}
 We also know that
 \begin{align*}
@@ -2412,13 +2420,11 @@ For an alternative to this assumption, please see \cref{alternative_assumptions_
 
 \begin{assumption}
 \label{minangleassumption}
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ with $\dk \le \minangledelta$ there exists
 a unit vector $\minangledirk \in \Rn$
-such that if $\dk \le \minangledelta$ and $i$ is such that 
-$\zik \in B_{\infty}(\xk, \minangledelta)$
-then
+such that
 \begin{align*}
--\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha.
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \quad \forall i \in \activeconstraintsk.
 \end{align*}
 Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
@@ -2503,7 +2509,7 @@ That is, there exists $\maxgrad > 0$ such that
 \end{align}
 \end{lemma}
 \begin{proof}
-We are given a $\xinit \in \feasible$. Let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf\left(\xinit\right)|, \max_{1\le i\le m}\left\{\nabla c_i\left(\xinit\right)|\right\} \right\}$.
+We are given a $\xinit \in \feasible$. Let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf\left(\xinit\right)|, \max_{i \in [m]}\left\{\nabla c_i\left(\xinit\right)|\right\} \right\}$.
 Thus, for any $x \in \Omega$,
 \begin{align*}
 \gradf(x) \le |\gradf\left(\xinit\right)| + \lipgrad \left\|x - 0 - \left(\xinit - 0\right)\right\| \le |\gradf\left(\xinit\right)| + 2\lipgrad \maxnorm \le \maxgrad.
@@ -2517,7 +2523,7 @@ The same applies to each $c_i$.
 Suppose that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
 There exists $M_c>0$ such that
 \begin{align*}
-c_i(x) \ge -M_c \quad \forall 1\le i \le m, x \in \feasible
+c_i(x) \ge -M_c \quad \forall i \in [m], x \in \feasible
 \end{align*}
 \end{lemma}
 \begin{proof}
@@ -2549,21 +2555,18 @@ If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \end{lemma}
 
 \begin{proof}
+Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.
 If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
 Otherwise, by \cref{minangleassumption}, there is a $\minangledirk$ such that 
 $-\minangledirk^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
 But, by definition of $\huk$ in \cref{define_u}:
-$\huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\frac{\gmcik}{\left\|\gmcik\right\|}$
+$\huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\frac{\gmcik}{\left\|\gmcik\right\|}$
 so that for all $i \in \activeconstraintsk$,
 \begin{align*}
 -\left(\huk\right)^T\frac{\gmcik}{\|\gmcik\|}  \ge -\left(\minangledirk\right)^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha.
 \end{align*}
 Therefore, $\thetamink \ge \minanglealpha$.
 \end{proof}
-
-\begin{comment}
-Change this to the approximate active constraints...
-\end{comment}
 
 \begin{lemma}
 \label{bounded_condition_numbers}
@@ -2584,13 +2587,13 @@ where $\minangledelta$ is defined by \cref{minangleassumption} and $\dacco(\epsi
 
 \begin{lemma}
 \label{sampletrk_is_nonempty}
-Let $\dacc$ be defined by \cref{define_delta_accuracy}.
+Let $\dacc$ and $\fcki$ be defined by \cref{define_delta_accuracy} and \cref{define_inner_cone}.
 Suppose that \cref{minangleassumption} holds.
 If $\dk \le \dacc$, then the tuple $(\qk, \ck, \sdk)$ defined in \cref{define_ellipsek}
-is non-empty according to \cref{ellipsoids_notation_definitions}.
+is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
 \begin{proof}
-\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that $\bsk < 1$.
+\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that $\bsk < 1 \Longrightarrow \frac{\bsk}{1 - \bsk} > 0$.
 Using \cref{define_bs}, \cref{define_inner_cone},
 $\fcki \ne \emptyset$.
 \end{proof}
@@ -2674,7 +2677,7 @@ As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \end{array}
 \end{align*}
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
-there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta)$ and all $1\le i\le m$:
+there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
 \begin{align*}
 \begin{array}{ccc}
 \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 &
@@ -2685,7 +2688,7 @@ there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_
 \left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
 \end{array}
 \end{align*}
-By \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $1\le i\le m$:
+By \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \Lambda_2 \left(2\delta\right)^2 \liphess \sqrt{p+1} = {\kappa'}_g\delta^2, &
@@ -2731,6 +2734,7 @@ This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoi
 
 \begin{lemma}
 \label{bounded_model_hessian_lemma}
+Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption} hold.
 Then there exists a $\maxmodelhessian > 0$ such that 
 \begin{align*}
@@ -2741,11 +2745,36 @@ whenever $\dk \le \dacc$.
 \end{lemma}
 
 \begin{proof}
-Using \cref{accuracy_is_satisfied} to define $\kappa_h$, we can let $\maxmodelhessian = \maxhessian + \kappa_h \dacc$.
+Let $\kappa_h$ and $\maxhessian$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_hessians_assumption} respectively,
+and let $\maxmodelhessian = \maxhessian + \kappa_h \dacc$.
 Then \cref{bounded_hessians_assumption} tells us that
 $\|\nabla^2 f(\xk)\| \le \maxhessian$, so that by \cref{accuracy_is_satisfied},
 $\|\hk\| \le \|\nabla^2 f(\xk)\| + \kappa_h\dacc = \maxmodelhessian$.
-The same applies to $\nabla^2 m_{c_i}^{(k)}(\xk)$.
+The same applies to each $\nabla^2 m_{c_i}^{(k)}(\xk)$.
+\end{proof}
+
+\begin{lemma}
+\label{i_thought_i_proved_this_already}
+Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
+Suppose the assumptions for
+\cref{bounded_gradients_lemma},
+\cref{accuracy_is_satisfied}
+hold.
+There exists a $\maxmodelgrad$ such that for each $k \in \naturals$, 
+\begin{align*}
+\left\| \gk \right\| \le \maxmodelgrad \quad
+\textrm{and} \quad \left\|\gmcik\right\| \le \maxmodelgrad \quad \forall i \in [m]
+\end{align*}
+whenever $\dk \le \dacc$.
+\end{lemma}
+\begin{proof}
+Let $\kappa_g$ and $\maxgrad$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_gradients_lemma} respectively,
+and let $\maxmodelhessian = \maxgrad + \kappa_g \dacc^2$.
+Using \cref{accuracy_is_satisfied} to define $\kappa_g$, we can let $\maxmodelgrad = \maxgrad + \kappa_g \dacc^2$.
+Then \cref{bounded_gradients_lemma} tells us that
+$\|\nabla f(\xk)\| \le \maxgrad$, so that by \cref{accuracy_is_satisfied},
+$\|\hk\| \le \|\nabla f(\xk)\| + \kappa_g\dacc^2 = \maxmodelgrad$.
+The same applies to each $\left\|\gmcik\right\|$.
 \end{proof}
 
 \subsection{Sample Region Feasibility}
@@ -3133,7 +3162,7 @@ $\capcones \cap \tr \subseteq \feasible$.
 To ensure sufficient reduction of the objective's model function during each iteration, the authors of \cite{Conejo:2013:GCT:2620806.2621814} impose the following efficiency condition:
 \begin{align}
 \label{efficiency}
-\mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
 \end{align}
 where $\kappa_f$ is a constant independent of $k$.
 This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
@@ -3303,7 +3332,7 @@ be defined by
 respetively.
 There exists $\kappa_{f}$ such that
 \begin{align*}
-m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC}) \ge \kappa_f\chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
+m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(u_{GC}\right) \ge \kappa_f\chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 \end{align*}
 \end{lemma}
 
@@ -3542,18 +3571,14 @@ m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left[m_
 \end{align}
 and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
 
-\begin{comment}
-Update the 3 here...
-\end{comment}
-
 Next, we will show that $v \in \capcones$.
-By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $\zik \not \in B_{\infty}(\xk, 3\sqrt{n}\dk)$, then $v \in \tr \Longrightarrow v \in \fik$.
-Therefore, we only consider the case that $\zik \in B_{\infty}(\xk, 3\sqrt{n}\dk)$.
+\color{red}
+By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $i \not \in \activeconstraintsk$, then $v \in \tr \Longrightarrow v \in \fik$.
+Therefore, we only consider the case that $i \in \activeconstraintsk$.
+\color{black}
 First, we need some identities for constraint $c_i$.
 
-Because $\zik \in B_{\infty}(\xk, 3\sqrt{n} \dk)$, and $3\sqrt{n}\dk\le\minangledelta$ by \cref{sr_delta_small_enough} we know
-$i \in B_{\infty}\left(\xk, \minangledelta\right)$.
-Thus, \cref{minangleassumption} states
+Because $i \in \activeconstraintsk$, and $\dk\le\minangledelta$ by \cref{sr_delta_small_enough} we can use \cref{minangleassumption} to conclude
 \begin{align}
 -\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
 \end{align}
@@ -3624,119 +3649,159 @@ Combining this with \cref{sr_what_to_bound} we see
 
 \subsection{Convergence of the Trust Region Radius}
 
-We will define:
+\begin{comment}
+$\eta_1$ corresponds to $\gammasm$, $\eta$ corresponds to $\gammabi$.
+\end{comment}
+
+
+% \suffiterates
+% \miniterates
+% \reduceiterates
+% \theirc
+% \theircnot
+
+
+With 
+$\gammasm$ and $\gammabi$
+defined by \cref{define_the_gammas},
+let
 \begin{align}
-S = \{k \in \naturals | \rk > \eta \} \\
-\bar{S} = \{k \in \naturals | \rk \ge \eta_1 \} \\
-c = \frac{L + \kappa_{g} + \frac {\maxhessian} 2}{\kappa_f} \\
-c_0 = L + \kappa_{g} + \frac {\maxhessian} 2 \\
-\mathcal K = \big \{ k \in \naturals | \dk \le \min \{ \dsr, \frac {\chik}{\maxhessian}, \frac{1-\eta_1}{c}\chik, \left(\frac 1 {\kappa_{\chi}}  \chik\right)^{\frac 1 {p_{\Delta}}}, 1 \} \big \} \label{define_mathcal_k}
+\suffiterates &= \left\{k \in \naturals | \rk > \gammabi \right\} \label{define_suffiterates} \\
+\textrm{and} \quad \miniterates &= \left\{k \in \naturals | \rk \ge \gammasm \right\} \label{define_miniterates}.
+\end{align}
+
+With
+$\kappa_g$, $\kappa_f$, $\lipgrad$, $\maxmodelhessian$
+defined by
+\cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{bounded_model_hessian_lemma}, \cref{bounded_hessians_assumption}.
+respectively, let
+\begin{align}
+\theircnot &= \lipgrad + \kappa_{g} + \frac 1 2 \maxmodelhessian \label{define_theircnot} \\
+\textrm{and} \quad \theirc &= \frac{\theircnot}{\kappa_f} .  \label{define_theirc}
+\end{align}
+
+With
+$\chik$, $p_{\Delta}$, $\dsr$, $\kappa_{\chi}$, $\maxmodelhessian$, $\gammasm$
+defined by 
+\cref{define_criticality_measure}, \cref{define_p_delta}, \cref{sufficient_reduction_theorem}, \cref{define_kappa_chi}, \cref{bounded_hessians_assumption}, and \cref{define_the_gammas}
+let
+\begin{align}
+\label{define_reduceiterates}
+\reduceiterates = \left \{ k \in \naturals \bigg| \dk \le \min \left\{ 
+\dsr, 
+\frac {\chik}{\maxmodelhessian}, 
+\frac{1-\gammasm}{\theirc}\chik,
+\left(\frac 1 {\kappa_{\chi}}  \chik\right)^{\frac 1 {p_{\Delta}}}, 
+1
+\right\} \right \} 
 \end{align}
 
 
 \begin{lemma}
 \label{mathcal_k_subset_bar_s}
-
-
-
+Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates} respectively.
 Assume that 
-\cref{bounded_below_assumption},
-\cref{bounded_hessians_assumption},
-\cref{lipschitz_gradients_assumption},
-and \cref{minangleassumption} hold.
-Then $\mathcal K \subset \bar{S}$.
+\cref{lipschitz_gradients_assumption}
+and the assumptions for
+\cref{accuracy_is_satisfied},
+\cref{bounded_model_hessian_lemma},
+and \cref{sufficient_reduction_theorem}
+hold.
+Then $\reduceiterates \subset \miniterates$.
 \end{lemma}
  
 
 \begin{proof}
-
 By the Mean Value Theorem, there exists a $t_k \in (0, 1)$ such that
 \begin{align*}
-f(\xk + \sk) = f(\xk) + \gradf(\xk + t_k\sk)^T\sk
+f\left(\xk + \sk\right) = f\left(\xk\right) + \gradf\left(\xk + t_k\sk\right)^T\sk
 \end{align*}
 
-By \cref{lipschitz_gradients_assumption}, \cref{bounded_model_hessian_lemma}, \cref{accuracy_is_satisfied},
+By \cref{lipschitz_gradients_assumption}, \cref{bounded_model_hessian_lemma}, \cref{accuracy_is_satisfied}, if $\dk \le 1$, then
 \begin{align*}
-|f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)| \\
-= |-(\gradf(\xk + t_k\sk) - \gk)^T\sk + \frac 1 2 (\sk)^T \hk \sk| \\
-\le (\| \gradf(\xk + t_k\sk) - \gradf(\xk) \| + \| \gradf(\xk)-\gk \|) \|\sk\| + \frac 1 2 \|\sk\|^2\|\hk\| \\
-\le (t_k \lipgrad \|\sk\| + \kappa_{g}\dk) \|\sk\| + \frac 1 2 \maxhessian \|\sk\|^2
+\left|f\left(\xk\right) - f\left(\xk + \sk\right) - \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right]\right| \\
+= \left|-\left[\gradf\left(\xk + t_k\sk\right) - \gk\right]^T\sk + \frac 1 2 \left(\sk\right)^T \hk \sk\right| \\
+\le \left(\left\| \gradf\left(\xk + t_k\sk\right) - \gradf\left(\xk\right) \right\| + \left\| \gradf\left(\xk\right)-\gk \right\|\right) \left\|\sk\right\| + \frac 1 2 \left\|\sk\right\|^2\left\|\hk\right\| \\
+\le \left(t_k \lipgrad \|\sk\| + \kappa_{g}\dk\right) \left\|\sk\right\| + \frac 1 2 \maxmodelhessian \left\|\sk\right\|^2
 \end{align*}
 
-Since $\| \sk \| \le \dk$ and $t_k \in (0, 1)$ we have that
-\begin{align}
-|f(\xk) - f(\xk + \sk) - (\mfk(\xk) + \mfk(\xk + \sk)| \le c_0 \dk^2
-\end{align}
+Since $\left\| \sk \right\| \le \dk$ and $t_k \in (0, 1)$ we have
+\begin{align*}
+\left|f\left(\xk\right) - f\left(\xk + \sk\right) - \left[\mfk\left(\xk\right) + \mfk\left(\xk + \sk\right)\right]\right| \le \theircnot \dk^2
+\end{align*}
+where $\theircnot$ is defined by \cref{define_theircnot}.
 
-By the definition of $\mathcal K$, for every $k \in \mathcal K$ we have that $\kappa_{\chi}\dk^{p_{\Delta}} \le \chik$ and consequently $\chik > 0$.
-By \cref{sufficient_reduction_theorem}, this means that $\mfk(\xk) - \mfk(\xk + \sk) \ne 0$.
+By \cref{define_reduceiterates}, for every $k \in \reduceiterates$ we have that $\kappa_{\chi}\dk^{p_{\Delta}} \le \chik$ and consequently $\chik > 0$.
+By \cref{sufficient_reduction_theorem}, this means that $\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ne 0$.
 Then,
 \begin{align*}
-|\rk - 1| = \bigg |\frac{f(\xk) - f(\xk + \sk) - (\mfk(\xk) - \mfk(\xk + \sk)}{\mfk(\xk) - \mfk(\xk + \sk)} \bigg | \\
-\le \frac {c_0 \dk^2} {\kappa_f \chik \min\{\frac{\chik}{\maxhessian}, \dk, 1\}} \\
-= \frac {c \dk^2} {\chik \min\{\frac{\chik}{\maxhessian}, \dk, 1\}}
+\left|\rk - 1\right| 
+= \left|\frac
+{f\left(\xk\right) - f\left(\xk + \sk\right) - \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right]}
+{\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)} \right| \\
+\le \frac {\theircnot \dk^2} {\kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\}} \\
+= \frac {\theirc \dk^2} {\chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\}}
 \end{align*}
 
-We also know by \cref{define_mathcal_k}
+We also know by \cref{define_reduceiterates}
 \begin{align*}
-\dk = \min\{\frac {\chik} {\maxhessian}, \dk, 1 \}, \quad
-\frac {c \dk}{\chik} \le 1 - \eta_1
+\dk = \min\left\{\frac {\chik} {\maxmodelhessian}, \dk, 1 \right\}, \quad \textrm{and} \quad
+\frac {\theirc \dk}{\chik} \le 1 - \gammasm
 \end{align*}
 so that
 \begin{align*}
-|\rk - 1| \le 1 - \eta_1
-\Longrightarrow \rk \ge \eta_1
+\left|\rk - 1\right| \le 1 - \gammasm
+\Longrightarrow \rk \ge \gammasm
 \end{align*}
-so that $k \in \bar{S}$.
+so that $k \in \miniterates$.
 \end{proof}
 
 
 
 \begin{lemma}
 \label{delta_to_zero}
-Assume that
-\cref{bounded_below_assumption},
-\cref{bounded_hessians_assumption},
-\cref{lipschitz_gradients_assumption},
-and \cref{minangleassumption} hold.
-Then the sequence $(\dk)$ converges to zero.
+Suppose that the assumptions for
+\cref{bounded_model_hessian_lemma} and
+\cref{sufficient_reduction_theorem}
+hold.
+Then the sequence $\left\{\dk\right\}$ converges to zero.
 \end{lemma}
- 
 
 \begin{proof}
-
-Suppose that $\bar{S}$ is finite. Then there exists $k_0 \in \naturals$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
-Thus, $(\dk)$ converges to zero.
-From now on $\bar{S}$ is infinite.  
-For any $k \in \bar{S}$, we know $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$ , using \cref{bounded_hessians_assumption} and \cref{sufficient_reduction_theorem} we have
+Let
+$\miniterates$, $\kappa_f$, $\gammasm$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$
+be defined by
+\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_the_gammas}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}
+respectively,
+and let $\omegadec$ and $\omegainc$ be defined by \cref{define_the_omegas}.
+Suppose that $\miniterates$ is finite.
+Then there exists $k_0 \in \naturals$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
+Thus, $\left\{\dk\right\} \to 0$ because $\omegadec < 1$.
+From now on, we may assume that $\miniterates$ is infinite.  
+For any $k \in \miniterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
+Using \cref{bounded_model_hessian_lemma} and \cref{sufficient_reduction_theorem} we have
 \begin{align*}
-f\left(\xk\right) - f\left(\xkpo\right) \ge \eta_1 \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \eta_1 \kappa_f \chik \min\left\{\frac{\chik}{\maxhessian}, \dk, 1\right\}\\
-f\left(\xk\right) - f\left(\xkpo\right) \ge \eta_1\kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxhessian}, \dk, 1\right\}
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \gammasm \kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\} \\
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm\kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}
 \end{align*}
+% 
 Because $f\left(\xk\right)$ is nonincreasing, the left hand side goes to zero.
 Thus,
 \begin{align}
-\lim_{k \in \bar{S}} \dk = 0.
+\lim_{k \in \miniterates} \dk = 0.
 \end{align}
 
 Consider the set
-$\mathcal U = \{ k \in \naturals | k \not \in \bar S \}$.
+$\mathcal U = \{ k \in \naturals | k \not \in \miniterates \}$.
 If $\mathcal U$ is finite, then $\lim_{k\to\infty}\dk = 0$.
-Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\bar S$ before $k$.
+Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\miniterates$ before $k$.
 Then $l_k$ is well-defined for all large $k$  and $\dk \le \omegainc \Delta_{l_k}$ which implies that
 \begin{align}
-\lim_{k \in \mathcal U } \dk \le \omegainc \lim_{k \in \mathcal U} \Delta_{l_k} = \omegainc \lim_{l_k \in \bar{S}} \Delta_{l_k}
+\lim_{k \in \mathcal U } \dk \le \omegainc \lim_{k \in \mathcal U} \Delta_{l_k} = \omegainc \lim_{l_k \in \miniterates} \Delta_{l_k}
 \end{align}
 so that $\lim_{k \in \mathcal U} \dk = 0$.
 \end{proof}
 
-
-
-\begin{lemma}
-\label{i_thought_i_proved_this_already}
-There exists a $\maxmodelgrad$ such that for each $k$, 
-$\left\|\gmcik\right\| \le \maxmodelgrad\quad \forall 1\le i\le m$ and $\left\| \gk \right\| \le \maxmodelgrad$.
-\end{lemma}
 
 \subsection{Bounded Projection}
 
@@ -3748,12 +3813,16 @@ Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
 We define the image of an $m\times n$ matrix $A$ to be
 \begin{align*}
 % \image(A; X) = \left\{Ax \;|\; x \in X\right\}
-\image(A) = \left\{Ax \;|\; x \in \Rn \right\}
+\image(A) = \left\{Ax \in \Rm \;|\; x \in \Rn \right\}
 \end{align*}
-and for any $J \subseteq \left\{1, 2, \ldots, m \right\}$, we define $A_J$ to be the $|J| \times n$ submatrix of $A$ 
+and for any $J \subseteq [m]$, we define $A_J$ to be the $|J| \times n$ submatrix of $A$ 
 formed by the rows indexed by $J$.
-Also, define $S(A)$ to be the collection of subsets $J \subseteq \left\{1, 2, \ldots, m \right\}$ such that 
-$\image(A_J) + \reals_+^J = \reals^J$.
+Also, define 
+% $S(A)$ to be the collection of subsets $J \subseteq [m]$ such that 
+% $\image(A_J) + \reals_+^J = \reals^J$.
+\begin{align}
+S_h(A) = \left\{J \subseteq [m] \; | \; \image(A_J) + \reals_+^J = \reals^J \right\}. \label{define_huff_subsets}
+\end{align}
 
 \begin{lemma}
 For a given $j \times n$ matrix $A_J$, we have that 
@@ -3764,10 +3833,10 @@ $A_J x < 0$.
 
 \begin{theorem}
 \label{hoffman_theorem}
-Let $A \in \mathbb R^{m \times n}$ be given.
+Let $A \in \mathbb R^{m \times n}$ be given, and let $S_h$ be defined by \cref{define_huff_subsets}.
 Define the Hoffman constant of $A$, denoted $H(A)$, to be
 \begin{align*}
-H(A) = \max_{J \in \mathcal S(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
+H(A) = \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
 \end{align*}
 %  = \max_{J \in \mathcal S(A)} \max_{\|y\| \le 1} \min_{A_Jx \le y_J} \|x\|.
 Then we have that for any $b \in \image(A; \Rn) + \reals^m_+$, and any $x \in \Rn$
@@ -3783,19 +3852,17 @@ x_0 = & \argmin_{y \in \Rn} & \|x - y\| \\
 \end{align*}
 \end{theorem}
 
-\subsubsection{Bound on Huffman Constant, with stronger assumption}
+\subsubsection{Bound on Huffman Constant}
 
-\begin{comment}
-The first definition should be removed, or used everywhere.
-\end{comment}
-
-We make the following definitions:
+For any $S \subseteq [m]$, define
 \begin{align}
-[m] = \left\{i \in \naturals | i \in [m] \right\} \label{sha_m}\\
-\forall S \subseteq [m], \feasiblek(S) =  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \forall i \in S \right\} \label{sha_fks} \\
-\projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_projkl} \\
-\activeprojkl = \left\{ i \in [m] \bigg| \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0 \right\} \label{sha_proj_indices} \\
-\jackk = \nabla m_c\left(\xk\right) \label{sha_jacobian}.
+\feasiblek(S) &=  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \; \forall i \in S \right\} \label{sha_fks} \\
+\projkl(S) &= \argmin_{x \in \feasiblel(S)} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_projkl}
+\end{align}
+Also, let
+\begin{align}
+\activeprojkl &= \left\{ i \in [m] \bigg| \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0 \right\} \label{sha_proj_indices} \\
+\jackk &= \nabla m_c\left(\xk\right) \label{sha_jacobian}.
 \end{align}
 
 In order to show that the huffman constant is bounded across iterations, we make the following additional assumption.
@@ -3818,30 +3885,30 @@ then
 
 
 
-\begin{lemma}
-\label{bound_dot_product}
-Suppose that $u_1, u_2, v_1, v_2 \in \Rn$ and $\epsilon, M > 0$ are such that
-\begin{align*}
-\|u_1 - u_2\| \le \epsilon, \quad
-\|v_1 - v_2\| \le \epsilon, \quad
-\|u_1\| \le M, \quad \textrm{and} \quad
-\|v_2\| \le M.
-\end{align*}
-Then
-\begin{align*}
-\left|u_1^Tv_1 - u_2^Tv_2\right| \le 2M\epsilon.
-\end{align*}
-\end{lemma}
-\begin{proof}
-We have
-\begin{align*}
-\left|u_1^Tv_1 - u_2^Tv_2\right|
-\le \left|u_1^Tv_1 - u_1^Tv_2\right\| + \left\|u_1^Tv_2 - u_2^Tv_2\right|
-= \left|u_1^T\left(v_1 - v_2\right)\right| + \left|\left(u_1 - u_2\right)^Tv_2\right|  \\
-\le \left\|u_1\right\|\left\|v_1 - v_2\right\| + \left\|u_1 - u_2\right\|\left\|v_2\right\|
-\le 2M\epsilon.
-\end{align*}
-\end{proof}
+% \begin{lemma}
+% \label{bound_dot_product}
+% Suppose that $u_1, u_2, v_1, v_2 \in \Rn$ and $\epsilon, M > 0$ are such that
+% \begin{align*}
+% \|u_1 - u_2\| \le \epsilon, \quad
+% \|v_1 - v_2\| \le \epsilon, \quad
+% \|u_1\| \le M, \quad \textrm{and} \quad
+% \|v_2\| \le M.
+% \end{align*}
+% Then
+% \begin{align*}
+% \left|u_1^Tv_1 - u_2^Tv_2\right| \le 2M\epsilon.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% We have
+% \begin{align*}
+% \left|u_1^Tv_1 - u_2^Tv_2\right|
+% \le \left|u_1^Tv_1 - u_1^Tv_2\right\| + \left\|u_1^Tv_2 - u_2^Tv_2\right|
+% = \left|u_1^T\left(v_1 - v_2\right)\right| + \left|\left(u_1 - u_2\right)^Tv_2\right|  \\
+% \le \left\|u_1\right\|\left\|v_1 - v_2\right\| + \left\|u_1 - u_2\right\|\left\|v_2\right\|
+% \le 2M\epsilon.
+% \end{align*}
+% \end{proof}
 
 \begin{lemma}
 \label{bp_combining_several}
@@ -4050,7 +4117,7 @@ Thus, we only need to let $k_0 = \max\left\{k_1, k_2\right\}$.
 \begin{lemma}
 \label{huffman_constant_is_bounded}
 Let $\jackk$ and $\activeprojkk$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
-Suppose that the assumptions for \cref{bp_combining_several} hold.
+Suppose that \cref{huffman_assumption} and the assumptions for \cref{bp_combining_several} hold.
 There exists $k_0 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_0$, then 
 \begin{align*}
 H\left(\jackkl\right) \le \huff.
@@ -4093,7 +4160,7 @@ Because $v$ was arbitrary, we have
 \end{align*}
 Because $J$ was arbitrary, we can substitute this into \cref{hoffman_theorem} to find
 \begin{align*}
-H\left(\jackkl\right) = \max_{J \in \mathcal S\left(\jackkl\right)} \left[\min_{v \in \mathbb R^J_+, \|v\| = 1}  \left\|\left(\jackj\right)^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha} = \huff.
+H\left(\jackkl\right) = \max_{J \in \mathcal S_h\left(\jackkl\right)} \left[\min_{v \in \mathbb R^J_+, \|v\| = 1}  \left\|\left(\jackj\right)^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha} = \huff.
 \end{align*}
 \end{proof}
 
@@ -4200,6 +4267,22 @@ Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x}
 % \end{align*}
 
 
+\color{red}
+\begin{lemma}
+Suppose that $y$ is such that
+\begin{align*}
+\mcik\left(\xk\right) + \gmcik^T y \le \gmcik^T\gk
+\end{align*}
+
+Then there exists a $y'$ such that
+\begin{align*}
+\mcil\left(\xl\right) + \gmcik^Ty' \le \gmcil^T \left[\xl - \xk + \gk \right] + \left[\gmcik - \gmcil\right]^T y
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+\end{proof}
+\color{black}
 
 \begin{lemma}[Theorem 4.2 of \cite{perturbations_of_linear_inequalities}]
 \label{4_2}
@@ -4427,7 +4510,7 @@ The assumptions for \cref{accuracy_is_satisfied} hold.
 Suppose that the assumptions for
 \cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}
 hold.
-Then, for each $1\le i\le m$, the sequence $\left\{\gmcik\right\}_{i=1}^{\infty}$ is Cauchy.
+Then, for each $i \in [m]$, the sequence $\left\{\gmcik\right\}_{i=1}^{\infty}$ is Cauchy.
 \end{lemma}
 \begin{proof}
 Let $\epsilon > 0$ be arbitrary.
@@ -4507,11 +4590,11 @@ Define
 \begin{array}{ll}
 A_1 = \jackkl,
 &
-b_1 = \left[-c\left(\xk\right) + {\nabla m^{(k)}_c}^T\gk\right]_{\activeprojkk \cup \activeprojkl}, 
+b_1 = \left[-c\left(\xk\right) + {\nabla m^{(k)}_c}\left(\xk\right)^T\gk\right]_{\activeprojkk \cup \activeprojkl}, 
 \\
 A_2 = \jaclkl,
 &
-b_2 = \left[-c\left(\xl\right) + {\nabla m^{(l)}_c}^T\left(\xl - \xk + \gk\right)\right]_{\activeprojkk \cup \activeprojkl}.
+b_2 = \left[-c\left(\xl\right) + {\nabla m^{(l)}_c}\left(\xl\right)^T\left(\xl - \xk + \gk\right)\right]_{\activeprojkk \cup \activeprojkl}.
 \end{array}
 \end{align*}
 and let
@@ -4741,10 +4824,10 @@ Then $\liminf_{k\to\infty} \chik = 0$.
 
 \begin{proof}
 Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $K > 0$ such that $\chik \ge \epsilon$ for each $k \ge K$.
-Take $ \tilde \Delta = \min \{\frac{\epsilon}{\maxhessian}, \frac{(1 - \eta_1)c}{\epsilon}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}$
+Take $ \tilde \Delta = \min \{\frac{\epsilon}{\maxhessian}, \frac{(1 - \gammasm)c}{\epsilon}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}$
 and consider a $k \ge K$.
 If $\dk \le \tilde \Delta$, then $k \in \mathcal K$.
-Then, by \cref{mathcal_k_subset_bar_s},  $k \in \bar S$ and thus $\dkpo \ge \dk$.
+Then, by \cref{mathcal_k_subset_bar_s},  $k \in \miniterates$ and thus $\dkpo \ge \dk$.
 Therefore, the trust region radius can only decrease if $\Delta > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
 Therefore, one can see that for all $k \ge K$
 \begin{align}
@@ -4756,30 +4839,94 @@ which is a contradiction.
 
 
 \subsubsection{Criticallity Goes to Zero, Part 2}
+
+\begin{criteria}
+\label{the_contradiction}
+There exists $\epsilon_{\textrm{lb}} > 0$, such that the set 
+$\mathcal U = \left\{k \in \naturals | \chik \ge \epsilon_{\textrm{lb}} \right\}$
+is infinite.
+\end{criteria}
+
+\begin{lemma}
+Let $ \epsilon_{\textrm{lb}} $ be defined by \cref{the_contradiction}.
+Suppose that \cref{the_contradiction} holds.
+
+Let 
+$S_{lb} \subset \naturals \times \naturals$ be the sequence
+\begin{align}
+S_{lb} = \left\{\left(k,
+\min_{i \in \naturals, i > k, \chi_{i} \le \epsilon_{\textrm{lb}}} i
+\right)\right\}_{k=1}^{\infty}.
+\end{align}
+Then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
+\end{lemma}
+\begin{proof}
+
+Let $S$ be defined by \cref{define_S}.
+Consider $C_k = \{i \in S | k \le i < l_k\}$.
+Note that because $k \in S$, so $C_k \ne \emptyset $.
+For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians_assumption}, we conclude that 
+
+\begin{align*}
+f(x^{(i)}) - f(x^{(i+1)}) \ge \gammabi\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \gammabi \kappa_f \chi_i \min\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\} 
+\end{align*}
+
+By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
+As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\maxhessian}$ and $\Delta_i \le 1$.
+Therefore,
+\begin{align*}
+\frac{\Delta_i}{2} \le \frac{\epsilon}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
+\end{align*}
+
+It follows that
+\begin{align*}
+f(x^{(i)}) - f(x^{(i+1)}) > \frac{\gammabi \kappa_f \epsilon \Delta_i}{4}
+\end{align*}
+
+and hence
+\begin{align*}
+\Delta_i < \frac{4}{\gammabi \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\end{align*}
+
+Meanwhile,
+\begin{align*}
+\|x^{(i)} - x^{(l_k)}\| \le \sum_{i \in C_k}\|x^{(i)} - x^{(i+1)}\| \le \sum_{i \in C_k} \Delta_i
+\end{align*}
+so that
+
+\begin{align}
+\|x^{(i)} - x^{(l_k)}\| < \frac{4}{\gammabi \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\end{align}
+
+We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
+Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \naturals '}$ converges to zero satisfying \cref{bp_given_by_contradiction}.
+\end{proof}
+
+
 \begin{lemma}
 \label{lim_chi_to_zero}
 Suppose that \cref{lipschitz_gradients_assumption}, \cref{bounded_below_assumption}, \cref{bounded_hessians_assumption} hold as well as the assumptions for 
 \cref{sufficient_reduction_theorem}, \cref{bounded_projection_theorem}, and \cref{accuracy_is_satisfied}.
-Further suppose that $\eta > 0$.
+Further suppose that $\gammabi > 0$.
 Then $\lim_{k\to\infty}\chik=0$.
 \end{lemma}
 
 
 \begin{proof}
-Suppose for a contradiction that for some $\epsilon > 0$ the set $\mathcal U = \{k \in \naturals | \chik \ge \epsilon \}$ is infinite.
+Suppose for a contradiction that for some $\epsilon > 0$ the set  is infinite.
 By \cref{delta_to_zero}, there exists a $k_0 \in \naturals$ such that for all $k \ge k_0$,
 
 \begin{align*}
-\dk \le \min\left\{\frac{\epsilon}{\maxhessian}, \frac{(1-\eta_1)\epsilon}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\right\}.
+\dk \le \min\left\{\frac{\epsilon}{\maxhessian}, \frac{(1-\gammasm)\epsilon}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\right\}.
 \end{align*}
 
 Then if $k \in \naturals '$ with $k \ge k_0$:
 
 \begin{align*}
-\dk \le \min\{\frac{\chik}{\maxhessian}, \frac{(1-\eta_1)\chik}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}
+\dk \le \min\{\frac{\chik}{\maxhessian}, \frac{(1-\gammasm)\chik}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}
 \end{align*}
 
-and therefore $k \in \bar S \subset S$.
+and therefore $k \in \miniterates \subset S$.
 
 Given $k \in \naturals'$ with $k\ge k_0$, consider $l_k$ the first index such that $l_k > k$ and $\chi_{l_k} \le \frac{\epsilon} 2$.
 The existence of $l_k$ is ensured by \cref{liminf_chi_to_zero}.
@@ -4820,43 +4967,6 @@ So that
 \frac{\epsilon} 2 \le \left(2 + \lipgrad\right) \|\xk - x^{(l_k)}\| + \kappa_{g}\left(\dk + \Delta_{l_k}\right) + \| p^{(k\to k)} - p^{(k\to l)}\| \label{chi2zero2_conv}.
 \end{align}
 
-Consider $C_k = \{i \in S | k \le i < l_k\}$.
-Note that because $k \in S$, so $C_k \ne \varnothing $.
-For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians_assumption}, we conclude that 
-
-\begin{align*}
-f(x^{(i)}) - f(x^{(i+1)}) \ge \eta\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \eta \kappa_f \chi_i \min\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\} 
-\end{align*}
-
-By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
-As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\maxhessian}$ and $\Delta_i \le 1$.
-Therefore,
-\begin{align*}
-\frac{\Delta_i}{2} \le \frac{\epsilon}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
-\end{align*}
-
-It follows that
-\begin{align*}
-f(x^{(i)}) - f(x^{(i+1)}) > \frac{\eta \kappa_f \epsilon \Delta_i}{4}
-\end{align*}
-
-and hence
-\begin{align*}
-\Delta_i < \frac{4}{\eta \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
-\end{align*}
-
-Meanwhile,
-\begin{align*}
-\|x^{(i)} - x^{(l_k)}\| \le \sum_{i \in C_k}\|x^{(i)} - x^{(i+1)}\| \le \sum_{i \in C_k} \Delta_i
-\end{align*}
-so that
-
-\begin{align}
-\|x^{(i)} - x^{(l_k)}\| < \frac{4}{\eta \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
-\end{align}
-
-We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
-Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \naturals '}$ converges to zero satisfying \cref{bp_given_by_contradiction}.
 Then by \cref{bounded_projection_theorem}, the entire right hand side of \cref{chi2zero2_conv} goes to zero.
 This is a contraduction, and there is no such $\epsilon > 0$.
 \end{proof}
@@ -4868,12 +4978,12 @@ This is a contraduction, and there is no such $\epsilon > 0$.
 Suppose that \cref{lipschitz_gradients_assumption}, \cref{bounded_below_assumption}, \cref{bounded_hessians_assumption}, and 
 the assumptions for \cref{accuracy_is_satisfied} hold.
 
-If $\eta = 0$, then
+If $\gammabi = 0$, then
 \begin{align}
 \liminf_{k\to\infty} \|P_{\Omega}(\xk - \gradf(\xk)) - \xk \| = 0.
 \end{align}
 
-If $\eta > 0$, then
+If $\gammabi > 0$, then
 \begin{align}
 \lim_{k\to\infty} \|P_{\Omega}(\xk - \gradf(\xk)) - \xk \| = 0.
 \end{align}
@@ -5176,6 +5286,24 @@ Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla
 
 \subsection{Removing the Huffman assumption}
 \label{removing_the_huffman_assumption}
+
+
+\begin{assumption}
+\label{minangleassumption_alt}
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
+a unit vector $\minangledirk \in \Rn$
+such that if $\dk \le \minangledelta$ and
+$i$ is such that $\zik \in B_{\infty}(\xk, \minangledelta)$
+then
+\begin{align*}
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha.
+\end{align*}
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
+\end{assumption}
+
+
+
+
 In this section, we discuss removing the need to make \cref{huffman_assumption}.
 We were able to a result similar to \cref{huffman_constant_is_bounded}, however it only uses the active constraints.
 This is weaker than we needed, because the active constraints may change across iterations.
