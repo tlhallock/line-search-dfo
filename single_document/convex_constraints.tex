@@ -766,9 +766,12 @@ The search trust region is used in defining the trust region subproblem.
 % This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
 \subsection{Extensions from Linear Constraints}
-In the last paper, we showed convergence of our algorithm for linear constraints.
-We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
-To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
+% In the last paper, we showed convergence of our algorithm for linear constraints.
+% We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
+% To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
+
+
+The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
 Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
 \begin{itemize}
 \item A point chosen by the geometry ensuring algorithm may be infeasible.
@@ -777,7 +780,7 @@ Errors in these models mean that we may attempt to evaluate a point that is not 
 
 
 To deal with these infeasible points, we have developed several strategies.
-Although an approach for avoiding one of these two function evaluations can work for the other in thoery, we stick to one simplified version.
+% Although an approach for avoiding one of these two function evaluations can work for the other in thoery, we stick to one simplified version.
 
 % \subsection{Implemented Ideas not used in this paper}
 % 
@@ -892,48 +895,6 @@ Therefore, to obtain feasible sample points, we require that
     \label{completed_2}
 \end{figure}
 
-We can now state our requirements of the ellipsoids.
-Note that other conditions may work, but we have chosen those in \cref{ellipsoids_notation_definitions} for our convergence analysis.
-
-\begin{definition}
-\label{ellipsoids_notation_definitions}
-For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
-We have the following definitions.
-\begin{itemize}
-\item The sequence $(\qk, \ck, \sdk)$ is \emph{bounded} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
-That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
-\begin{align}
-\sigma(Q^{(k)}) \le \sigmamax. \label{define_suitable_condition_numbers}
-\end{align}
-\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within $ \capcones \cap \trkpo $.
-That is,
-\begin{align}
-\unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
-\end{align}
-where
-\begin{align}
-\unshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck \right)^T \qk \left(x - \ck\right) \le \frac 1 2 {\sdk}^2 \right\} \label{define_unshifed_ellipsoid}
-\end{align}
-\item The tuple $(\qk, \ck, \sdk)$ is \emph{feasible} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the feasible region:
-\begin{align}
-\unshiftedellipsoid \subseteq \feasible.
-\end{align}
-where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}
-\item The tuple $(\qk, \ck, \sdk)$ is \emph{adjacent} if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
-\begin{align}
-\xk \in \scaledunshiftedellipsoid \label{define_suitable_close_to_iterate}
-\end{align}
-where
-\begin{align}
-\scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\sdk}^2 \right\} \label{define_scaledunshiftedellipsoid}
-\end{align}
-\item The tuple $(\qk, \ck, \sdk)$ are \emph{non-empty} if
-\begin{align}
-\unshiftedellipsoid \ne \emptyset
-\end{align}
-where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
-\end{itemize}
-\end{definition}
 
 \subsubsection{Linear Constraints}
 
@@ -1419,6 +1380,50 @@ Because we analyse this in more depth, we dedicate \cref{conservative_ellipsoid_
 
 \subsection{Conservative Ellipsoid Derivation}
 \label{conservative_ellipsoid_section}
+
+We state the requirements of the ellipsoids that the conservative ellipsoid satisfies.
+The criteria in \cref{ellipsoids_notation_definitions} summarize one of many possible sets of criteria sufficient for convergence.
+
+\begin{definition}
+\label{ellipsoids_notation_definitions}
+For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
+We have the following definitions.
+\begin{itemize}
+\item The sequence $(\qk, \ck, \sdk)$ is \emph{bounded} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
+That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
+\begin{align}
+\sigma(Q^{(k)}) \le \sigmamax. \label{define_suitable_condition_numbers}
+\end{align}
+\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within $ \capcones \cap \trkpo $.
+That is,
+\begin{align}
+\unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
+\end{align}
+where
+\begin{align}
+\unshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck \right)^T \qk \left(x - \ck\right) \le \frac 1 2 {\sdk}^2 \right\} \label{define_unshifed_ellipsoid}
+\end{align}
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{feasible} if an ellipsoid defined by $\qk, \ck, \sdk$ lies within the feasible region:
+\begin{align}
+\unshiftedellipsoid \subseteq \feasible.
+\end{align}
+where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{adjacent} if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
+\begin{align}
+\xk \in \scaledunshiftedellipsoid \label{define_suitable_close_to_iterate}
+\end{align}
+where
+\begin{align}
+\scaledunshiftedellipsoid = \left\{x \in \Rn | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le {\sdk}^2 \right\} \label{define_scaledunshiftedellipsoid}
+\end{align}
+\item The tuple $(\qk, \ck, \sdk)$ are \emph{non-empty} if
+\begin{align}
+\unshiftedellipsoid \ne \emptyset
+\end{align}
+where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
+\end{itemize}
+\end{definition}
+
 \subsubsection{Definition}
 
 % However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
@@ -2334,7 +2339,6 @@ The algorithm is as follows:
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
 We will let $\Omega$ be some open region containing $\feasible$.
 
-
 \begin{assumption}
 \label{constraints_are_convex}
 The functions $c_i$ for all $i \in [m]$ are convex in $ \Omega $. That is, 
@@ -2344,11 +2348,8 @@ c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \Omega, \zeta \in [0, 
 \end{align*}
 \end{assumption}
 
-
 \paragraph{Bounded functions}
 The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
-
-
 
 \begin{assumption}
 \label{bounded_below_assumption}
