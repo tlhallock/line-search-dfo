@@ -102,7 +102,7 @@
 \newcommand{\feasiblel}{{\mathcal F^{(l)}}}
 \newcommand{\feasible}{{\mathcal F}}
 \newcommand{\fmin}{f_{\text{min}}}
-\newcommand{\gammabi}{\gamma_{\textrm{sufficient}}}
+\newcommand{\gammabi}{\gamma_{\textrm{suff}}}
 \newcommand{\gammasm}{\gamma_{\textrm{min}}}
 \newcommand{\gcik}{{\nabla c_i \left(\xk\right)}}
 \newcommand{\gk}{{\nabla m_f^{(k)}\left(\xk\right)}}
@@ -4133,10 +4133,9 @@ such for any $i \in \activeprojkk \cup \activeprojkl$,
 \begin{align*}
 \left( \huffdirk \right)^T \gmcik \ge \frac 1 2 \huffalpha.
 \end{align*}
-
 That is,
 \begin{align*}
-\jackkl u_f^{(k,l)} \ge \frac 1 2 \huffalpha e.
+\jackkl \huffdirk \ge \frac 1 2 \huffalpha e.
 \end{align*}
 
 Let $J \subseteq \activeprojkk \cup \activeprojkl$ with $|J| \ne 0$ be arbitrary,
@@ -4484,6 +4483,16 @@ we see
 \subsubsection{Bound on Projection}
 
 
+\begin{definition}
+\label{criteria_from_contradiction}
+A set $S \subseteq\naturals \times \naturals$ is called \emph{Something} if
+% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
+for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
+then 
+$\left\|\xk - \xl \right\| \le \epsilon$.
+% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
+\end{definition}
+
 % \begin{criteria}
 % \label{xlxkdifftozero}
 % The trust region radaii go to zero, that is $\lim_{k\to\infty} \dk = 0$.
@@ -4491,26 +4500,25 @@ we see
 % \end{criteria}
 
 
-\color{red}
-\begin{definition}
-The sequence $\left\{y^{(i)}\right\}_{i=1}^{\infty}$ is a Cauchy sequence if for any $\epsilon > 0$, there exists an $N \in \naturals$ such that 
-$\left\|y^{(k)} - y^{(l)}\right\| \le \epsilon$ for each $k, l \ge N$.
-\end{definition}
-
-\begin{lemma}
-Every convergent sequence is a Cauchy sequence.
-\end{lemma}
-\color{black}
+% \color{red}
+% \begin{definition}
+% The sequence $\left\{y^{(i)}\right\}_{i=1}^{\infty}$ is a Cauchy sequence if for any $\epsilon > 0$, there exists an $N \in \naturals$ such that 
+% $\left\|y^{(k)} - y^{(l)}\right\| \le \epsilon$ for each $k, l \ge N$.
+% \end{definition}
+% 
+% \begin{lemma}
+% Every convergent sequence is a Cauchy sequence.
+% \end{lemma}
+% \color{black}
 
 
 \begin{lemma}
 \label{model_gradients_are_cauchy}
-Suppose that \cref{criteria_from_contradiction} holds.
-The assumptions for \cref{accuracy_is_satisfied} hold.
 Suppose that the assumptions for
-\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}
+\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}, \cref{accuracy_is_satisfied}
 hold.
-Then, for each $i \in [m]$, the sequence $\left\{\gmcik\right\}_{i=1}^{\infty}$ is Cauchy.
+If $S$ satisfies \cref{criteria_from_contradiction}, then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
+such that if $(k, l) \in S$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
 \end{lemma}
 \begin{proof}
 Let $\epsilon > 0$ be arbitrary.
@@ -4548,33 +4556,21 @@ By our choice of $N_0$, we see that
 % A^{(k)} = \nabla m_c\left(\xk\right) \label{sha_jacobian}
 
 
-\begin{definition}
-\label{criteria_from_contradiction}
-A set $S \subseteq\naturals \times \naturals$ is called \emph{Cauchy-squared} if
-% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
-for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
-then 
-$\left\|\xk - \xl \right\| \le \epsilon$.
-
-% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
-\end{definition}
-
-
-
 
 \begin{lemma}
+\label{bounded_projection_theorem}
 Let $\jackk$ and $\activeprojkl$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
 Let
 $\projkl(S)$
 be defined by
 \cref{sha_proj_indices}.
-
-Suppose that the assumptions for
+Suppose that 
+\cref{constraints_are_convex}
+and the assumptions for
 \cref{bp_combining_several}
 hold.
-Suppose that \cref{constraints_are_convex} holds.
-Let $\epsilon > 0$ be arbitrary.
-There exists a $k_0$ such that if $k, l \ge k_0$ then
+Let $\epsilon > 0$ be arbitrary, and suppose that $S$ satisfies \cref{criteria_from_contradiction}.
+There exists a $k_0$ such that if $(k, l) \in S$ and $k, l \ge k_0$ then
 
 \begin{align*}
 \left\| \projkl\left([m]\right) - \projkk\left([m]\right) \right\| \le \epsilon.
@@ -4619,52 +4615,53 @@ P_2 = \left\{x \in \Rn | A_2x \le b_2\right\}.
 With $s = x - \left(\xk - \gk \right)$, we see
 \begin{align*}
 \argmin_{s \in P_1} \left\|s\right\|
-=
+&=
 \begin{array}{ccc}
 \argmin_{s \in \Rn} & \left\|s\right\| & \\
 \textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(s - \gk\right) & \forall i \in \activeprojkk \cup \activeprojkl
 \end{array} \\
-=
+&=
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
 \textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) & \forall i \in \activeprojkk \cup \activeprojkl
 \end{array} \\
-=
+&=
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
 \textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) & \forall i \in [m]
 \end{array} \\
-=
+&=
 \argmin_{x \in \fik} \left\|x - \left(\xk - \gk\right)\right\| = \projk\left([m]\right).
 \end{align*}
 
 Likewise,
 by
-\cref{sha_projkl}
+\cref{sha_projkl},
 
 \begin{align*}
 \argmin_{s \in P_2} \left\|s\right\|
-=
+&=
 \begin{array}{ccc}
 \argmin_{s \in \Rn} & \left\|s\right\| & \\
 \textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(s - \xl + \xk - \gk\right) & \forall i \in \activeprojkk \cup \activeprojkl
 \end{array} \\
-=
+&=
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
 \textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) & \forall i \in \activeprojkk \cup \activeprojkl
 \end{array} \\
-=
+&=
 \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
 \textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) & \forall i \in [m]
 \end{array} \\
-=
+&=
 \argmin_{x \in \feasiblel([m])} \left\|x - \left(\xk - \gk\right)\right\| = \projkl\left([m]\right).
 \end{align*}
 
-
-Need to show an $M$.
+\begin{comment}
+Show the bound on $M$.
+\end{comment}
 
 
 Let $\jackk$ be defined by \cref{sha_jacobian}.
@@ -4753,16 +4750,16 @@ Thus, the result follows by letting $k_0 = \max\left\{k_1, k_2, k_3\right\}$.
 
 
 
-\begin{theorem}
-Suppose that \cref{criteria_from_contradiction}.
-
-\begin{align*}
-\end{align*}
-\end{theorem}
-
-\begin{proof}
-
-\end{proof}
+% \begin{theorem}
+% Suppose that \cref{criteria_from_contradiction}.
+% 
+% \begin{align*}
+% \end{align*}
+% \end{theorem}
+% 
+% \begin{proof}
+% 
+% \end{proof}
 
 
 % \color{red}
@@ -4817,23 +4814,32 @@ Suppose that \cref{criteria_from_contradiction}.
 \subsubsection{Criticallity Goes to Zero, Part 1}
 \begin{lemma}
 \label{liminf_chi_to_zero}
-Suppose that \cref{lipschitz_gradients_assumption} as well as the assumptions for \cref{sufficient_reduction_theorem} and \cref{accuracy_is_satisfied}.
+Let $\chik$ be defined by \cref{define_criticality_measure}.
+Suppose the assumptions for \cref{mathcal_k_subset_bar_s} and \cref{delta_to_zero} hold.
 Then $\liminf_{k\to\infty} \chik = 0$.
 \end{lemma}
  
 
 \begin{proof}
-Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $K > 0$ such that $\chik \ge \epsilon$ for each $k \ge K$.
-Take $ \tilde \Delta = \min \{\frac{\epsilon}{\maxhessian}, \frac{(1 - \gammasm)c}{\epsilon}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}$
-and consider a $k \ge K$.
-If $\dk \le \tilde \Delta$, then $k \in \mathcal K$.
+Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $k_1 > 0$ such that $\chik \ge \epsilon$ for each $k \ge k_1$.
+Using the same constants as used in \cref{define_reduceiterates}, let
+\begin{align*}
+\tilde \Delta = \min \left\{
+\dsr, 
+\frac{\epsilon}{\maxhessian}, 
+\frac{(1 - \gammasm)}{\theirc} \epsilon,
+\left(\frac 1 {\kappa_{\chi}} \epsilon \right)^{\frac 1 {p_{\Delta}}},
+1\right\}
+\end{align*}
+and consider a $k \ge k_1$.
+If $\dk \le \tilde \Delta$, then $k \in \reduceiterates$.
 Then, by \cref{mathcal_k_subset_bar_s},  $k \in \miniterates$ and thus $\dkpo \ge \dk$.
-Therefore, the trust region radius can only decrease if $\Delta > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
-Therefore, one can see that for all $k \ge K$
+Therefore, the trust region radius can only decrease if $\dk > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
+Therefore, one can see that for all $k \ge k_1$
 \begin{align}
-\dk \ge \min\{\omegadec \tilde \Delta, \dk \}
+\dk \ge \min\left\{\omegadec \tilde \Delta, \dk \right\}
 \end{align}
-which is a contradiction.
+which contradicts \cref{delta_to_zero}.
 \end{proof}
 
 
@@ -4842,120 +4848,151 @@ which is a contradiction.
 
 \begin{criteria}
 \label{the_contradiction}
+Let $\chik$ be defined by \cref{define_criticality_measure}.
 There exists $\epsilon_{\textrm{lb}} > 0$, such that the set 
 $\mathcal U = \left\{k \in \naturals | \chik \ge \epsilon_{\textrm{lb}} \right\}$
 is infinite.
 \end{criteria}
 
-\begin{lemma}
-Let $ \epsilon_{\textrm{lb}} $ be defined by \cref{the_contradiction}.
-Suppose that \cref{the_contradiction} holds.
+Letting $\epsilon_{lb}$ be defined by \cref{the_contradiction}, as well as the other constants used in \cref{define_reduceiterates},
+define
+\begin{align}
+\Delta_{lb} = \min\left\{
+\dsr,
+\frac{\epsilon_{lb}}{\maxmodelhessian}, 
+\frac{(1-\gammasm)}{\theirc}\epsilon_{lb}, 
+\left(\frac 1 {\kappa_{\chi}}  \epsilon_{lb} \right)^{\frac 1 {p_{\Delta}}}, 
+1
+\right\}. \label{define_delta_lb}
+\end{align}
 
+
+Using the same , \cref{delta_to_zero} implies the existence of $k_0 \in \naturals$ such that for all $k \ge k_0$,
+
+\begin{lemma}
+\label{contradiction_portion}
+Let $ \epsilon_{\textrm{lb}} $ be defined by \cref{the_contradiction}.
+
+Suppose that 
+\cref{bounded_below_assumption}
+and the assumptions for
+\cref{bounded_model_hessian_lemma}, \cref{liminf_chi_to_zero}, \cref{delta_to_zero}, and \cref{sufficient_reduction_theorem} hold.
 Let 
 $S_{lb} \subset \naturals \times \naturals$ be the sequence
 \begin{align}
+\label{define_slb}
 S_{lb} = \left\{\left(k,
 \min_{i \in \naturals, i > k, \chi_{i} \le \epsilon_{\textrm{lb}}} i
 \right)\right\}_{k=1}^{\infty}.
 \end{align}
-Then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
+
+If \cref{the_contradiction} were true, then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
 \end{lemma}
 \begin{proof}
-
-Let $S$ be defined by \cref{define_S}.
-Consider $C_k = \{i \in S | k \le i < l_k\}$.
-Note that because $k \in S$, so $C_k \ne \emptyset $.
-For each $i \in C_k$, using the fact that $i \in S$, and \cref{bounded_hessians_assumption}, we conclude that 
-
+Notice that \cref{liminf_chi_to_zero} ensures that the sequence $S_{lb}$ is well defined.
+By \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then $\dk \le \Delta_{lb}$ as defined in \cref{define_delta_lb}.
+Let $\suffiterates$ be defined by \cref{define_suffiterates}, and consider
+$C_k = \left\{i \in \suffiterates | k_1 \le k \le i < l \right\}$ for $(k, l) \in S_{lb}$.
+Note that $k \in \suffiterates$, so $C_k \ne \emptyset $.
+For each $i \in C_k$, using the fact that $i \in \suffiterates$, \cref{bounded_model_hessian_lemma}, and \cref{sufficient_reduction_theorem}, we can conclude
 \begin{align*}
-f(x^{(i)}) - f(x^{(i+1)}) \ge \gammabi\big ( \mfk(x^{(i)}) - \mfk(x^{(i)} + s^{(i)}) \big ) \ge \gammabi \kappa_f \chi_i \min\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\} 
+f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) 
+\ge \gammabi \left( \mfk\left(x^{(i)}\right) - \mfk\left(x^{(i)} + s^{(i)}\right) \right) 
+\ge \gammabi \kappa_f \chi_i \min\left\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\right\} 
 \end{align*}
 
-By the definition of $l_k$, we have that $\chi_i > \frac{\epsilon}{2}$ for all $i \in C_k$.
-As $i \ge k$, $\Delta_i \le \frac{\epsilon}{\maxhessian}$ and $\Delta_i \le 1$.
+By the definition of $l$, we have that $\chi_i > \frac{\epsilon_{lb}}{2}$ for all $i \in C_k$.
+As $i \ge k$, we have $\Delta_i \le \frac{\epsilon_{lb}}{\maxhessian}$ and $\Delta_i \le 1$.
 Therefore,
 \begin{align*}
-\frac{\Delta_i}{2} \le \frac{\epsilon}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
+\frac{\Delta_i}{2} \le \frac{\epsilon_{lb}}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
 \end{align*}
 
 It follows that
 \begin{align*}
-f(x^{(i)}) - f(x^{(i+1)}) > \frac{\gammabi \kappa_f \epsilon \Delta_i}{4}
+f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) > \frac{\gammabi \kappa_f \epsilon_{lb} \Delta_i}{4}
 \end{align*}
 
 and hence
 \begin{align*}
-\Delta_i < \frac{4}{\gammabi \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\Delta_i < \frac{4}{\gammabi \kappa_f \epsilon_{lb}} \left[ f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right)\right].
 \end{align*}
 
 Meanwhile,
 \begin{align*}
-\|x^{(i)} - x^{(l_k)}\| \le \sum_{i \in C_k}\|x^{(i)} - x^{(i+1)}\| \le \sum_{i \in C_k} \Delta_i
+\left\|\xk - \xl\right\| \le \sum_{i \in C_k}\left\|x^{(i)} - x^{(i+1)}\right\| \le \sum_{i \in C_k} \Delta_i
 \end{align*}
 so that
 
 \begin{align}
-\|x^{(i)} - x^{(l_k)}\| < \frac{4}{\gammabi \kappa_f \epsilon} \big ( f(x^{(i)}) - f(x^{(i+1)})\big ).
+\left\|\xk - \xl\right\| < \frac{4}{\gammabi \kappa_f \epsilon_{lb}} \left[ f\left(\xk\right) - f\left(\xl\right)\right].
 \end{align}
 
-We also know that $(f(\xk))$ is bounded below, and since it is nonincreasing, $f(\xk)  - f(x^{(l_k)}) \to 0$.
-Therefore $(\|\xk - x^{(l_k)}\|)_{k \in \naturals '}$ converges to zero satisfying \cref{bp_given_by_contradiction}.
+We also know that $\left\{f\left(\xk\right)\right\}$ is bounded below by \cref{bounded_below_assumption}, 
+and since it is nonincreasing, $f\left(\xk\right)  - f\left(\xl\right) \to 0$.
+Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{k \in S_{lb}}$ converges to zero.
 \end{proof}
 
 
 \begin{lemma}
 \label{lim_chi_to_zero}
-Suppose that \cref{lipschitz_gradients_assumption}, \cref{bounded_below_assumption}, \cref{bounded_hessians_assumption} hold as well as the assumptions for 
-\cref{sufficient_reduction_theorem}, \cref{bounded_projection_theorem}, and \cref{accuracy_is_satisfied}.
-Further suppose that $\gammabi > 0$.
-Then $\lim_{k\to\infty}\chik=0$.
+
+Let $\chik$ be defined by \cref{define_criticality_measure}.
+Suppose that 
+\cref{lipschitz_gradients_assumption}
+the assumptions for 
+\cref{delta_to_zero},
+\cref{contradiction_portion},
+\cref{liminf_chi_to_zero}.
+hold.
+If $\gammabi > 0$, then $\lim_{k\to\infty}\chik=0$.
 \end{lemma}
 
 
 \begin{proof}
-Suppose for a contradiction that for some $\epsilon > 0$ the set  is infinite.
-By \cref{delta_to_zero}, there exists a $k_0 \in \naturals$ such that for all $k \ge k_0$,
+Suppose for a contradiction that \cref{the_contradiction} were true, and $\mathcal U = \left\{k \in \naturals | \chik \ge \epsilon_{\textrm{lb}} \right\}$ is infinite.
+By \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then $\dk \le \Delta_{lb}$ as defined in \cref{define_delta_lb}.
+Then, if $k \in \mathcal U$ with $k \ge k_0$, then $k \in \reduceiterates \subset \miniterates$.
+% \begin{align*}
+% \dk \le \min\{\frac{\chik}{\maxhessian}, \frac{(1-\gammasm)\chik}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}
+% \end{align*}
+% and therefore $k \in \miniterates \subset S$.
 
-\begin{align*}
-\dk \le \min\left\{\frac{\epsilon}{\maxhessian}, \frac{(1-\gammasm)\epsilon}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\right\}.
-\end{align*}
+Let $(k, l) \in S_{lb}$ defined by \cref{define_slb} be given with $k \ge k_1$.
+This means that $\chik - \chi^{(l)} \ge \frac {\epsilon} 2 $.
 
-Then if $k \in \naturals '$ with $k \ge k_0$:
-
-\begin{align*}
-\dk \le \min\{\frac{\chik}{\maxhessian}, \frac{(1-\gammasm)\chik}{c}, \left(\frac 1 {\kappa_{\chi}}  \epsilon \right)^{\frac 1 {p_{\Delta}}}, 1\}
-\end{align*}
-
-and therefore $k \in \miniterates \subset S$.
-
-Given $k \in \naturals'$ with $k\ge k_0$, consider $l_k$ the first index such that $l_k > k$ and $\chi_{l_k} \le \frac{\epsilon} 2$.
-The existence of $l_k$ is ensured by \cref{liminf_chi_to_zero}.
-This means that $\chik - \chi_{l_k} \ge \frac {\epsilon} 2 $.
-
-We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied}
+We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied} that there is a $\kappa_g > 0$ and $\lipgrad>0$ such that
 \begin{align}
-\left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \nonumber \\
-\le \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \nonumber \\
-\le \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right) + \lipgrad \left\|\xk - x^{(l_k)} \right\| \label{chi2zero2_comp1}
+\left\|\gk - \gl\right\| \nonumber \\
+\le \left\|\gk - \gradf\left(\xk\right)\right\| 
++ \left\|\gradf\left(\xk\right) - \gradf\left(\xl\right)\right\| 
++ \left\|\gradf\left(\xl\right) - \gl \right\| \nonumber \\
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\| \label{chi2zero2_comp1}
 \end{align}
 
-
-Let $\Omega_1 = \feasiblek$ and $\Omega_2 = \mathcal F^{(l_k)}$.
-
-Using \cref{define_projectionk}, the definition of $\chik$, the triangle inequality, the contraction property of projections, \cref{chi2zero2_comp1},
-definitions \cref{define_projectionk}, \cref{accuracy_is_satisfied} we have that
-
-\begin{comment}
-This needs to be updated to definitions \cref{define_projectionk}.
-\end{comment}
+Using the triangle inequality, the contraction property of projections, 
+\cref{sha_projkl}, \cref{define_criticality_measure}, and \cref{chi2zero2_comp1} we have 
 \begin{align*}
-\frac{\epsilon}{2} \le \left \|P_{\Omega_1}\left(\xk - \gk\right) - \xk\right \| - \left\|P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right) - x^{(l_k)}\right\| \\
-\le \left\|P_{\Omega_1}\left(\xk - \gk\right) - \xk - P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right) + x^{(l_k)}\right\| \\
-\le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(\xk - \gk\right)\right\| \\+ \left\|P_{\Omega_2}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right)\right\| \\
-\le\left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \left\|\xk - \gk - x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
-\le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|\\
-=   (2 + \lipgrad) \left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right)
+\frac{\epsilon}{2} \le \chik - \chi^{(l)} \\
+=     \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right \| 
+    - \left\|P_{\feasiblel}\left(\xl - \gl\right) - \xl\right \| \\
+\le   \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk
+    -  P_{\feasiblel}\left(\xl - \gl\right) + \xl\right \| \\
+ \le  \left\|\xk - \xl\right\|
+ + \left\|P_{\feasiblek}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xk - \gk\right) \right\| \\
+ + \left\|P_{\feasiblel}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xl - \gl\right) \right\| \\
+\le \left\|\xk - \xl\right\| + \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\| 
++ \left\| \xk - \gk - \xl + \gl  \right\| \\
+\le \left(2 + \lipgrad\right) \left\|\xk - \xl\right\| 
++ \kappa_g \left(\dk^2 + \dl^2\right)
++ \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\|
 \end{align*}
+        
+% \begin{align*}
+% \le\left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \left\|\xk - \gk - x^{(l_k)} - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
+% \le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \left\|\gk - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|\\
+% =   (2 + \lipgrad) \left\|\xk - x^{(l_k)}\right\| + \| p^{(k\to k)} - p^{(k\to l)}\| + \kappa_g \left(\dk^2 + \Delta_{l_k}^2\right)
+% \end{align*}
 
 
 % \le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
@@ -4964,14 +5001,24 @@ This needs to be updated to definitions \cref{define_projectionk}.
 
 So that
 \begin{align}
-\frac{\epsilon} 2 \le \left(2 + \lipgrad\right) \|\xk - x^{(l_k)}\| + \kappa_{g}\left(\dk + \Delta_{l_k}\right) + \| p^{(k\to k)} - p^{(k\to l)}\| \label{chi2zero2_conv}.
+\frac{\epsilon_{lb}} 2 \le \left(2 + \lipgrad\right) \left\|\xk - \xl\right\| 
++ \kappa_g \left(\dk^2 + \dl^2\right)
++ \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\|
+\label{chi2zero2_conv}.
 \end{align}
 
-Then by \cref{bounded_projection_theorem}, the entire right hand side of \cref{chi2zero2_conv} goes to zero.
-This is a contraduction, and there is no such $\epsilon > 0$.
+Because we have assumed \cref{the_contradiction}, we can apply \cref{contradiction_portion} so that 
+$S_{lb}$ defined \cref{define_slb} satisfies \cref{criteria_from_contradiction}.
+We can then apply \cref{bounded_projection_theorem} and \cref{delta_to_zero} to conclude that the entire right hand side of \cref{chi2zero2_conv} goes to zero.
+This is a contradiction, and \cref{the_contradiction} must be false.
 \end{proof}
 
 \subsubsection{Convergence}
+
+
+\begin{comment}
+One of the remaining pieces...
+\end{comment}
 
 \begin{theorem}
 \label{the_convergence_theorem}
