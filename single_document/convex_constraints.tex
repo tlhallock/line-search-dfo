@@ -4,7 +4,7 @@
 
 \usepackage{hyperref}
 \usepackage[fleqn]{amsmath}
-\usepackage[demo]{graphicx}
+\usepackage{graphicx}
 \usepackage{color}
 \usepackage{xspace}
 \usepackage{cite}
@@ -3872,16 +3872,15 @@ so that $\left\|y - z\right\|_{\infty} = \left\| v_+ \right\|_{\infty}$.
 
 
 \begin{lemma}
-Suppose
+Suppose that $a, v \in \Rn$, $b, r \in \reals$, and $i \in [m]$ are given such that
 \begin{align*}
 a^Tv > b \\
 0 \le b \\
-r < v_i < 2r \\
-a_i > ? \\
-\frac 1 r > \frac 1 {v_i} > \frac 1 {2r} \\
-a_i > \frac 1 {v_i} \left(b - \sum_{j\ne i}  a_j v_j\right)
+r \ge 0 \\
+r \le v_i \\
+-2r \le v_j \le 2r \quad \forall j \in [m]
 \end{align*}
-
+Then $a_i > ?$.
 \end{lemma}
 \begin{proof}
 Because $a^Tv > b \ge 0$, we know that
@@ -3926,25 +3925,22 @@ a_i \ge -\sum_{\substack{j=1 \\ j\ne i}}^n |a_j|
 \begin{lemma}
 Define $H(A)$ and $\atr$.
 
-Let $A_1$ be an $m \times n$ matrix and $h_0 > 0$ be given with $H(A_1) = h_0$.
+Let $A_1$ be an $m \times n$ matrix, $p \in \Rn$, and $b_1 \in \Rm$  be given 
+such that $A_1p \le b_1$.
 Define 
 \begin{align*}
 A_2 = \begin{pmatrix} A_1 \\ \atr \end{pmatrix}.
 \end{align*}
-Then $H(A_2) = $.
+Then $H(A_2) = \max\left\{H\left(A_1\right), \left(1 + \sqrt{n}\right), ?\right\}$.
 \end{lemma}
 \begin{proof}
-
-Let $A_1$, $b_1 \in \Rm$; $p, \hat x, z_0, z_1, y \in \Rn$; and $r > 0$
-be such that both
-\begin{align*}\hat x \in 
+Let $y \in \Rn$ and $r > 0$ be arbitrary.
+Notice that by letting $b_2 = \begin{pmatrix} b_1 \\ p + re_{\pm} \end{pmatrix}$, we have
+\begin{align*}
 \left\{x \in \Rn \bigg| A_2 x \le b_2 \right\} = 
-\left\{x \in B_{\infty}(p, r) \bigg| A_1 x \le b_1 \right\}
+\left\{x \in B_{\infty}(p, r) \bigg| A_1 x \le b_1 \right\}.
 \end{align*}
-where
-$b_2 = \begin{pmatrix} b_1 \\ p + re_{\pm} \end{pmatrix}$.
 Define
-
 \begin{align*}
 z_0 = \argmin_{\substack{x \in B_{\infty}(p, r), \\ A_1 x \le b_1} } \|y - x\|, \quad
 z_1 = \argmin_{A_1 x \le b_1} \|y - x\|, \quad \textrm{and} \quad
@@ -3961,21 +3957,22 @@ z_2 = \argmin_{x \in B_{\infty}(p, r)} \|y - x\|.
 
 \paragraph{Case 1}
 Suppose that $y \in B_{\infty}(p, r)$.
+
 Then $\|y - z_0\| \le H(A_1) \left\|\left(A_1y - b_1\right)_+\right\|_{\infty} \le H\left(A_1\right) \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}$.
 \paragraph{Case 2}
-Suppose that $y \in B_{\infty}(p, 2r)$.
-
-\paragraph{Case 3}
-
 Suppose that $y \not \in B_{\infty}(p, 2r)$.
 
 Then $\left\|\left(A_2y - b_2\right)_+\right\|_{\infty} \ge r$,
 so that $\|y - z_0\| 
-\le \|y - z_2\| + \|x_0 - z_2\| 
+\le \|y - z_2\| + \|z_2 - z_0\| 
 =  \left\|\left(\atr y - p + re_{\pm} \right)_+\right\|_{\infty} + \|x_0 - z_2\| \\
 \le \left\|\left(A_2y - b_2\right)_+\right\|_{\infty} + r\sqrt{n}
 \le \left(1  + \sqrt{n} \right) \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}
 $
+
+\paragraph{Case 3}
+Suppose that $y \in B_{\infty}(p, 2r)$.
+
 
 % H(A_1) \left\|\left(A_1p - b_1\right)_+\right\|_{\infty} \le H\left(A_1\right) \left\|\left(A_2p - b_2\right)_+\right\|_{\infty}$.
 
