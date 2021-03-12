@@ -760,10 +760,19 @@ while $\chik$ is defined by \cref{define_criticality_measure}.
 \section{Algorithm}
 \label{infeasible_point_strategies}
 
-\paragraph{Trust Regions}
 
-Our algorithm maintains up to three trust regions: 
-a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
+The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
+Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
+\begin{itemize}
+\item A point chosen by the geometry ensuring algorithm may be infeasible.
+\item The trial point solving the trust region subproblem may be infeasible.
+\end{itemize}
+
+
+% What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
+% for handling infeasible sample points.
+To deal with these two forms of infeasible points, we have developed several strategies that make use of three separate trust regions.
+These trust regions are a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 \begin{align}
 \outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall i \in [n]\}. \label{define_outer_trust_region}
@@ -792,19 +801,7 @@ The search trust region is used in defining the trust region subproblem.
 % We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
 % To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
 
-\paragraph{Extensions from Linear Constraints}
 
-The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
-Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
-\begin{itemize}
-\item A point chosen by the geometry ensuring algorithm may be infeasible.
-\item The trial point solving the trust region subproblem may be infeasible.
-\end{itemize}
-
-
-% What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
-% for handling infeasible sample points.
-To deal with these two forms of infeasible points, we have developed several strategies.
 What remains in \cref{infeasible_point_strategies} is devoted to search strategies for ensuring feasible sample points:
 \cref{possible_ellipsoids} and \cref{handling_linear_constraints_within_ellipsoid_programs} could be considered background, while the others discuss algorithms.
 The version we call the ``conservative ellipsoid'' is lengthier and discussed within \cref{constructing_and_analysizing_conservative_ellipsoid}.
