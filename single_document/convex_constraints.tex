@@ -129,6 +129,7 @@
 \newcommand{\omegadec}{\omega_{\text{dec}}}
 \newcommand{\omegainc}{\omega_{\text{inc}}}
 \newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
+\newcommand{\outertrkpo}{{T_{\text{out}}^{(k+1)}}}
 \newcommand{\polydn}{\mathcal{P}^d_n}
 \newcommand{\qk}{{Q^{(k)}}}
 \newcommand{\reals}{\mathbb R}
@@ -269,7 +270,7 @@ We present convergence analysis.
 % DOING.TXT
 %
 %
-%
+% Make the uses of [m] be 1 \le i \le m before table of notation....
 %
 % remove latex warnings
 % simplify the algorithm
@@ -905,11 +906,11 @@ The intersection of these cones is the set
 \capcones = \{x\in\Rn | \; x \in \fik \quad \forall i \in \activeconstraintsk \} \label{define_capcones}
 \end{align}
 which is depicted in \cref{completed_2}.
-In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrk \subseteq \feasible$.
+In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrkpo \subseteq \feasible$.
 \color{red}
 Therefore, to obtain feasible sample points, we require that 
 \begin{align*}
-\sampletrk \subset \capcones \cap \outertrk.
+\sampletrkpo \subset \capcones \cap \outertrkpo.
 \end{align*}
 \color{black}
 
