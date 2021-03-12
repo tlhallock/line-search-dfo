@@ -265,6 +265,54 @@ We present convergence analysis.
 \newpage
 
 
+
+% DOING.TXT
+%
+%
+%
+%
+% remove latex warnings
+% simplify the algorithm
+% make a comment about the decision to construct the next ellipsoid (proximity vs large enough)
+% due to the construction of our ellipsoid, it will be lambda poised over the entire set
+% make comment about simply assuming the hoffman assumption is bounded...
+% \oalpha should be removed...
+% define a pdelta, palpha, pbeta
+% remove content from future work.
+% The text in the sufficient reduction theorem.
+% h to ht  in figures?
+% 23rd changes only on page 11
+% I didn't take the omegainc change....
+% add comment about the smaller ellipsoid is not that much worse
+% prove theorem used from steve's paper
+% use \sigma for the condition number of a matrix
+% [m] is used before it is defined...
+% 
+% 
+% 
+% 
+% I was supposed to insert this:
+% what remains in section 5 is various different versions
+% We will show feasibility and convergence of the algorithm assuming certain of these 
+% 
+% script
+% 	update the table of notation
+% 
+% 	
+% maybe
+% 	connect the ellipsoid definitions to something...
+% 
+% 	
+% probably no longer an issue:
+% discuss which criticallity measure?
+% u uses the current: what if there are no currently active constraints, but there is during the next iteration?
+% remove references to the approximation of the active constraints
+% make the 1 + k_active just be a constant?
+
+
+
+
+
 \section{Introduction}
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
@@ -740,6 +788,7 @@ The search trust region is used in defining the trust region subproblem.
 % This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
 \subsection{Extensions from Linear Constraints}
+\label{infeasible_point_strategies}
 % In the last paper, we showed convergence of our algorithm for linear constraints.
 % We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
 % To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
@@ -753,7 +802,21 @@ Errors in these models mean that we may attempt to evaluate a point that is not 
 \end{itemize}
 
 
-To deal with these infeasible points, we have developed several strategies.
+% What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
+% for handling infeasible sample points.
+To deal with these two forms of infeasible points, we have developed several strategies.
+What remains in \cref{infeasible_point_strategies} is devoted to search strategies for ensuring feasible sample points:
+\cref{possible_ellipsoids} and \cref{handling_linear_constraints_within_ellipsoid_programs} could be considered background, while the others discuss algorithms.
+The version we call the ``conservative ellipsoid'' is lengthier and discussed within \cref{constructing_and_analysizing_conservative_ellipsoid}.
+Within \cref{convex_model_reduction} we examine two strategies for handling infeasible trial points.
+Finally, in \cref{the_algroithm_section}, we state the convergent algorithm, which is based on the strategies found in 
+\cref{constructing_and_analysizing_conservative_ellipsoid} and \cref{decreasing_the_trust_region_for_infeasible_trial}.
+
+
+
+% We will show feasibility and convergence of the algorithm assuming certain of these 
+
+
 % Although an approach for avoiding one of these two function evaluations can work for the other in thoery, we stick to one simplified version.
 
 % \subsection{Implemented Ideas not used in this paper}
@@ -871,6 +934,7 @@ Therefore, to obtain feasible sample points, we require that
 
 
 \subsubsection{Linear Constraints}
+\label{handling_linear_constraints_within_ellipsoid_programs}
 
 Throughout discussing strategies for constructing an ellipsoid within the buffering cones, we must also require that the ellipsoid is contained within the trust region.
 Because our trust region is $\tr$, we can satisfy the trust region constraints by including linear constraints of the form $\xk_i - \dk \le x_i \le \xk_i + \dk$.
@@ -1352,10 +1416,10 @@ Throughout \cref{possible_ellipsoids} we have considered several inner trust reg
 However, we are not able to show that these formulations satisfy the requirements necessary for convergence.
 % not been able to show that these satisfied the requirements stated in \cref{ellipsoids_notation_definitions}.
 We were able to find an ellipsoid contained within each \cref{define_fik} that may, in general, be smaller than the largest possible ellipsoid.
-Because we analyse this in more depth, we dedicate \cref{conservative_ellipsoid_section} to this.
+Because we analyse this in more depth, we dedicate \cref{constructing_and_analysizing_conservative_ellipsoid} to this.
 
 \subsection{Conservative Ellipsoid Derivation}
-\label{conservative_ellipsoid_section}
+\label{constructing_and_analysizing_conservative_ellipsoid}
 
 We state the ellipsoid requirements required for convergence in \cref{ellipsoids_notation_definitions}, and then show the conservative ellipsoid satisfies them.
 Note the criteria in \cref{ellipsoids_notation_definitions} only summarize one of many possible sets of criteria sufficient for convergence.
@@ -1494,10 +1558,6 @@ Note that within \cref{define_ellipsek} we have defined the components $\qkpo$, 
 
 % \cref{ellsoid_is_suitable_theorem_p2} tells us that this ellipsoid satisfies \cref{ellipsoids_notation_definitions}.
 % Which part? Trusted and adjacent
-
-\begin{comment}
-Move to here...
-\end{comment}
 
 \subsubsection{Properties}
 \label{feasible_ellipsoid_analysis}
@@ -1959,10 +2019,6 @@ Thus, $\fcki \subseteq \fik$.
 % \color{black}
 
 
-\begin{comment}
-Move the bounded to 6.8.2.
-\end{comment}
-
 \begin{lemma}
 \label{ellsoid_is_suitable_theorem_p1}
 Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
@@ -2152,6 +2208,7 @@ We use this optimization problem as a subroutine of the trust region subproblem 
 
 
 \subsubsection{Decrease the Trust Region Radius}
+\label{decreasing_the_trust_region_for_infeasible_trial}
 
 Another option is to simply decrease the trust region radius.
 However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
@@ -2250,6 +2307,7 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
 
 
 \subsection{Convergent Algorithm}
+\label{the_algroithm_section}
 
 We can now state the algorithm.
 The algorithm not only assumes the customary initial iterate $ \xinit $ with 
