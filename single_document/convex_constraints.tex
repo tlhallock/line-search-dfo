@@ -758,8 +758,9 @@ while $\chik$ is defined by \cref{define_criticality_measure}.
 
 
 \section{Algorithm}
+\label{infeasible_point_strategies}
 
-\subsection{Trust Regions}
+\paragraph{Trust Regions}
 
 Our algorithm maintains up to three trust regions: 
 a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
@@ -787,12 +788,11 @@ The search trust region is used in defining the trust region subproblem.
 % Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
 % This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
-\subsection{Extensions from Linear Constraints}
-\label{infeasible_point_strategies}
 % In the last paper, we showed convergence of our algorithm for linear constraints.
 % We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
 % To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
 
+\paragraph{Extensions from Linear Constraints}
 
 The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
 Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
