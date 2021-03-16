@@ -2741,23 +2741,56 @@ We also use the following two theorems found within our convergence analysis for
 \begin{lemma}
 \label{change_radius} 
 Suppose that \cref{bounded_hessians_assumption} and \cref{lipschitz_gradients_assumption} hold.
-
-% Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
+Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
 % Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 % Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 Suppose there there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
-\left\|\gradf(x) - \nabla m(x)\right\| \le \Lambda_2 \\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m(x)\right\| \le \Lambda_3 % \Delta
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 % \Delta
 \end{align*}
-Then for all $x \in B\left(y^0, r\Delta\right)$,
+Then let $r > 1$ be arbitrary.
+For all $x \in B\left(y^0, r\Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 r^? \\ % \Delta^3
-\left\|\gradf(x) - \nabla m(x)\right\| \le \Lambda_2 r^?\\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m(x)\right\| \le \Lambda_3 r^?% \Delta
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 r^?\\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 r^?% \Delta
 \end{align*}.
 \end{lemma}
+
+\begin{proof}
+Let $x \in B\left(y^{0}, r\Delta\right)$, and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
+Because $z \in B\left(y^0, \Delta\right)$, we know that
+
+\begin{align*}
+\left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
+\left\|\gradf(z) - \nabla m(z)\right\| \le \Lambda_2 \\ % \Delta^2
+\left\|\nabla^2 f(z) - \nabla^2 m(z)\right\| \le \Lambda_3 % \Delta
+\end{align*}
+and that there exists 
+% $\alpha \in [0, 1]$, 
+$\chi_1 \in [y^0, x]$ and
+$\chi_2 \in [z, x]$
+such that such that
+\begin{align*}
+f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
+f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
+m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
+\end{align*}
+we have
+\begin{align*}
+f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
++ \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
++ \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
+\left|f(x) - m_f(x)\right| 
+\le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
++ \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
+\end{align*}
+
+
+
+\end{proof}
 
 
 \begin{theorem}
@@ -4134,11 +4167,7 @@ b_2 = \begin{pmatrix} b_J \\ \btr\left(p, r\right) \end{pmatrix},
 \quad \textrm{and} \quad
 z_2 = \argmin_{\substack{A x \le b \\ x \in \bpr} } \|y - x\|.
 \end{align*}
-<<<<<<< HEAD
-Then the value
-=======
 Define 
->>>>>>> 3f907c3ab55debb17fa954047287eb4f55ed2603
 \begin{align}
 H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_J\right).
 \label{define_har}
@@ -6086,6 +6115,8 @@ The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
 
 \subsection{Bounded Level Sets}
 \label{bounded_level_sets}
+
+
 
 \section{Future Work}
 \subsection{Removing a regularity assumption}
