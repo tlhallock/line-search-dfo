@@ -329,15 +329,15 @@ In such applications, function evaluations are expensive, so it is sensible to i
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
 \begin{align*}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-\mbox{subject to} & c_i(x) \le 0 & i \in [m],
+\mbox{subject to} & c_i(x) \le 0 & 1 \le i \le m,
 \end{array}
 \end{align*}
 where 
 % $\domain$ is a subset of $\Rn$, and
-$f$ and $c_i, i \in [m]$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+$f$ and $c_i, \forall 1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
 We will let the feasible set be represented as 
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall i \in [m] \}. \label{define_feasible}
+\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}. \label{define_feasible}
 \end{align}
 
 We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
@@ -349,17 +349,17 @@ For example, the trust-region subproblem might have the form
 \begin{align*}
 \begin{array}{ccl} \min_{\|s\| \le \dk}
  & \mfk \left(\xk+s\right) \\
-\mbox{subject to} & \mcik\left(\xk + s\right) \le 0 & i \in [m], \\
+\mbox{subject to} & \mcik\left(\xk + s\right) \le 0 & 1 \le i \le m, \\
 & \|s\| \le \dk \\
 \end{array}
 \end{align*}
 
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
-and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall i \in [m]$, and $\dk$ is the radius of the trust-region.
+and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
 The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
 We are using the models of the constraints to approximate the feasible region during each iteration:
 \begin{align}
-\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall i \in [m] \} \label{define_feasiblek}
+\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \} \label{define_feasiblek}
 \end{align}
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
