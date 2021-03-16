@@ -67,6 +67,11 @@
 \newcommand{\symboldefinition}[4]{#1}
 
 
+\newcommand{\ehuffo}{{\epsilon_{\textrm{huff, 1}}}}
+\newcommand{\ehufft}{{\epsilon_{\textrm{huff, 2}}}}
+\newcommand{\mhufft}{{M_{\textrm{huff, 2}}}}
+
+
 
 \newcommand{\activeconstraintsk}{{\mathbb A_{k}}}
 \newcommand{\activeconstraintsl}{{\mathbb A_{l}}}
@@ -176,8 +181,10 @@
 \newcommand{\projkk}{{p^{(k,k)}}}
 \newcommand{\projll}{{p^{(l,l)}}}
 \newcommand{\trueprojk}{{p_c^{(k)}}}
-\newcommand{\truefeasiblek}{{F^{(k)}}}
+\newcommand{\truefeasiblek}{{F_c^{(k)}}}
+\newcommand{\truefeasible}{{F_c}}
 \newcommand{\trueactiveprojk}{{\mathbb P_c^{(k)}}}
+\newcommand{\nearlyactiveprojk}{{\mathbb P_{a}}}
 \newcommand{\activeprojkk}{{\mathbb P^{(k, k)}}}
 \newcommand{\activeprojkl}{{\mathbb P^{(k, l)}}}
 \newcommand{\activeprojlk}{{\mathbb P^{(l, k)}}}
@@ -210,8 +217,8 @@
 \newcommand{\huffalpha}{{\alpha_h}}
 \newcommand{\huffdir}{{u_h}}
 \newcommand{\huffdirk}{{u^{(k)}_h}}
-\newcommand{\activeprojk}{{Remove me}}
-\newcommand{\activeprojl}{{Remove me}}
+\newcommand{\activeprojk}{{\textrm{active projection k}}}
+\newcommand{\activeprojl}{{active projection l}}
 
 
 %=======================================
@@ -3987,30 +3994,55 @@ Then \cref{huffman_of_infinity_ball} implies
 \end{proof}
 
 
+
+
+
+\begin{align*}
+\left\{i \in [m] \bigg| p - \frac{A_ip - b}{\left\|A_i\right\|^2} A_i \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}
+\end{align*}
+
+
+
+\begin{align*}
+\left\|p - \frac{b - A_ip}{\left\|A_i\right\|^2} A_i\right\| \ge \sqrt{n} r \\
+\|p - z\| \le \sqrt{n} r \\
+A_i z \le b \\
+A_i z = A_i(p + z) \\
+A_i \left(p - \frac{A_ip - b_i}{\left\|A_i\right\|^2} A_i\right)
+= A_i p - A_ip + b_i = b_i \\
+|b_i| \ge \sqrt{n} r \\
+z = \frac{A_iz}{\left\|A_i\right\|^2}A_i^T + z - \frac{A_iz}{\left\|A_i\right\|^2}A_i^T \\
+A_iz = b \\
+\frac{b - A_i p}{\|A_i\|} \ge \sqrt{n} r
+\end{align*}
+
+
+
 \begin{lemma}
 \label{version_of_hoffman_with_infinity_ball}
 Let $H(A)$ be defined by \cref{hoffman_theorem}; and let $\atr$ and $\btr$ be defined by \cref{define_atr}.
 
 Let $A_1$ be an $m \times n$ matrix, $p, y \in \Rn$, $r > 0$, and $b_1 \in \Rm$  be given 
-such that $A_1p \le b_1$.
+such that $Ap \le b$.
 Define 
+% J = \left\{i \in [m] \bigg | \|A_i\| \ne 0 \quad \textrm{and} \quad \frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r  \right\} \\
 \begin{align*}
-A_2 = \begin{pmatrix} A_1 \\ \atr \end{pmatrix},
+A_2 = \begin{pmatrix} A_J \\ \atr \end{pmatrix},
 \quad
-b_2 = \begin{pmatrix} b_1 \\ \btr\left(p, r\right) \end{pmatrix},
+b_2 = \begin{pmatrix} b_J \\ \btr\left(p, r\right) \end{pmatrix},
 \quad \textrm{and} \quad
-z_2 = \argmin_{\substack{A_2 x \le b_2} } \|y - x\|.
+z_2 = \argmin_{\substack{A x \le b \\ x \in \bpr} } \|y - x\|.
 \end{align*}
-Then 
+Then the value
 \begin{align}
-H\left(A_1, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
+H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_J\right).
 \label{define_har}
 \end{align}
 satisfies
 \begin{align*}
 \left\|y - z_2\right\|_{\infty} 
 \le 
-H\left(A_1, r\right)
+H\left(A, p, r\right)
 \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
 \end{align*}
 \end{lemma}
@@ -4023,16 +4055,20 @@ H\left(A_1, r\right)
 % \end{align*}
 Define
 \begin{align*}
-z_1 = \argmin_{A_1 x \le b_1} \|y - x\|
+z_0 = \argmin_{x \in B_{\infty}(p, r)} \|y - x\|
 \quad \textrm{and} \quad
-z_0 = \argmin_{x \in B_{\infty}(p, r)} \|y - x\|.
+z_1 = \argmin_{A_J x \le b_J} \|y - x\|.
 \end{align*}
+
+% \quad \textrm{and} \quad
+% z_2 = \argmin_{A_2 x \le b_2} \|y - x\|.
+
 Notice that
 \begin{align}
 \left\|y - z_1\right\|_{\infty}
 \le \left\|y - z_1\right\|
-\le H\left(A_1\right) \left\|\left(A_1y - b_1\right)_+\right\|
-\le \sqrt{n} H\left(A_1\right) \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
+\le H\left(A_J\right) \left\|\left(A_Jy - b_J\right)_+\right\|
+\le \sqrt{n} H\left(A_J\right) \left\|\left(A_Jy - b_J\right)_+\right\|_{\infty}.
 \label{hoi_computation_1}
 \end{align}
 
@@ -4172,8 +4208,17 @@ so
 \le \left(1 + \frac 4 r\right) h.
 \end{align*}
 
-
-
+% Throughout the the cases, we have established that $\|y - z_2\|_{\infty} \le H(A, p, r)\|A_2 y - b_2\|_{\infty}$.
+% Suppose that $i \in [m] \setminus J$.
+% If $\|A_i\| = 0$, then $A_i z = 0 = A_i p \le b_i$.
+% Otherwise, $\frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r \Longrightarrow A_i p \le b_i - \left\|A_i\right\|r\sqrt{n}$.
+% Then, $z_2 \in \bpr \Longrightarrow \left\|z_2 - p \right\| \le \sqrt{n} r$ so that
+% \begin{align*}
+% A_iz_2 = A_ip + A_i\left(z_2 - p\right) \le A_ip + \|A_i\|\|z_2 - p\| \le b_i - \left\|A_i\right\|r\sqrt{n} + \|A_i\|r \sqrt{n} = b_i
+% \end{align*}
+% and $z_2 \in \bpr \cap \left\{x \in \Rn | Ax\le b\right\}$.
+% We can conclude
+% $\left\|y - z^{\star}\right\| \le \left\|y - z_2\right\|$.
 
 
 % \paragraph{Case 3a}
@@ -4256,13 +4301,52 @@ Also, let
 \end{align}
 Finally, the equivalent definitions for the linearizations of the true constraints are
 \begin{align}
-\truefeasiblek &=  \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{sha_truefk} \\
+\truefeasible \left(x\right) &=  \left\{ y \in \Rn \bigg| c_i\left(x\right) + \nabla c_i\left(x\right)^T \left(y - x\right) \le 0 \; \forall i \in [m] \right\} \label{sha_truef} \\
+\truefeasiblek &=  \truefeasible\left(\xk\right) \label{sha_truefk} \\
 \trueprojk &= \argmin_{x \in \truefeasiblek} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_trueproj} \\
 \trueactiveprojk &= \left\{ i \in [m] \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_true_proj_indices}
 \end{align}
 
 In order to show that the huffman constant is bounded across iterations, we make the following additional assumption.
 We leave removing this assumption as future work, which is discussed in \cref{removing_the_huffman_assumption}.
+
+% \begin{align}
+% \nearlyactiveprojk \left(x, y; \epsilon\right) = \left\{ i \in [m] 
+% \quad \bigg| \quad
+% \left|c_i\left(x\right) + \nabla c_i\left(x\right)^T \left(P_{\truefeasible\left(x\right)}\left(y\right) - x\right)\right| \le \epsilon \right\} \label{sha_nearly_proj_indices}
+% \end{align}
+
+% \begin{lemma}
+% Suppose that
+% \begin{align*}
+% b_1 + a_1^T\left(p_1 - x\right) = 0 \\
+% b_2 + a_2^T\left(p_2 - x\right) = 0
+% \end{align*}
+% where 
+% \begin{align*}
+% \left|b_1 - b_2\right| \le \epsilon
+% \quad \textrm{and} \quad
+% \left|a_1 - a_2\right| \le \epsilon
+% \quad \textrm{and} \quad
+% \left|p_1 - p_2\right| \le L.
+% \end{align*}
+% Then
+% \begin{align*}
+% b_2 + a_2^T\left(p_2 - x\right) \le \epsilon
+% \end{align*}
+% 
+% \end{lemma}
+% \begin{proof}
+% 
+% 
+% \begin{align*}
+% \left|c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(P_{\truefeasible\left(\xk\right)}\left(\xk\right) - \xk\right)\right| \le \epsilon.
+% \end{align*}
+% 
+% \end{proof}
+
+\newpage
+
 
 \begin{assumption}
 \label{huffman_assumption}
@@ -4278,6 +4362,77 @@ then
 \huffdir(x, y)^T \nabla c_i \left(x\right) \ge \huffalpha.
 \end{align*}
 \end{assumption}
+
+
+Define
+\begin{align}
+\mathbb J(x, \Delta) = \left\{i \in [m] \bigg | \exists y \in B_{\infty}\left(x, \Delta\right) \quad \textrm{s.t.} \quad c_i(y) \ge 0\right\}
+\end{align}
+
+
+\begin{assumption}
+\label{new_huffman_assumption}
+There exist $\huffeps, \huffalpha > 0$ such that
+for each $x \in \Omega$,
+there exists a unit vector $\huffdir(x) \in \Rn$ such that
+\begin{align*}
+\huffdir(x)^T \nabla c_i \left(x\right) \ge \huffalpha \quad \forall i \in \mathbb J(x, \huffeps).
+\end{align*}
+\end{assumption}
+
+
+\begin{lemma}
+% \activeprojkk \cup \activeprojkl \cup \trueactiveprojk
+We have that 
+\begin{align*}
+\activeconstraintsk \cup \activeconstraintsl \subseteq \mathbb J\left(\xk, \max\left\{\sqrt{n}\dk, \left\|\xk - \xl\right\| + \dl\right\}\right) 
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+By \cref{accuracy_is_satisfied}, there exists a $u \in \Rn$ with $\|u\| \le 1$ such that
+\begin{align*}
+\nabla c_i\left(\xk\right) \le \gmcik + \kappa_f \dk^2 u.
+\end{align*}
+\begin{comment}
+That one had assumptions...
+\end{comment}
+By \cref{mingradassumption}, there exists $\maxmodelgrad$ such that
+\begin{align*}
+\left\|\gmcik\right\| \ge \mingrad
+\Longrightarrow  \frac{1}{\left\|\gmcik\right\|} \ge \frac 1 {\maxmodelgrad}
+\end{align*}
+
+Let $\gamma = \left[1 + \frac{\kappa_f \dk^2}{\left\|\gmcik\right\|}\right]^{-1}$.
+
+
+If $k \in \activeconstraintsk$, then $\left\|\zik - \xk\right\|_{\infty} \le \dk$.
+Using \cref{define_z},
+
+
+By \cref{constraints_are_convex}, 
+\begin{align*}
+c_i\left(\xk + \gamma\left(\zik - \xk\right) \right) \ge c_i\left(\xk\right) + \gamma\nabla c_i\left(\xk\right)^T\left(\zik - \xk\right) \\
+= c_i\left(\xk\right) - \gamma\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|^2} \left[\gmcik + \kappa_f \dk^2 u \right]^T\gmcik \\
+\ge c_i\left(\xk\right) - \gamma c_i\left(\xk\right)\left[1 + \frac{\kappa_f \dk^2}{\left\|\gmcik\right\|}\right]
+= 0
+\end{align*}
+
+\paragraph{Case 1}
+
+Let $i \in \trueactiveprojk$
+
+% Let $i$ be such that 
+% \begin{align*}
+% \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0
+% \end{align*}
+% then
+% \begin{align*}
+% \left|c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(P_{\truefeasible\left(\xk\right)}\left(\xk\right) - \xk\right)\right| \le \epsilon.
+% \end{align*}
+
+
+\end{proof}
 
 
 
@@ -4305,6 +4460,9 @@ then
 % \le 2M\epsilon.
 % \end{align*}
 % \end{proof}
+
+
+\color{red}
 
 \begin{lemma}
 \label{bp_combining_several}
@@ -4392,7 +4550,7 @@ By \cref{criteria_from_contradiction}, we know that there exists $k_2 \in \natur
 % \end{align}
 % \color{black}
 
-By the triangle inequality, \cref{til_acc_const}, \cref{til_lip_cons}, and \cref{til_bound_dk} provide
+The triangle inequality, \cref{til_acc_const}, \cref{til_lip_cons}, and \cref{til_bound_dk} provide
 \begin{align}
 \left\| \gmcik - \gmcil \right\|
 \le \left\| \gmcik - \nabla c_i\left(\xk\right) \right\|
@@ -4520,7 +4678,7 @@ Thus, we only need to let $k_0 = \max\left\{k_1, k_2\right\}$.
 
 \end{proof}
 
-
+\color{black}
 \begin{lemma}
 \label{huffman_constant_is_bounded}
 Let $\jackk$ and $\activeprojkk$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
@@ -4685,40 +4843,67 @@ x_2^{\star} = \argmin_{
 }\|x\|^2.
 \label{bap_define_the_projections}
 \end{align}
-Lastly, we assume that there is some $\hat x \in P_1 \cap P_2 \cap \bpr$ and $h > 0$ such that 
+We also assume that $p$ is within the interior of the polyhedron.
+That is, there is some $h > 0$ such that 
 \begin{align}
 \label{bap_feasible_by_h}
-A_1 \hat x \le b_1 - h
+A_1 p \le b_1 - h
 \quad \textrm{and} \quad
-A_2 \hat x \le b_2 - h.
+A_2 p \le b_2 - h.
+\end{align}
+
+Lastly, define the functions
+$\ehuffo : \Rn \times \reals \times \reals \to \reals$;
+$\ehufft : \Rn \times \reals \times \reals \times \reals \to \reals$; and 
+$\mhufft : \Rn \times \reals \times \reals \to \reals$
+by
+\begin{align}
+\ehuffo\left(w, x, y\right) &= \min\left\{\frac{\min_i w_i}{1 + x}, \frac 1 {2y}\right\} \label{define_ehuffo} \\
+\ehufft\big(w, x, y, z\big) &= \min\left\{\frac{\min_i w_i}{1 + x}, \frac 1 {2y}, \frac 1 {2z}\right\} = \min\left\{\ehuffo\left(w, x, y\right), \ehuffo\left(w, x, z\right) \right\} \label{define_ehufft} \\
+\mhufft \big(w, x, y \big) &= 6y \left(1 + w\right) \left(1 + 2 x\right). \label{define_mhufft}
 \end{align}
 
 
-\begin{lemma}[Dramatic simplification of Lemma 4.1]
-\label{4_1}
-Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
-\cref{bap_feasible_by_h} is satisfied and $p \in P_1$.
-Then for any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, 
-the system $A_1x \le b'$ has a solution $x \in \bpr$.
-\end{lemma}
-
-\begin{proof}
-Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
-\end{proof}
+% \begin{align*}
+% 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right]
+% \end{align*}
 
 
-\begin{lemma}
-\label{simple_bound}
-If $x > 0$, then $\frac {x}{1+x} \le x$.
-\end{lemma}
-\begin{proof}
-Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x} \le x$.
-\end{proof}
+% \begin{align*}
+% \begin{array}{rcl}
+% \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) =
+% \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
+% M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
+% \end{array}
+% \end{align*}
+
+
+% \begin{lemma}[Dramatic simplification of Lemma 4.1]
+% \label{4_1}
+% Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
+% \cref{bap_feasible_by_h} is satisfied and $p \in P_1$.
+% Then for any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, 
+% the system $A_1x \le b'$ has a solution $x \in \bpr$.
+% \end{lemma}
+% 
+% \begin{proof}
+% Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
+% \end{proof}
+
+% 
+% \begin{lemma}
+% \label{simple_bound}
+% If $x > 0$, then $\frac {x}{1+x} \le x$.
+% \end{lemma}
+% \begin{proof}
+% Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x} \le x$.
+% \end{proof}
 
 % \begin{align*}
 % \frac {d}{dx} \frac x {1-x}|_{\frac 1 2} = \frac 1 {(1 - x)^2}|_{\frac 1 2} = 4 \\
 % \Longrightarrow \frac x {1-x} \le 4x \forall x \le \frac 1 2
 % \end{align*}
+
 
 \begin{lemma}[Theorem 4.2 of \cite{perturbations_of_linear_inequalities}]
 \label{4_2}
@@ -4730,80 +4915,105 @@ $\hat x, p \in \Rn$;
 $\epsilon, r > 0$
 be given satisfying
 \cref{bap_define_the_polyhedra}, \cref{bap_polyhedra_are_close}, \cref{bap_define_ps}, and \cref{bap_feasible_by_h}.
-Let $H\left(A, r\right)$ be defined by \cref{version_of_hoffman_with_infinity_ball}.
+Let $H\left(A, r\right)$ and $\ehuffo$ be defined by \cref{version_of_hoffman_with_infinity_ball} and \cref{define_ehuffo} respectively.
 
 % Let $A_1$ be an $ m \times n $ matrix;
 % $P_1$ and $P_2$ be defined by \cref{bap_define_the_polyhedra};
 % and $h$, $M$, $H(A_1)$ be defined by \cref{bap_feasible_by_h}, \cref{bap_polyhedra_are_bounded}, and \cref{hoffman_theorem} respectively.
 
-There exists $\epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1, r\right)\right)$ such that if 
-$\epsilon \le \epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1, r\right)\right)$
-then, for every $s_1 \in P_1 \cap \bpr$,
-% satisfying $\epsilon'(1 + \|s_1\|) \le ?$ 
-there corresponds an $s_2$ in $P_2 \cap \bpr$ satisfying 
-$\|s_1 - s_2\|_{\infty}\le \epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right)$.
+If
+$\epsilon \le \ehuffo \left(h, \|p\| + r, H\left(A_1, r\right)\right)$
+then, for every $s \in P_1 \cap \bpr$,
+there corresponds an $s'$ in $P_2 \cap \bpr$ satisfying 
+$\|s - s'\|_{\infty}\le 2\epsilon H\left(A_1, r\right)\left(1 + \|s\|_{\infty}\right)$.
 \end{lemma}
 
 
 \begin{proof}
-We define
-\begin{align*}
-\epsilon_{h, 1}\left(h, \|p_1\| + r, H\left(A_1, r\right)\right)
-= \min\left\{\frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}\right\}.
-\end{align*}
+% We define
+% \begin{align*}
+% \epsilon_{h, 1}\left(h, \|p_1\| + r, H\left(A_1, r\right)\right)
+% = \min\left\{\frac{\min_i h_i}{1 + \|p\| + r},\left[2 H\left(A_1, r\right)\right]^{-1}\right\}.
+% \end{align*}
 
-Because $s_1 \in P_1 \cap \bpr$, we can let $x_1 = s_1$ to see $A_1x_1 \le b_1$ and $x_1 \in \bpr$.
+Because $s \in P_1 \cap \bpr$, we can let $y^{(1)} = s$ to see $A_1y^{(1)} \le b_1$ and $y^{(1)} \in \bpr$.
 % Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
 % Define $x_1 = s_1$, so that $x_1$ solves $A_1x_1 \le b_1$.
-We extend this by letting $x_{n+1} \in \bpr$ for all $n = 2, 3, \ldots$ be some solution to
-$A_1 x_{n+1} \le b_2 + (A_1 - A_2) x_n$.
-By \cref{4_1}, there is a solution if
+We extend this by letting $y^{(n+1)} \in \bpr$ for all $n = 2, 3, \ldots$ be some solution to
+
+\begin{align}
+A_1 y^{(n+1)} \le b_2 + (A_1 - A_2) y^{(n)}. \label{define_the_sequence}
+\end{align}
+
+Notice that
 \begin{align*}
-\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i.
+\left\|\left[b_1 - b_2 - (A_1 - A_2)y^{(n)}\right]^+\right\|_{\infty} 
+\le \epsilon + \epsilon\left\| \left(y^{(n)}\right)^+\right\|_{\infty} 
+\le \epsilon\left(1 + \left\|y^{(n)}\right\|_\infty\right) \quad \textrm{and} \\
+\epsilon \le \ehuffo\left(h, \|p\| + r, H\left(A_1\right)\right) \le \frac{\min_i h_i}{1 + \|p\| + r} \Longrightarrow
+\epsilon\left(1 + \left\|y^{(n)}\right\|_\infty\right) \le \epsilon\left(1 + \|p\| + r\right) \le \min_i h_i.
 \end{align*}
-This is satisfied as $\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_{\infty} \le \epsilon + \epsilon\| x_n^+\|_{\infty} \le \epsilon(1 + \|x_n\|_\infty)$
-and
+imply
 \begin{align*}
-\epsilon \le \epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1\right)\right) \le \frac{\min_i h_i}{1 + \|p\| + r} \Longrightarrow
-\epsilon(1 + \|x_n\|_\infty) \le \epsilon(1 + \|p\| + r) \le \min_i h_i.
+b_1 - b_2 - (A_1 - A_2)y^{(n)} \le \left[b_1 - b_2 - (A_1 - A_2)y^{(n)}\right]^+ \le \min_i h_i e \le h
 \end{align*}
+or just $b_1 - h \le b_2 - \left(A_1 - A_2\right)y^{(n)}$.
+This means $A_1 p \le b_1 - h \le b_2 - \left(A_1 - A_2\right)y^{(n)}$,
+so that $p$ is a solution to \cref{define_the_sequence} for each $n$, and the system \cref{define_the_sequence} is consistent.
+
+
+% \begin{align*}
+% A_1p \le b_1 - h \le b_1 - e \min_i h_i
+% \le ?
+% \le b_2 + \left(A_1 - A_2\right) y^{(n)}
+% \end{align*}
+
+% Because $b_1 - e \min_i h_i \le  b_2 + (A_1 - A_2) x_n \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le  b_2 + (A_1 - A_2) x_n$ so that $p$ is a solution.
+
+
+% By \cref{4_1}, there is a solution if
+% \begin{align*}
+% \|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i.
+% \end{align*}
+
 % Thus, this will have a solution for a suitably small $\epsilon$ with a uniform bound on $\|x_n\|_\infty$.
 Because there is a solution for each $n$, we can use \cref{version_of_hoffman_with_infinity_ball} 
-to find $x_{n+1}$ whose distance from $x_n$ is given by
+to find $y^{(n+1)}$ whose distance from $y^{(n)}$ is given by
 \begin{align*}
-\|x_{n+1} - x_n\|_\infty \le  H\left(A_1, r\right) \left\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \\
-\le  H\left(A_1, r\right)\left\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty\le  H\left(A_1, r\right) \epsilon(1 + \|x_n\|_\infty).
+\left\|y^{(n+1)} - y^{(n)}\right\|_\infty 
+\le  H\left(A_1, r\right) \left\|\left[A_1x_n - b_2 - (A_1 - A_2)y^{(n)}\right ]^+\right\|_\infty \\
+\le  H\left(A_1, r\right)\left\|\left[b_1 - b_2 - (A_1 - A_2)y^{(n)} \right]^+\right\|_\infty
+\le  H\left(A_1, r\right) \epsilon\left(1 + \left\|y^{(n)} \right\|_\infty\right).
 \end{align*}
 For $n=1$ this reduces to
 \begin{align*}
-\|x_2 - x_1\|_\infty \le \epsilon H\left(A_1, r\right) (1 + \|s_1\|_\infty)
-\Longrightarrow \|x_2\|_\infty \le \|s_1\| _\infty+ \epsilon H\left(A_1, r\right)(1 + \|s_1\|_\infty).
+\left\|y^{(2)} - y^{(1)}\right\|_\infty \le \epsilon H\left(A_1, r\right) (1 + \|s\|_\infty)
+\Longrightarrow \left\|y^{(2)}\right\|_\infty \le \|s\| _\infty+ \epsilon H\left(A_1, r\right)(1 + \|s\|_\infty).
 \end{align*}
 
 For all other values of $n$, we also know that
 \begin{align*}
-\left\|x_{n+1} - x_{n}\|_\infty \le  H\left(A_1, r\right)\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \\
-\le  H\left(A_1, r\right)\left\|[b_2 + (A_1 - A_2)x_{n-1} - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty
-\le \epsilon  H\left(A_1, r\right)  \|x_{n}-x_{n-1}\|_\infty.
+\left\|y^{(n+1)} - y^{(n)}\right\|_\infty \le  H\left(A_1, r\right)\left\|\left[A_1x_n - b_2 - (A_1 - A_2)y^{(n)}\right]^+\right\|_\infty \\
+\le  H\left(A_1, r\right)\left\|[b_2 + (A_1 - A_2)y^{(n-1)} - b_2 - (A_1 - A_2)y^{(n)}]^+\right\|_\infty
+\le \epsilon  H\left(A_1, r\right)  \|y^{(n)}-y^{(n-1)}\|_\infty.
 \end{align*}
 
 By induction, we see that
 \begin{align*}
-\|x_{n+1} - x_n\|_\infty 
-\le \left(\epsilon H\left(A_1, r\right)\right)^{n-1}\left\|x_2 - x_1\right\|_\infty \\
-\Longrightarrow \|x_{n+1}\|_\infty 
-\le \|s_1\|_\infty + \left( \sum_{i=1}^{n-1}( \epsilon H(A, r))^i\right) \|x_2 - x_1\|_\infty .
+\left\|y^{(n+1)} - y^{(n)}\right \|_\infty 
+\le \left[\epsilon H\left(A_1, r\right)\right]^{n-1}\left\|y^{(2)} - y^{(1)}\right\|_\infty \\
+\Longrightarrow \left\|y^{(n+1)}\right\|_\infty 
+\le \|s\|_\infty + \left( \sum_{i=1}^{n-1}\left( \epsilon H(A, r)\right)^i\right) \|y^{(2)} - y^{(1)}\|_\infty .
 \end{align*}
 
-Because $\epsilon H(A_1)\le\frac 1 2$, the sequence $\{x_n\}$ is Cauchy, and it must converge to a point $s_2$ satisfying
+Because $\epsilon H(A_1)\le\frac 1 2$, the sequence $\left\{y^{(n)}\right\}$ is Cauchy, and it must converge to a point $s'$ satisfying
 \begin{align*}
-\|s_2 - s_1\|_\infty 
-\le \frac{1}{1 - \epsilon H\left(A_1, r\right)}\|x_2 - x_1\| 
-\le \frac{\epsilon H\left(A_1, r\right)}{1 - \epsilon H\left(A_1, r\right)}\left(1 + \|s_1\|_{\infty}\right)
-\le \epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right)
+\|s' - s\|_\infty 
+\le \frac{1}{1 - \epsilon H\left(A_1, r\right)}\left\|y^{(2)} - y^{(1)}\right\| 
+\le \frac{\epsilon H\left(A_1, r\right)}{1 - \epsilon H\left(A_1, r\right)}\left(1 + \|s\|_{\infty}\right)
+\le 2\epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right).
 \end{align*}
-by \cref{simple_bound}.
-Lastly, $s_2$ solves $A_1s_2 \le b_2 + (A_1 - A_2)s_2$ so that $A_2s_2 \le b_2$ and $s_2 \in P_2$.
+Lastly, $s'$ solves $A_1s' \le b_2 + (A_1 - A_2)s'$ so that $A_2s' \le b_2$ and $s' \in P_2$.
 \end{proof}
 
 
@@ -4814,42 +5024,43 @@ Let
 $A_1, A_2 \in \mathbb R ^ {m \times n}$; 
 $P_1, P_2 \subseteq \Rn$; 
 $h, b_1, b_2 \in \Rm$; 
-$p, \hat x,x_1^{\star}, x_2^{\star}  \in \Rn$, 
+$p, x_1^{\star}, x_2^{\star}  \in \Rn$, 
 $\epsilon, r > 0$
 be given satisfying
 \cref{bap_define_the_polyhedra}, \cref{bap_polyhedra_are_close}, \cref{bap_define_ps}, \cref{bap_define_the_projections}, and \cref{bap_feasible_by_h}.
-Let $H\left(A, r\right)$ be defined by \cref{version_of_hoffman_with_infinity_ball}.
+Let 
+$H\left(A, r\right)$, $\ehufft$, and $\mhufft$
+be defined by 
+\cref{version_of_hoffman_with_infinity_ball}, \cref{define_ehufft}, and \cref{define_mhufft}
+respectively.
 
-There exist
-$\epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) > 0$ and 
-$M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) > 0$
-such that if 
+If
 \begin{align*}
-\epsilon \le \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big),
+\epsilon \le \ehufft\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big),
 \end{align*}
 then
 \begin{align*}
 \|x_1^{\star} - x_2^{\star}\| 
-\le M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) \sqrt{\epsilon}.
+\le \mhufft \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) \sqrt{\epsilon}.
 \end{align*}
 \end{lemma}
 
 \begin{proof}
 We define
-\begin{align*}
-\begin{array}{rcl}
-\epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) & = &
-\min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
-M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
-\end{array}
-\end{align*}
-and
+% \begin{align*}
+% \begin{array}{rcl}
+% \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) & = &
+% \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
+% M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
+% \end{array}
+% \end{align*}
+% and
 \begin{align*}
 \begin{array}{rclrcl}
 r_1 &=& \|x_1^{\star}\|_{\infty},
-& c_{r_1} &=& H\left(A_1, r\right)\left(1 + r_1\right), \\
+& c_{r_1} &=& 2H\left(A_1, r\right)\left(1 + r_1\right), \\
 r_2 &=&  \|x_1^{\star}\|_{\infty} + c_{r_1}\epsilon,
-& c_{r_2} &=&  H\left(A_2, r\right)\left(1 + r_2\right).
+& c_{r_2} &=&  2H\left(A_2, r\right)\left(1 + r_2\right).
 \end{array}
 \end{align*}
 % Let $c_{r_1} = $
@@ -4858,15 +5069,15 @@ r_2 &=&  \|x_1^{\star}\|_{\infty} + c_{r_1}\epsilon,
 % Want:
 
 Using \cref{4_2} we can let $x_2 \in P_2 \cap \bpr$ satisfy 
-$\|x_2 - x_1^{\star}\| \le \epsilon H(A_1, r) \left(1 + \|x_1^{\star}\|_{\infty}\right) = c_{r_1}\epsilon$.
+$\|x_2 - x_1^{\star}\| \le 2\epsilon H(A_1, r) \left(1 + \|x_1^{\star}\|_{\infty}\right) = c_{r_1}\epsilon$.
 Then
 $\|x_2^{\star}\| \le \|x_2\| = \|x_1^{\star} + x_2 - x_1^{\star}\| \le \|x_1^{\star}\| + c_{r_1}\epsilon = r_2$.
 We can once again use \cref{4_2} to choose $y_1 \in P_1 \cap \bpr$ satisfying 
-$\|x_2^{\star} - y_1\|_{\infty} \le \epsilon H(A_2, r)\left(1 + \|x_2^{\star}\|\right) \le c_{r_2}\epsilon$.
+$\|x_2^{\star} - y_1\|_{\infty} \le 2\epsilon H(A_2, r)\left(1 + \|x_2^{\star}\|\right) \le c_{r_2}\epsilon$.
+
 Because $P_1$, $P_2$, and $\bpr$ are convex sets, and $x_1^{\star}, x_2^{\star}$ minimize the projection of the origin, we have
 $\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right)\ge 0$ and
 $\left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)\ge 0$.
-
 Adding these, and rearranging, we find that
 \begin{align*}
 \|x_2^{\star} - x_1^{\star}\|_{\infty}^2 \le \|x_2^{\star} - x_1^{\star}\|_{\infty} c_{r_2}\epsilon + 2r_1c_{r_2}\epsilon \\
@@ -4923,15 +5134,15 @@ Using $\sqrt{x + y} \le \sqrt{x} + \sqrt{y}$, we have
 \end{align*}
 We can define 
 \begin{align*}
-M' = H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right],
+M' = 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right],
 \end{align*}
 and use
 \begin{align*}
 \begin{array}{cccccl}
 & r_1     &\le& \|p\| + r 													& &	\\
-\le & c_{r_1} &\le& H\left(A_1, r\right)\left(1 + \|p\| + r\right) 				& &	\\
-\le & r_2     &\le&  \|p\| + r + H\left(A_1, r\right)\left(1 + \|p\| + r\right) 	&=& \left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\\
-\le & c_{r_2} &\le&  H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right] &=& M'
+\le & c_{r_1} &\le& 2H\left(A_1, r\right)\left(1 + \|p\| + r\right) 				& &	\\
+\le & r_2     &\le&  \|p\| + r + 2H\left(A_1, r\right)\left(1 + \|p\| + r\right) 	&=&-1 + \left(1 + \|p\| + r\right)\left[1 + 2H(A_1, r)\right]\\
+\le & c_{r_2} &\le& 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right] &=& M'
 \end{array}
 \end{align*}
 to see
@@ -5046,19 +5257,19 @@ along with
 \begin{align}
 P_i = \left\{x \in \Rn | A_ix \le b_i\right\}, \quad \forall i \in [4]. \label{define_the_ps}
 \end{align}
-\color{red}
-Notice that
-\begin{align*}
-P_1 = \left\{
-x \in \Rn \bigg |
-\mcik \left(\xk\right) + \gmcik \left(x - \gk \right) \le 0  \quad \forall i \in \activeprojkk \cup \activeprojkl
-\right\} \quad \textrm{and}\\
-P_2 = \left\{
-x \in \Rn \bigg |
-\mcil \left(\xl\right) + \gmcil \left(x - \xl + \xk - \gk\right) \le 0 \quad \forall i \in \activeprojkk \cup \activeprojkl
-\right\}.
-\end{align*}
-\color{black}
+% \color{red}
+% Notice that
+% \begin{align*}
+% P_1 = \left\{
+% x \in \Rn \bigg |
+% \mcik \left(\xk\right) + \gmcik \left(x - \gk \right) \le 0  \quad \forall i \in \activeprojkk \cup \activeprojkl
+% \right\} \quad \textrm{and}\\
+% P_2 = \left\{
+% x \in \Rn \bigg |
+% \mcil \left(\xl\right) + \gmcil \left(x - \xl + \xk - \gk\right) \le 0 \quad \forall i \in \activeprojkk \cup \activeprojkl
+% \right\}.
+% \end{align*}
+% \color{black}
 
 
 
