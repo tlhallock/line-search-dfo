@@ -85,6 +85,7 @@
 \newcommand{\bsk}{{\beta_0^{(\star, k)}}}
 \newcommand{\capcones}{{C^{(k)}_{\cap}}}
 \newcommand{\chik}{{\chi^{(k)}}}
+\newcommand{\chil}{{\chi^{(l)}}}
 \newcommand{\ck}{{c^{(k)}}}
 \newcommand{\dacc}{{\Delta_{\textrm{acc}}}}
 \newcommand{\dacco}{{\Delta_{\textrm{a}}}}
@@ -95,8 +96,8 @@
 \newcommand{\dkpo}{\Delta_{k+1}}
 \newcommand{\dsr}{{\Delta_{\textrm{sr}}}}
 \newcommand{\fcki}{{C^{(k)}_{\textrm{in}}}}
-\newcommand{\feasiblek}{{\mathcal F^{(k)}}}
-\newcommand{\feasiblel}{{\mathcal F^{(l)}}}
+\newcommand{\feasiblek}{{\mathcal F_m^{(k)}}}
+\newcommand{\feasiblel}{{\mathcal F_m^{(l)}}}
 \newcommand{\feasible}{{\mathcal F}}
 \newcommand{\fmin}{f_{\text{min}}}
 \newcommand{\gammabi}{\gamma_{\textrm{suff}}}
@@ -134,6 +135,7 @@
 \newcommand{\omegadec}{\omega_{\text{dec}}}
 \newcommand{\omegainc}{\omega_{\text{inc}}}
 \newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
+\newcommand{\outertrkpo}{{T_{\text{out}}^{(k+1)}}}
 \newcommand{\polydn}{\mathcal{P}^d_n}
 \newcommand{\qk}{{Q^{(k)}}}
 \newcommand{\reals}{\mathbb R}
@@ -273,16 +275,26 @@ We present convergence analysis.
 
 
 
+
+
+
+
 % DOING.TXT
 %
 %
-%
+% Make the uses of [m] be 1 \le i \le m before table of notation....
+% Add discussion of convergence of iterates
+
+% consolidate kappa_ef and kappa_f
+
+
+% Replace the eta/gamma suff
 %
 % remove latex warnings
-% simplify the algorithm
-% make a comment about the decision to construct the next ellipsoid (proximity vs large enough)
+% simplify the algorithm                                                                                                                                            XXXXXXX (just remove that section)
+% make a comment about the decision to construct the next ellipsoid (proximity vs large enough)                         XXXXXXX
 % due to the construction of our ellipsoid, it will be lambda poised over the entire set
-% make comment about simply assuming the hoffman assumption is bounded...
+% make comment about simply assuming the hoffman assumption is bounded...                                                   
 % \oalpha should be removed...
 % define a pdelta, palpha, pbeta
 % remove content from future work.
@@ -290,10 +302,20 @@ We present convergence analysis.
 % h to ht  in figures?
 % 23rd changes only on page 11
 % I didn't take the omegainc change....
-% add comment about the smaller ellipsoid is not that much worse
+% add comment about the smaller ellipsoid is not that much worse                                                                        ?????
 % prove theorem used from steve's paper
 % use \sigma for the condition number of a matrix
 % [m] is used before it is defined...
+
+
+
+
+% Talk more about the contributions of this paper
+
+
+
+
+% make the huffman assumption only require nearly active constraints
 % 
 % 
 % 
@@ -765,11 +787,21 @@ while $\chik$ is defined by \cref{define_criticality_measure}.
 
 
 \section{Algorithm}
+\label{infeasible_point_strategies}
 
-\subsection{Trust Regions}
 
-Our algorithm maintains up to three trust regions: 
-a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
+The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
+Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
+\begin{itemize}
+\item A point chosen by the geometry ensuring algorithm may be infeasible.
+\item The trial point solving the trust region subproblem may be infeasible.
+\end{itemize}
+
+
+% What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
+% for handling infeasible sample points.
+To deal with these two forms of infeasible points, we have developed several strategies that make use of three separate trust regions.
+These trust regions are a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen,  and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
 \begin{align}
 \outertrk = \tr = \{x\in \Rn | \; \xk_i - \dk \le x_i \le \xk_i + \dk \quad \forall i \in [n]\}. \label{define_outer_trust_region}
@@ -794,24 +826,11 @@ The search trust region is used in defining the trust region subproblem.
 % Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
 % This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.}{}  \sbnote{I don't think this needs to be said here}
 
-\subsection{Extensions from Linear Constraints}
-\label{infeasible_point_strategies}
 % In the last paper, we showed convergence of our algorithm for linear constraints.
 % We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
 % To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
 
 
-The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
-Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
-\begin{itemize}
-\item A point chosen by the geometry ensuring algorithm may be infeasible.
-\item The trial point solving the trust region subproblem may be infeasible.
-\end{itemize}
-
-
-% What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
-% for handling infeasible sample points.
-To deal with these two forms of infeasible points, we have developed several strategies.
 What remains in \cref{infeasible_point_strategies} is devoted to search strategies for ensuring feasible sample points:
 \cref{possible_ellipsoids} and \cref{handling_linear_constraints_within_ellipsoid_programs} could be considered background, while the others discuss algorithms.
 The version we call the ``conservative ellipsoid'' is lengthier and discussed within \cref{constructing_and_analysizing_conservative_ellipsoid}.
@@ -842,7 +861,7 @@ Finally, in \cref{the_algroithm_section}, we state the convergent algorithm, whi
 % However, this requires using some artificial value of the constraints at infeasible points.
 
 
-\subsection{Infeasible Sample Points: Ensuring a Feasible Sample Region}
+\subsection{Constructing the Sample Region}
 \label{possible_ellipsoids}
 
 We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
@@ -915,15 +934,11 @@ The intersection of these cones is the set
 \capcones = \{x\in\Rn | \; x \in \fik \quad \forall i \in \activeconstraintsk \} \label{define_capcones}
 \end{align}
 which is depicted in \cref{completed_2}.
-In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrk \subseteq \feasible$.
-\color{red}
+In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrkpo \subseteq \feasible$.
 Therefore, to obtain feasible sample points, we require that 
 \begin{align*}
-\sampletrk \subset \capcones \cap \outertrk.
+\sampletrkpo \subset \capcones \cap \outertrkpo.
 \end{align*}
-\color{black}
-
-
 
 
 \begin{figure}[ht]
@@ -1233,55 +1248,55 @@ f(\lambda) = p^T\left(\lambda Q - I\right)^{-1}Q\left(\lambda Q - I\right)^{-1}p
 Notice that $f(0) = p^TQp - 1 > 0$, and the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$.
 The authors show that a binary search on $\lambda$ can find the zeros of $f$.
 
-\subsubsection{Numerical Solution}
-
-Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
-One very simple random-search algorithm can be used to show this.
-
-\begin{comment}
-Dramatically simplify this algorithm...
-\end{comment}
-
-\begin{algorithm}[H]
-    \caption{Search for feasible ellipsoid}
-    \label{numerical_ellipsoid_algorithm}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-                Set $E_{max}$ to any feasible ellipsoid, 
-                an initial sample variance $\sigma^2$, 
-                a threshold $M$ of iterations per sample variance, 
-                a decrease ratio $\gamma \in (0, 1)$, 
-                a variance tolerance $\delta_{\sigma} > 0$
-        
-        \item[\textbf{Step 1}] \textbf{(Random Perturbation)} \\
-            Evaluate the next iterate \begin{itemize}
-                \item[] Sample a rotation matrix $R$ with variance $\sigma^2$, $\qk \gets R \qk$
-                \item[] Sample a positive diagonal matrix $D$ with variance $\sigma^2$, $\qk \gets D \qk$
-                \item[] Sample a translation $c$ bounded by with variance $\sigma^2$, $\ck \gets c + \ck$
-            \end{itemize}
-        
-        \item[\textbf{Step 2}] \textbf{(Check Feasibility)} \\
-            Run feasibility check \cref{cone_feasibility_check} for each constraint.
-            If the new ellipsoid is feasible and larger than $E_{max}$, then 
-            	set $E_{max}$ to this ellipsoid,
-            	set counter $j \gets 0$, and
-            	go to Step 1
-        
-        \item[\textbf{Step 3}] \textbf{(Decrease Sample Variance)} \\
-            If the counter $j \ge M$, then
-	    	decrease $\sigma^2 \gets \gamma \sigma^2$,
-	    	set the counter $j\gets 0$, and
-	    	go to Step 1
-            
-        \item[\textbf{Step 4}] \textbf{(Check for Convergence)} \\
-	    If $\sigma^2 < \delta_{\sigma}$ \textbf{Return} $E_{max}$.
-	    Otherwise, 
-        		set counter $j \gets j + 1$, and
-        		go to Step 1
-    \end{itemize}
-\end{algorithm}
-
-Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
+% \subsubsection{Numerical Solution}
+% 
+% Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
+% One very simple random-search algorithm can be used to show this.
+% 
+% \begin{comment}
+% Dramatically simplify this algorithm...
+% \end{comment}
+% 
+% \begin{algorithm}[H]
+%     \caption{Search for feasible ellipsoid}
+%     \label{numerical_ellipsoid_algorithm}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%                 Set $E_{max}$ to any feasible ellipsoid, 
+%                 an initial sample variance $\sigma^2$, 
+%                 a threshold $M$ of iterations per sample variance, 
+%                 a decrease ratio $\gamma \in (0, 1)$, 
+%                 a variance tolerance $\delta_{\sigma} > 0$
+%         
+%         \item[\textbf{Step 1}] \textbf{(Random Perturbation)} \\
+%             Evaluate the next iterate \begin{itemize}
+%                 \item[] Sample a rotation matrix $R$ with variance $\sigma^2$, $\qk \gets R \qk$
+%                 \item[] Sample a positive diagonal matrix $D$ with variance $\sigma^2$, $\qk \gets D \qk$
+%                 \item[] Sample a translation $c$ bounded by with variance $\sigma^2$, $\ck \gets c + \ck$
+%             \end{itemize}
+%         
+%         \item[\textbf{Step 2}] \textbf{(Check Feasibility)} \\
+%             Run feasibility check \cref{cone_feasibility_check} for each constraint.
+%             If the new ellipsoid is feasible and larger than $E_{max}$, then 
+%             	set $E_{max}$ to this ellipsoid,
+%             	set counter $j \gets 0$, and
+%             	go to Step 1
+%         
+%         \item[\textbf{Step 3}] \textbf{(Decrease Sample Variance)} \\
+%             If the counter $j \ge M$, then
+% 	    	decrease $\sigma^2 \gets \gamma \sigma^2$,
+% 	    	set the counter $j\gets 0$, and
+% 	    	go to Step 1
+%             
+%         \item[\textbf{Step 4}] \textbf{(Check for Convergence)} \\
+% 	    If $\sigma^2 < \delta_{\sigma}$ \textbf{Return} $E_{max}$.
+% 	    Otherwise, 
+%         		set counter $j \gets j + 1$, and
+%         		go to Step 1
+%     \end{itemize}
+% \end{algorithm}
+% 
+% Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
 
 
 \subsubsection{Spherical Solution}
@@ -2389,8 +2404,56 @@ The algorithm is as follows:
 
 \section{Convergence Analysis}
 
-\subsection{Assumptions}
+Within this section we show that \cref{constrained_dfo} converges.
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
+To use their analysis, we show that the accuracy and efficiency assumptions required for their proof hold, 
+this is done within \cref{ellipsoidal_lambda} and \cref{sufficient_reduction_section} respectively.
+Additionally, our criticallity measure \cref{define_criticality_measure} changes within each iteration.
+Thus, we must also show that the criticallity measure converges to the true criticallity measure
+\begin{align}
+\label{verbiage_hoffman_use_one}
+\chik \approx \chi (x) = \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\end{align}
+For some results, we also show that the criticallity measure converges across iterations
+\begin{align}
+\label{verbiage_hoffman_use_two}
+\chik \approx \chil.
+\end{align}
+
+We summarize the steps of the proof here:
+\begin{itemize}
+\item Show that the accuracy condition \cref{accuracy} is satisfied. \\
+This is done within \cref{ellipsoidal_lambda}. 
+To do this, we must show our construction of $\sampletrk$ satisfies the boundedness requirement defined within \cref{ellipsoids_notation_definitions}.
+This is done within \cref{bounded_condition_numbers}.
+\item Show that the efficiency condition \cref{efficiency} is satisfied. \\
+This is the topic of \cref{sufficient_reduction_section}.
+We use a slightly weaker efficiency condition, as stated in \cref{sufficient_reduction_theorem}.
+\item Show $\liminf_{k\to\infty} \chik \to 0$. \\
+This is done within \cref{initial_convergence_results}, and is a fairly straight forward use of the analysis within \cite{Conejo:2013:GCT:2620806.2621814}.
+\item Show $\lim_{k\to\infty} \chik \to 0$ whenever $\gammabi > 0$. \\
+This is done within \cref{limit_of_criticallity_to_zero}.
+This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on bounding the Huffman constant of the constraint's model's Jacobians.
+This is done within \cref{bounding_the_projection_section}.
+This is complicated by the fact that we do not assume bounded level sets, so we do not have a gaurantee that the sequence $\left\{\xk\right\}$ is Cauchy.
+Thus, we introduce \cref{criteria_from_contradiction}, which
+\begin{itemize}
+\item sufficient to proof \cref{verbiage_hoffman_use_two},
+\item follows from a false assumption within a proof of contradiction \cref{the_contradiction},
+\item would be true under the stronger assumption of bounded level sets.
+\end{itemize}
+(For a discussion on simplifying the analysis with bounded level sets see \cref{bounded_level_sets}).
+% \begin{itemize}
+% \item This is one uses of the hoffman bound
+% \item motivate criteria mention contradiction
+% \end{itemize}
+\item Show lim of true criticallity measure is zero \\
+This is done within \cref{limit_of_true_criticallity}.
+This relies on \cref{verbiage_hoffman_use_two}, which in turn relies on bounding the Hoffman constant of the Jacobians of the constraints.
+Because of the similarity, this is done in parallel with bounding the constraint's model's Jacobian's Hoffman's constant in \cref{bounding_the_projection_section}.
+\end{itemize}
+
+\subsection{Assumptions}
 We will let $\Omega$ be some open region containing $\feasible$.
 
 \begin{assumption}
@@ -2609,6 +2672,7 @@ c_i(x) \ge c_i\left(\xinit\right) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = 
 
 
 \subsection{Bounded Condition Numbers}
+\label{bounded_condition_numbers}
 In this section, we show that the condition numbers $\sigma(\qk)$ are bounded.
 
 \begin{lemma}
@@ -2643,7 +2707,7 @@ Namely, there exists a $\dacc > 0$, such that $\sigma(\qkpo) \le \frac {12}{\min
 \end{lemma}
 \begin{proof}
 Letting $\activeconstraintsk$ be defined by \cref{define_activeconstraints},
-we see that if $\activeconstraintsk = \emptyset$, then \cref{define_suitable_condition_numbers} is satisfied because $\kappa(\qkpo) = 1$.
+we see that if $\activeconstraintsk = \emptyset$, then \cref{define_suitable_condition_numbers} is satisfied because $\sigma(\qkpo) = 1$.
 If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{theta_min_is_bounded} and \cref{boundbeta} by letting
 \begin{align}
 \dacc = \min\left\{\minangledelta, \dacco(\minanglealpha) \right\} \label{define_delta_accuracy}
@@ -3724,10 +3788,12 @@ Combining this with \cref{sr_what_to_bound} we see
 
 
 
-\subsection{Convergence of the Trust Region Radius}
-
+\subsection{Initial Convergence Results}
+\label{initial_convergence_results}
 \begin{comment}
-$\eta_1$ corresponds to $\gammasm$, $\eta$ corresponds to $\gammabi$.
+$\eta$ corresponds to $\gammasm$, $\eta_1$ corresponds to $\gammabi$.
+$\bar S$ corresponds to $\suffiterates$.
+$S$ corresponds to $\miniterates$.
 \end{comment}
 
 
@@ -3760,16 +3826,17 @@ let
 \reduceiterates = \left \{ k \in \naturals \bigg| \dk \le \min \left\{ 
 \dsr, 
 \frac {\chik}{\maxmodelhessian}, 
-\frac{1-\gammasm}{\theirc}\chik,
+\frac{1-\gammabi}{\theirc}\chik,
 \left(\frac 1 {\kappa_{\chi}}  \chik\right)^{\frac 1 {p_{\Delta}}}, 
 1
 \right\} \right \} 
 \end{align}
 
+\subsubsection{Trust Region Radius}
 
 \begin{lemma}
 \label{mathcal_k_subset_bar_s}
-Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates} respectively.
+Let $\suffiterates$ and $\reduceiterates$ be defined by \cref{define_suffiterates} and \cref{define_reduceiterates} respectively.
 Assume that 
 \cref{lipschitz_gradients_assumption}
 and the assumptions for
@@ -3816,14 +3883,14 @@ Then,
 We also know by \cref{define_reduceiterates}
 \begin{align*}
 \dk = \min\left\{\frac {\chik} {\maxmodelhessian}, \dk, 1 \right\}, \quad \textrm{and} \quad
-\frac {\theirc \dk}{\chik} \le 1 - \gammasm
+\frac {\theirc \dk}{\chik} \le 1 - \gammabi
 \end{align*}
 so that
 \begin{align*}
-\left|\rk - 1\right| \le 1 - \gammasm
-\Longrightarrow \rk \ge \gammasm
+\left|\rk - 1\right| \le 1 - \gammabi
+\Longrightarrow \rk \ge \gammabi
 \end{align*}
-so that $k \in \miniterates$.
+so that $k \in \suffiterates$.
 \end{proof}
 
 
@@ -3839,32 +3906,32 @@ Then the sequence $\left\{\dk\right\}$ converges to zero.
 
 \begin{proof}
 Let
-$\miniterates$, $\kappa_f$, $\gammasm$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$
+$\suffiterates$, $\kappa_f$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$ $\gammabi$
 be defined by
-\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_the_gammas}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}
+\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}, \cref{define_the_gammas}
 respectively,
 and let $\omegadec$ and $\omegainc$ be defined by \cref{define_the_omegas}.
-Suppose that $\miniterates$ is finite.
+Suppose that $\suffiterates$ is finite.
 Then there exists $k_0 \in \naturals$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
 Thus, $\left\{\dk\right\} \to 0$ because $\omegadec < 1$.
-From now on, we may assume that $\miniterates$ is infinite.  
-For any $k \in \miniterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
+From now on, we may assume that $\suffiterates$ is infinite.  
+For any $k \in \suffiterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
 Using \cref{bounded_model_hessian_lemma} and \cref{sufficient_reduction_theorem} we have
 \begin{align*}
-f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \gammasm \kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\} \\
-f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm\kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammabi \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \gammabi \kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\} \\
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammabi \kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}
 \end{align*}
 % 
 Because $f\left(\xk\right)$ is nonincreasing, the left hand side goes to zero.
 Thus,
 \begin{align}
-\lim_{k \in \miniterates} \dk = 0.
+\lim_{k \in \suffiterates} \dk = 0.
 \end{align}
 
 Consider the set
-$\mathcal U = \{ k \in \naturals | k \not \in \miniterates \}$.
+$\mathcal U = \{ k \in \naturals | k \not \in \suffiterates \}$.
 If $\mathcal U$ is finite, then $\lim_{k\to\infty}\dk = 0$.
-Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\miniterates$ before $k$.
+Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\suffiterates$ before $k$.
 Then $l_k$ is well-defined for all large $k$  and $\dk \le \omegainc \Delta_{l_k}$ which implies that
 \begin{align}
 \lim_{k \in \mathcal U } \dk \le \omegainc \lim_{k \in \mathcal U} \Delta_{l_k} = \omegainc \lim_{l_k \in \miniterates} \Delta_{l_k}
@@ -3873,7 +3940,41 @@ so that $\lim_{k \in \mathcal U} \dk = 0$.
 \end{proof}
 
 
+\subsubsection{Criticallity Goes to Zero, Part 1}
+\begin{lemma}
+\label{liminf_chi_to_zero}
+Let $\chik$ be defined by \cref{define_criticality_measure}.
+Suppose the assumptions for \cref{mathcal_k_subset_bar_s} and \cref{delta_to_zero} hold.
+Then $\liminf_{k\to\infty} \chik = 0$.
+\end{lemma}
+ 
+
+\begin{proof}
+Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $k_1 > 0$ such that $\chik \ge \epsilon$ for each $k \ge k_1$.
+Using the same constants as used in \cref{define_reduceiterates}, let
+\begin{align*}
+\tilde \Delta = \min \left\{
+\dsr, 
+\frac{\epsilon}{\maxhessian}, 
+\frac{(1 - \gammasm)}{\theirc} \epsilon,
+\left(\frac 1 {\kappa_{\chi}} \epsilon \right)^{\frac 1 {p_{\Delta}}},
+1\right\}
+\end{align*}
+and consider a $k \ge k_1$.
+If $\dk \le \tilde \Delta$, then $k \in \reduceiterates$.
+Then, by \cref{mathcal_k_subset_bar_s},  $k \in \miniterates$ and thus $\dkpo \ge \dk$.
+Therefore, the trust region radius can only decrease if $\dk > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
+Therefore, one can see that for all $k \ge k_1$
+\begin{align}
+\dk \ge \min\left\{\omegadec \tilde \Delta, \dk \right\}
+\end{align}
+which contradicts \cref{delta_to_zero}.
+\end{proof}
+
+
+
 \subsection{Bounded Projection}
+\label{bounding_the_projection_section}
 
 \subsubsection{The Huffman Constant}
 
@@ -4033,12 +4134,16 @@ b_2 = \begin{pmatrix} b_J \\ \btr\left(p, r\right) \end{pmatrix},
 \quad \textrm{and} \quad
 z_2 = \argmin_{\substack{A x \le b \\ x \in \bpr} } \|y - x\|.
 \end{align*}
+<<<<<<< HEAD
 Then the value
+=======
+Define 
+>>>>>>> 3f907c3ab55debb17fa954047287eb4f55ed2603
 \begin{align}
 H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_J\right).
 \label{define_har}
 \end{align}
-satisfies
+Then
 \begin{align*}
 \left\|y - z_2\right\|_{\infty} 
 \le 
@@ -5731,41 +5836,11 @@ The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 % 
 % \color{black}
 
-\subsection{Convergence Proof}
-\subsubsection{Criticallity Goes to Zero, Part 1}
-\begin{lemma}
-\label{liminf_chi_to_zero}
-Let $\chik$ be defined by \cref{define_criticality_measure}.
-Suppose the assumptions for \cref{mathcal_k_subset_bar_s} and \cref{delta_to_zero} hold.
-Then $\liminf_{k\to\infty} \chik = 0$.
-\end{lemma}
- 
-
-\begin{proof}
-Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $k_1 > 0$ such that $\chik \ge \epsilon$ for each $k \ge k_1$.
-Using the same constants as used in \cref{define_reduceiterates}, let
-\begin{align*}
-\tilde \Delta = \min \left\{
-\dsr, 
-\frac{\epsilon}{\maxhessian}, 
-\frac{(1 - \gammasm)}{\theirc} \epsilon,
-\left(\frac 1 {\kappa_{\chi}} \epsilon \right)^{\frac 1 {p_{\Delta}}},
-1\right\}
-\end{align*}
-and consider a $k \ge k_1$.
-If $\dk \le \tilde \Delta$, then $k \in \reduceiterates$.
-Then, by \cref{mathcal_k_subset_bar_s},  $k \in \miniterates$ and thus $\dkpo \ge \dk$.
-Therefore, the trust region radius can only decrease if $\dk > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
-Therefore, one can see that for all $k \ge k_1$
-\begin{align}
-\dk \ge \min\left\{\omegadec \tilde \Delta, \dk \right\}
-\end{align}
-which contradicts \cref{delta_to_zero}.
-\end{proof}
-
+\subsection{Convergence}
 
 
 \subsubsection{Criticallity Goes to Zero, Part 2}
+\label{limit_of_criticallity_to_zero}
 
 \begin{criteria}
 \label{the_contradiction}
@@ -5934,7 +6009,12 @@ We can then apply \cref{bounded_projection_theorem} and \cref{delta_to_zero} to 
 This is a contradiction, and \cref{the_contradiction} must be false.
 \end{proof}
 
-\subsubsection{Convergence}
+\subsubsection{Convergence of Criticallity Measure}
+\label{limit_of_true_criticallity}
+
+\begin{comment}
+Change to simply $\feasible$.
+\end{comment}
 
 \begin{theorem}
 \label{the_convergence_theorem}
@@ -5943,12 +6023,12 @@ the assumptions for \cref{accuracy_is_satisfied} hold.
 
 If $\gammabi = 0$, then
 \begin{align}
-\liminf_{k\to\infty} \|P_{\Omega}(\xk - \gradf(\xk)) - \xk \| = 0.
+\liminf_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf(\xk)\right) - \xk \right\| = 0.
 \end{align}
 
 If $\gammabi > 0$, then
 \begin{align}
-\lim_{k\to\infty} \|P_{\Omega}(\xk - \gradf(\xk)) - \xk \| = 0.
+\lim_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf(\xk)\right) - \xk \right\| = 0.
 \end{align}
 
 \end{theorem}
@@ -5958,7 +6038,7 @@ If $\gammabi > 0$, then
 \begin{proof}
 
 Let 
-$\feasiblek$, $\projkk$, $\truefeasiblek$, $\trueprojk$
+$\feasiblek$, $\projkk$, $ \truefeasiblek $, $\trueprojk$
 be defined by 
 \cref{define_feasiblek}, \cref{sha_projkl}, \cref{sha_truefk}, \cref{sha_trueproj}
 respectively.
@@ -6003,6 +6083,9 @@ so that
 \lim_{k\to\infty} \left[\left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\trueprojk - \projkk\right\|\right] = 0.
 \end{align*}
 The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
+
+\subsection{Bounded Level Sets}
+\label{bounded_level_sets}
 
 \section{Future Work}
 \subsection{Removing a regularity assumption}
