@@ -300,61 +300,24 @@ We present convergence analysis.
 % DOING.TXT
 %
 %
-% Make the uses of [m] be 1 \le i \le m before table of notation....
-% Add discussion of convergence of iterates
+% Add discussion of convergence of iterates to bounded level sets
 
 % consolidate kappa_ef and kappa_f
-
-
-% Replace the eta/gamma suff
-%
 % remove latex warnings
-% simplify the algorithm                                                                                                                                            XXXXXXX (just remove that section)
-% make a comment about the decision to construct the next ellipsoid (proximity vs large enough)                         XXXXXXX
-% due to the construction of our ellipsoid, it will be lambda poised over the entire set
-% make comment about simply assuming the hoffman assumption is bounded...                                                   
+% Add motivation for why the hoffman constant is not bounded over the entire set
 % \oalpha should be removed...
-% define a pdelta, palpha, pbeta
+% define commands for pdelta, palpha, pbeta
 % remove content from future work.
 % The text in the sufficient reduction theorem.
 % h to ht  in figures?
-% 23rd changes only on page 11
-% I didn't take the omegainc change....
-% add comment about the smaller ellipsoid is not that much worse                                                                        ?????
 % prove theorem used from steve's paper
-% use \sigma for the condition number of a matrix
-% [m] is used before it is defined...
-
-
-
+% change the final convergence theorem to be about F
 
 % Talk more about the contributions of this paper
+% Finish proofs that are WIP
 
-
-
-
-% make the huffman assumption only require nearly active constraints
-% 
-% 
-% 
-% 
-% I was supposed to insert this:
-% what remains in section 5 is various different versions
-% We will show feasibility and convergence of the algorithm assuming certain of these 
-% 
 % script
 % 	update the table of notation
-% 
-% 	
-% maybe
-% 	connect the ellipsoid definitions to something...
-% 
-% 	
-% probably no longer an issue:
-% discuss which criticallity measure?
-% u uses the current: what if there are no currently active constraints, but there is during the next iteration?
-% remove references to the approximation of the active constraints
-% make the 1 + k_active just be a constant?
 
 
 
@@ -4161,73 +4124,73 @@ Then \cref{huffman_of_infinity_ball} implies
 \end{proof}
 
 
-
-
-
-\begin{align*}
-\left\{i \in [m] \bigg| p - \frac{A_ip - b}{\left\|A_i\right\|^2} A_i \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}
-\end{align*}
-
-
-
-\begin{align*}
-\left\|p - \frac{b - A_ip}{\left\|A_i\right\|^2} A_i\right\| \ge \sqrt{n} r \\
-\|p - z\| \le \sqrt{n} r \\
-A_i z \le b \\
-A_i z = A_i(p + z) \\
-A_i \left(p - \frac{A_ip - b_i}{\left\|A_i\right\|^2} A_i\right)
-= A_i p - A_ip + b_i = b_i \\
-|b_i| \ge \sqrt{n} r \\
-z = \frac{A_iz}{\left\|A_i\right\|^2}A_i^T + z - \frac{A_iz}{\left\|A_i\right\|^2}A_i^T \\
-A_iz = b \\
-\frac{b - A_i p}{\|A_i\|} \ge \sqrt{n} r
-\end{align*}
-
-
-
-
-
-\begin{lemma}
-\label{version_of_hoffman_with_infinity_ball}
-Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
-
-Let $A$ be an $m \times n$ matrix;
-$p, y \in \Rn$; $b, b' \in \Rm$;
-and $M, r, \epsilon > 0$ be given 
-such that 
-\begin{align*}
-Ap \le b,
-\quad
-Ap \le b',
-\quad
-\|b - b'\| \le \epsilon,
-\quad \textrm{and} \quad
-\left\|y - p\right\| \le M.
-\end{align*}
-Define 
-% J = \left\{i \in [m] \bigg | \|A_i\| \ne 0 \quad \textrm{and} \quad \frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r  \right\} \\
-% A_2 = \begin{pmatrix} A \\ \atr \end{pmatrix},
+% 
+% 
+% 
+% \begin{align*}
+% \left\{i \in [m] \bigg| p - \frac{A_ip - b}{\left\|A_i\right\|^2} A_i \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\|p - \frac{b - A_ip}{\left\|A_i\right\|^2} A_i\right\| \ge \sqrt{n} r \\
+% \|p - z\| \le \sqrt{n} r \\
+% A_i z \le b \\
+% A_i z = A_i(p + z) \\
+% A_i \left(p - \frac{A_ip - b_i}{\left\|A_i\right\|^2} A_i\right)
+% = A_i p - A_ip + b_i = b_i \\
+% |b_i| \ge \sqrt{n} r \\
+% z = \frac{A_iz}{\left\|A_i\right\|^2}A_i^T + z - \frac{A_iz}{\left\|A_i\right\|^2}A_i^T \\
+% A_iz = b \\
+% \frac{b - A_i p}{\|A_i\|} \ge \sqrt{n} r
+% \end{align*}
+% 
+% 
+% 
+% 
+% 
+% \begin{lemma}
+% \label{version_of_hoffman_with_infinity_ball}
+% Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+% 
+% Let $A$ be an $m \times n$ matrix;
+% $p, y \in \Rn$; $b, b' \in \Rm$;
+% and $M, r, \epsilon > 0$ be given 
+% such that 
+% \begin{align*}
+% Ap \le b,
 % \quad
-% b_2 = \begin{pmatrix} b \\ \btr\left(p, r\right) \end{pmatrix},
+% Ap \le b',
+% \quad
+% \|b - b'\| \le \epsilon,
 % \quad \textrm{and} \quad
-\begin{align*}
-z^{\star} = \argmin_{\substack{A z \le b \\ z \in \bpr} } \|y - z\|.
-\end{align*}
-Define 
-\begin{align}
-H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
-\label{define_har}
-\end{align}
-Then
-\begin{align*}
-\left\|y - z_2\right\|_{\infty} 
-\le 
-H\left(A, p, r\right)
-\left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
-\end{align*}
-\end{lemma}
-
-
+% \left\|y - p\right\| \le M.
+% \end{align*}
+% Define 
+% % J = \left\{i \in [m] \bigg | \|A_i\| \ne 0 \quad \textrm{and} \quad \frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r  \right\} \\
+% % A_2 = \begin{pmatrix} A \\ \atr \end{pmatrix},
+% % \quad
+% % b_2 = \begin{pmatrix} b \\ \btr\left(p, r\right) \end{pmatrix},
+% % \quad \textrm{and} \quad
+% \begin{align*}
+% z^{\star} = \argmin_{\substack{A z \le b \\ z \in \bpr} } \|y - z\|.
+% \end{align*}
+% Define 
+% \begin{align}
+% H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
+% \label{define_har}
+% \end{align}
+% Then
+% \begin{align*}
+% \left\|y - z_2\right\|_{\infty} 
+% \le 
+% H\left(A, p, r\right)
+% \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
+% \end{align*}
+% \end{lemma}
+% 
+% 
 
 
 
@@ -4258,14 +4221,14 @@ z_2 = \argmin_{\substack{A_2 x \le b \\ x \in \bpr} } \|y - x\|.
 \end{align*}
 Define 
 \begin{align}
-H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
+H\left(A, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
 \label{define_har}
 \end{align}
 Then
 \begin{align*}
 \left\|y - z_2\right\|_{\infty} 
 \le 
-H\left(A, p, r\right)
+H\left(A, r\right)
 \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
 \end{align*}
 \end{lemma}
@@ -5638,12 +5601,25 @@ The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 
 \subsubsection{Bound on Full Projection}
 
-
+Now that we have bounded the projection onto the set of constraints that are near the current iterate, we bound the distance between projections onto all constraints.
 
 % \minactivealpha
 % \activeindicesk
 % \activedirk
 % \activegradmin
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/complicated_lemma.png}
+    \caption{
+    	Here, we bound the distance between the projections of $y$ onto two different polyhedra.
+    	The polyhedra are defined by matrices that are arbitrarily close to eachother.
+    	The constraints of the polyhedra are split into two different sets, those that intersect a ball of radius $r$ about a point $p$,
+    	and those that do not.
+    	The left hand side matrix for the constraints that intersect this ball have a bounded hoffman constant.
+	}
+    \label{complicated_lemma}
+\end{figure}
 
 
 
@@ -5891,96 +5867,96 @@ u' = v'\left(s'_{j'}\right).
 \end{align*}
 Then, both $Au \le b$ and
 $A'u' \le b'$.
-
-\paragraph{Case 1}
-Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
-
-\paragraph{Case 2}
-Suppose that 
-
-
-
-Suppose that 
-Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
-
-
-and
-\begin{align*}
-\epsilon\left(M + \left\|p'_J\right\| + 1\right)
-\ge \left|A_ip_J - A_i p'_J\right| + \left|A_i p'_J- A'_ip'_J\right| + \left| b_i + b'_i\right| \\
-\ge \left|A_ip_J - A'_ip'_J - b_i + b'_i\right|
-\ge \bigg|
-\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|
-\bigg|
-\end{align*}
-imply
-\begin{align*}
-\bigg|
-\left(\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|\right)
-\left(\left\|p - p_J\right\| - \left\|p - p'_J\right\|\right)
-\bigg|
-\end{align*}
-
+% 
+% \paragraph{Case 1}
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% \paragraph{Case 2}
+% Suppose that 
+% 
+% 
+% 
+% Suppose that 
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% 
+% and
+% \begin{align*}
+% \epsilon\left(M + \left\|p'_J\right\| + 1\right)
+% \ge \left|A_ip_J - A_i p'_J\right| + \left|A_i p'_J- A'_ip'_J\right| + \left| b_i + b'_i\right| \\
+% \ge \left|A_ip_J - A'_ip'_J - b_i + b'_i\right|
+% \ge \bigg|
+% \left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|
+% \bigg|
+% \end{align*}
+% imply
+% \begin{align*}
+% \bigg|
+% \left(\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|\right)
+% \left(\left\|p - p_J\right\| - \left\|p - p'_J\right\|\right)
+% \bigg|
+% \end{align*}
+% 
 \end{proof}
-
-
-
-If $|x - x'| \le \epsilon$ and $|y - y'| \le \delta$, then
-\begin{align*}
-x - \epsilon \le x' \le x + \epsilon \\
-y - \delta \le y' \le y + \delta \\
-\end{align*}
-
-\begin{align*}
-|xy - x'y'| 
-= |xy - xy' + xy' - x'y'| 
-= |x(y - y') + y'(x - x')| 
-\le |x||y - y'| + |y'||x - x'|
-\le \delta |x| + \epsilon|y'|
-\end{align*}
-
-
-
-\begin{align*}
-\|x + t_1(p - x) - y - t_2(p - y)\|  \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
-\end{align*}
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_1y + t_1y - t_2 y\|
-% \le \|x(1 - t_1) - y(1 - t_2) + t_1p - t_2p)\| 
-
-
-
-\begin{align*}
-\left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-\le \|p_J - p'_J\| + \left\|\left(p_J - v\left(s_i\right)\right) - \left(p'_J - v'\left(s'_i\right)\right)\right\|
-\end{align*}
-
-
-
-\begin{align*}
-\left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-\le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\| \\
-\le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\|
-\end{align*}
-
-
-\begin{align*}
-\|x + t_1(p - x) - y - t_2(p - y)\|  \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
-\le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
-\end{align*}
-
-
-
-\begin{align*}
-\|t_1(p - x) - t_2(p - y)\| \le \|t_1(p - x) - t_1(p-y)\| + \|t_1(p-y) - t_2(p - y)\| \\
-\le |t_1|\|p - x - p + y\| + \left|t_1 - t_2\right|\left\|p - y\right\|
-\end{align*}
+% 
+% 
+% 
+% If $|x - x'| \le \epsilon$ and $|y - y'| \le \delta$, then
+% \begin{align*}
+% x - \epsilon \le x' \le x + \epsilon \\
+% y - \delta \le y' \le y + \delta \\
+% \end{align*}
+% 
+% \begin{align*}
+% |xy - x'y'| 
+% = |xy - xy' + xy' - x'y'| 
+% = |x(y - y') + y'(x - x')| 
+% \le |x||y - y'| + |y'||x - x'|
+% \le \delta |x| + \epsilon|y'|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% % \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_1y + t_1y - t_2 y\|
+% % \le \|x(1 - t_1) - y(1 - t_2) + t_1p - t_2p)\| 
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \|p_J - p'_J\| + \left\|\left(p_J - v\left(s_i\right)\right) - \left(p'_J - v'\left(s'_i\right)\right)\right\|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\| \\
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\|
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|t_1(p - x) - t_2(p - y)\| \le \|t_1(p - x) - t_1(p-y)\| + \|t_1(p-y) - t_2(p - y)\| \\
+% \le |t_1|\|p - x - p + y\| + \left|t_1 - t_2\right|\left\|p - y\right\|
+% \end{align*}
 
 % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_ip'_J\right\| \\
 
@@ -6005,11 +5981,15 @@ are defined by
 Suppose that $S$ is a set that satisfies \cref{criteria_from_contradiction}.
 There exists a $\delta > 0$ and $k_0 \in \naturals$ such that,
 \begin{itemize}
-\item if $k \ge k_0$, then if $i \in \mathbb A_1 \cup \mathbb A_3$
-$\left\|\gmcik\right\| \ge \delta$ and 
-$\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta$.
-\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1 \cup \mathbb A_2$
-$\left\|\gmcil\right\| \ge \delta$.
+\item if $k \ge k_0$, then if $i \in \mathbb A_1 \cup \mathbb A_3$, we have
+\begin{align*}
+\left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
+\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
+\end{align*}
+\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1 \cup \mathbb A_2$, we have
+\begin{align*}
+\left\|\gmcil\right\| \ge \delta.
+\end{align*}
 \end{itemize}
 \end{lemma}
 \begin{proof}
@@ -6035,22 +6015,39 @@ $.
 
 
 \paragraph{Case 1}
-If $-c_i(\xk) \le \mingradepsilon$, then $\| \nabla c_i(\xk) \| \ge \mingrad \ge 3\delta$.
+If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
 \paragraph{Case 2}
-Suppose that $-c_i(\xk) > \mingradepsilon$ and $i \in \mathbb A_1$.
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1$.
 \begin{align*}
 \left\|\gmcik\right\| \maxmodelgrad
 \ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
 \ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
 \end{align*}
-By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i(\xk) \| \ge 3\delta$
+By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
 
 \paragraph{Case 3}
-Suppose that $-c_i(\xk) > \mingradepsilon$ and $i \in \mathbb A_2$.
-\paragraph{Case 4}
-Suppose that $-c_i(\xk) > \mingradepsilon$ and $i \in \mathbb A_3$.
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2$.
+\begin{align*}
+\left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
+\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
+\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\end{align*}
 
-Throughout the cases, we have established that $\left\| \nabla c_i(\xk) \right\| \ge 3 \delta$.
+
+\paragraph{Case 4}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_3$.
+\color{red}
+We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
+\color{black}
+\begin{align*}
+\left\|\gmcil\right\| \maxmodelgrad
+\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right)
+\ge -c_i\left(\xl\right) > \frac 1 2 \mingradepsilon
+\end{align*}
+
+
+
+Throughout the cases, we have established that $\left\| \nabla c_i\left(\xl\right) \right\| \ge 3 \delta$.
 Thus, \cref{hmoydihtp_eqn1} implies 
 \begin{align*}
 \left\|\gmcik\right\| \ge 2 \delta.
