@@ -2520,6 +2520,7 @@ However, this provides a uniform bound across all points, not just a critical po
 
 For an alternative to this assumption, please see \cref{alternative_assumptions_section}.
 
+\color{red}
 \begin{assumption}
 \label{minangleassumption}
 Define $\activeconstraintsk$ by \cref{define_activeconstraints}.
@@ -2531,6 +2532,7 @@ such that
 \end{align*}
 Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
+\color{black}
 
 Within the following assumption, remember that $\zik$ is defined by \cref{define_z}.
 \begin{assumption}
@@ -2783,6 +2785,31 @@ f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right)
 \le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
 + \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
 \end{align*}
+
+
+
+\begin{align*}
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right) \right\| \\
+= \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y\right) \right\| 
++ \left\| \nabla^2 f\left(y\right) - \nabla^2 m_f\left(y\right) \right\|
++ \left\| \nabla^2 m_f\left(y\right) - \nabla^2 m_f\left(x\right) \right\| \\
+\le \liphess \left\|x - y \right\| + \Lambda_2 + 
+\end{align*}
+
+
+
+\begin{align*}
+\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+\end{align*}
+
+
+
+\begin{align*}
+\phi_i\left(x\right) = \phi_i\left(y\right) + 
+\end{align*}
+
+
 
 
 
