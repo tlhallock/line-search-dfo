@@ -95,7 +95,7 @@
 \newcommand{\dl}{\Delta_l}
 \newcommand{\dkpo}{\Delta_{k+1}}
 \newcommand{\dsr}{{\Delta_{\textrm{sr}}}}
-\newcommand{\fcki}{{C^{(k)}_{\textrm{in}}}}
+\newcommand{\fcki}{{C^{(k+1)}_{\textrm{in}}}}
 \newcommand{\feasiblek}{{\mathcal F_m^{(k)}}}
 \newcommand{\feasiblel}{{\mathcal F_m^{(l)}}}
 \newcommand{\feasible}{{\mathcal F}}
@@ -1531,11 +1531,11 @@ For simplicity, define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
 
 We can then measure the range of directions about $\huk$ that are feasible by computing
 \begin{align}
-\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)}. \label{define_bsk}
+\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left[1 - \left(\beta\dk^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink\right) ^2\right]}. \label{define_bsk}
 \end{align}
 Namely, we will show that the cone
 \begin{align}
-\fcki = \left\{x \in \Rn \bigg| \quad x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
+\fcki = \left\{x \in \Rn \; \bigg| \; x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
 \end{align}
 is feasible with respect to all active constraints.
 This cone is depicted in \cref{feasible_direction}.
@@ -2753,6 +2753,8 @@ c_i(x) \ge c_i\left(\xinit\right) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = 
 \subsection{Bounded Condition Numbers}
 \label{bounded_condition_numbers}
 In this section, we show that the condition numbers $\sigma(\qk)$ are bounded.
+This is required to show the accuracy condition \cref{accuracy}, because this condition number determines the sample sets poisedness, as discussed in \cref{geometry}.
+% The accuracy condition dependThis condition number influences model's accuracy. 
 
 \begin{lemma}
 \label{theta_min_is_bounded}
@@ -2836,16 +2838,55 @@ Suppose there there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that 
 \left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 % \Delta
 \end{align*}
 Then let $r > 1$ be arbitrary.
-For all $x \in B\left(y^0, r\Delta\right)$,
+There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^0, r\Delta\right)$,
 \begin{align*}
-\left|f(x) - m_f(x)\right| \le \Lambda_1 r^? \\ % \Delta^3
-\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 r^?\\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 r^?% \Delta
-\end{align*}.
+\left|f(x) - m_f(x)\right| \le \Lambda_1' r^? \\ % \Delta^3
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r^?\\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3' r .% \Delta
+\end{align*}
 \end{lemma}
 
 \begin{proof}
-Let $x \in B\left(y^{0}, r\Delta\right)$, and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
+Let $x \in B\left(y^{0}, r\Delta\right)$, and define
+\begin{align*}
+\Lambda_1' = \Lambda_1 + \\
+\Lambda_2' = \Lambda_2 +  \\
+\Lambda_3' = \Lambda_3 + \liphess \Delta
+\end{align*}
+First, note that because $m_f$ is a quadratic model,
+\begin{align*}
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right)\right\|
+= \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\|
+\le \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| + \left\| \nabla^2 f\left(y^0\right) - \nabla^2 m_f\left(y^0\right)\right\| \\
+\le \liphess \|x - y\| + \Lambda_3 \le  \Lambda_3' r .
+\end{align*}
+
+
+By the mean value theorem, 
+\begin{align*}
+\left\|\nabla f(x) - \nabla f\left(y^0\right) \right\|
+\le \left\|x - y^0\right\| \max_{0\le t\le 1} \left\| \nabla^2 f\left(y^0 + t (x - y^0)\right) \right\| \\
+\le r \Delta \liphess
+\end{align*}
+Thus,
+\begin{align*}
+\left\|\nabla f(x) - \nabla m_f(x)\right\| \le 
+\left\| \nabla f(x) - \nabla f(y^0) \right\| + \left\|\nabla f(y^0) - \nabla m_f(y^0)\right\| + \left\|\nabla m_f(y^0) - \nabla m_f(x)\right\| \\
+\end{align*}
+
+
+Define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$, and notice $z \in B_{\infty}\left(y^0, \Delta\right)$.
+
+
+
+Subtracting this from
+\begin{align*}
+m_f(x) = m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + (x - y^0)^T\nabla^2 m_f(y^0) (x - y^0),
+\end{align*}
+
+
+
+and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
 Because $z \in B\left(y^0, \Delta\right)$, we know that
 
 \begin{align*}
@@ -2887,8 +2928,11 @@ f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right)
 
 \begin{align*}
 \nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
-\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+\left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| + \left\| \nabla^2 m_f\left(y^0\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
 \end{align*}
+
 
 
 
@@ -3167,6 +3211,7 @@ Continuing with \cref{define_z}, \cref{define_mingraddelta}, and $\dk \le 1$ we 
 
 \begin{lemma}
 \label{each_constraints_cone_is_feasible}
+Let $\fik$ be defined by \cref{define_fik}.
 Suppose that 
 \cref{bounded_hessians_assumption},
 \cref{max_norm_assumption},
@@ -5731,6 +5776,19 @@ The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 
 \subsubsection{Bound on Full Projection}
 
+
+\begin{align*}
+\left\|z - p\right\| = r \\
+r \le \left\|z' - p\right\| = r + \epsilon \\
+(z - p)^T (z' - p) \ge \|z - p\|^2
+\end{align*}
+
+\begin{align*}
+\left\|z - z'\right\|
+\end{align*}
+
+
+
 Now that we have bounded the projection onto the set of constraints that are near the current iterate, we bound the distance between projections onto all constraints.
 
 % \minactivealpha
@@ -6885,6 +6943,9 @@ The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
 
 \subsection{Bounded Level Sets}
 \label{bounded_level_sets}
+
+We would have been able to make a number of simplifications if we assume bounded level sets.
+With bounded level sets.
 
 
 \section{Future Work}
