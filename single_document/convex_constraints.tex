@@ -270,7 +270,7 @@ We present convergence analysis.
 
 
 
-
+%     remove x hat
 
 % DOING.TXT
 %
@@ -2406,7 +2406,7 @@ Additionally, our criticallity measure \cref{define_criticality_measure} changes
 Thus, we must also show that the criticallity measure converges to the true criticallity measure
 \begin{align}
 \label{verbiage_hoffman_use_one}
-\chik \approx \chi (x) = \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\chik \approx \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
 \end{align}
 For some results, we also show that the criticallity measure converges across iterations
 \begin{align}
@@ -2427,7 +2427,7 @@ We use a slightly weaker efficiency condition, as stated in \cref{sufficient_red
 This is done within \cref{initial_convergence_results}, and is a fairly straight forward use of the analysis within \cite{Conejo:2013:GCT:2620806.2621814}.
 \item Show $\lim_{k\to\infty} \chik \to 0$ whenever $\gammabi > 0$. \\
 This is done within \cref{limit_of_criticallity_to_zero}.
-This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on bounding the Huffman constant of the constraint's model's Jacobians.
+This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on bounding the Hoffman constant of the constraint's model's Jacobians.
 This is done within \cref{bounding_the_projection_section}.
 This is complicated by the fact that we do not assume bounded level sets, so we do not have a gaurantee that the sequence $\left\{\xk\right\}$ is Cauchy.
 Thus, we introduce \cref{criteria_from_contradiction}, which
@@ -3968,7 +3968,7 @@ which contradicts \cref{delta_to_zero}.
 \subsection{Bounded Projection}
 \label{bounding_the_projection_section}
 
-\subsubsection{The Huffman Constant}
+\subsubsection{The Hoffman Constant}
 
 We rely on results found within \cite{pena2020new}.
 We use the following terminology to state their results.
@@ -4794,6 +4794,10 @@ A_2 \hat x \le b_2 - h.
 \end{align}
 
 
+\begin{comment}
+Remove this.
+\end{comment}
+
 \begin{lemma}[Dramatic simplification of Lemma 4.1]
 \label{4_1}
 Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
@@ -4805,6 +4809,10 @@ the system $A_1x \le b'$ has a solution $x \in \bpr$.
 \begin{proof}
 Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
 \end{proof}
+
+\begin{comment}
+Remove this.
+\end{comment}
 
 
 \begin{lemma}
