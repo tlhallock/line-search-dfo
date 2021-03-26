@@ -67,6 +67,11 @@
 \newcommand{\symboldefinition}[4]{#1}
 
 
+\newcommand{\ehuffo}{{\epsilon_{\textrm{huff, 1}}}}
+\newcommand{\ehufft}{{\epsilon_{\textrm{huff, 2}}}}
+\newcommand{\mhufft}{{M_{\textrm{huff, 2}}}}
+
+
 
 \newcommand{\activeconstraintsk}{{\mathbb A_{k}}}
 \newcommand{\activeconstraintsl}{{\mathbb A_{l}}}
@@ -178,8 +183,10 @@
 \newcommand{\projkk}{{p^{(k,k)}}}
 \newcommand{\projll}{{p^{(l,l)}}}
 \newcommand{\trueprojk}{{p_c^{(k)}}}
-\newcommand{\truefeasiblek}{{F^{(k)}}}
+\newcommand{\truefeasiblek}{{F_c^{(k)}}}
+\newcommand{\truefeasible}{{F_c}}
 \newcommand{\trueactiveprojk}{{\mathbb P_c^{(k)}}}
+\newcommand{\nearlyactiveprojk}{{\mathbb P_{a}}}
 \newcommand{\activeprojkk}{{\mathbb P^{(k, k)}}}
 \newcommand{\activeprojkl}{{\mathbb P^{(k, l)}}}
 \newcommand{\activeprojlk}{{\mathbb P^{(l, k)}}}
@@ -212,8 +219,25 @@
 \newcommand{\huffalpha}{{\alpha_h}}
 \newcommand{\huffdir}{{u_h}}
 \newcommand{\huffdirk}{{u^{(k)}_h}}
-\newcommand{\activeprojk}{{Remove me}}
-\newcommand{\activeprojl}{{Remove me}}
+\newcommand{\activeprojk}{{\textrm{active projection k}}}
+\newcommand{\activeprojl}{{active projection l}}
+
+
+
+
+
+\newcommand{\activeindicesk}{{ \mathbb I_h^{(k)} }}
+\newcommand{\minactivealpha}{{ \alpha_{\textrm{h}} }}
+\newcommand{\activedirk}{{ u_{h}^{(k)} }}
+\newcommand{\activegradmin}{{ g_{\textrm{h}} }}
+
+
+\newcommand{\modeljack}{{ \nabla m^{(k)}_{c}\left(\xk\right) }}
+\newcommand{\modeljacl}{{ \nabla m^{(l)}_{c}\left(\xl\right) }}
+\newcommand{\truejack}{{ \nabla c\left(\xk\right) }}
+
+
+
 
 
 %=======================================
@@ -270,67 +294,29 @@ We present convergence analysis.
 
 
 
-%     remove x hat
+% Might not be able to use the \hat x.....
 
 % DOING.TXT
 %
 %
-% Make the uses of [m] be 1 \le i \le m before table of notation....
-% Add discussion of convergence of iterates
+% Add discussion of convergence of iterates to bounded level sets
 
-
-
-% Rename epsilon_h, 1 and move it out of the theorem
-
-% Replace the eta/gamma suff
-%
+% consolidate kappa_ef and kappa_f
 % remove latex warnings
-% simplify the algorithm                                                                                                                                            XXXXXXX (just remove that section)
-% make a comment about the decision to construct the next ellipsoid (proximity vs large enough)                         XXXXXXX
-% due to the construction of our ellipsoid, it will be lambda poised over the entire set
-% make comment about simply assuming the hoffman assumption is bounded...                                                   
+% Add motivation for why the hoffman constant is not bounded over the entire set
 % \oalpha should be removed...
-% define a pdelta, palpha, pbeta
+% define commands for pdelta, palpha, pbeta
 % remove content from future work.
 % The text in the sufficient reduction theorem.
 % h to ht  in figures?
-% 23rd changes only on page 11
-% I didn't take the omegainc change....
-% add comment about the smaller ellipsoid is not that much worse                                                                        ?????
 % prove theorem used from steve's paper
-% use \sigma for the condition number of a matrix
-% [m] is used before it is defined...
-
-
-
+% change the final convergence theorem to be about F
 
 % Talk more about the contributions of this paper
+% Finish proofs that are WIP
 
-
-
-
-% make the huffman assumption only require nearly active constraints
-% 
-% 
-% 
-% 
-% I was supposed to insert this:
-% what remains in section 5 is various different versions
-% We will show feasibility and convergence of the algorithm assuming certain of these 
-% 
 % script
 % 	update the table of notation
-% 
-% 	
-% maybe
-% 	connect the ellipsoid definitions to something...
-% 
-% 	
-% probably no longer an issue:
-% discuss which criticallity measure?
-% u uses the current: what if there are no currently active constraints, but there is during the next iteration?
-% remove references to the approximation of the active constraints
-% make the 1 + k_active just be a constant?
 
 
 
@@ -345,15 +331,15 @@ In such applications, function evaluations are expensive, so it is sensible to i
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
 \begin{align*}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-\mbox{subject to} & c_i(x) \le 0 & i \in [m],
+\mbox{subject to} & c_i(x) \le 0 & 1 \le i \le m,
 \end{array}
 \end{align*}
 where 
 % $\domain$ is a subset of $\Rn$, and
-$f$ and $c_i, i \in [m]$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+$f$ and $c_i, \forall 1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
 We will let the feasible set be represented as 
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall i \in [m] \}. \label{define_feasible}
+\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}. \label{define_feasible}
 \end{align}
 
 We are interested in developing {\em model-based} trust-region algorithms for solving these problems.
@@ -365,17 +351,17 @@ For example, the trust-region subproblem might have the form
 \begin{align*}
 \begin{array}{ccl} \min_{\|s\| \le \dk}
  & \mfk \left(\xk+s\right) \\
-\mbox{subject to} & \mcik\left(\xk + s\right) \le 0 & i \in [m], \\
+\mbox{subject to} & \mcik\left(\xk + s\right) \le 0 & 1 \le i \le m, \\
 & \|s\| \le \dk \\
 \end{array}
 \end{align*}
 
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
-and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall i \in [m]$, and $\dk$ is the radius of the trust-region.
+and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
 The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
 We are using the models of the constraints to approximate the feasible region during each iteration:
 \begin{align}
-\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall i \in [m] \} \label{define_feasiblek}
+\feasiblek = \{x \in \Rn | \mcik(x) \le 0 \; \forall 1 \le i \le m \} \label{define_feasiblek}
 \end{align}
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
@@ -885,7 +871,7 @@ The first step is to identify the set of constraints that are nearly active rela
 Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
 Specifically, for each $i$ with $\left\|\gmcik\right\| \ne 0$, define
 \begin{align}
-\zik = \xk - \frac{m^{(k)}_{c_i}(\xk)}{\left\|\gmcik\right\|^2} \gmcik. \label{define_z}
+\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik. \label{define_z}
 \end{align}
 If $\zik$ lies sufficiently near the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
 Specifically, the set of nearly active constraints is defined by
@@ -1242,55 +1228,55 @@ f(\lambda) = p^T\left(\lambda Q - I\right)^{-1}Q\left(\lambda Q - I\right)^{-1}p
 Notice that $f(0) = p^TQp - 1 > 0$, and the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$.
 The authors show that a binary search on $\lambda$ can find the zeros of $f$.
 
-\subsubsection{Numerical Solution}
-
-Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
-One very simple random-search algorithm can be used to show this.
-
-\begin{comment}
-Dramatically simplify this algorithm...
-\end{comment}
-
-\begin{algorithm}[H]
-    \caption{Search for feasible ellipsoid}
-    \label{numerical_ellipsoid_algorithm}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-                Set $E_{max}$ to any feasible ellipsoid, 
-                an initial sample variance $\sigma^2$, 
-                a threshold $M$ of iterations per sample variance, 
-                a decrease ratio $\gamma \in (0, 1)$, 
-                a variance tolerance $\delta_{\sigma} > 0$
-        
-        \item[\textbf{Step 1}] \textbf{(Random Perturbation)} \\
-            Evaluate the next iterate \begin{itemize}
-                \item[] Sample a rotation matrix $R$ with variance $\sigma^2$, $\qk \gets R \qk$
-                \item[] Sample a positive diagonal matrix $D$ with variance $\sigma^2$, $\qk \gets D \qk$
-                \item[] Sample a translation $c$ bounded by with variance $\sigma^2$, $\ck \gets c + \ck$
-            \end{itemize}
-        
-        \item[\textbf{Step 2}] \textbf{(Check Feasibility)} \\
-            Run feasibility check \cref{cone_feasibility_check} for each constraint.
-            If the new ellipsoid is feasible and larger than $E_{max}$, then 
-            	set $E_{max}$ to this ellipsoid,
-            	set counter $j \gets 0$, and
-            	go to Step 1
-        
-        \item[\textbf{Step 3}] \textbf{(Decrease Sample Variance)} \\
-            If the counter $j \ge M$, then
-	    	decrease $\sigma^2 \gets \gamma \sigma^2$,
-	    	set the counter $j\gets 0$, and
-	    	go to Step 1
-            
-        \item[\textbf{Step 4}] \textbf{(Check for Convergence)} \\
-	    If $\sigma^2 < \delta_{\sigma}$ \textbf{Return} $E_{max}$.
-	    Otherwise, 
-        		set counter $j \gets j + 1$, and
-        		go to Step 1
-    \end{itemize}
-\end{algorithm}
-
-Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
+% \subsubsection{Numerical Solution}
+% 
+% Although the algorithm presented in \cref{ideal_ellipsoid_in_polyhedron} yields a solution that cannot be solved explicitly, it is easy to check if an ellipsoid is feasible using \cref{cone_feasibility_check}.
+% One very simple random-search algorithm can be used to show this.
+% 
+% \begin{comment}
+% Dramatically simplify this algorithm...
+% \end{comment}
+% 
+% \begin{algorithm}[H]
+%     \caption{Search for feasible ellipsoid}
+%     \label{numerical_ellipsoid_algorithm}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%                 Set $E_{max}$ to any feasible ellipsoid, 
+%                 an initial sample variance $\sigma^2$, 
+%                 a threshold $M$ of iterations per sample variance, 
+%                 a decrease ratio $\gamma \in (0, 1)$, 
+%                 a variance tolerance $\delta_{\sigma} > 0$
+%         
+%         \item[\textbf{Step 1}] \textbf{(Random Perturbation)} \\
+%             Evaluate the next iterate \begin{itemize}
+%                 \item[] Sample a rotation matrix $R$ with variance $\sigma^2$, $\qk \gets R \qk$
+%                 \item[] Sample a positive diagonal matrix $D$ with variance $\sigma^2$, $\qk \gets D \qk$
+%                 \item[] Sample a translation $c$ bounded by with variance $\sigma^2$, $\ck \gets c + \ck$
+%             \end{itemize}
+%         
+%         \item[\textbf{Step 2}] \textbf{(Check Feasibility)} \\
+%             Run feasibility check \cref{cone_feasibility_check} for each constraint.
+%             If the new ellipsoid is feasible and larger than $E_{max}$, then 
+%             	set $E_{max}$ to this ellipsoid,
+%             	set counter $j \gets 0$, and
+%             	go to Step 1
+%         
+%         \item[\textbf{Step 3}] \textbf{(Decrease Sample Variance)} \\
+%             If the counter $j \ge M$, then
+% 	    	decrease $\sigma^2 \gets \gamma \sigma^2$,
+% 	    	set the counter $j\gets 0$, and
+% 	    	go to Step 1
+%             
+%         \item[\textbf{Step 4}] \textbf{(Check for Convergence)} \\
+% 	    If $\sigma^2 < \delta_{\sigma}$ \textbf{Return} $E_{max}$.
+% 	    Otherwise, 
+%         		set counter $j \gets j + 1$, and
+%         		go to Step 1
+%     \end{itemize}
+% \end{algorithm}
+% 
+% Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
 
 
 \subsubsection{Spherical Solution}
@@ -1383,6 +1369,22 @@ with squared distance
 = \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}
 \end{align*}
 
+We summarize the previous statements here:
+
+
+\begin{lemma}
+Let $t \in \reals$, $y \in \mathbb R^{n-1}$, and $\beta' > 0$.
+Then the point
+\begin{align*}
+z = \left(1 + {\beta'} ^ 2\right)^{-1} \left({\beta'} \|y\| + t, \left({\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}\right) y\right)
+\end{align*}
+satisfies
+\begin{align*}
+z = \argmin_{\left\|x\right\| \le \beta' s} \left\|x - y\right\|^2 + \left\|s - t\right\|^2 \\
+\left\|z - (t, y)\right\|^2 = \left(1 + {\beta'}^2\right)^{-1}\left(t \beta' - \left\|y\right\| \right)^2.
+\end{align*}
+\end{lemma}
+
 After a shift and rotation from the vertex point $\wik$ and going direction $-\wik$:
 
 \begin{align*}
@@ -1445,7 +1447,7 @@ Note the criteria in \cref{ellipsoids_notation_definitions} only summarize one o
 For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
 We have the following definitions.
 \begin{itemize}
-\item The sequence $(\qk, \ck, \sdk)$ is \emph{bounded} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
+\item The sequence $(\qk, \ck, \sdk)$ is \emph{conditioned} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
 That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
 \begin{align}
 \sigma\left(Q^{(k)}\right) \le \sigmamax. \label{define_suitable_condition_numbers}
@@ -1508,27 +1510,30 @@ However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction
 \huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}. \label{define_u}
 \end{align}
 
-
-The angle between this direction and the nearest direction that is infeasible is then measured by
+\begin{comment}
+What isn't clear?
+\end{comment}
+We are interested in constructing a cone of directions known to be feasible: namely those unit vectors that make a negative dot product with each nearly active constraint.
+We measure the distance between the direction $\huk$ and the nearest direction that is not feasible by computing
 \begin{align}
 \thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{define_thetamink}.
 \end{align}
+For simplicity, define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
 
-The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
-\begin{align*}
-\begin{array}{ccc}
-\huk \in \argmax_{u\in\Rn, \pi \in\reals} & \pi \\
-& -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \pi & \forall i \in \activeconstraintsk \\
-& \|u \| = 1& 
-\end{array}.
-\end{align*}
-For simplicity, we will define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
+% The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
+% \begin{align*}
+% \begin{array}{ccc}
+% \huk \in \argmax_{u\in\Rn, \pi \in\reals} & \pi \\
+% & -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \pi & \forall i \in \activeconstraintsk \\
+% & \|u \| = 1& 
+% \end{array}.
+% \end{align*}
 
-We can then measure the maximum angle that is feasible with respect to each of the constraints with
+We can then measure the range of directions about $\huk$ that are feasible by computing
 \begin{align}
-\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)} \label{define_bsk}
+\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)}. \label{define_bsk}
 \end{align}
-so that the cone
+Namely, we will show that the cone
 \begin{align}
 \fcki = \left\{x \in \Rn \bigg| \quad x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
 \end{align}
@@ -1540,7 +1545,7 @@ This cone is depicted in \cref{feasible_direction}.
     \caption{
     	At times, the conservative ellipsoid may be much smaller than desired.
     	Here each cone $\fik$ is in blue, and $\fcki$ is in green.
-    	$\fcki$ is contained within the intersection of each $\fik$.
+    	$\fcki$ is contained within the intersection of the $\fik$ cones.
 	}
     \label{feasible_direction}
 \end{figure}
@@ -1703,89 +1708,131 @@ But,
 
 \begin{lemma}
 \label{boundbsk}
-% Let $\bsk$ and $\fcki$ be defined as in \cref{define_bsk} and \cref{define_inner_cone}.
-Let $\bsk$ and $\thetamink$ be defined by \cref{define_bsk} and \cref{define_thetamink}.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
-$\bsk \le 1 - \frac 1 4 \epsilon^2$.
+Let $\bsk$, $\thetamink$, and $p_{\beta}$ be defined by \cref{define_bsk}, \cref{define_thetamink}, and \cref{define_abpab}.
+
+If $\dk^{p_{\beta}} \le \frac {1} {4\beta}\left(\thetamink\right)^2$, then $\bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
 \end{lemma}
 
-\begin{proof}
-Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
-% Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
-Then we can let $\dacco(\epsilon)$ be defined by
-% \minangledelta,
-% 1,
-\begin{align}
-\dacco(\epsilon) < \min\left\{
-\left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
-\left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
-\right\}\label{define_delta_accuracy_old}.
-\end{align}
-If $\dk \le \dacco(\epsilon)$, then
-\begin{align}
-\beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
-2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
-\end{align}
-Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
-which combined with $\epsilon ^2 \le 1 \le 5$ shows
-\begin{align*}
--\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
-\end{align*}
-This means
-\begin{align*}
-\left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
-= 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
-\le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
-\end{align*}
-Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
-% 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
-% \Longrightarrow
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
-\end{align}
-Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
-Also,
-\begin{align*}
-1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
-= \left(1 - \frac 1 2 \epsilon^2 \right)^2 
-\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
-\end{align*}
-so that
-\begin{align*}
-1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
-\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
-\Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
-\end{align*}
-Dividing by $2$ yields:
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\label{boundedbeta_eqn2}.
-\end{align}
 
-We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
+\begin{proof}
+
+
+First note that $\thetamink \le 1$ and $p_{\beta} \in (0, 1)$, so that $\beta \dk \le \frac 1 4$.
+Because $\left(\thetamink\right)^2 \ge 4\beta\dk^{p_{\beta}}$,
 \begin{align*}
-\sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
+    \left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]
+\le \left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - 4\beta \dk^{p_{\beta}}\right] \\
+= 1 - 4 \beta \dk^{p_{\beta}} - \left(\beta \dk^{p_{\beta}}\right)^2 + 4 \left(\beta \dk^{p_{\beta}}\right)^3 \\
+= \left(1 - 2 \beta \dk^{p_{\beta}}\right)^2 - 5 \left(\beta\dk^{p_{\beta}}\right)^2 + 4 \left(\beta \dk^{p_{\beta}}\right)^3 \\
+\le \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
 \end{align*}
-Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
-so that
+Thus, 
+\begin{align}
+\label{steves_rewrite_eqn1}
+\sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le 1 - 2 \beta \dk^{p_{\beta}}.
+\end{align}
+Note also that $1 - \left(\beta  \dk ^{p_{\beta}}\right)^2 \le 1$, so
+\begin{align}
+\label{steves_rewrite_eqn2}
+\sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le \sqrt{1 - \left(\thetamink \right)^2} \le 1 - \frac 1 2 \left(\thetamink \right)^2.
+\end{align}
+Adding \cref{steves_rewrite_eqn1} and \cref{steves_rewrite_eqn2}, we find
 \begin{align*}
-\bsk 
-= \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
-\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\le 1 -  \frac 1 4 \epsilon^2.
+2 \sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le 2 - 2 \beta \dk ^{p_{\beta}} - \frac 1 2 \left(\thetamink \right)^2
+\end{align*}
+and
+\begin{align*}
+\bsk = \beta \dk ^{p_{\beta}} + \sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]}
+\le \beta \dk ^{p_{\beta}} + 1 - \beta \dk ^{p_{\beta}} - \frac 1 4 \left(\thetamink \right)^2 \\
+= 1 - \frac 1 4 \left(\thetamink \right)^2.
 \end{align*}
 \end{proof}
+
+% \begin{proof}
+% For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+% $\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
+% $\bsk \le 1 - \frac 1 4 \epsilon^2$.
+% Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
+% % Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
+% Then we can let $\dacco(\epsilon)$ be defined by
+% % \minangledelta,
+% % 1,
+% \begin{align}
+% \dacco(\epsilon) < \min\left\{
+% \left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
+% \left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
+% \right\}\label{define_delta_accuracy_old}.
+% \end{align}
+% If $\dk \le \dacco(\epsilon)$, then
+% \begin{align}
+% \beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
+% 2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
+% \end{align}
+% Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
+% which combined with $\epsilon ^2 \le 1 \le 5$ shows
+% \begin{align*}
+% -\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
+% \end{align*}
+% This means
+% \begin{align*}
+% \left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
+% = 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
+% \le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
+% \end{align*}
+% Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
+% % 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+% % \Longrightarrow
+% \begin{align}
+% \frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% = \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
+% \end{align}
+% Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
+% Also,
+% \begin{align*}
+% 1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
+% = \left(1 - \frac 1 2 \epsilon^2 \right)^2 
+% \Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
+% \end{align*}
+% so that
+% \begin{align*}
+% 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
+% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
+% \Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
+% \end{align*}
+% Dividing by $2$ yields:
+% \begin{align}
+% \frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% \label{boundedbeta_eqn2}.
+% \end{align}
+% 
+% We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
+% \begin{align*}
+% \sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% \Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
+% \end{align*}
+% Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
+% so that
+% \begin{align*}
+% \bsk 
+% = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
+% \le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+% \le 1 -  \frac 1 4 \epsilon^2.
+% \end{align*}
+% \end{proof}
 
 
 
 \begin{lemma}
 \label{boundbeta}
 Let $\thetamink$ and $\qkpo$ be defined by \cref{define_thetamink} and \cref{define_ellipsek} respectively.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qkpo) \le \frac{12}{\epsilon^2}$.
+
+If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\sigma\left(\qkpo\right) \le 12 \left(\thetamink\right)^{-2}$.
+
+% For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+% $\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qkpo) \le \frac{12}{\epsilon^2}$.
 \end{lemma}
 
 \begin{proof}
@@ -1800,26 +1847,27 @@ Also, during iteration $k$, let $\bs$ be defined by \cref{define_bs}.
 % \ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
 % \sdk = \frac 1 {2\gamma} \dk.
 % \end{align*}
-First note that by \cref{define_bs} and \cref{boundbsk}, there exists $\dacco(\epsilon) > 0$ such that if 
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, then
-$\frac {1} 2 \le \bs \le 1 - \frac 1 4 \epsilon^2$.
+First note that by \cref{define_bs} and \cref{boundbsk}, we have
+$\frac 1 2 \bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
 Squaring this yields
 \begin{align}
-\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \epsilon^2\right)^2 \le 1 - \frac 1 4 \epsilon^2 \label{p2_numerator}
+\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \left(\thetamink\right)^2\right)^2 \le 1 - \frac 1 4 \left(\thetamink\right)^2 \label{p2_numerator}
 \end{align}
 so that
 \begin{align}
-\frac 1 4 \epsilon^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
+\frac 1 4  \left(\thetamink\right)^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
 \end{align}
 Dividing \cref{p2_numerator} by \cref{p2_denominator}, we see that
 \begin{align*}
 \frac 1 3
 \le \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}
-\le \frac {4 - \epsilon^2}{\epsilon^2} \le \frac {4}{\epsilon^2}
-\Longrightarrow 
+\le \frac {4 - \left(\thetamink\right)^2}{\left(\thetamink\right)^2} \le \frac {4}{\left(\thetamink\right)^2}
+\end{align*}
+Now, using \cref{conservative_ellipsoid_details}, we can compute 
+\begin{align*}
 \sigma \left(\qkpo\right) 
-= \frac{\max\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}}{\min\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}} 
-\le \frac {12}{\epsilon^2}
+= \frac{\max\left\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\right\}}{\min\left\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\right\}} 
+\le \frac {12}{\left(\thetamink\right)^2}
 \end{align*}
 as $\det(\rotk) = 1$.
 \end{proof}
@@ -2398,17 +2446,23 @@ The algorithm is as follows:
 
 \section{Convergence Analysis}
 
-Within this section we show that \cref{constrained_dfo} converges.
+Within this section we show that \cref{constrained_dfo} converges to a critical point.
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
 To use their analysis, we show that the accuracy and efficiency assumptions required for their proof hold, 
 this is done within \cref{ellipsoidal_lambda} and \cref{sufficient_reduction_section} respectively.
-Additionally, our criticallity measure \cref{define_criticality_measure} changes within each iteration.
+Additionally, our criticallity measure defined by \cref{define_criticality_measure}:
+$\chik = \left\|\xk - \text{Proj}_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|$
+depends on the current approximation of the constraints, which changes each iteration.
 Thus, we must also show that the criticallity measure converges to the true criticallity measure
 \begin{align}
 \label{verbiage_hoffman_use_one}
-\chik \approx \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\chik \approx \chi (\xk)
 \end{align}
-For some results, we also show that the criticallity measure converges across iterations
+where 
+\begin{align*}
+\chi (x) = \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\end{align*}
+For some results, we also show that the criticallity \cref{define_criticality_measure} measure converges across iterations:
 \begin{align}
 \label{verbiage_hoffman_use_two}
 \chik \approx \chil.
@@ -2418,7 +2472,7 @@ We summarize the steps of the proof here:
 \begin{itemize}
 \item Show that the accuracy condition \cref{accuracy} is satisfied. \\
 This is done within \cref{ellipsoidal_lambda}. 
-To do this, we must show our construction of $\sampletrk$ satisfies the boundedness requirement defined within \cref{ellipsoids_notation_definitions}.
+To do this, we must show our construction of $\sampletrk$ satisfies the conditioned requirement defined by \cref{ellipsoids_notation_definitions}.
 This is done within \cref{bounded_condition_numbers}.
 \item Show that the efficiency condition \cref{efficiency} is satisfied. \\
 This is the topic of \cref{sufficient_reduction_section}.
@@ -2447,6 +2501,20 @@ This relies on \cref{verbiage_hoffman_use_two}, which in turn relies on bounding
 Because of the similarity, this is done in parallel with bounding the constraint's model's Jacobian's Hoffman's constant in \cref{bounding_the_projection_section}.
 \end{itemize}
 
+Throughout this section, we assume that 
+$\left\{\xk\right\}$,
+$\left\{\dk\right\}$,
+$\left\{m_{c_i}\right\}$,
+and
+$\left\{m_{f}\right\}$
+are generated by 
+\cref{constrained_dfo}.
+Other quantities such as $\activeconstraintsk$, $\huk$, $\thetamink$, $\qk$, $\ck$, and $\sdk$ 
+that are generated by the conservative ellipsoid method described in
+\cref{ellipsoid_requirements} and \cref{constructing_and_analysizing_conservative_ellipsoid}
+include references to their definitions when used.
+
+
 \subsection{Assumptions}
 We will let $\Omega$ be some open region containing $\feasible$.
 
@@ -2459,8 +2527,8 @@ c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \Omega, \zeta \in [0, 
 \end{align*}
 \end{assumption}
 
-\paragraph{Bounded functions}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
+% \paragraph{Bounded functions}
+% The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
 
 \begin{assumption}
 \label{bounded_below_assumption}
@@ -2501,8 +2569,8 @@ The set $\feasible$ is bounded. That is, there exists $\maxnorm > 0$ such that
 \color{black}
 
 
-\paragraph{All functions are smooth}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
+% \paragraph{All functions are smooth}
+% The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
 
 \begin{assumption}
 \label{lipschitz_gradients_assumption}
@@ -2533,13 +2601,30 @@ However, this provides a uniform bound across all points, not just a critical po
 
 For an alternative to this assumption, please see \cref{alternative_assumptions_section}.
 
+\color{red}
 \begin{assumption}
 \label{minangleassumption}
+Define $\activeconstraintsk$ by \cref{define_activeconstraints}.
 There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ with $\dk \le \minangledelta$ there exists
 a unit vector $\minangledirk \in \Rn$
 such that
 \begin{align*}
 -\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \quad \forall i \in \activeconstraintsk.
+\end{align*}
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
+\end{assumption}
+\color{black}
+
+Within the following assumption, remember that $\zik$ is defined by \cref{define_z}.
+\begin{assumption}
+\label{minangleassumption_alt}
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
+a unit vector $\minangledirk \in \Rn$
+such that if $\dk \le \minangledelta$ and
+$i$ is such that $\zik \in B_{\infty}(\xk, \minangledelta)$
+then
+\begin{align*}
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha.
 \end{align*}
 Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
@@ -2694,19 +2779,21 @@ Therefore, $\thetamink \ge \minanglealpha$.
 
 \begin{lemma}
 \label{bounded_condition_numbers}
-Let $\qkpo$ and $\minanglealpha$ be defined by \cref{define_ellipsek} and \cref{minangleassumption} respectively.
+Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints};
+$\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise; and $\minanglealpha$ be defined by \cref{minangleassumption}.
 Suppose that \cref{minangleassumption} holds.
-Then the sequence $\left(\qk, \ck, \sk\right)$ is bounded as defined by \cref{ellipsoids_notation_definitions}.
-Namely, there exists a $\dacc > 0$, such that $\sigma(\qkpo) \le \frac {12}{\minanglealpha}$ whenever $\dk \le \dacc$.
+% Then the sequence $\left(\qk, \ck, \sk\right)$ is conditioned as defined by \cref{ellipsoids_notation_definitions}.
+There exists a $\dacc > 0$, such that $\sigma(\qkpo) \le {12}\left(\minanglealpha\right)^{-2}$ whenever $\dk \le \dacc$.
 \end{lemma}
 \begin{proof}
-Letting $\activeconstraintsk$ be defined by \cref{define_activeconstraints},
-we see that if $\activeconstraintsk = \emptyset$, then \cref{define_suitable_condition_numbers} is satisfied because $\kappa(\qkpo) = 1$.
+If $\activeconstraintsk = \emptyset$, then 
+% \cref{define_suitable_condition_numbers} is satisfied because 
+$\sigma\left(\qkpo\right) = 1$.
 If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{theta_min_is_bounded} and \cref{boundbeta} by letting
 \begin{align}
-\dacc = \min\left\{\minangledelta, \dacco(\minanglealpha) \right\} \label{define_delta_accuracy}
+\dacc = \min\left\{\minangledelta, \frac 1 {4 \beta} \left(\minanglealpha \right)^2 \right\} \label{define_delta_accuracy}
 \end{align}
-where $\minangledelta$ is defined by \cref{minangleassumption} and $\dacco(\epsilon)$ is defined by \cref{define_delta_accuracy_old}.
+where $\minangledelta$ is defined by \cref{minangleassumption}.
 \end{proof}
 
 
@@ -2718,8 +2805,12 @@ If $\dk \le \dacc$, then the tuple $(\qk, \ck, \sdk)$ defined in \cref{define_el
 is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
 \begin{proof}
-\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that $\bsk < 1 \Longrightarrow \frac{\bsk}{1 - \bsk} > 0$.
-Using \cref{define_bs}, \cref{define_inner_cone},
+Let $\minanglealpha$ be defined by \cref{minangleassumption}.
+\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that 
+if $\dk \le \dacc$, then $\thetamink \ge \minanglealpha$, 
+so that the definitions \cref{define_bsk} and \cref{define_bs} imply
+$\bsk < 1 \Longrightarrow \frac{\bsk}{1 - \bsk} > 0$.
+Thus, the set of directions in \cref{define_inner_cone} is non empty, and
 $\fcki \ne \emptyset$.
 \end{proof}
 
@@ -2735,23 +2826,81 @@ We also use the following two theorems found within our convergence analysis for
 \begin{lemma}
 \label{change_radius} 
 Suppose that \cref{bounded_hessians_assumption} and \cref{lipschitz_gradients_assumption} hold.
-
-% Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
+Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
 % Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 % Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 Suppose there there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
-\left\|\gradf(x) - \nabla m(x)\right\| \le \Lambda_2 \\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m(x)\right\| \le \Lambda_3 % \Delta
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 % \Delta
 \end{align*}
-Then for all $x \in B\left(y^0, r\Delta\right)$,
+Then let $r > 1$ be arbitrary.
+For all $x \in B\left(y^0, r\Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 r^? \\ % \Delta^3
-\left\|\gradf(x) - \nabla m(x)\right\| \le \Lambda_2 r^?\\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m(x)\right\| \le \Lambda_3 r^?% \Delta
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 r^?\\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 r^?% \Delta
 \end{align*}.
 \end{lemma}
+
+\begin{proof}
+Let $x \in B\left(y^{0}, r\Delta\right)$, and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
+Because $z \in B\left(y^0, \Delta\right)$, we know that
+
+\begin{align*}
+\left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
+\left\|\gradf(z) - \nabla m(z)\right\| \le \Lambda_2 \\ % \Delta^2
+\left\|\nabla^2 f(z) - \nabla^2 m(z)\right\| \le \Lambda_3 % \Delta
+\end{align*}
+and that there exists 
+% $\alpha \in [0, 1]$, 
+$\chi_1 \in [y^0, x]$ and
+$\chi_2 \in [z, x]$
+such that such that
+\begin{align*}
+f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
+f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
+m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
+\end{align*}
+we have
+\begin{align*}
+f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
++ \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
++ \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
+\left|f(x) - m_f(x)\right| 
+\le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
++ \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
+\end{align*}
+
+
+
+\begin{align*}
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right) \right\| \\
+= \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y\right) \right\| 
++ \left\| \nabla^2 f\left(y\right) - \nabla^2 m_f\left(y\right) \right\|
++ \left\| \nabla^2 m_f\left(y\right) - \nabla^2 m_f\left(x\right) \right\| \\
+\le \liphess \left\|x - y \right\| + \Lambda_2 + 
+\end{align*}
+
+
+
+\begin{align*}
+\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+\end{align*}
+
+
+
+\begin{align*}
+\phi_i\left(x\right) = \phi_i\left(y\right) + 
+\end{align*}
+
+
+
+
+
+\end{proof}
 
 
 \begin{theorem}
@@ -3785,7 +3934,9 @@ Combining this with \cref{sr_what_to_bound} we see
 \subsection{Initial Convergence Results}
 \label{initial_convergence_results}
 \begin{comment}
-$\eta_1$ corresponds to $\gammasm$, $\eta$ corresponds to $\gammabi$.
+$\eta$ corresponds to $\gammasm$, $\eta_1$ corresponds to $\gammabi$.
+$\bar S$ corresponds to $\suffiterates$.
+$S$ corresponds to $\miniterates$.
 \end{comment}
 
 
@@ -3818,7 +3969,7 @@ let
 \reduceiterates = \left \{ k \in \naturals \bigg| \dk \le \min \left\{ 
 \dsr, 
 \frac {\chik}{\maxmodelhessian}, 
-\frac{1-\gammasm}{\theirc}\chik,
+\frac{1-\gammabi}{\theirc}\chik,
 \left(\frac 1 {\kappa_{\chi}}  \chik\right)^{\frac 1 {p_{\Delta}}}, 
 1
 \right\} \right \} 
@@ -3828,7 +3979,7 @@ let
 
 \begin{lemma}
 \label{mathcal_k_subset_bar_s}
-Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates} respectively.
+Let $\suffiterates$ and $\reduceiterates$ be defined by \cref{define_suffiterates} and \cref{define_reduceiterates} respectively.
 Assume that 
 \cref{lipschitz_gradients_assumption}
 and the assumptions for
@@ -3875,14 +4026,14 @@ Then,
 We also know by \cref{define_reduceiterates}
 \begin{align*}
 \dk = \min\left\{\frac {\chik} {\maxmodelhessian}, \dk, 1 \right\}, \quad \textrm{and} \quad
-\frac {\theirc \dk}{\chik} \le 1 - \gammasm
+\frac {\theirc \dk}{\chik} \le 1 - \gammabi
 \end{align*}
 so that
 \begin{align*}
-\left|\rk - 1\right| \le 1 - \gammasm
-\Longrightarrow \rk \ge \gammasm
+\left|\rk - 1\right| \le 1 - \gammabi
+\Longrightarrow \rk \ge \gammabi
 \end{align*}
-so that $k \in \miniterates$.
+so that $k \in \suffiterates$.
 \end{proof}
 
 
@@ -3898,32 +4049,32 @@ Then the sequence $\left\{\dk\right\}$ converges to zero.
 
 \begin{proof}
 Let
-$\miniterates$, $\kappa_f$, $\gammasm$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$
+$\suffiterates$, $\kappa_f$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$ $\gammabi$
 be defined by
-\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_the_gammas}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}
+\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}, \cref{define_the_gammas}
 respectively,
 and let $\omegadec$ and $\omegainc$ be defined by \cref{define_the_omegas}.
-Suppose that $\miniterates$ is finite.
+Suppose that $\suffiterates$ is finite.
 Then there exists $k_0 \in \naturals$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
 Thus, $\left\{\dk\right\} \to 0$ because $\omegadec < 1$.
-From now on, we may assume that $\miniterates$ is infinite.  
-For any $k \in \miniterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
+From now on, we may assume that $\suffiterates$ is infinite.  
+For any $k \in \suffiterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
 Using \cref{bounded_model_hessian_lemma} and \cref{sufficient_reduction_theorem} we have
 \begin{align*}
-f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \gammasm \kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\} \\
-f\left(\xk\right) - f\left(\xkpo\right) \ge \gammasm\kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammabi \left[\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right)\right] \ge \gammabi \kappa_f \chik \min\left\{\frac{\chik}{\maxmodelhessian}, \dk, 1\right\} \\
+f\left(\xk\right) - f\left(\xkpo\right) \ge \gammabi \kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}
 \end{align*}
 % 
 Because $f\left(\xk\right)$ is nonincreasing, the left hand side goes to zero.
 Thus,
 \begin{align}
-\lim_{k \in \miniterates} \dk = 0.
+\lim_{k \in \suffiterates} \dk = 0.
 \end{align}
 
 Consider the set
-$\mathcal U = \{ k \in \naturals | k \not \in \miniterates \}$.
+$\mathcal U = \{ k \in \naturals | k \not \in \suffiterates \}$.
 If $\mathcal U$ is finite, then $\lim_{k\to\infty}\dk = 0$.
-Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\miniterates$ before $k$.
+Otherwise, consider $k \in \mathcal U$ and define $l_k$ to be the last index in $\suffiterates$ before $k$.
 Then $l_k$ is well-defined for all large $k$  and $\dk \le \omegainc \Delta_{l_k}$ which implies that
 \begin{align}
 \lim_{k \in \mathcal U } \dk \le \omegainc \lim_{k \in \mathcal U} \Delta_{l_k} = \omegainc \lim_{l_k \in \miniterates} \Delta_{l_k}
@@ -3986,6 +4137,7 @@ Also, define
 S_h(A) = \left\{J \subseteq [m] \; | \; \image(A_J) + \reals_+^J = \reals^J \right\}. \label{define_huff_subsets}
 \end{align}
 
+The following result is also from \cite{pena2020new}.
 \begin{lemma}
 For a given $j \times n$ matrix $A_J$, we have that 
 $\image(A_J) + \reals_+^J = \reals^J$
@@ -3993,13 +4145,23 @@ if and only if there exists an $x \in \Rn$ such that
 $A_J x < 0$.
 \end{lemma}
 
+\begin{definition}
+\label{hoffman_definition}
+Let $A \in \mathbb R^{m \times n}$ be given, and let $S_h$ be defined by \cref{define_huff_subsets}.
+Define the Hoffman constant of $A$, denoted $H(A)$, to be
+\begin{align*}
+H(A) = \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
+\end{align*}
+\end{definition}
 
+
+The following result is from \cite{pena2020new}.
 % Let $\left\|\cdot\right\|_1$ be any norm with dual $\left\|\cdot\right\|_2$.
 \begin{theorem}
-\label{hoffman_theorem}
-Let $A \in \mathbb R^{m \times n}$ be given, and let $S_h$ be defined by \cref{define_huff_subsets}.
-Define the Hoffman constant of $A$, denoted $H(A)$, to be such that for any 
-$b \in \image(A; \Rn) + \reals^m_+$, and any $y \in \Rn$
+\label{hoffmans_theorem}
+Let $A \in \mathbb R^{m \times n}$ be given, and let $H(A)$ be defined by \cref{hoffman_definition}.
+Then for any
+$b \in \image(A) + \reals^m_+$, and any $y \in \Rn$
 \begin{align*}
 \left\|y - z\right\| \le H(A) \left\|\left(Ay - b\right)_+\right\|
 \end{align*}
@@ -4010,13 +4172,7 @@ z = & \argmin_{x \in \Rn} & \|y - x\| \\
       & \textrm{s.t.}    & Ax \le b
 \end{array}.
 \end{align*}
-Then we have that
-\begin{align*}
-H(A) = \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
-\end{align*}
-%  = \max_{J \in \mathcal S(A)} \max_{\|y\| \le 1} \min_{A_Jx \le y_J} \|x\|.
 \end{theorem}
-
 
 \begin{lemma}
 \label{huffman_of_infinity_ball}
@@ -4072,7 +4228,7 @@ so that $\left\|y - z\right\|_{\infty} = \left\| v_+ \right\|_{\infty}$.
 \end{proof}
 
 \begin{corollary}
-Let $H(A)$ and $\atr$ be defined by \cref{hoffman_theorem} and \cref{define_atr} respectively.
+Let $H(A)$ and $\atr$ be defined by \cref{hoffman_definition} and \cref{define_atr} respectively.
 Then $H(\atr) = \sqrt{n}$.
 \end{corollary}
 \begin{proof}
@@ -4087,30 +4243,111 @@ Then \cref{huffman_of_infinity_ball} implies
 \end{proof}
 
 
+% 
+% 
+% 
+% \begin{align*}
+% \left\{i \in [m] \bigg| p - \frac{A_ip - b}{\left\|A_i\right\|^2} A_i \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\|p - \frac{b - A_ip}{\left\|A_i\right\|^2} A_i\right\| \ge \sqrt{n} r \\
+% \|p - z\| \le \sqrt{n} r \\
+% A_i z \le b \\
+% A_i z = A_i(p + z) \\
+% A_i \left(p - \frac{A_ip - b_i}{\left\|A_i\right\|^2} A_i\right)
+% = A_i p - A_ip + b_i = b_i \\
+% |b_i| \ge \sqrt{n} r \\
+% z = \frac{A_iz}{\left\|A_i\right\|^2}A_i^T + z - \frac{A_iz}{\left\|A_i\right\|^2}A_i^T \\
+% A_iz = b \\
+% \frac{b - A_i p}{\|A_i\|} \ge \sqrt{n} r
+% \end{align*}
+% 
+% 
+% 
+% 
+% 
+% \begin{lemma}
+% \label{version_of_hoffman_with_infinity_ball}
+% Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+% 
+% Let $A$ be an $m \times n$ matrix;
+% $p, y \in \Rn$; $b, b' \in \Rm$;
+% and $M, r, \epsilon > 0$ be given 
+% such that 
+% \begin{align*}
+% Ap \le b,
+% \quad
+% Ap \le b',
+% \quad
+% \|b - b'\| \le \epsilon,
+% \quad \textrm{and} \quad
+% \left\|y - p\right\| \le M.
+% \end{align*}
+% Define 
+% % J = \left\{i \in [m] \bigg | \|A_i\| \ne 0 \quad \textrm{and} \quad \frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r  \right\} \\
+% % A_2 = \begin{pmatrix} A \\ \atr \end{pmatrix},
+% % \quad
+% % b_2 = \begin{pmatrix} b \\ \btr\left(p, r\right) \end{pmatrix},
+% % \quad \textrm{and} \quad
+% \begin{align*}
+% z^{\star} = \argmin_{\substack{A z \le b \\ z \in \bpr} } \|y - z\|.
+% \end{align*}
+% Define 
+% \begin{align}
+% H\left(A, p, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
+% \label{define_har}
+% \end{align}
+% Then
+% \begin{align*}
+% \left\|y - z_2\right\|_{\infty} 
+% \le 
+% H\left(A, p, r\right)
+% \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
+% \end{align*}
+% \end{lemma}
+% 
+% 
+
+
+
+
+
+
+
+
+
+
+
 \begin{lemma}
 \label{version_of_hoffman_with_infinity_ball}
-Let $H(A)$ be defined by \cref{hoffman_theorem}; and let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+Let $H(A)$ be defined by \cref{hoffman_definition}; and let $\atr$ and $\btr$ be defined by \cref{define_atr}.
 
-Let $A_1$ be an $m \times n$ matrix, $p, y \in \Rn$, $r > 0$, and $b_1 \in \Rm$  be given 
-such that $A_1p \le b_1$.
+Let $A$ be an $m \times n$ matrix;
+$p, y \in \Rn$; $b \in \Rm$;
+and $M, r > 0$ be given 
+such that $Ap \le b$ and $\left\|y - p\right\| \le M$.
 Define 
+% J = \left\{i \in [m] \bigg | \|A_i\| \ne 0 \quad \textrm{and} \quad \frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r  \right\} \\
 \begin{align*}
-A_2 = \begin{pmatrix} A_1 \\ \atr \end{pmatrix},
+A_2 = \begin{pmatrix} A \\ \atr \end{pmatrix},
 \quad
-b_2 = \begin{pmatrix} b_1 \\ \btr\left(p, r\right) \end{pmatrix},
+b_2 = \begin{pmatrix} b \\ \btr\left(p, r\right) \end{pmatrix},
 \quad \textrm{and} \quad
-z_2 = \argmin_{\substack{A_2 x \le b_2} } \|y - x\|.
+z_2 = \argmin_{\substack{A_2 x \le b \\ x \in \bpr} } \|y - x\|.
 \end{align*}
 Define 
 \begin{align}
-H\left(A_1, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
+H\left(A, r\right) = \left(1 + \frac 4 r\right)\sqrt{n} H\left(A_1\right).
 \label{define_har}
 \end{align}
 Then
 \begin{align*}
 \left\|y - z_2\right\|_{\infty} 
 \le 
-H\left(A_1, r\right)
+H\left(A, r\right)
 \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
 \end{align*}
 \end{lemma}
@@ -4123,16 +4360,20 @@ H\left(A_1, r\right)
 % \end{align*}
 Define
 \begin{align*}
-z_1 = \argmin_{A_1 x \le b_1} \|y - x\|
+z_0 = \argmin_{x \in B_{\infty}(p, r)} \|y - x\|
 \quad \textrm{and} \quad
-z_0 = \argmin_{x \in B_{\infty}(p, r)} \|y - x\|.
+z_1 = \argmin_{A_J x \le b_J} \|y - x\|.
 \end{align*}
+
+% \quad \textrm{and} \quad
+% z_2 = \argmin_{A_2 x \le b_2} \|y - x\|.
+
 Notice that
 \begin{align}
 \left\|y - z_1\right\|_{\infty}
 \le \left\|y - z_1\right\|
-\le H\left(A_1\right) \left\|\left(A_1y - b_1\right)_+\right\|
-\le \sqrt{n} H\left(A_1\right) \left\|\left(A_2y - b_2\right)_+\right\|_{\infty}.
+\le H\left(A_J\right) \left\|\left(A_Jy - b_J\right)_+\right\|
+\le \sqrt{n} H\left(A_J\right) \left\|\left(A_Jy - b_J\right)_+\right\|_{\infty}.
 \label{hoi_computation_1}
 \end{align}
 
@@ -4272,8 +4513,17 @@ so
 \le \left(1 + \frac 4 r\right) h.
 \end{align*}
 
-
-
+% Throughout the the cases, we have established that $\|y - z_2\|_{\infty} \le H(A, p, r)\|A_2 y - b_2\|_{\infty}$.
+% Suppose that $i \in [m] \setminus J$.
+% If $\|A_i\| = 0$, then $A_i z = 0 = A_i p \le b_i$.
+% Otherwise, $\frac{b_i - A_i p}{\|A_i\|} \ge \sqrt{n} r \Longrightarrow A_i p \le b_i - \left\|A_i\right\|r\sqrt{n}$.
+% Then, $z_2 \in \bpr \Longrightarrow \left\|z_2 - p \right\| \le \sqrt{n} r$ so that
+% \begin{align*}
+% A_iz_2 = A_ip + A_i\left(z_2 - p\right) \le A_ip + \|A_i\|\|z_2 - p\| \le b_i - \left\|A_i\right\|r\sqrt{n} + \|A_i\|r \sqrt{n} = b_i
+% \end{align*}
+% and $z_2 \in \bpr \cap \left\{x \in \Rn | Ax\le b\right\}$.
+% We can conclude
+% $\left\|y - z^{\star}\right\| \le \left\|y - z_2\right\|$.
 
 
 % \paragraph{Case 3a}
@@ -4342,382 +4592,232 @@ so
 % There is a $v$ such that $A_iv < 0$ for each $i$ and $s_i v_i < 0$ where $s_i \in \left\{1, -1\right\}$.
 % Because $Ap \le b$ ,
 
-\subsubsection{Bound on Huffman Constant}
+\subsubsection{Bound on Hoffman Constant}
 
-For any $S \subseteq [m]$, define
-\begin{align}
-\feasiblek(S) &=  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \; \forall i \in S \right\} \label{sha_fks} \\
-\projkl(S) &= \argmin_{x \in \feasiblel(S)} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_projkl}
-\end{align}
-Also, let
-\begin{align}
-\activeprojkl &= \left\{ i \in [m] \bigg| \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0 \right\} \label{sha_proj_indices} \\
-\jackk &= \nabla m_c\left(\xk\right) \label{sha_jacobian}.
-\end{align}
-Finally, the equivalent definitions for the linearizations of the true constraints are
-\begin{align}
-\truefeasiblek &=  \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{sha_truefk} \\
-\trueprojk &= \argmin_{x \in \truefeasiblek} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_trueproj} \\
-\trueactiveprojk &= \left\{ i \in [m] \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_true_proj_indices}
-\end{align}
+\begin{definition}
+\label{criteria_from_contradiction}
+A sequence $S \subseteq\naturals \times \naturals$ satisfies this definition if
+% is called a \emph{Cauchy pair-subsequence} if
+% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
+for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
+then 
+$\left\|\xk - \xl \right\| \le \epsilon$.
+% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
+\end{definition}
 
-In order to show that the huffman constant is bounded across iterations, we make the following additional assumption.
-We leave removing this assumption as future work, which is discussed in \cref{removing_the_huffman_assumption}.
-
-\begin{assumption}
-\label{huffman_assumption}
-There exist $\huffeps, \huffalpha > 0$ such that
-for each $x \in \Omega$ and unit vector $y \in \Rn$,
-there exists a unit vector $\huffdir(x, y) \in \Rn$ such that
-if $i \in [m]$ is such that 
-\begin{align*}
-y^T \nabla c_i \left(x\right) \ge - \huffeps
-\end{align*}
-then
-\begin{align*}
-\huffdir(x, y)^T \nabla c_i \left(x\right) \ge \huffalpha.
-\end{align*}
-\end{assumption}
-
-
-
-% \begin{lemma}
-% \label{bound_dot_product}
-% Suppose that $u_1, u_2, v_1, v_2 \in \Rn$ and $\epsilon, M > 0$ are such that
-% \begin{align*}
-% \|u_1 - u_2\| \le \epsilon, \quad
-% \|v_1 - v_2\| \le \epsilon, \quad
-% \|u_1\| \le M, \quad \textrm{and} \quad
-% \|v_2\| \le M.
-% \end{align*}
-% Then
-% \begin{align*}
-% \left|u_1^Tv_1 - u_2^Tv_2\right| \le 2M\epsilon.
-% \end{align*}
-% \end{lemma}
-% \begin{proof}
-% We have
-% \begin{align*}
-% \left|u_1^Tv_1 - u_2^Tv_2\right|
-% \le \left|u_1^Tv_1 - u_1^Tv_2\right\| + \left\|u_1^Tv_2 - u_2^Tv_2\right|
-% = \left|u_1^T\left(v_1 - v_2\right)\right| + \left|\left(u_1 - u_2\right)^Tv_2\right|  \\
-% \le \left\|u_1\right\|\left\|v_1 - v_2\right\| + \left\|u_1 - u_2\right\|\left\|v_2\right\|
-% \le 2M\epsilon.
-% \end{align*}
-% \end{proof}
 
 \begin{lemma}
-\label{bp_combining_several}
-Let $\activeprojkl$ and $\huffalpha$ be defined by \cref{sha_proj_indices} and \cref{huffman_assumption}.
-Assume that \cref{huffman_assumption}, \cref{lipschitz_gradients_assumption}, \cref{criteria_from_contradiction} and the assumptions for
-\cref{model_gradients_are_cauchy}, \cref{bounded_gradients_lemma}, \cref{i_thought_i_proved_this_already}, \cref{delta_to_zero}, and \cref{accuracy_is_satisfied} hold.
-There exists $k_0 \in \naturals$ such that for any $k, l \ge k_0$ 
-there is a unit vector $ \huffdirk \in \Rn $ such that for all $i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk$, we have both
-\begin{align*}
-\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha
-\quad \textrm{and} \quad
-\left(\huffdirk\right)^T\nabla c_i\left(\xk\right)\ge \frac 1 2 \huffalpha.
-\end{align*}
-%  \quad \textrm{and} \quad
-%  u^T \gmcil \ge \frac 1 4 \alpha.
+\label{model_gradients_are_cauchy}
+Suppose that the assumptions for
+\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}, \cref{accuracy_is_satisfied}
+hold.
+
+If $S$ satisfies \cref{criteria_from_contradiction}, then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
+such that if $(k, l) \in S$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
 \end{lemma}
 \begin{proof}
-Let $i \in [m]$ and let
-$\huffeps$ and $\maxmodelgrad$
-be defined by 
-\cref{huffman_assumption} and \cref{i_thought_i_proved_this_already}
-respectively.
+Let $\epsilon > 0$ be arbitrary.
+By \cref{delta_to_zero}, we can choose $N_1$ such that $\lipgrad \left\|\xk - \xl \right\| \le \frac 1 3 \epsilon$.
+Also, because every convergent sequence is Cauchy, we can choose an $N_2 \in \naturals$ such that $\kappa_g \dk^2 \le \frac 1 3 \epsilon $ whenever $k \ge N_2$.
+Choose $N_0 = \max\{N_1, N_2\}$, and let $d, k \ge N_2$.
+The triangle inequality states
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le 
+\left\|\nabla \mcik\left(\xk\right) - \nabla c_i\left(\xk\right) \right\|
++ \left \| \nabla \mcil\left(\xl\right) - \nabla c_i\left(\xl\right) \right \| \\
++ \left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\|.
+\end{align*}
+Using \cref{accuracy_is_satisfied} and \cref{lipschitz_gradients_assumption}, we see
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\|.
+\end{align*}
+By our choice of $N_0$, we see that
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le \frac 1 3 \epsilon + \frac 1 3 \epsilon + \frac 1 3 \epsilon = \epsilon.
+\end{align*}
+\end{proof}
+% \left\|\mcik\left(\xk\right) - \mcik\left(\xl\right) \right\| + \left \| \mcik\left(\xl\right) - \mcil\left(\xl\right) \right\|
+
+
+
+
+
+Let $\minangledelta$ be defined by \cref{minangleassumption_alt},
+and define
+% such that if $\dk \le \minangledelta$ and
+\begin{align}
+\activeindicesk = \left\{i \in [m] \bigg| \zik \in B_{\infty}\left(\xk, \minangledelta \right) \right\} \label{define_activeindicesk}
+\end{align}
+
+
+
+\begin{lemma}
+\label{underbound}
+Suppose that \cref{mingradassumption} holds.
+
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+There exists $\activegradmin > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
+for all $i \in \activeindicesk$,
+\begin{align*}
+\left\|\gmcik\right\| \ge \activegradmin.
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption}.
 Define
 \begin{align}
-\epsilon = \frac {\huffeps} {4\maxmodelgrad}. \label{til_define_eps}
+\label{define_activegradmin}
+\activegradmin = \min\left\{\mingrad, \frac{\mingradepsilon}{\sqrt{n} \minangledelta}\right\}.
 \end{align}
 
-From \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, there exists $\kappa_g$ and $k_1$ such that if $k, l \ge k_1$, then
-\begin{align}
-\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
-\left\|\gmcil - \nabla c_i\left(\xl\right)\right\| \le \kappa_g \dl^2. \label{til_acc_const}
-\end{align}
-%  \\
-% \left\|\gk - \nabla f\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
-% \left\|\gl - \nabla f \left(\xl\right)\right\| \le \kappa_g \dl^2. \label{til_acc_obj}
-
-By \cref{lipschitz_gradients_assumption}, we know that there exists $\lipgrad > 0$ such that
-\begin{align}
-\left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\|. \label{til_lip_cons}
-\end{align}
-%  \\
-% \quad \textrm{and} \quad
-% \left\|\nabla f\left(\xk\right) - \nabla f\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\|. \label{til_lip_obj}
- 
-\cref{bounded_gradients_lemma}
-% , \cref{i_thought_i_proved_this_already}, and \cref{til_define_m} 
-tells us
-\begin{align}
-\label{til_upper_bounds}
-\left\|\gk\right\| \le \maxmodelgrad 
-\quad \textrm{and} \quad
-\left\|\gmcil \right\| \le \maxmodelgrad.
-\end{align}
-
-% \begin{align}
-% \label{til_upper_bounds}
-% \begin{array}{rrrr}
-% \left\|\gmcik\right\| \le M, & \left\|\gmcil\right\| \le M, &
-% \left\|\gk\right\| \le M, & \left\|\gl\right\| \le M, \\
-% \left\|\nabla c_i\left(\xk\right) \right\| \le M, & \left\|\nabla c_i\left(\xl\right) \right\| \le M, &
-% \left\|\nabla f\left(\xk\right) \right\| \le M, & \left\|\nabla f\left(\xl\right) \right\| \le M.
-% \end{array}
-% \end{align}
-
-By \cref{criteria_from_contradiction}, we know that there exists $k_2 \in \naturals$ such that if $k, l \ge k_2$, then
-\begin{align}
-\label{til_bound_dk}
-\left\|\xk - \xl \right\| \le \epsilon \min\left\{1, \frac{1}{2\lipgrad}\right\},
-\quad
-\dk \le \min\left\{
-\sqrt{\frac{\epsilon}{4\kappa_g}},
-\sqrt{\frac{\huffalpha}{2\kappa_g}}\right\},
-\quad \textrm{and} \quad
-\dl \le \sqrt{\frac{\epsilon}{4\kappa_g}}.
-\end{align}
-
-% \color{red}
-% By the triangle inequality, \cref{til_acc_obj}, \cref{til_lip_obj}, and \cref{til_bound_dk} we have
-% \begin{align}
-% \left\| \gk - \gl \right\|
-% \le \left\| \gk - \nabla f\left(\xk\right) \right\|
-% +   \left\| \nabla f\left(\xk\right) - \nabla f\left(\xl\right) \right\| \nonumber \\
-% +   \left\| \nabla f\left(\xl\right) - \gl \right\|
-% \le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmf_close}
-% \end{align}
-% \color{black}
-
-By the triangle inequality, \cref{til_acc_const}, \cref{til_lip_cons}, and \cref{til_bound_dk} provide
-\begin{align}
-\left\| \gmcik - \gmcil \right\|
-\le \left\| \gmcik - \nabla c_i\left(\xk\right) \right\|
-+   \left\| \nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right) \right\| \nonumber \\
-+   \left\| \nabla c_i\left(\xl\right) - \gmcil \right\|
-\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmc_close}
-\end{align}
-
-
-% \color{red}
-% Using \cref{til_gmf_close}, \cref{til_gmc_close}, \cref{til_upper_bounds}, \cref{bound_dot_product}, and \cref{til_define_eps} we find
-% \begin{align}
-% \left\|\gk^T \gmcik - \gl^T \gmcil\right\| \le 2M\epsilon \le \frac 1 4 \huffeps. \label{til_case_one}
-% \end{align}
-% \color{black}
-
-
-\paragraph{Case 1}
-% \begin{comment}
-% \begin{align*}
-% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \left(\gmcil\right) \ge 0
-% \end{align*}
-% 
-% \begin{align*}
-% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \gmcil \ge 0, \\
-% \end{align*}
-% 
-% 
-% \begin{align*}
-% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \gmcil \ge 0, \\
-% \Longrightarrow - \gk^T \gmcil \ge \left(\projkl\left( [m] \right) - \xk \right)^T \gmcil \\
-% = \gmcil^T\left(\projkl\left( [m] \right) - \xl \right) + \gmcil^T\left(\xk - \xl \right) \\
-% = \mcil \left(\xl\right) + \gmcil^T\left(\xk - \xl \right)
-% \end{align*}
-
-% \begin{align*}
-% \left(\xk - \gk - \projkl\right)^T\left(\xl - \projkl\right) \le 0 \\
-% \gmcil^T\left(\projkl - \xl\right) = -\mcil\left(\xl\right) \ge 0 \\
-% \end{align*}
-
-% Does the following line need justification?
-% \end{comment}
-
-If $i \in \activeprojkl$, then $\xl \in \feasiblel\left([m]\right)$ implies
+By \cref{mingradassumption}, if $-c_i\left(\xk\right) \le \mingradepsilon$, then $\nabla c_i\left(\xk\right) \ge \mingrad \ge \activegradmin$.
+We may now assume that $-c_i\left(\xk\right) \ge \mingradepsilon$.
+Because $i \in \activeindicesk$, using \cref{define_z}, we have
 \begin{align*}
-\left(\xk - \gk - \xl\right)^T \gmcil \ge 0. \\
+\sqrt{n} \minangledelta \ge \left\|\xk - \zik \right\|
+= \frac{-c_i\left(\xk\right)}{\left\|\gmcik\right\|}
+\ge \frac{\mingradepsilon}{\left\|\gmcik\right\|}
+\Longrightarrow
+\left\|\gmcik\right\| \ge \frac{\mingradepsilon}{\sqrt{n} \minangledelta} \ge \activegradmin
 \end{align*}
-Using \cref{til_upper_bounds}, \cref{til_bound_dk}, and \cref{til_define_eps}, this becomes
-\begin{align*}
-0 \le \left\| \gmcil \right\| \left\|\xk - \xl \right\|- \gk^T \gmcil \\
-\le \maxmodelgrad \frac {\huffeps} {4\maxmodelgrad} - \gk^T \gmcil
-\end{align*}
-so that
-\begin{align}
-\label{til_replacement}
-- \gk^T \gmcil \ge -\frac 1 4 \huffeps .
-\end{align}
-Also note that \cref{til_upper_bounds}, \cref{til_gmc_close}, \cref{til_define_eps} imply
-\begin{align*}
-\left\|
- \gk^T \gmcik
--\gk^T \gmcil
-\right\| \\
-\le \left\|\gk\right\| \left\|\gmcik - \gmcil\right\|
-\le \maxmodelgrad \epsilon = \frac 1 {4} \huffeps.
-\end{align*}
-Combining this with \cref{til_replacement}, we see $-\gk^T \gmcik \ge - \frac 1 2 \huffeps$.
-\paragraph{Case 2}
-Instead, if $i \in \activeprojkk$, then $-\gk^T \gmcik \ge 0 \ge - \frac 1 2 \huffeps$.
-
-\paragraph{Case 3}
-Lastly, suppose that $i \in \trueactiveprojk$.
-Then, by \cref{til_acc_const}, \cref{til_upper_bounds}, \cref{til_bound_dk}, and \cref{til_define_eps}
-\begin{align*}
--\gk^T \gmcik \ge -\gk^T \nabla c_i\left(\xk\right) - \left\|\gk\right\| \kappa_g \dk^2 \\
-\ge 0 - \maxmodelgrad \kappa_g \frac{\epsilon}{4\kappa_g} 
-=  - \frac{1}{16 } \huffeps
-\end{align*}
-
-
-Throughout the cases, we have established that
-\begin{align}
-\label{til_either_way}
--\gk^T \gmcik \ge - \frac 1 2 \huffeps, \quad \forall i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk.
-\end{align}
-Combining this with \cref{til_define_eps}, \cref{til_acc_const}, \cref{til_upper_bounds}, \cref{til_bound_dk} we see
-\begin{align*}
-\left\| \gk^T \gmcik - \gk^T \nabla c_i \left(\xk\right)\right\| 
-\le M\kappa_g\dk^2 
-\le M\frac {\epsilon} {4} \le \frac 1 {16} \huffeps.
-\end{align*}
-This, along with \cref{til_either_way} gives
-\begin{align*}
--\gk^T \nabla c_i \left(\xk\right) \ge -\huffeps.
-\end{align*}
-By \cref{huffman_assumption} there exists a unit vector $\huffdirk = \huffdir\left(\xk, -\gk\right) \in \Rn$ such that
-\begin{align*}
-\left(\huffdirk\right)^T \nabla c_i \left(\xk\right) \ge \huffalpha.
-\end{align*}
-By \cref{til_acc_const} and \cref{til_bound_dk}
-\begin{align*}
-\left\|
-\left(\huffdirk\right)^T \nabla c_i \left(\xk\right) -
-\left(\huffdirk\right)^T \gmcik
-\right\|
-\le ( 1 ) \kappa_g \dk^2 
-\le \frac 1 2 \huffalpha
-\end{align*}
-so that
-\begin{align*}
-\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha.
-\end{align*}
-Thus, we only need to let $k_0 = \max\left\{k_1, k_2\right\}$.
-% 
-% 
-% \paragraph{Case 2}
-% If $i \in \activeprojkk$, then
-% \begin{align*}
-% \Longrightarrow  \\
-% \Longrightarrow u\left(\xk, -\gk\right)^T \gmcik \ge \frac 1 2 \alpha
-% .
-% \end{align*}
-% %  \\
-% % \Longrightarrow u\left(\xk, -\gk\right)^T \gmcil \ge \frac 1 4 \alpha
-
 \end{proof}
+
 
 
 \begin{lemma}
-\label{huffman_constant_is_bounded}
-Let $\jackk$ and $\activeprojkk$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
-Suppose that \cref{huffman_assumption} and the assumptions for \cref{bp_combining_several} hold.
-There exists $k_0 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_0$, then 
+\label{yet_another_bound_on_a_u}
+Suppose that the assumptions for \cref{underbound}, \cref{accuracy_is_satisfied} hold.
+Suppose that the assumptions for \cref{model_gradients_are_cauchy} hold.
+
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+There exists $k_0 \in \naturals$, scalar $\minactivealpha > 0$, and unit vector $\activedirk \in \Rn$ such that if 
+$k \ge k_0$, then $\forall i \in \activeindicesk$
 \begin{align*}
-H\left(\jackkl \right) \le \huff,
-\quad 
-H\left(\jackt\right) \le \huff,
+\gmcik^T \activedirk \ge \minactivealpha
 \quad \textrm{and} \quad
-H\left(\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right)\right) \le \huff.
+\nabla c_i\left(\xk\right)^T \activedirk \ge \minactivealpha.
+\end{align*}
+
+Furthermore, if a set $S$ satisfies \cref{criteria_from_contradiction}, and $(k, l) \in S$, $l \ge k_0$, then $\forall i \in \activeindicesk$
+\begin{align*}
+\gmcil^T \activedirk \ge \minactivealpha.
 \end{align*}
 \end{lemma}
-
 \begin{proof}
-Let $\huffalpha$ be defined by \cref{huffman_assumption}, and define $\huff = \frac 2 {\huffalpha}$.
-We know by \cref{bp_combining_several} that there exists
-$k_1 \in \naturals$ such that for any $k, l \ge k_1$ there is a unit vector 
-$ \huffdirk \in \Rn $
-such for any $i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk$,
+
+Let 
+$\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt};
+$\kappa_g$ be defined by \cref{accuracy_is_satisfied}; 
+and $\activegradmin$ be defined by \cref{define_activegradmin}.
+
+Define 
+\begin{align}
+\minactivealpha = \frac 1 2 \minanglealpha \activegradmin. \label{define_minactivealpha}
+\end{align}
+
+By \cref{delta_to_zero}, we know there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then
 \begin{align*}
-\left( \huffdirk \right)^T \gmcik \ge \frac 1 2 \huffalpha
-\quad \textrm{and} \quad
-\left( \huffdirk \right)^T \nabla c_i\left(\xk\right) \ge \frac 1 2 \huffalpha.
+\dk \le \minangledelta \quad \textrm{and} \quad  \dk \le \sqrt{\frac {\minanglealpha \activegradmin} {2 \kappa_g}}.
+\end{align*}
+Thus, by \cref{minangleassumption_alt} and \cref{underbound} we know 
+there exists a unit vector $\minangledirk\in\Rn$ and $k_2 \in \naturals$ such that 
+for all $i \in \mathbb I^{(k)}$, $k \ge k_2$:
+\begin{align*}
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \Longrightarrow \gmcik\left(-\minangledirk\right) \ge \minanglealpha \activegradmin
+\end{align*}
+Also, by \cref{accuracy_is_satisfied}, we have
+\begin{align*}
+\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \kappa_g \dk^2 \le \frac 1 2 \minanglealpha \activegradmin
+\end{align*}
+so that
+\begin{align*}
+\nabla c_i\left(\xk\right)^T \left(-\minangledirk\right) = 
+\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \nabla c_i\left(\xk\right) \right)^T\left(-\minangledirk\right) \\
+\ge \minanglealpha \activegradmin - \left\|\gmcik - \nabla c_i\left(\xk\right) \right\|\left\|\minangledirk\right\|
+\ge \minanglealpha \activegradmin - \frac 1 2 \minanglealpha \activegradmin = \minactivealpha.
 \end{align*}
 
-% \jackkl
-% \jackt
-% \nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right)\right)
-
-That is,
+Furthermore, if $(k, l) \in S$, then by \cref{model_gradients_are_cauchy} there exists $k_3 \in \naturals$ such that if $(k, l) \in S$ and $k, l \ge k_3$
 \begin{align*}
-\jackkl \huffdirk \ge \frac 1 2 \huffalpha e,
-\quad
-\jackt \huffdirk \ge \frac 1 2 \huffalpha e,
-\quad \textrm{and} \quad
-\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right) \huffdirk \ge \frac 1 2 \huffalpha e.
+\left\|\gmcik - \gmcil\right\| \le \frac {\minanglealpha \activegradmin} {2}
 \end{align*}
-
-Now, let 
+and once again,
 \begin{align*}
-(A, S) \in \left\{
-\left(\jackkl, \activeprojkk \cup \activeprojkl\right),
-\left(\jackt, \activeprojkk \cup \trueactiveprojk\right),
-\left(\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right), \activeprojkk \cup \trueactiveprojk\right)
-\right\},
-\end{align*}
-and $J \subseteq S$ with $|J| \ne 0$ be arbitrary.
-Suppose that $v_J \in \mathbb R^J_+$ with $\|v_J\| = 1$.
-Then, Cauchy-Schwarz implies
- \begin{align*}
- \left\|A_J^Tv\right\| = \left\|A_J^Tv\right\| \left\|\huffdirk\right\| \ge
-A_J^T\huffdirk
-= v^TA_J\huffdirk
-\ge \frac 1 2 \huffalpha v^Te
-\ge \frac 1 2 \sqrt{|J|} \huffalpha
-\ge \frac {\huffalpha} 2 .
-\end{align*}
-so that 
-\begin{align*}
-\left[ \left\|A_J^Tv\right\|\right]^{-1} \le \frac 2 {\huffalpha}.
-\end{align*}
-Because $v$ was arbitrary, we have
-\begin{align*}
-\left[\min_{v \in \mathbb R^J_+, \|v\| = 1} \left\|A_J^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha}.
-\end{align*}
-Because $J$ was arbitrary, we can substitute this into \cref{hoffman_theorem} to find
-\begin{align*}
-H\left(A\right) = \max_{J \in \mathcal S_h\left(A\right)} \left[\min_{v \in \mathbb R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha} = \huff.
+\gmcil \left(-\minangledirk\right) = 
+\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \gmcil \right)^T\left(-\minangledirk\right)
+\ge \minactivealpha.
 \end{align*}
 \end{proof}
 
 
 
+\begin{lemma}
+\label{the_hoffman_constants_are_bounded}
+Let $H(A)$ be defined by \cref{hoffman_definition}.
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+Suppose that the assumptions for \cref{yet_another_bound_on_a_u} hold.
+
+There exists $\huff > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
+\begin{align*}
+H\left(\left[\modeljack\right]_{\activeindicesk}\right) \le \huff
+\quad \textrm{and} \quad
+H\left(\left[\truejack\right]_{\activeindicesk}\right) \le \huff.
+\end{align*}
+Furthermore, if $S$ satisfies \cref{criteria_from_contradiction}, $l \ge k_0$, $(k, l) \in S$, then
+\begin{align*}
+H\left(\left[\modeljacl\right]_{\activeindicesk}\right) \le \huff.
+\end{align*}
+
+\end{lemma}
+\begin{proof}
+By \cref{yet_another_bound_on_a_u}, 
+there exists $k_1 \in \naturals$, scalar $\minactivealpha > 0$, and unit vector $\activedirk \in \Rn$ 
+such that if $k \ge k_1$, $i \in \activeindicesk$, then
+\begin{align*}
+\gmcik^T \activedirk \ge \minactivealpha 
+\Longrightarrow \left[\modeljack \activedirk \right]_{\activeindicesk} \ge \minactivealpha e, \\
+\textrm{and} \quad
+\nabla c_i\left(\xk\right)^T \activedirk \ge \minactivealpha
+\Longrightarrow \left[\truejack \activedirk \right]_{\activeindicesk} \ge \minactivealpha e.
+\end{align*}
+
+
+Thus, for any $J \subseteq \activeindicesk$, $J \ne \emptyset$, $v \in \mathbb R^{|J|}$, $v \ge 0$, $\|v\| = 1$:
+$A \in \left\{\modeljack,  \truejack  \right\}$,
+ \begin{align*}
+ \left\|A_J^Tv\right\| = \left\|A_J^Tv\right\| \left\|\activedirk\right\| \ge
+\left(A_J^Tv\right)^T\activedirk
+= v^TA_J \activedirk
+\ge \minactivealpha v^Te
+\ge \sqrt{|J|} \minactivealpha
+\ge \minactivealpha .
+\end{align*}
+Similarily, if $(k, l) \in S$, $l \ge k_1$, then if $A = \modeljacl$, we still find
+$\left\|A_J^Tv\right\| \ge \minactivealpha$.
+
+Because $v$ was arbitrary, we have for each 
+$A \in \left\{\modeljack,  \truejack,  \modeljacl  \right\}$
+\begin{align*}
+A_J^Tv \ge \minactivealpha 
+\Longrightarrow \min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\|\ge \minactivealpha
+\Longrightarrow \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1} \le \frac 1 {\minactivealpha}.
+\end{align*}
+Because $J$ was arbitrary, we find
+\begin{align*}
+H\left(A_{\activeindicesk}\right) 
+= \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\le \max_{J \in \mathcal S_h(A)} \frac 1 {\minactivealpha} = \frac 1 {\minactivealpha}.
+\end{align*}
+Thus, we only need to let $\huff = \frac 1 {\minactivealpha}$, and $k_0 = k_1$.
+\end{proof}
 
 
 
-% \color{red}
-% \begin{theorem}
-% \begin{align*}
-% \left\|\projkl([m]) - \projkk([m]) \right\| \le \epsilon
-% \end{align*}
-% \end{theorem}
-% \begin{proof}
-% \begin{align*}
-% \left\|\projkl([m]) - \projkk([m]) \right\| = \left\|\projkl\left(\activeprojkk \cup \activeprojkl \right) - \projkk\left(\activeprojkk \cup \activeprojkl \right) \right\|
-% \end{align*}
-% For $k \ge k_0$, 
-% \begin{align*}
-% \left\|A^{(k)}_{\activeprojkk \cup \activeprojkl} - A^{(l)}_{\activeprojkk \cup \activeprojkl}\right\| \le \epsilon_1 \\
-% \textrm{and} \quad \left\|c\left(\xk\right)_{\activeprojkk \cup \activeprojkl} - c\left(\xl\right)_{\activeprojkk \cup \activeprojkl}\right\| \le \epsilon_1 \\
-% \textrm{and} \quad H\left(A^{(k)}_{\activeprojkk \cup \activeprojkl}\right) \le \epsilon_1 \\
-% \textrm{and} \quad H\left(A^{(l)}_{\activeprojkk \cup \activeprojkl}\right) \le \epsilon_1 \\
-% \Longrightarrow \left\|\projkl\left(\activeprojkk \cup \activeprojkl\right) - \projkk\left(\activeprojkk \cup \activeprojkl\right) \right\| \le  \epsilon
-% \end{align*}
-% \end{proof}
-% \color{black}
+
 
 \subsubsection{Bound on Arbitrary Polyhedra}
 
@@ -4785,48 +4885,78 @@ x_2^{\star} = \argmin_{
 }\|x\|^2.
 \label{bap_define_the_projections}
 \end{align}
-Lastly, we assume that there is some $\hat x \in P_1 \cap P_2 \cap \bpr$ and $h > 0$ such that 
+We also assume that $p$ is within the interior of the polyhedron.
+That is, there is some $h > 0$ such that 
 \begin{align}
 \label{bap_feasible_by_h}
-A_1 \hat x \le b_1 - h
+A_1 p \le b_1 - h
 \quad \textrm{and} \quad
-A_2 \hat x \le b_2 - h.
+A_2 p \le b_2 - h.
+\end{align}
+
+Lastly, define the functions
+$\ehuffo : \Rn \times \reals \times \reals \to \reals$;
+$\ehufft : \Rn \times \reals \times \reals \times \reals \to \reals$; and 
+$\mhufft : \Rn \times \reals \times \reals \to \reals$
+by
+\begin{align}
+\ehuffo\left(w, x, y\right) &= \min\left\{\frac{\min_i w_i}{1 + x}, \frac 1 {2y}\right\} \label{define_ehuffo} \\
+\ehufft\big(w, x, y, z\big) &= \min\left\{\frac{\min_i w_i}{1 + x}, \frac 1 {2y}, \frac 1 {2z}\right\} = \min\left\{\ehuffo\left(w, x, y\right), \ehuffo\left(w, x, z\right) \right\} \label{define_ehufft} \\
+\mhufft \big(w, x, y \big) &= 6y \left(1 + w\right) \left(1 + 2 x\right). \label{define_mhufft}
 \end{align}
 
 
-\begin{comment}
-Remove this.
-\end{comment}
+% <<<<<<< HEAD
+% \begin{comment}
+% Remove this.
+% \end{comment}
+% 
+% \begin{lemma}[Dramatic simplification of Lemma 4.1]
+% \label{4_1}
+% Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
+% \cref{bap_feasible_by_h} is satisfied and $p \in P_1$.
+% Then for any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, 
+% the system $A_1x \le b'$ has a solution $x \in \bpr$.
+% \end{lemma}
+% \begin{align*}
+% 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right]
+% \end{align*}
+% \begin{align*}
+% \begin{array}{rcl}
+% \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) =
+% \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
+% M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
+% \end{array}
+% \end{align*}
+% >>>>>>> f05e15e489d76ee1a9363ed7eeea3e9de603a110
 
-\begin{lemma}[Dramatic simplification of Lemma 4.1]
-\label{4_1}
-Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
-\cref{bap_feasible_by_h} is satisfied and $p \in P_1$.
-Then for any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, 
-the system $A_1x \le b'$ has a solution $x \in \bpr$.
-\end{lemma}
 
-\begin{proof}
-Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
-\end{proof}
+% \begin{lemma}[Dramatic simplification of Lemma 4.1]
+% \label{4_1}
+% Suppose $A_1$ be an $m \times n$ matrix, $b_1, h \in \Rm$, $\hat x, p \in \Rn$, $r>0$ such that 
+% \cref{bap_feasible_by_h} is satisfied and $p \in P_1$.
+% Then for any $b' \in \Rm$ with $\|\left[b_1 - b'\right]^+\|_{\infty} \le \min_i h_i$, 
+% the system $A_1x \le b'$ has a solution $x \in \bpr$.
+% \end{lemma}
+% 
+% \begin{proof}
+% Because $b_1 - e \min_i h_i \le b' \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le b'$ so that $\hat x$ is a solution.
+% \end{proof}
 
-\begin{comment}
-Remove this.
-\end{comment}
-
-
-\begin{lemma}
-\label{simple_bound}
-If $x > 0$, then $\frac {x}{1+x} \le x$.
-\end{lemma}
-\begin{proof}
-Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x} \le x$.
-\end{proof}
+% 
+% \begin{lemma}
+% \label{simple_bound}
+% If $x > 0$, then $\frac {x}{1+x} \le x$.
+% \end{lemma}
+% \begin{proof}
+% Observe $1 \le 1 + x\Longrightarrow x \le x + x^2 \Longrightarrow \frac {x}{1+x} \le x$.
+% \end{proof}
 
 % \begin{align*}
 % \frac {d}{dx} \frac x {1-x}|_{\frac 1 2} = \frac 1 {(1 - x)^2}|_{\frac 1 2} = 4 \\
 % \Longrightarrow \frac x {1-x} \le 4x \forall x \le \frac 1 2
 % \end{align*}
+
 
 \begin{lemma}[Theorem 4.2 of \cite{perturbations_of_linear_inequalities}]
 \label{4_2}
@@ -4838,80 +4968,105 @@ $\hat x, p \in \Rn$;
 $\epsilon, r > 0$
 be given satisfying
 \cref{bap_define_the_polyhedra}, \cref{bap_polyhedra_are_close}, \cref{bap_define_ps}, and \cref{bap_feasible_by_h}.
-Let $H\left(A, r\right)$ be defined by \cref{version_of_hoffman_with_infinity_ball}.
+Let $H\left(A, r\right)$ and $\ehuffo$ be defined by \cref{version_of_hoffman_with_infinity_ball} and \cref{define_ehuffo} respectively.
 
 % Let $A_1$ be an $ m \times n $ matrix;
 % $P_1$ and $P_2$ be defined by \cref{bap_define_the_polyhedra};
 % and $h$, $M$, $H(A_1)$ be defined by \cref{bap_feasible_by_h}, \cref{bap_polyhedra_are_bounded}, and \cref{hoffman_theorem} respectively.
 
-There exists $\epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1, r\right)\right)$ such that if 
-$\epsilon \le \epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1, r\right)\right)$
-then, for every $s_1 \in P_1 \cap \bpr$,
-% satisfying $\epsilon'(1 + \|s_1\|) \le ?$ 
-there corresponds an $s_2$ in $P_2 \cap \bpr$ satisfying 
-$\|s_1 - s_2\|_{\infty}\le \epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right)$.
+If
+$\epsilon \le \ehuffo \left(h, \|p\| + r, H\left(A_1, r\right)\right)$
+then, for every $s \in P_1 \cap \bpr$,
+there corresponds an $s'$ in $P_2 \cap \bpr$ satisfying 
+$\|s - s'\|_{\infty}\le 2\epsilon H\left(A_1, r\right)\left(1 + \|s\|_{\infty}\right)$.
 \end{lemma}
 
 
 \begin{proof}
-We define
-\begin{align*}
-\epsilon_{h, 1}\left(h, \|p_1\| + r, H\left(A_1, r\right)\right)
-= \min\left\{\frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}\right\}.
-\end{align*}
+% We define
+% \begin{align*}
+% \epsilon_{h, 1}\left(h, \|p_1\| + r, H\left(A_1, r\right)\right)
+% = \min\left\{\frac{\min_i h_i}{1 + \|p\| + r},\left[2 H\left(A_1, r\right)\right]^{-1}\right\}.
+% \end{align*}
 
-Because $s_1 \in P_1 \cap \bpr$, we can let $x_1 = s_1$ to see $A_1x_1 \le b_1$ and $x_1 \in \bpr$.
+Because $s \in P_1 \cap \bpr$, we can let $y^{(1)} = s$ to see $A_1y^{(1)} \le b_1$ and $y^{(1)} \in \bpr$.
 % Because $P_2$ is not empty, we know that there is an $\bar s  \in P_2$ satisfying $A_2\bar s \le b_2$.
 % Define $x_1 = s_1$, so that $x_1$ solves $A_1x_1 \le b_1$.
-We extend this by letting $x_{n+1} \in \bpr$ for all $n = 2, 3, \ldots$ be some solution to
-$A_1 x_{n+1} \le b_2 + (A_1 - A_2) x_n$.
-By \cref{4_1}, there is a solution if
+We extend this by letting $y^{(n+1)} \in \bpr$ for all $n = 2, 3, \ldots$ be some solution to
+
+\begin{align}
+A_1 y^{(n+1)} \le b_2 + (A_1 - A_2) y^{(n)}. \label{define_the_sequence}
+\end{align}
+
+Notice that
 \begin{align*}
-\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i.
+\left\|\left[b_1 - b_2 - (A_1 - A_2)y^{(n)}\right]^+\right\|_{\infty} 
+\le \epsilon + \epsilon\left\| \left(y^{(n)}\right)^+\right\|_{\infty} 
+\le \epsilon\left(1 + \left\|y^{(n)}\right\|_\infty\right) \quad \textrm{and} \\
+\epsilon \le \ehuffo\left(h, \|p\| + r, H\left(A_1\right)\right) \le \frac{\min_i h_i}{1 + \|p\| + r} \Longrightarrow
+\epsilon\left(1 + \left\|y^{(n)}\right\|_\infty\right) \le \epsilon\left(1 + \|p\| + r\right) \le \min_i h_i.
 \end{align*}
-This is satisfied as $\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_{\infty} \le \epsilon + \epsilon\| x_n^+\|_{\infty} \le \epsilon(1 + \|x_n\|_\infty)$
-and
+imply
 \begin{align*}
-\epsilon \le \epsilon_{h, 1}\left(h, \|p\| + r, H\left(A_1\right)\right) \le \frac{\min_i h_i}{1 + \|p\| + r} \Longrightarrow
-\epsilon(1 + \|x_n\|_\infty) \le \epsilon(1 + \|p\| + r) \le \min_i h_i.
+b_1 - b_2 - (A_1 - A_2)y^{(n)} \le \left[b_1 - b_2 - (A_1 - A_2)y^{(n)}\right]^+ \le \min_i h_i e \le h
 \end{align*}
+or just $b_1 - h \le b_2 - \left(A_1 - A_2\right)y^{(n)}$.
+This means $A_1 p \le b_1 - h \le b_2 - \left(A_1 - A_2\right)y^{(n)}$,
+so that $p$ is a solution to \cref{define_the_sequence} for each $n$, and the system \cref{define_the_sequence} is consistent.
+
+
+% \begin{align*}
+% A_1p \le b_1 - h \le b_1 - e \min_i h_i
+% \le ?
+% \le b_2 + \left(A_1 - A_2\right) y^{(n)}
+% \end{align*}
+
+% Because $b_1 - e \min_i h_i \le  b_2 + (A_1 - A_2) x_n \le b_1 + e \min_i h_i$, we have $A_1\hat x\le b_1 - h\le b_1 - e \min_i h_i \le  b_2 + (A_1 - A_2) x_n$ so that $p$ is a solution.
+
+
+% By \cref{4_1}, there is a solution if
+% \begin{align*}
+% \|[b_1 - b_2 - (A_1 - A_2)x_n]^+\|_\infty \le \min_i h_i.
+% \end{align*}
+
 % Thus, this will have a solution for a suitably small $\epsilon$ with a uniform bound on $\|x_n\|_\infty$.
 Because there is a solution for each $n$, we can use \cref{version_of_hoffman_with_infinity_ball} 
-to find $x_{n+1}$ whose distance from $x_n$ is given by
+to find $y^{(n+1)}$ whose distance from $y^{(n)}$ is given by
 \begin{align*}
-\|x_{n+1} - x_n\|_\infty \le  H\left(A_1, r\right) \left\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \\
-\le  H\left(A_1, r\right)\left\|[b_1 - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty\le  H\left(A_1, r\right) \epsilon(1 + \|x_n\|_\infty).
+\left\|y^{(n+1)} - y^{(n)}\right\|_\infty 
+\le  H\left(A_1, r\right) \left\|\left[A_1x_n - b_2 - (A_1 - A_2)y^{(n)}\right ]^+\right\|_\infty \\
+\le  H\left(A_1, r\right)\left\|\left[b_1 - b_2 - (A_1 - A_2)y^{(n)} \right]^+\right\|_\infty
+\le  H\left(A_1, r\right) \epsilon\left(1 + \left\|y^{(n)} \right\|_\infty\right).
 \end{align*}
 For $n=1$ this reduces to
 \begin{align*}
-\|x_2 - x_1\|_\infty \le \epsilon H\left(A_1, r\right) (1 + \|s_1\|_\infty)
-\Longrightarrow \|x_2\|_\infty \le \|s_1\| _\infty+ \epsilon H\left(A_1, r\right)(1 + \|s_1\|_\infty).
+\left\|y^{(2)} - y^{(1)}\right\|_\infty \le \epsilon H\left(A_1, r\right) (1 + \|s\|_\infty)
+\Longrightarrow \left\|y^{(2)}\right\|_\infty \le \|s\| _\infty+ \epsilon H\left(A_1, r\right)(1 + \|s\|_\infty).
 \end{align*}
 
 For all other values of $n$, we also know that
 \begin{align*}
-\left\|x_{n+1} - x_{n}\|_\infty \le  H\left(A_1, r\right)\|[A_1x_n - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty \\
-\le  H\left(A_1, r\right)\left\|[b_2 + (A_1 - A_2)x_{n-1} - b_2 - (A_1 - A_2)x_n]^+\right\|_\infty
-\le \epsilon  H\left(A_1, r\right)  \|x_{n}-x_{n-1}\|_\infty.
+\left\|y^{(n+1)} - y^{(n)}\right\|_\infty \le  H\left(A_1, r\right)\left\|\left[A_1x_n - b_2 - (A_1 - A_2)y^{(n)}\right]^+\right\|_\infty \\
+\le  H\left(A_1, r\right)\left\|[b_2 + (A_1 - A_2)y^{(n-1)} - b_2 - (A_1 - A_2)y^{(n)}]^+\right\|_\infty
+\le \epsilon  H\left(A_1, r\right)  \|y^{(n)}-y^{(n-1)}\|_\infty.
 \end{align*}
 
 By induction, we see that
 \begin{align*}
-\|x_{n+1} - x_n\|_\infty 
-\le \left(\epsilon H\left(A_1, r\right)\right)^{n-1}\left\|x_2 - x_1\right\|_\infty \\
-\Longrightarrow \|x_{n+1}\|_\infty 
-\le \|s_1\|_\infty + \left( \sum_{i=1}^{n-1}( \epsilon H(A, r))^i\right) \|x_2 - x_1\|_\infty .
+\left\|y^{(n+1)} - y^{(n)}\right \|_\infty 
+\le \left[\epsilon H\left(A_1, r\right)\right]^{n-1}\left\|y^{(2)} - y^{(1)}\right\|_\infty \\
+\Longrightarrow \left\|y^{(n+1)}\right\|_\infty 
+\le \|s\|_\infty + \left( \sum_{i=1}^{n-1}\left( \epsilon H(A, r)\right)^i\right) \|y^{(2)} - y^{(1)}\|_\infty .
 \end{align*}
 
-Because $\epsilon H(A_1)\le\frac 1 2$, the sequence $\{x_n\}$ is Cauchy, and it must converge to a point $s_2$ satisfying
+Because $\epsilon H(A_1)\le\frac 1 2$, the sequence $\left\{y^{(n)}\right\}$ is Cauchy, and it must converge to a point $s'$ satisfying
 \begin{align*}
-\|s_2 - s_1\|_\infty 
-\le \frac{1}{1 - \epsilon H\left(A_1, r\right)}\|x_2 - x_1\| 
-\le \frac{\epsilon H\left(A_1, r\right)}{1 - \epsilon H\left(A_1, r\right)}\left(1 + \|s_1\|_{\infty}\right)
-\le \epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right)
+\|s' - s\|_\infty 
+\le \frac{1}{1 - \epsilon H\left(A_1, r\right)}\left\|y^{(2)} - y^{(1)}\right\| 
+\le \frac{\epsilon H\left(A_1, r\right)}{1 - \epsilon H\left(A_1, r\right)}\left(1 + \|s\|_{\infty}\right)
+\le 2\epsilon H\left(A_1, r\right)\left(1 + \|s_1\|_{\infty}\right).
 \end{align*}
-by \cref{simple_bound}.
-Lastly, $s_2$ solves $A_1s_2 \le b_2 + (A_1 - A_2)s_2$ so that $A_2s_2 \le b_2$ and $s_2 \in P_2$.
+Lastly, $s'$ solves $A_1s' \le b_2 + (A_1 - A_2)s'$ so that $A_2s' \le b_2$ and $s' \in P_2$.
 \end{proof}
 
 
@@ -4922,42 +5077,43 @@ Let
 $A_1, A_2 \in \mathbb R ^ {m \times n}$; 
 $P_1, P_2 \subseteq \Rn$; 
 $h, b_1, b_2 \in \Rm$; 
-$p, \hat x,x_1^{\star}, x_2^{\star}  \in \Rn$, 
+$p, x_1^{\star}, x_2^{\star}  \in \Rn$, 
 $\epsilon, r > 0$
 be given satisfying
 \cref{bap_define_the_polyhedra}, \cref{bap_polyhedra_are_close}, \cref{bap_define_ps}, \cref{bap_define_the_projections}, and \cref{bap_feasible_by_h}.
-Let $H\left(A, r\right)$ be defined by \cref{version_of_hoffman_with_infinity_ball}.
+Let 
+$H\left(A, r\right)$, $\ehufft$, and $\mhufft$
+be defined by 
+\cref{version_of_hoffman_with_infinity_ball}, \cref{define_ehufft}, and \cref{define_mhufft}
+respectively.
 
-There exist
-$\epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) > 0$ and 
-$M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) > 0$
-such that if 
+If
 \begin{align*}
-\epsilon \le \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big),
+\epsilon \le \ehufft\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big),
 \end{align*}
 then
 \begin{align*}
 \|x_1^{\star} - x_2^{\star}\| 
-\le M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) \sqrt{\epsilon}.
+\le \mhufft \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) \sqrt{\epsilon}.
 \end{align*}
 \end{lemma}
 
 \begin{proof}
 We define
-\begin{align*}
-\begin{array}{rcl}
-\epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) & = &
-\min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
-M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
-\end{array}
-\end{align*}
-and
+% \begin{align*}
+% \begin{array}{rcl}
+% \epsilon_{h, 2}\big(h, \|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right)\big) & = &
+% \min\left\{\frac 1 2, \frac{\min_i h_i}{1 + \|p\| + r},\left(2 H\left(A_1, r\right)\right)^{-1}, \left(2 H\left(A_2, r\right)\right)^{-1}\right\}\\
+% M_{h, 2} \big(\|p\| + r, H\left(A_1, r\right), H\left(A_2, r\right) \big) & = & 3H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right].
+% \end{array}
+% \end{align*}
+% and
 \begin{align*}
 \begin{array}{rclrcl}
 r_1 &=& \|x_1^{\star}\|_{\infty},
-& c_{r_1} &=& H\left(A_1, r\right)\left(1 + r_1\right), \\
+& c_{r_1} &=& 2H\left(A_1, r\right)\left(1 + r_1\right), \\
 r_2 &=&  \|x_1^{\star}\|_{\infty} + c_{r_1}\epsilon,
-& c_{r_2} &=&  H\left(A_2, r\right)\left(1 + r_2\right).
+& c_{r_2} &=&  2H\left(A_2, r\right)\left(1 + r_2\right).
 \end{array}
 \end{align*}
 % Let $c_{r_1} = $
@@ -4966,15 +5122,15 @@ r_2 &=&  \|x_1^{\star}\|_{\infty} + c_{r_1}\epsilon,
 % Want:
 
 Using \cref{4_2} we can let $x_2 \in P_2 \cap \bpr$ satisfy 
-$\|x_2 - x_1^{\star}\| \le \epsilon H(A_1, r) \left(1 + \|x_1^{\star}\|_{\infty}\right) = c_{r_1}\epsilon$.
+$\|x_2 - x_1^{\star}\| \le 2\epsilon H(A_1, r) \left(1 + \|x_1^{\star}\|_{\infty}\right) = c_{r_1}\epsilon$.
 Then
 $\|x_2^{\star}\| \le \|x_2\| = \|x_1^{\star} + x_2 - x_1^{\star}\| \le \|x_1^{\star}\| + c_{r_1}\epsilon = r_2$.
 We can once again use \cref{4_2} to choose $y_1 \in P_1 \cap \bpr$ satisfying 
-$\|x_2^{\star} - y_1\|_{\infty} \le \epsilon H(A_2, r)\left(1 + \|x_2^{\star}\|\right) \le c_{r_2}\epsilon$.
+$\|x_2^{\star} - y_1\|_{\infty} \le 2\epsilon H(A_2, r)\left(1 + \|x_2^{\star}\|\right) \le c_{r_2}\epsilon$.
+
 Because $P_1$, $P_2$, and $\bpr$ are convex sets, and $x_1^{\star}, x_2^{\star}$ minimize the projection of the origin, we have
 $\left(x_2^{\star}\right)^T \left(x_2 - x_2^{\star}\right)\ge 0$ and
 $\left(x_1^{\star}\right)^T \left(y_1 - x_1^{\star}\right)\ge 0$.
-
 Adding these, and rearranging, we find that
 \begin{align*}
 \|x_2^{\star} - x_1^{\star}\|_{\infty}^2 \le \|x_2^{\star} - x_1^{\star}\|_{\infty} c_{r_2}\epsilon + 2r_1c_{r_2}\epsilon \\
@@ -5031,15 +5187,15 @@ Using $\sqrt{x + y} \le \sqrt{x} + \sqrt{y}$, we have
 \end{align*}
 We can define 
 \begin{align*}
-M' = H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right],
+M' = 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right],
 \end{align*}
 and use
 \begin{align*}
 \begin{array}{cccccl}
 & r_1     &\le& \|p\| + r 													& &	\\
-\le & c_{r_1} &\le& H\left(A_1, r\right)\left(1 + \|p\| + r\right) 				& &	\\
-\le & r_2     &\le&  \|p\| + r + H\left(A_1, r\right)\left(1 + \|p\| + r\right) 	&=& \left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\\
-\le & c_{r_2} &\le&  H\left(A_2, r\right) \left[\left(\|p\| + r\right)\left[1 + H(A_1, r)\right] + H(A_1, r)\right] &=& M'
+\le & c_{r_1} &\le& 2H\left(A_1, r\right)\left(1 + \|p\| + r\right) 				& &	\\
+\le & r_2     &\le&  \|p\| + r + 2H\left(A_1, r\right)\left(1 + \|p\| + r\right) 	&=&-1 + \left(1 + \|p\| + r\right)\left[1 + 2H(A_1, r)\right]\\
+\le & c_{r_2} &\le& 2 \left(1 + \|p\| + r\right) H\left(A_2, r\right) \left[1 + 2H(A_1, r)\right] &=& M'
 \end{array}
 \end{align*}
 to see
@@ -5052,18 +5208,8 @@ to see
 
 
 
-\subsubsection{Bound on Projection}
+\subsubsection{Bound on Active Projection}
 
-
-\begin{definition}
-\label{criteria_from_contradiction}
-A sequence $S \subseteq\naturals \times \naturals$ is called a \emph{Cauchy pair-subsequence} if
-% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
-for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
-then 
-$\left\|\xk - \xl \right\| \le \epsilon$.
-% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
-\end{definition}
 
 % \begin{criteria}
 % \label{xlxkdifftozero}
@@ -5084,42 +5230,6 @@ $\left\|\xk - \xl \right\| \le \epsilon$.
 % \color{black}
 
 
-\begin{lemma}
-\label{model_gradients_are_cauchy}
-Suppose that the assumptions for
-\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}, \cref{accuracy_is_satisfied}
-hold.
-
-If $S$ satisfies \cref{criteria_from_contradiction}, then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
-such that if $(k, l) \in S$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
-\end{lemma}
-\begin{proof}
-Let $\epsilon > 0$ be arbitrary.
-By \cref{delta_to_zero}, we can choose $N_1$ such that $\lipgrad \left\|\xk - \xl \right\| \le \frac 1 3 \epsilon$.
-Also, because every convergent sequence is Cauchy, we can choose an $N_2 \in \naturals$ such that $\kappa_g \dk^2 \le \frac 1 3 \epsilon $ whenever $k \ge N_2$.
-Choose $N_0 = \max\{N_1, N_2\}$, and let $d, k \ge N_2$.
-The triangle inequality states
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le 
-\left\|\nabla \mcik\left(\xk\right) - \nabla c_i\left(\xk\right) \right\|
-+ \left \| \nabla \mcil\left(\xl\right) - \nabla c_i\left(\xl\right) \right \| \\
-+ \left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\|.
-\end{align*}
-Using \cref{accuracy_is_satisfied} and \cref{lipschitz_gradients_assumption}, we see
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\|.
-\end{align*}
-By our choice of $N_0$, we see that
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le \frac 1 3 \epsilon + \frac 1 3 \epsilon + \frac 1 3 \epsilon = \epsilon.
-\end{align*}
-\end{proof}
-% \left\|\mcik\left(\xk\right) - \mcik\left(\xl\right) \right\| + \left \| \mcik\left(\xl\right) - \mcil\left(\xl\right) \right\|
-
-
 
 
 % [m] = \left\{i \in \naturals | i \in [m] \right\} \label{sha_m}\\
@@ -5127,132 +5237,120 @@ By our choice of $N_0$, we see that
 % \projkl(S) = \argmin_{x \in \feasiblel(S)} \left\|\xk - \gk\right\| \label{sha_projkl} \\
 % \activeprojkk = \left\{ i \in [m] \bigg| \mcik\left(\xk\right) + \gmcik^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_proj_indices} \\
 % A^{(k)} = \nabla m_c\left(\xk\right) \label{sha_jacobian}
+% With $\jackk$, $\activeprojkl$, and $\trueactiveprojk$ defined by \cref{sha_jacobian}, \cref{sha_proj_indices}, and \cref{sha_true_proj_indices}, define
 
 
-With $\jackk$, $\activeprojkl$, and $\trueactiveprojk$ defined by \cref{sha_jacobian}, \cref{sha_proj_indices}, and \cref{sha_true_proj_indices}, define
+With $\activeindicesk$ defined by \cref{define_activeindicesk}, make the following definitions:
 \begin{align}
 \label{define_the_as}
-\begin{array}{ll}
-A_1 = \jackkl,
+\begin{array}{llllll}
+A_{m}^{(k, l)} &=& \left[\modeljacl \right]_{\activeindicesk},
 &
-b_1 = \left[-c\left(\xk\right) + {\nabla m^{(k)}_c}\left(\xk\right)^T\gk\right]_{\activeprojkk \cup \activeprojkl}, 
+b_{m}^{(k, l)} &=& \left[-c\left(\xl\right) + \modeljacl^T\left(\xl - \xk + \gk\right)\right]_{\activeindicesk},
 \\
-A_2 = \jaclkl,
+A_{c}^{(k)} &=& \left[\truejack \right]_{\activeindicesk},
 &
-b_2 = \left[-c\left(\xl\right) + {\nabla m^{(l)}_c}\left(\xl\right)^T\left(\xl - \xk + \gk\right)\right]_{\activeprojkk \cup \activeprojkl},
-\\
-A_3 = \jackt,
-&
-b_3 = \left[-c\left(\xk\right) + {\nabla m^{(k)}_c}\left(\xk\right)^T\gk\right]_{\activeprojkk \cup \trueactiveprojk}, 
-\\
-A_4 = \nabla c_{\activeprojkk \cup \trueactiveprojk}\left(\xk\right),
-&
-b_4 = \left[ -c\left(\xk\right) + \nabla c\left(\xk\right)^T\gk\right]_{\activeprojkk \cup \trueactiveprojk},
+b_{c}^{(k)} &=& \left[ -c\left(\xk\right) + \truejack^T\gk\right]_{\activeindicesk},
 \end{array}
 \end{align}
+% A_{m}^{(k)} &=& \left[\modeljack \right]_{\activeindicesk},
+% &
+% b_{m}^{(k)} &=& \left[-c\left(\xk\right) + \modeljack^T\gk\right]_{\activeindicesk}, 
+% \\
 along with
 \begin{align}
-P_i = \left\{x \in \Rn | A_ix \le b_i\right\}, \quad \forall i \in [4]. \label{define_the_ps}
+\begin{array}{cccc}
+\projkl = & \argmin_{s \in \Rn} & \left\|s - \left(\xk - \gk\right)\right\| & \\
+		& \textrm{s.t.}         & c_i\left(\xl\right) + \gmcil^T s \le 0	& \forall i \in \activeindicesk
+\end{array} \label{define_another_model_projection} \\
+\begin{array}{cccc}
+\trueprojk = & \argmin_{s \in \Rn} & \left\|s - \left(\xk - \gk\right)\right\| & \\
+		& \textrm{s.t.}         & c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T s \le 0	& \forall i \in \activeindicesk
+\end{array}\label{define_another_true_projection} 
 \end{align}
-\color{red}
-Notice that
-\begin{align*}
-P_1 = \left\{
-x \in \Rn \bigg |
-\mcik \left(\xk\right) + \gmcik \left(x - \gk \right) \le 0  \quad \forall i \in \activeprojkk \cup \activeprojkl
-\right\} \quad \textrm{and}\\
-P_2 = \left\{
-x \in \Rn \bigg |
-\mcil \left(\xl\right) + \gmcil \left(x - \xl + \xk - \gk\right) \le 0 \quad \forall i \in \activeprojkk \cup \activeprojkl
-\right\}.
-\end{align*}
-\color{black}
+and
+\begin{align}
+\label{define_the_ps}
+\begin{array}{cc}
+P^{(k)}_1 = \left\{x \in \Rn | b_{m}^{(k, k)}x \le b_{m}^{(k, k)}\right\}, &
+P^{(k)}_2 = \left\{x \in \Rn | A_{m}^{(k, l)}x \le b_{m}^{(k, l)}\right\}, \\
+\textrm{and}  &
+P^{(k)}_3 = \left\{x \in \Rn | A_{c}^{(k)} x \le b_{c}^{(k)}\right\}.
+\end{array}
+\end{align}
+% \color{red}
+% Notice that
+% \begin{align*}
+% P_1 = \left\{
+% x \in \Rn \bigg |
+% \mcik \left(\xk\right) + \gmcik \left(x - \gk \right) \le 0  \quad \forall i \in \activeprojkk \cup \activeprojkl
+% \right\} \quad \textrm{and}\\
+% P_2 = \left\{
+% x \in \Rn \bigg |
+% \mcil \left(\xl\right) + \gmcil \left(x - \xl + \xk - \gk\right) \le 0 \quad \forall i \in \activeprojkk \cup \activeprojkl
+% \right\}.
+% \end{align*}
+% \color{black}
 
 
 
 \begin{lemma}
 \label{bprojs_comps}
-
-% \truefeasiblek
-% 
-% \trueactiveprojk 
+Let
+$\projkl$ by \cref{define_another_model_projection};
+$\trueprojk$ by \cref{define_another_true_projection};
+and $P^{(k)}_1$, $P^{(k)}_2$, and $P^{(k)}_3$ by \cref{define_the_ps}.
 
 We have the following computations:
 \begin{align*}
-\argmin_{s \in P_1} \left\|s\right\| = \argmin_{s \in P_3} \left\|s\right\| &= \xk - \gk + \projkk\left([m]\right), \\
-\argmin_{s \in P_2} \left\|s\right\| &= \xk - \gk + \projkl\left([m]\right), \\
-\textrm{and} \quad \argmin_{s \in P_4} \left\|s\right\| &= \xk - \gk + \trueprojk.
+\argmin_{s \in P^{(k)}_1} \left\|s\right\| &= \xk - \gk + \projkk, \\
+\argmin_{s \in P^{(k)}_2} \left\|s\right\| &= \xk - \gk + \projkl, \\
+\textrm{and} \quad \argmin_{s \in P^{(k)}_3} \left\|s\right\| &= \xk - \gk + \trueprojk.
 \end{align*}
 \end{lemma}
 \begin{proof}
 With a change of variables $s = x - \left(\xk - \gk \right)$, we see that
 \begin{align*}
-\argmin_{s \in P_1} \left\|s\right\|
+-\left(\xk - \gk\right) + \argmin_{s \in P^{(k)}_1} \left\|s\right\|
 =
-\begin{array}{ccc}
+-\left(\xk - \gk\right) + \\ \begin{array}{ccc}
 \argmin_{s \in \Rn} & \left\|s\right\| & \\
-\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(s - \gk\right) \le 0& \forall i \in \activeprojkk \cup \activeprojkl
+\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(s - \gk\right) \le 0& \forall i \in \activeindicesk
 \end{array} \\
-=
-\xk - \gk + \left(\begin{array}{ccc}
+= \begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) \le 0& \forall i \in \activeprojkk \cup \activeprojkl
-\end{array}\right) \\
-=
-\xk - \gk + \left(\begin{array}{ccc}
-\argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) \le 0& \forall i \in [m]
-\end{array}\right) \\
-=
-\xk - \gk + \left(\argmin_{x \in \fik} \left\|x - \left(\xk - \gk\right)\right\|\right) = \xk - \gk + \projkk\left([m]\right).
+\textrm{s.t.} & \mcik \left(\xk\right) + \gmcik ^T\left(x - \xk\right) \le 0& \forall i \in \activeindicesk
+\end{array}
+= \projkk.
 \end{align*}
-The exact same argument applies for $P_3$, as the subset of indices also includes $\activeprojkk$.
-
 Likewise,
-by
-\cref{sha_projkl},
-
 \begin{align*}
-\argmin_{s \in P_2} \left\|s\right\|
-=
+-\left(\xk - \gk\right) + \argmin_{s \in P^{(k)}_2} \left\|s\right\|
+= -\left(\xk - \gk\right) + \\
 \begin{array}{ccc}
 \argmin_{s \in \Rn} & \left\|s\right\| & \\
-\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(s - \xl + \xk - \gk\right) \le 0& \forall i \in \activeprojkk \cup \activeprojkl
+\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(s - \xl + \xk - \gk\right) \le 0& \forall i \in \activeindicesk
 \end{array} \\
-=
-\xk - \gk + \left(\begin{array}{ccc}
-\argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) \le 0& \forall i \in \activeprojkk \cup \activeprojkl
-\end{array}\right) \\
-=
-\xk - \gk + \left(\begin{array}{ccc}
-\argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) \le 0& \forall i \in [m]
-\end{array}\right) \\
-=
-\xk - \gk + \left(\argmin_{x \in \feasiblel([m])} \left\|x - \left(\xk - \gk\right)\right\|\right) = \xk - \gk + \projkl\left([m]\right).
+\begin{array}{ccc}
+= \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
+\textrm{s.t.} & \mcil \left(\xl\right) + \gmcil ^T\left(x - \xl\right) \le 0& \forall i \in \activeindicesk
+\end{array}
+= \projkl.
 \end{align*}
 
 Finally,
 \begin{align*}
-\argmin_{s \in P_4} \left\|s\right\|
-=
+-\left(\xk - \gk\right) + \argmin_{s \in P^{(k)}_3} \left\|s\right\|
+= -\left(\xk - \gk\right) + \\
 \begin{array}{ccc}
 \argmin_{s \in \Rn} & \left\|s\right\| & \\
-\textrm{s.t.} & c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(s - \gk\right) \le 0& \forall i \in \activeprojkk \cup \trueactiveprojk
+\textrm{s.t.} & c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(s - \gk\right) \le 0& \forall i \in \activeindicesk
 \end{array} \\
 =
-\xk - \gk + \left(\begin{array}{ccc}
+\begin{array}{ccc}
 \argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & c_i \left(\xl\right) + \nabla c_i\left(\xk\right) ^T\left(x - \xk \right) \le 0& \forall i \in \activeprojkk \cup \trueactiveprojk
-\end{array}\right) \\
-=
-\xk - \gk + \left(\begin{array}{ccc}
-\argmin_{x \in \Rn} & \left\|x - \left(\xk - \gk\right)\right\| & \\
-\textrm{s.t.} & c_i \left(\xl\right) + \nabla c_i\left(\xk\right) ^T\left(x - \xk \right) \le 0& \forall i \in [m]
-\end{array}\right) \\
-=
-\xk - \gk + \left(\argmin_{x \in \truefeasiblek} \left\|x - \left(\xk - \xk \right)\right\|\right) = \xk - \gk + \trueprojk\left([m]\right).
+\textrm{s.t.} & c_i \left(\xl\right) + \nabla c_i\left(\xk\right) ^T\left(x - \xk \right) \le 0& \forall i \in \activeindicesk
+\end{array} = \trueprojk.
 \end{align*}
 \end{proof}
 
@@ -5260,6 +5358,12 @@ Finally,
 
 \begin{lemma}
 \label{the_polyhedron_are_close}
+
+Let $A_{m}^{(k, l)}$, $b_{m}^{(k, l)}$, $A_{c}^{(k)}$, and $b_{c}^{(k)}$ be defined by \cref{define_the_as};
+$\projkl$ by \cref{define_another_model_projection};
+$\trueprojk$ by \cref{define_another_true_projection};
+and $P^{(k)}_1$, $P^{(k)}_2$, and $P^{(k)}_3$ by \cref{define_the_ps}.
+
 Let $\epsilon > 0$ be arbitrary.
 
 Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
@@ -5268,15 +5372,15 @@ There exists $k_0 \in \naturals$ such that
 \begin{itemize}
 \item if $k, l \ge k_0$ and $(k, l) \in S$, then
 \begin{align*}
-\left\|A_1 - A_2\right\| \le \epsilon
+\left\|A_{m}^{(k, l)} - A_{m}^{(k, k)}\right\| \le \epsilon
 \quad \textrm{and} \quad
-\left\|b_1 - b_2\right\| \le \epsilon;
+\left\|b_{m}^{(k, l)} - b_{m}^{(k, k)}\right\| \le \epsilon;
 \end{align*}
 \item if $k, l \ge k_0$, then
 \begin{align*}
-\left\|A_3 - A_4\right\| \le \epsilon
+\left\|A_{m}^{(k, k)} - A_{c}^{(k)}\right\| \le \epsilon
 \quad \textrm{and} \quad
-\left\|b_3 - b_4\right\| \le \epsilon.
+\left\|b_{m}^{(k, k)} - b_{c}^{(k)}\right\| \le \epsilon.
 \end{align*}
 \end{itemize}
 
@@ -5287,16 +5391,18 @@ $\maxmodelgrad$ and $\lipgrad$
 be defined by
 \cref{i_thought_i_proved_this_already} and \cref{lipschitz_gradients_assumption}
 respectively.
+Let $\activeindicesk$ defined by \cref{define_activeindicesk}.
 
+Notice that if we show the result for $\|\cdot\|_{\infty}$, the result will also be true for $\|\cdot\|_2$, by equivalence of finite dimensional vector spaces.
 Let $\epsilon > 0$ be fixed.
-By \cref{model_gradients_are_cauchy}, we know that there exists $k_0 \in \naturals$ such that 
-if $k, l \ge k_0$ and $i \in \activeprojkk \cup \activeprojkl$, we have
+By \cref{model_gradients_are_cauchy}, we know that there exists $k_1 \in \naturals$ such that 
+if $k, l \ge k_1$ and $i \in \activeindicesk$, we have
 \begin{align*}
 \left\|\gmcik - \gmcil\right\| \le \epsilon \min\left\{1, \frac {1}{2 \maxmodelgrad}\right\}
 \quad \textrm{and} \quad
 \left\| \xk - \xl \right\| \le \frac{\epsilon}{2\left(\lipgrad + \maxmodelgrad\right)}.
 \end{align*}
-This immediately implies $\left\|A_1 - A_2\right\|_{\infty} \le \epsilon$.
+This immediately implies $\left\|A_{m}^{(k, l)} - A_{m}^{(k, k)}\right\|_{\infty} \le \epsilon$.
 Combining this along with \cref{define_the_as}, the triangle inequality, \cref{lipschitz_gradients_assumption}, and \cref{i_thought_i_proved_this_already}, we see that 
 \begin{align*}
 \left\|
@@ -5330,18 +5436,18 @@ c_i\left(\xl\right) -
 \end{align*}
 so that
 \begin{align*}
-\left\|b_1 - b_2\right\|_{\infty} \le \epsilon.
+\left\|b_{m}^{(k, l)} - b_{m}^{(k, k)}\right\|_{\infty} \le \epsilon.
 \end{align*}
 
 Also, by
-\cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists a $k_0 \in \naturals$ such that if $k \ge k_0$, 
-then for each $i \in i \in \activeprojkk \cup \trueactiveprojk$,
+\cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists $k_2 \in \naturals$ such that if $k \ge k_2$, 
+then for each $i \in \activeindicesk$,
 \begin{align*}
 \left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2
 \quad \textrm{and} \quad
 \kappa_g \dk^2 \le \epsilon \min\left\{1, \frac {1}{\maxmodelgrad}\right\}.
 \end{align*}
-This immediately implies $\left\|A_3 - A_4\right\|_{\infty} \le \epsilon$.
+This immediately implies $\left\|A_{m}^{(k, k)} - A_{c}^{(k)}\right\|_{\infty} \le \epsilon$.
 Also, it implies
 \begin{align*}
 \left\|
@@ -5353,19 +5459,52 @@ Also, it implies
 \end{align*}
 so that
 \begin{align*}
-\left\|b_3 - b_4\right\|_{\infty} \le \epsilon.
+\left\|b_{m}^{(k, k)} - b_{c}^{(k)}\right\|_{\infty} \le \epsilon.
 \end{align*}
 
 \end{proof}
 
+\begin{lemma}
+\label{the_gradient_is_in_em_all}
+Let $P^{(k)}_1$, $P^{(k)}_2$, and $P^{(k)}_3$ by \cref{define_the_ps}.
 
+Then
+\begin{align*}
+\gk \in P^{(k)}_1 \cap P^{(k)}_2 \cap P^{(k)}_3.
+\end{align*}
+\end{lemma}
+\begin{proof}
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+For each $i \in \activeindicesk$, we have
+\begin{align*}
+c_i\left(\xk\right) + \gmcik^T \left(\xk - \xk\right)  \le 0 \\
+\Longrightarrow c_i\left(\xk\right) + \gmcik^T \left(\gk - \gk \right)  \le 0 \\
+\Longrightarrow \gmcik^T \gk  \le -c_i\left(\xk\right) + \gmcik^T\gk
+\end{align*}
+so that $\gk \in P_1^{(k)}$.
+Likewise, $\xk \in \feasible$ implies $c_i\left(\xk\right) + \nabla c\left(\xk\right)^T \left(\xk-\xk\right)  \le 0$, so that
+\begin{align*}
+\nabla c\left(\xk\right)^T \left(\gk\right)  \le -c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\gk
+\end{align*}
+and $\gk \in P_3^{(k)}$.
+Also, because $\xk \in \feasible \subset \feasiblel$ by \cref{constraints_are_convex},
+\begin{align*}
+c_i\left(\xl\right) + \gmcil^T \left(\xk - \xl\right) \le 0 \\
+\Longrightarrow \gmcil^T \left(\gk\right) \le -c_i\left(\xl\right) + \gmcil^T\left(\xl - \xk + \gk\right)
+\end{align*}
+% 0 \le -c_i\left(\xl\right) + \gmcil^T\left(\xl\right) \\
+so that $\gk \in P_2^{(k)}$.
+\end{proof}
 
 
 \begin{lemma}
 \label{its_all_bounded}
-Let $\epsilon_{h, 2}$ and $M_{h, 2}$ be defined by \cref{2_2},
+Let $\epsilon_{h, 2}$ and $M_{h, 2}$ be defined by \cref{define_ehufft} and \cref{define_mhufft} respectively.
 and let $H(A, r)$ be defined by \cref{version_of_hoffman_with_infinity_ball}.
-For $i \in [4]$, let $A_i, b_i$, and $P_i$ be defined by \cref{define_the_as} and \cref{define_the_ps}.
+Let $A_{m}^{(k, l)}$, $b_{m}^{(k, l)}$, $A_{c}^{(k)}$, and $b_{c}^{(k)}$ be defined by \cref{define_the_as};
+$\projkl$ by \cref{define_another_model_projection};
+$\trueprojk$ by \cref{define_another_true_projection};
+and $P^{(k)}_1$, $P^{(k)}_2$, and $P^{(k)}_3$ by \cref{define_the_ps}.
 Let
 $\feasible$, $\maxmodelgrad$
 be defined by
@@ -5373,6 +5512,8 @@ be defined by
 \cref{bounded_gradients_lemma}
 .
 Suppose that a subset $S$ satisfies \cref{criteria_from_contradiction}.
+
+Suppose that the assumptions for \cref{the_hoffman_constants_are_bounded} are satisfied.
 
 Define 
 \begin{align*}
@@ -5383,140 +5524,95 @@ Then there exists $k_0 \in \naturals$, $\epsilon_0, M_0 > 0$ such that
 \begin{itemize}
 \item if $k, l \ge k_0$ and $(k, l) \in S$, then
 \begin{align*}
-\epsilon_{h, 2}\big(h, \|\gk\| + 2 \maxmodelgrad, H\left(A_1, 2 \maxmodelgrad\right), H\left(A_2, 2 \maxmodelgrad\right)\big) > \epsilon_0, \\
-         M_{h, 2} \big(\|\gk\| + 2 \maxmodelgrad, H\left(A_1, 2 \maxmodelgrad\right), H\left(A_2, 2 \maxmodelgrad\right)\big) \le M_0.
+\epsilon_{h, 2}\left(h, \left\|\gk\right\| + 2 \maxmodelgrad, H\left(A_{m}^{(k, k)}, 2 \maxmodelgrad\right), H\left(A_{m}^{(k, l)}, 2 \maxmodelgrad\right)\right) > \epsilon_0, \\
+         M_{h, 2} \left(\left\|\gk\right\| + 2 \maxmodelgrad, H\left(A_{m}^{(k, k)}, 2 \maxmodelgrad\right), H\left(A_{m}^{(k, l)}, 2 \maxmodelgrad\right)\right) \le M_0.
 \end{align*}
 \item if $k, l \ge k_0$, then
 \begin{align*}
-\epsilon_{h, 2}\big(h, \|\gk\| + 2 \maxmodelgrad, H\left(A_3, 2 \maxmodelgrad\right), H\left(A_4, 2 \maxmodelgrad\right)\big) > \epsilon_0, \\
-		 M_{h, 2} \big(\|\gk\| + 2 \maxmodelgrad, H\left(A_3, 2 \maxmodelgrad\right), H\left(A_4, 2 \maxmodelgrad\right)\big) \le M_0.
+\epsilon_{h, 2}\left(h, \left\|\gk\right\| + 2 \maxmodelgrad, H\left(A_{m}^{(k, k)}, 2 \maxmodelgrad\right), H\left(A_{c}^{(k)}, 2 \maxmodelgrad\right)\right) > \epsilon_0, \\
+		 M_{h, 2} \left(\left\|\gk\right\| + 2 \maxmodelgrad, H\left(A_{m}^{(k, k)}, 2 \maxmodelgrad\right), H\left(A_{c}^{(k)}, 2 \maxmodelgrad\right)\right) \le M_0.
 \end{align*}
 \end{itemize}
 \end{lemma}
 \begin{proof}
-Let $\jackk$ be defined by \cref{sha_jacobian}.
-By \cref{huffman_constant_is_bounded}, there exists $k_1 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_1$, then 
+By \cref{the_hoffman_constants_are_bounded}, there exists $k_1 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_1$, then 
 \begin{align*}
-H\left(\jackkl \right) \le \huff,
-\quad 
-H\left(\jackt\right) \le \huff,
+H\left(A_{m}^{(k, k)}\right) \le \huff, \quad
+H\left(A_{m}^{(k, l)}\right) \le \huff, 
 \quad \textrm{and} \quad
-H\left(\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right)\right) \le \huff.
+H\left(A_{c}^{(k)}\right) \le \huff.
 \end{align*}
 By letting $\huff' = \left(1 + \frac 2 {\maxmodelgrad} \right) \huff$, we see from \cref{version_of_hoffman_with_infinity_ball}
-$H\left(A_i, 2 \maxmodelgrad\right) \le \huff' \; \forall i \in [4].$
+\begin{align*}
+H\left(A_{m}^{(k, k)}, r\right) \le \huff', \quad
+H\left(A_{m}^{(k, l)}, r\right) \le \huff', 
+\quad \textrm{and} \quad
+H\left(A_{c}^{(k)}, r\right) \le \huff'.
+\end{align*}
 By \cref{constraints_are_convex}, we know that $\feasible \subseteq \feasiblek$, so that $\xinit \in \feasiblek$.
 Because $c\left(\xinit\right) < 0$ by \cref{initial_point_is_feasible} and \cref{lipschitz_gradients_assumption}, we know that $h > 0$.
 Notice that $\feasible \subseteq \feasiblek$ and $\xk \in \feasible$ also implies that
 $\xk \in \feasiblek$ and $\xk \in \feasiblel$.
 Also, \cref{i_thought_i_proved_this_already} informs us that $\|\gk\| \le \maxmodelgrad$.
-
 \end{proof}
-
-
-
 
 
 \begin{lemma}
-\label{the_gradient_is_in_em_all}
-For $i \in [4]$, let $P_i$ be defined by \cref{define_the_ps}.
-Then
-\begin{align*}
-\gk \in \cap_{i = 1}^4 P_i.
-\end{align*}
-\end{lemma}
-\begin{proof}
-
-\cref{define_the_as}
-Let $P_i$ be defined by \cref{define_the_ps}.
-For each $i \in [m]$, we have
-\begin{align*}
-c_i\left(\xk\right) + \gmcik^T \left(\xk - \xk\right)  \le 0 \\
-\Longrightarrow c_i\left(\xk\right) + \gmcik^T \left(\gk - \gk \right)  \le 0 \\
-\Longrightarrow \gmcik^T \gk  \le -c_i\left(\xk\right) + \gmcik^T\gk
-\end{align*}
-so that $-\xk + \gk \in P_1 \cap P_3$.
-Likewise, $\xk \in \feasible$ implies $c_i\left(\xk\right) + \nabla c\left(\xk\right)^T \left(\xk-\xk\right)  \le 0$, so that
-\begin{align*}
-\nabla c\left(\xk\right)^T \left(\gk\right)  \le -c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\gk
-\end{align*}
-and $-\xk + \gk \in P_4$.
-Also, because $\xk \in \feasible \subset \feasiblel$ by \cref{constraints_are_convex},
-\begin{align*}
-c_i\left(\xl\right) + \gmcil^T \left(\xk - \xl\right) \le 0 \\
-\Longrightarrow \gmcil^T \left(\gk\right) \le -c_i\left(\xl\right) + \gmcil^T\left(\xl - \xk + \gk\right)
-\end{align*}
-% 0 \le -c_i\left(\xl\right) + \gmcil^T\left(\xl\right) \\
-so that $\gk \in P_2$.
-\end{proof}
-
-
-
-
-
-
-
-
-
-\begin{theorem}
-\label{bounded_projection_theorem}
-Let $\jackk$ and $\activeprojkl$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
-Let
-$\projkl(S)$
-be defined by
-\cref{sha_proj_indices}.
+\label{bounded_active_projection}
+Let $\projkl$ and $\trueprojk$ be defined by \cref{define_another_model_projection} and \cref{define_another_true_projection} respectively.
 Suppose that 
 \cref{constraints_are_convex}
 and the assumptions for
-\cref{bp_combining_several}
+\cref{its_all_bounded}, \cref{the_polyhedron_are_close}, \cref{the_gradient_is_in_em_all}, \cref{2_2}, \cref{i_thought_i_proved_this_already}, \cref{bprojs_comps}, and \cref{delta_to_zero}
 hold.
 Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
 
 Let $\epsilon > 0$ be arbitrary.
 There exists $k_0 \in \naturals$ such that 
 \begin{itemize}
-\item if $k, l \ge k_0$, then
-$\left\| \trueprojk - \projkk\left([m]\right) \right\| \le \epsilon$
-\item if $(k, l) \in S$ and $(k, l) \in S$, then
-$\left\| \projkl\left([m]\right) - \projkk\left([m]\right) \right\| \le \epsilon$
+\item if $k \ge k_0$, then
+$\left\| \trueprojk - \projkk \right\| \le \epsilon$
+\item if $(k, l) \in S$ and $k,l \ge k_0$, then
+$\left\| \projkl - \projkk \right\| \le \epsilon$
 \end{itemize}
-\end{theorem}
+\end{lemma}
 
 \begin{proof}
-For $i \in [4]$, let $A_i$ and $b_i$ be defined by \cref{define_the_as}.
 Let $\epsilon_0$ and $M_0$ be defined by \cref{its_all_bounded},
 and define
 \begin{align*}
 \epsilon_1 = \min\left\{ \epsilon_0, \left(\frac{\epsilon}{M_0}\right)^2\right\}.
 \end{align*}
 By \cref{the_polyhedron_are_close}, we know that there is a $k_1 \in \naturals$ such that if $k, l \ge k_1$, then
+
 \begin{align*}
-\left\|A_1 - A_2\right\| \le \epsilon_1, \quad
-\left\|b_1 - b_2\right\| \le \epsilon_1, \quad
-\left\|A_3 - A_4\right\| \le \epsilon_1, \quad \textrm{and} \quad
-\left\|b_3 - b_4\right\| \le \epsilon_1.
+\left\|A_{m}^{(k, l)} - A_{m}^{(k, k)}\right\| \le \epsilon_1, \;
+\left\|b_{m}^{(k, l)} - b_{m}^{(k, k)}\right\| \le \epsilon_1, \;
+\left\|A_{m}^{(k, k)} - A_{c}^{(k)}\right\| \le \epsilon_1, \;
+\left\|b_{m}^{(k, k)} - b_{c}^{(k)}\right\| \le \epsilon_1.
 \end{align*}
 
+
 By \cref{the_gradient_is_in_em_all}, we can apply \cref{2_2} with the assignment
-$p \gets \gk$, $r \gets 2\maxmodelgrad$, $P_1 \gets P_1$, $P_1 \gets P_2$, $\hat x \gets \xinit$,
+$p \gets \gk$, $r \gets 2\maxmodelgrad$, $P_1 \gets P^{(k)}_1$, $P_2 \gets P^{(k)}_2$, $\hat x \gets \xinit$,
 $h \gets \xinit - \argmin_{x \not \in \feasible} \left\|\xinit - x\right\|$,
 to learn
 \begin{align*}
 \left\|
-\argmin_{x \in P_1 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_1 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 -
-\argmin_{x \in P_2 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_2 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 \right\|
 \le M_0 \sqrt{\epsilon_1} \le \epsilon.
 \end{align*}
 Likewise, with
-$p \gets \gk$, $r \gets 2\maxmodelgrad$, $P_1 \gets P_3$, $P_1 \gets P_4$, $\hat x \gets \xinit$,
+$p \gets \gk$, $r \gets 2\maxmodelgrad$, $P_1 \gets P^{(k)}_1$, $P_2 \gets P^{(k)}_3$, $\hat x \gets \xinit$,
 $h \gets \xinit - \argmin_{x \not \in \feasible} \left\|\xinit - x\right\|$,
 \begin{align*}
 \left\|
-\argmin_{x \in P_3 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_1 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 -
-\argmin_{x \in P_4 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_3 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 \right\|
 \le \epsilon
 \end{align*}
@@ -5526,25 +5622,27 @@ $\left\|\gk\right\| \le \maxmodelgrad$
 implying along with \cref{bprojs_comps} that
 \begin{align*}
 \begin{array}{cccccc}
-\argmin_{x \in P_1 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_1 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 &=& \argmin_{x \in P_1} \left\|x\right\| 
-&=& \xk - \gk + &\projkk\left([m]\right)
+&=& \xk - \gk + &\projkk
 \\
-\argmin_{x \in P_2 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+\argmin_{x \in P^{(k)}_2 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
 &=&\argmin_{x \in P_2} \left\|x\right\| 
-&=& \xk - \gk + &\projkl\left([m]\right)
+&=& \xk - \gk + &\projkl
 \\
-\argmin_{x \in P_3 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
-&=&\argmin_{x \in P_3} \left\|x\right\| 
-&=& \xk - \gk + &\projkk\left([m]\right)
-\\
-\argmin_{x \in P_4 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
-&=& \argmin_{x \in P_4} \left\|x\right\| 
+\argmin_{x \in P^{(k)}_3 \cap B_{\infty}\left(\gk, 2\maxgrad\right)} \left\|x\right\|
+&=& \argmin_{x \in P_3} \left\|x\right\| 
 &=& \xk - \gk + &\trueprojk
 \end{array}
 \end{align*}
 The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 \end{proof}
+
+
+
+
+
+
 
 
 
@@ -5627,6 +5725,915 @@ The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 % 
 % 
 % \color{black}
+
+
+
+
+\subsubsection{Bound on Full Projection}
+
+Now that we have bounded the projection onto the set of constraints that are near the current iterate, we bound the distance between projections onto all constraints.
+
+% \minactivealpha
+% \activeindicesk
+% \activedirk
+% \activegradmin
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/complicated_lemma.png}
+    \caption{
+    	Here, we bound the distance between the projections of $y$ onto two different polyhedra.
+    	The polyhedra are defined by matrices that are arbitrarily close to eachother.
+    	The constraints of the polyhedra are split into two different sets, those that intersect a ball of radius $r$ about a point $p$,
+    	and those that do not.
+    	The left hand side matrix for the constraints that intersect this ball have a bounded hoffman constant.
+	}
+    \label{complicated_lemma}
+\end{figure}
+
+
+
+
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a, a', p, y \in \Rn$;
+and $d, \delta, M > 0$
+are given such that
+$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) \|a - a'\|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+If ${a}^T z' \le d$ and ${a'}^T z \le d$, then $z' - z = 0$.
+Without loss of generality, suppose that ${a'}^T (z - p) > d$.
+Then
+\begin{align*}
+0 < {a'}^T\left(z - p\right) - d 
+= \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
+\Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
+\le \left\|a' - a\right\| \left\|z - p\right\| 
+\le \left\|a' - a\right\| \left\|y\right\|
+\end{align*}
+For any $t \in [0, 1]$, we have
+\begin{align*}
+\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d 
+= (1 - t) \left[a^T\left(z - p\right) - d\right] + t \left[{a'}^T\left(z - p\right) - d\right]
+\le t \left[{a'}^T\left(z - p\right) - d\right] \\
+\le \left\|a - a'\right\| \left\|y\right\|
+\end{align*}
+and
+\begin{align*}
+\left[(1 - t) a + t a'\right]^T(y - p) = (1 - t) a^T(y - p) + t {a'}^T(y - p) \ge \left(1-t\right) \delta\left\|y - p\right\| + t \delta\left\|y - p\right\| = \delta\left\|y - p\right\| \\
+\Longrightarrow \frac 1 {\left[(1 - t) a + t a'\right]^T(y - p)} \le \frac {1} {\delta\left\|y - p\right\|}.
+\end{align*}
+Thus, by letting $\lambda = \left(\left\|y - p\right\| \delta\right)^{-1}\left\|a - a'\right\|\left\|y\right\|$, we see
+\begin{align*}
+\lambda
+\ge \frac{\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d}{\left[(1 - t) a + t a'\right]^T(y - p)} \\
+\Longrightarrow \left[(1 - t) a + t a'\right]^T \left[z - \lambda \left(y - p\right) - p\right] \le d
+\end{align*}
+and
+\begin{align*}
+\left\|z - \lambda\left(y - p\right) - z\right\| \le  \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+Thus,
+\begin{align*}
+\left\|p + y - z'\right\| \le \left\|p + y - z - \lambda \left(y - p\right)\right\| \le \left\|p + y - z\right\| + \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+
+\begin{comment}
+Some more logic here...
+\end{comment}
+
+\begin{align*}
+\left\|z - z'\right\| \le K \left\|a - a'\right\| \left\|y\right\|
+\end{align*}
+
+
+
+% Let 
+% \begin{align*}
+% r  = \left\|p + y - z\right\|
+% \quad \textrm{and} \quad
+% r' = \left\|p + y - z'\right\|
+% \end{align*}
+% and without loss of generality, suppose that $r \le r'$.
+
+
+% 
+% 
+% Let
+% \begin{align*}
+% \mathcal P(t) = \left\{
+% x \in \Rn \bigg | 
+% Ax \le b, 
+% \left[(1 - t) a + t a'\right]^T (x - p) \le d
+% \right\}
+% \end{align*}
+% so that
+% \begin{align*}
+% z = P_{\mathcal P(0)}(p + y) \\
+% z' = P_{\mathcal P(1)}(p + y) \\
+% \end{align*}
+% 
+% \begin{align*}
+% v(t) = P_{\mathcal P(t)}(p + y) \\
+% z(t) = \frac 1 2 \left\| z - v(t)\right\|^2 \\
+% \end{align*}
+% 
+% For any particular $t_0 \in [0, 1]$, there exists $\mu \in \mathbb R_{\ge 0}$ and $\lambda \in \mathbb R^m_{\ge 0}$ such that
+% \begin{align*}
+% p + y - v(t_0) = \mu \left[(1 - t_0) a + t_0 a'\right]^T + A^T\lambda
+% \end{align*}
+% 
+% \begin{align*}
+% z'(t) = 2 \nabla v(t)^T\left( z - v(t)\right) \\
+% \nabla v(t) = 
+% \end{align*}
+% 
+% Let $\mathcal I(t)$ be the set of active indices:
+% \begin{align*}
+% \mathcal I (t) = \left\{i \in [m] \bigg | A_i v(t) = b_i \right\}
+% \end{align*}
+% 
+% For some sufficiently small $h \in \reals$, we will have 
+% \begin{align*}
+% v(t+h) = 
+% \end{align*}
+% 
+\end{proof}
+% 
+% 
+% \begin{lemma}
+% Suppose
+% $A \in \reals^{m \times n}$;
+% $b \in \Rm$;
+% $a, a', p \in \Rn$;
+% and $d \in \reals$
+% are given such that
+% $Ap < b$ and $d > 0$.
+% Define
+% \begin{align*}
+% z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+% \quad \textrm{and} \quad
+% z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% If both $a^T\left(z' - p\right) \le d$ and ${a'}^T \left(z - p\right) \le d$, then we have $z - z' = 0$.
+% Without loss of generality, assume that 
+% $a^T\left(z' - p\right) > d \Longrightarrow a^T\left(z' - p\right) - d > 0$.
+% By the contraction property of projections
+% \begin{align*}
+% \left\|z' - p\right\|
+% \le \left\|P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p + y\right) - P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p\right)\right\|
+% \le \left\|p + y - p\right\|
+% = \|y\|.
+% \end{align*}
+% Combine this with ${a'}^T \left(z' - p\right) \le d \Longrightarrow {a'}^T \left(z' - p\right) - d \le 0$ to find
+% \begin{align*}
+% a^T\left(z' - p\right) - d 
+% = a^T\left(z' - p\right) - {a'}^T \left(z' - p\right) + {a'}^T \left(z' - p\right) - d 
+% \le \left(a - a'\right)^T \left(z' - p\right) \\
+% \le \left\|a - a'\right\| \left\|z' - p\right\|
+% \le \left\|a - a'\right\| \|y\|.
+% \end{align*}
+% We can compute
+% \begin{align*}
+% a^T\left(\frac{d + a^Tp}{a^Tz'}z' - p\right) = d + a^Tp - a^Tp = d
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|z' - \frac{d + a^Tp}{a^Tz'}z'\right\| 
+% = \left\|z'\right\|\left|\frac{a^Tz'}{a^Tz'} - \frac{d + a^Tp}{a^Tz'}\right|
+% \le \left\|z'\right\| \frac{\left\|y\right\|}{a^Tz} \left\|a - a'\right\|
+% \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% Let $s = \frac{a^Tz' - d}{a^T\left(z' - p\right)}$.
+% Notice that
+% $s a^T\left(p - z'\right) = d - a^Tz' \Longrightarrow  a^T\left[z' + s \left(p - z'\right)  \right] = d $
+% and
+% $\left\|z' - s\left(p - z'\right) - z'\right\| 
+% = \frac{a^Tz' - d}{a^T\left(z' - p\right)}\left\| z' - p\right\| 
+% \le \frac{\left\|z' - p\right\|}{a^T\left(z' - p\right)} \|a - a'\| \|z'\|$
+% \end{proof}
+
+
+
+
+
+
+
+
+\begin{lemma}
+\label{master_projection_lemma}
+Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+Let $H(A)$ be defined by \cref{hoffman_theorem}.
+
+Let $A, A'$ be $m \times n$ matrices;
+$p, y \in \Rn$; $b, b' \in \Rm$;
+and $M,\delta, r, \epsilon > 0$ be given 
+such that 
+with the definition
+\begin{align*}
+J = \left\{i \in [m] \; \bigg | \; b_i \le \|A_i\|r  \right\}
+\end{align*}
+all the following identities are satisfied:
+\begin{align*}
+Ap \le b,
+\quad 
+A'p \le b', \\
+\left\|A_i - A'_i \right\| \le \epsilon\quad \forall i \in [m],
+\quad 
+\left|b_i - b'_i \right| \le \epsilon \quad \forall i \in [m], \\
+\delta \le \left\|A_i\right\| \le M \quad \forall i \in [m],
+\quad 
+\delta \le \left\|A'_i\right\| \le M \quad \forall i \in [m], \\
+\left|b_i\right| \le M \quad \forall i \in [m],
+\quad 
+\left|b'_i\right| \le M \quad \forall i \in [m], \\
+H\left(A_J\right) \le M, \quad H\left(A'_J\right) \le M.
+\end{align*}
+Then
+\begin{align*}
+\|z - z'\| \le \left(\ldots\right) \epsilon
+\end{align*}
+where
+\begin{align*}
+z  = \argmin_{x \in \Rn | A (x - p) \le b }\left\|p + y - x\right\|
+\quad \textrm{and} \quad
+z' = \argmin_{x \in \Rn | A'(x - p) \le b'}\left\|p + y - x\right\|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+
+
+Because $H\left(A_J\right) \le M$, we have that if 
+$\mathcal A = \left\{i \in J | A_i\left(y - p\right) \ge 0 \right\}$, and
+$\mathcal A' = \left\{i \in J | A'_i\left(y - p\right) \ge 0 \right\}$, then
+\begin{align*}
+M \ge H(A_J) 
+= \max_{\mathcal J \in \mathcal S_h(A_J)} \left[\min_{v \in R^{\mathcal J}_+, \|v\| = 1}  \left\|A_{\mathcal J}^Tv\right\| \right]^{-1}
+\ge \left[\min_{v \in R^{\mathcal A}_+, \|v\| = 1}  \left\|A_{\mathcal A}^Tv\right\| \right]^{-1}
+\ge \frac{\left\|y - p\right\|}{\left\|A_{\mathcal A}^T (y - p) \right\|} \\
+\Longrightarrow A_{\mathcal A}^T (y - p)  \ge \frac 1 M \left\|y - p\right\|.
+\end{align*}
+Also, if $i \in [m] \setminus J$ and $A_iy \ge b_i$, then
+\begin{align*}
+A_i \left(y - p\right) = A_i y - b_i + b_i - A_ip > \|A_i\| r 
+\end{align*}
+
+% 
+% 
+% \begin{align*}
+% b_i - A_ip > \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
+% \end{align*}
+
+
+\end{proof}
+
+
+
+
+% % Define
+% % \begin{align*}
+% % K = M\|y - p\| + \max\left\{
+% % \max_{i \in [m]}\left\{A_ip - b_i\right\},
+% % \max_{i \in [m]}\left\{A'_ip - b'_i\right\},
+% % \right\}
+% % \end{align*}
+% 
+% Note that
+% \begin{align*}
+% |A_ip_J - b_i| \le M(M+1) \\
+% |A'_ip'_J - b'_i| \le M(M+1) \\
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| \le |
+% A_ip_J - b_i - A'_ip'_J + b'_i
+% | \\
+% \le |A_ip_J - A_i p'_J| + |A_ip'_J - A'_ip'_J| + |b'_i - b_i|
+% \le M\epsilon + M\epsilon + \epsilon = \epsilon (2M + 1).
+% \end{align*}
+% 
+% 
+% 
+% Let 
+% \begin{align*}
+% v(t) = p_J + t(p - p_J)
+% \quad
+% v'(t) = p'_J + t(p - p'_J).
+% \end{align*}
+% Let $i \in [m] \setminus J$.
+% If $A_ip_J > b_i$, then 
+% \begin{align*}
+% b_i - A_ip \le \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
+% \end{align*}
+% If $s_i = \frac{A_ip_J - b_i}{A_i(p_J - p)}$, we have
+% \begin{align*}
+% t \ge s_i
+% \Longrightarrow tA_i(p - p_J) \le b_i - A_ip_J 
+% \Longrightarrow A_iv(t) \le b_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p_J - v\left(s_i\right)\right\|
+% = \frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{A_i(p_J - p)}
+% < 2\frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p_J\right\|.
+% \end{align*}
+% 
+% 
+% Likewise, if $A'_ip'_J > b'_i$, then 
+% \begin{align*}
+% - A_ip > \|A_i\|r - b_i
+% \Longrightarrow \epsilon\|p\| - A'_i p \ge \left(\|A'_i\| - \epsilon\right)r - b'_i - \epsilon \\
+% \Longrightarrow -A'_ip > \|A'_i\|r - b'_i - \epsilon\left(1 + \|p\| + r\right) \\
+% \Longrightarrow A'_i\left(p'_J - p\right) > \delta r - \frac 1 2 \delta r = \frac 1 2 \delta r > 0 \\
+% \Longrightarrow \frac{1}{A'_i\left(p'_J - p\right)} < \frac{2}{\delta r}.
+% \end{align*}
+% If $s'_i = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}$, we have
+% \begin{align*}
+% t \ge s'_i
+% \Longrightarrow tA'_i(p - p'_J) \le b'_i - A'_ip'_J 
+% \Longrightarrow A'_iv(t) \le b'_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% = \frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{A'_i(p'_J - p)}
+% < 2\frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p'_J\right\|
+% \end{align*}
+% 
+% Consider any $i \in [m] \setminus J$,
+% and let
+% \begin{align*}
+% \gamma_1 = \frac{A_ip_J - b_i}{A_i(p_J - p)}
+% \quad \textrm{and} \quad
+% \gamma_2 = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}.
+% \end{align*}
+% 
+% 
+% \paragraph{Case 1}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J > b'_i$.
+% 
+% Then
+% \begin{align*}
+% \gamma_1 - \gamma_2
+% \end{align*}
+% 
+% 
+% Notice that
+% \begin{align*}
+% \epsilon 
+% \ge \left\|p_J - p'_J\right\|
+% = \left\|p_J - p + \left(p - p'_J\right)\right\|
+% \ge \bigg|
+% \left\|p - p_J\right\| - \left\|p - p'_J\right\|
+% \bigg| \\
+% p_J - v(s_i) = p_J - p_J - s_i \left(p - p_J\right) \\
+% p'_J - v'(s_i) = p'_J - p'_J - s'_i \left(p - p_J\right)
+% \end{align*}
+% implies
+% \begin{align*}
+% \bigg||s_i| - |s'_i|\bigg| =
+% \bigg|
+% \left\|p_J - v\left(s_i\right)\right\| -
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% \bigg| \le \frac{2K}{\delta r} \epsilon
+% \end{align*}
+% so that with
+% we have
+% \begin{align*}
+% v\left(s_i\right) - v'\left(s'_i\right) 
+% = \left(p_J - p'_J\right) + \left(p'_J - v(s'_i)\right) - \left(p_J - v(s_i)\right) \\
+% = \left(p_J - p'_J\right) 
+% + \gamma_2 \left(p - p'_J\right)
+% - \gamma_1 \left(p - p _J\right) \\
+% = \left(p_J - p'_J\right) 
+% + \left(\gamma_2 - \gamma_1\right) p
+% + \gamma_1 p _J - \gamma_1 p'_J
+% + \gamma_1 p'_J - \gamma_2 p'_J \\
+% \Longrightarrow \left\|v\left(s_i\right) - v'\left(s'_i\right) \right\|
+% \le \left(1 + \gamma_1 \right)\left\|p_J - p'_J\right\| + \left(\|p\| + \|p'_J\|\right)\left|\gamma_1 - \gamma_2\right|
+% \end{align*}
+% 
+% \begin{align*}
+% \gamma_1 p_J - \gamma_2 p'_J
+% \end{align*}
+% 
+% 
+% % \begin{align*}
+% % v\left(s_i\right) - v'\left(s'_i\right) 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) + \left(p_J - v(s_i)\right) - \left(p'_J - v(s'_i)\right)
+% % \end{align*}
+% 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% 
+% 
+% 
+% 
+% 
+% % \begin{align*}
+% % \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% % = \left\|p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right)\right\| \\
+% % = \left\|p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right)\right\| \\
+% % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_i p_J\right\| + \left\|s'_ip_J - s'_ip'_J\right\| \\
+% % \le \left(\|p_J\| + \left\|p\right\|\right)\left|s'_i - s_i\right| + \left(1 + |s'_i|\right)\left\|p_J - p'_J\right\|
+% % \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% \paragraph{Case 2}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J \le b'_i$.
+% Then 
+% \begin{align*}
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| 
+% \le \epsilon (2M + 1).
+% \end{align*}
+% \paragraph{Case 3}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J > b'_i$.
+% 
+% \paragraph{Case 4}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\| 
+% = \left\|p_J - p'_J\right\| \le \epsilon.
+% \end{align*}
+% 
+% Let $u = p_J$ if $A_ip_J \le b_i \forall i \in [m] \setminus J$ and $u' = p'_J$ if $A'_ip'_J \le b'_i \forall i \in [m] \setminus J$.
+% Otherwise, let
+% \begin{align*}
+% j = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A_ip_J > b_i
+% }}\{s_i\},
+% \quad u = v\left(s_j\right),
+% \quad 
+% j' = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A'_ip'_J > b'_i
+% }}\{s'_i\},
+% \quad \textrm{and} \quad
+% u' = v'\left(s'_{j'}\right).
+% \end{align*}
+% Then, both $Au \le b$ and
+% $A'u' \le b'$.
+% 
+% \paragraph{Case 1}
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% \paragraph{Case 2}
+% Suppose that 
+% 
+% 
+% 
+% Suppose that 
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% 
+% and
+% \begin{align*}
+% \epsilon\left(M + \left\|p'_J\right\| + 1\right)
+% \ge \left|A_ip_J - A_i p'_J\right| + \left|A_i p'_J- A'_ip'_J\right| + \left| b_i + b'_i\right| \\
+% \ge \left|A_ip_J - A'_ip'_J - b_i + b'_i\right|
+% \ge \bigg|
+% \left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|
+% \bigg|
+% \end{align*}
+% imply
+% \begin{align*}
+% \bigg|
+% \left(\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|\right)
+% \left(\left\|p - p_J\right\| - \left\|p - p'_J\right\|\right)
+% \bigg|
+% \end{align*}
+% 
+% 
+% 
+% 
+% If $|x - x'| \le \epsilon$ and $|y - y'| \le \delta$, then
+% \begin{align*}
+% x - \epsilon \le x' \le x + \epsilon \\
+% y - \delta \le y' \le y + \delta \\
+% \end{align*}
+% 
+% \begin{align*}
+% |xy - x'y'| 
+% = |xy - xy' + xy' - x'y'| 
+% = |x(y - y') + y'(x - x')| 
+% \le |x||y - y'| + |y'||x - x'|
+% \le \delta |x| + \epsilon|y'|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% % \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_1y + t_1y - t_2 y\|
+% % \le \|x(1 - t_1) - y(1 - t_2) + t_1p - t_2p)\| 
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \|p_J - p'_J\| + \left\|\left(p_J - v\left(s_i\right)\right) - \left(p'_J - v'\left(s'_i\right)\right)\right\|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\| \\
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\|
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|t_1(p - x) - t_2(p - y)\| \le \|t_1(p - x) - t_1(p-y)\| + \|t_1(p-y) - t_2(p - y)\| \\
+% \le |t_1|\|p - x - p + y\| + \left|t_1 - t_2\right|\left\|p - y\right\|
+% \end{align*}
+
+% \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_ip'_J\right\| \\
+
+
+% 
+% \begin{align*}
+% \left\|x\right\| \frac{y}{\left\|y\right\|}
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|y\right\| - \left\|x \right\| \le \left\|y - x\right\| \\
+% 1 - \frac{\left\|x \right\|}{\left\|y\right\|} \le \frac{\left\|y - x\right\|}{\left\|y\right\|} \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \left\|x -  \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% \le \left\|x - \frac{\left\|x\right\|}{\left\|y\right\|} x \right\|+ \left\|\frac{\left\|x\right\|}{\left\|y\right\|} x - \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% = \left\|x\right\|\left(1 - \frac{\left\|x\right\|}{\left\|y\right\|}\right) + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le \left\|x\right\|\frac{\left\|y - x\right\|}{\left\|y\right\|} + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le 2 \frac{\left\|x\right\|}{\left\|y\right\|} \left\|x - y\right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left|\left\|x\right\| - \left\|y\right\|\right|\le \left\|x - y \right\| \le a \left\|y\right\| \\
+% \left|\frac{\left\|x\right\|}{\left\|y\right\|} - 1\right|\le \left\|x - y \right\| \le a 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\|
+% \le \left\|x - y\right\| + 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s \frac{\left\|x\right\|}{\left\|y\right\|} y\right\| + \left\| s \frac{\left\|x\right\|}{\left\|y\right\|} y - s' y \right\|
+% \end{align*}
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s y\right\| + \left\| s y - s' y \right\|
+% \le s \left\|x - y\right\| + \left|s - s'\right| \left\| y \right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|p_J - \right\| \frac{p'_J - p}{\left\|p'_J - p\right\|} 
+% \end{align*}
+
+
+
+
+
+
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a, p, y \in \Rn$;
+and $d, d', \delta, M > 0$
+are given such that
+$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z' = \argmin_{\substack{Ax \le b \\ {a}^T \left(x - p\right) \le d'}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) |d - d'|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{comment}
+More logic here...
+\end{comment}
+\end{proof}
+
+
+
+
+
+
+Define
+
+\begin{align}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek} \\
+\end{align}
+
+
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, for any fixed $k$, define
+\begin{align}
+\mathbb A_1 &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\} \label{tbbt_a1} \\
+\mathbb A_2 &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\} \label{tbbt_a2}\\
+\mathbb A_3 &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\} \label{tbbt_a3}
+\end{align}
+
+\begin{lemma}
+For some fixed $k$, suppose that $\mathbb A_1$, $\mathbb A_2$, $\mathbb A_3$
+are defined by
+\cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3}.
+Suppose that $S$ is a set that satisfies \cref{criteria_from_contradiction}.
+There exists a $\delta > 0$ and $k_0 \in \naturals$ such that,
+\begin{itemize}
+\item if $k \ge k_0$, then if $i \in \mathbb A_1 \cup \mathbb A_3$, we have
+\begin{align*}
+\left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
+\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
+\end{align*}
+\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1 \cup \mathbb A_2$, we have
+\begin{align*}
+\left\|\gmcil\right\| \ge \delta.
+\end{align*}
+\end{itemize}
+\end{lemma}
+\begin{proof}
+
+Let $\mingradepsilon > 0$ and $\mingrad > 0$ be defined by \cref{mingradassumption}.
+Define
+\begin{align*}
+\delta = \min\left\{\frac 1 3 \mingrad, \frac 1 4 \mingradepsilon\right\}
+\end{align*}
+
+Before going through cases, we make some observations.
+By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists $k_1 \naturals$ such that if $k \ge k_1$, then
+\begin{align}
+\label{hmoydihtp_eqn1}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \min\left \{\frac 1 2 \mingrad, \delta \right\}.
+\end{align}
+
+By \cref{i_thought_i_proved_this_already}, we know that there exists $\maxmodelgrad > 0$ with 
+$
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
+\le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad
+$.
+
+
+\paragraph{Case 1}
+If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
+\paragraph{Case 2}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1$.
+\begin{align*}
+\left\|\gmcik\right\| \maxmodelgrad
+\ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
+\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\end{align*}
+By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
+
+\paragraph{Case 3}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2$.
+\begin{align*}
+\left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
+\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
+\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\end{align*}
+
+
+\paragraph{Case 4}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_3$.
+\color{red}
+We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
+\color{black}
+\begin{align*}
+\left\|\gmcil\right\| \maxmodelgrad
+\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right)
+\ge -c_i\left(\xl\right) > \frac 1 2 \mingradepsilon
+\end{align*}
+
+
+
+Throughout the cases, we have established that $\left\| \nabla c_i\left(\xl\right) \right\| \ge 3 \delta$.
+Thus, \cref{hmoydihtp_eqn1} implies 
+\begin{align*}
+\left\|\gmcik\right\| \ge 2 \delta.
+\end{align*}
+Then, by \cref{model_gradients_are_cauchy}, there is a $k_4 \in \naturals$ such that if $k, l \ge k_4$ and $(k,l) \in S$, we have
+\begin{align*}
+\left\|\gmcil\right\| \ge \delta.
+\end{align*}
+\end{proof}
+
+\begin{theorem}
+\label{bounded_projection_theorem}
+Suppose that the assumptions for
+\cref{bounded_active_projection} and \cref{master_projection_lemma}
+hold.
+Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
+
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
+
+Let $\epsilon > 0$ be arbitrary.
+There exists $k_0 \in \naturals$ such that 
+\begin{itemize}
+\item if $k \ge k_0$, then
+$\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right) \right\| \le \epsilon$
+\item if $(k, l) \in S$ and $k,l \ge k_0$, then
+$\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right) \right\| \le \epsilon$
+\end{itemize}
+\end{theorem}
+\begin{proof}
+Let 
+$\minangledelta$ be define by \cref{minangleassumption};
+$\activeindicesk$ by \cref{define_activeindicesk};
+$M_c$ by \cref{maximum_constraint_value_lemma};
+$\maxgrad$ by \cref{bounded_gradients_lemma};
+$\maxmodelgrad$ by \cref{i_thought_i_proved_this_already};
+$\projkl$ by \cref{define_another_model_projection};
+$\trueprojk$ by \cref{define_another_true_projection};
+$\kappa_g$ by \cref{accuracy_is_satisfied};
+
+Define $\epsilon_1 = ?$.
+
+
+
+
+
+
+By \cref{bounded_active_projection}, we know that there exists a $k_1$ such that if $k, l \ge k_1$, then
+\begin{align}
+\label{tbbt_eqn1}
+\left\| \trueprojk - \projkk \right\| \le \epsilon_1 \quad \textrm{and} \quad
+\left\| \projkl - \projkk \right\| \le \epsilon_1
+\end{align}
+
+
+By \cref{delta_to_zero} there is a $k_2$ such that if $k, l \ge k_2$, then
+\begin{align*}
+\dk \le \min\left\{\frac{\epsilon_1}{\kappa_g} \right\}
+\end{align*}
+
+
+
+To show that
+$\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right) \right\| \le \epsilon$
+we invoke \cref{master_projection_lemma} with 
+\begin{align*}
+A			\gets \modeljack, \quad
+b			\gets c_i\left(\xk\right), \quad
+A'			\gets \truejack, \quad
+b'			\gets c_i\left(\xk\right), \\
+p			\gets \xk \\
+y			\gets \xk - \gk \\
+M			\gets \max\{\maxmodelgrad, \maxgrad, M_c\}\\
+\delta		\gets \\
+r			\gets \minangledelta \\
+\epsilon	\gets \\
+\end{align*}
+
+With these definitions, we immediately see that $Ap \le b$, and $A'p \le b'$.
+Because $b_i = b_i'$, $|b_i - b'_i| = 0 \le \epsilon$.
+Also, by \cref{accuracy_is_satisfied}, we know that $\left\|A_i - A'_i \right\| \le \kappa_g \dk^2 \le \epsilon_1$.
+By \cref{bounded_gradients_lemma}, \cref{i_thought_i_proved_this_already}, and \cref{maximum_constraint_value_lemma}, we see that
+$\left|b_i\right| \le M $, $\left|b'_i\right| \le M$,
+$\left|A_i\right| \le M $, and $\left|A'_i\right| \le M$.
+Notice that with this choice of $r$, $\activeindicesk$ is precisely the set $J$,
+so that $\|p_J - p'_J\| \le \epsilon$ from \cref{tbbt_eqn1}.
+
+\color{red}
+Still need to show:
+\begin{align*}
+\delta \le \left\|A_i\right\| \\
+\|p_J\| \le M \quad \|p'_J\| \le M \\
+\epsilon\left(1 + \|p\| + r\right) \le \frac 1 2 \delta r
+\end{align*}
+\color{black}
+Then, 
+\begin{align*}
+P_{\feasiblek}\left(\xk - \gk\right) = z, \quad
+P_{\truefeasiblek}\left(\xk - \gk\right) = z'
+\end{align*}
+so that
+\begin{align*}
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right) \right\| \le ?
+\end{align*}
+
+
+For 
+$\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right) \right\| \le \epsilon$,
+we make the assignment
+\begin{align*}
+A			\gets \modeljack, \quad
+b			\gets c_i\left(\xk\right), \quad
+A'			\gets \modeljacl, \quad
+b'			\gets c_i\left(\xl\right), \\
+p			\gets \xk \\
+y			\gets \xk - \gk \\
+M			\gets \max\{\maxmodelgrad, M_c\}\\
+\delta		\gets \\
+r			\gets \minangledelta \\
+\epsilon	\gets \\
+\end{align*}
+
+With these definitions, we once again see that $Ap \le b$, and $A'p \le b'$ because $\xk$ is feasible.
+\color{red}
+Also, \cref{lipschitz_gradients_assumption} tells us that (needs lipschitz in value....)
+$|b_i - b'_i|$.
+\color{black}
+Also, by \cref{model_gradients_are_cauchy}, we know that there is a $k_3$ such that if $k, l \ge k_3$, then $\left\|A_i - A'_i \right\| \le \kappa_g \dk^2 \le \epsilon_1$.
+By \cref{i_thought_i_proved_this_already}, and \cref{maximum_constraint_value_lemma}, we see that
+$\left|b_i\right| \le M $, $\left|b'_i\right| \le M$,
+$\left|A_i\right| \le M $, and $\left|A'_i\right| \le M$.
+Notice that with this choice of $r$, $\activeindicesk$ is precisely the set $J$,
+so that $\|p_J - p'_J\| \le \epsilon$ from \cref{tbbt_eqn1}.
+
+\color{red}
+Still need to show:
+\begin{align*}
+\delta \le \left\|A_i\right\| \\
+\|p_J\| \le M \quad \|p'_J\| \le M \\
+\epsilon\left(1 + \|p\| + r\right) \le \frac 1 2 \delta r
+\end{align*}
+\color{black}
+Then, 
+\begin{align*}
+P_{\feasiblek}\left(\xk - \gk\right) = z, \quad
+P_{\feasiblel}\left(\xk - \gk\right) = z' \\
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right) \right\| \le ?
+\end{align*}
+
+
+
+
+\end{proof}
+
 
 \subsection{Convergence}
 
@@ -5879,6 +6886,7 @@ The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
 \subsection{Bounded Level Sets}
 \label{bounded_level_sets}
 
+
 \section{Future Work}
 \subsection{Removing a regularity assumption}
 \label{alternative_assumptions_section}
@@ -5918,7 +6926,7 @@ Define the set of indices of $\epsilon$ active model constraints at a point $x \
 \end{definition}
 
 \begin{assumption}
-\label{minangleassumption_alt}
+\label{minangleassumption_alt_func}
 There exists a $\minanglealpha$ and $\epsilon > 0$ such that for every $x \in \feasible$, 
 there is a unit vector $\minanglediralt(x)$ such that
 \begin{align*}
@@ -6159,47 +7167,496 @@ Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla
 \color{black}
 
 
-\subsection{Removing the Huffman assumption}
+\subsection{Removing the Hoffman assumption}
 \label{removing_the_huffman_assumption}
 
 
+
+\subsubsection{Just removed...}
+
+In order to show that the hoffman constant is bounded across iterations, we make the following additional assumption.
+We leave removing this assumption as future work, which is discussed in \cref{removing_the_huffman_assumption}.
+
+% \begin{align}
+% \nearlyactiveprojk \left(x, y; \epsilon\right) = \left\{ i \in [m] 
+% \quad \bigg| \quad
+% \left|c_i\left(x\right) + \nabla c_i\left(x\right)^T \left(P_{\truefeasible\left(x\right)}\left(y\right) - x\right)\right| \le \epsilon \right\} \label{sha_nearly_proj_indices}
+% \end{align}
+
+% \begin{lemma}
+% Suppose that
+% \begin{align*}
+% b_1 + a_1^T\left(p_1 - x\right) = 0 \\
+% b_2 + a_2^T\left(p_2 - x\right) = 0
+% \end{align*}
+% where 
+% \begin{align*}
+% \left|b_1 - b_2\right| \le \epsilon
+% \quad \textrm{and} \quad
+% \left|a_1 - a_2\right| \le \epsilon
+% \quad \textrm{and} \quad
+% \left|p_1 - p_2\right| \le L.
+% \end{align*}
+% Then
+% \begin{align*}
+% b_2 + a_2^T\left(p_2 - x\right) \le \epsilon
+% \end{align*}
+% 
+% \end{lemma}
+% \begin{proof}
+% 
+% 
+% \begin{align*}
+% \left|c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(P_{\truefeasible\left(\xk\right)}\left(\xk\right) - \xk\right)\right| \le \epsilon.
+% \end{align*}
+% 
+% \end{proof}
+
+\newpage
+
+
 \begin{assumption}
-\label{minangleassumption_alt}
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
-a unit vector $\minangledirk \in \Rn$
-such that if $\dk \le \minangledelta$ and
-$i$ is such that $\zik \in B_{\infty}(\xk, \minangledelta)$
+\label{huffman_assumption}
+There exist $\huffeps, \huffalpha > 0$ such that
+for each $x \in \Omega$ and unit vector $y \in \Rn$,
+there exists a unit vector $\huffdir(x, y) \in \Rn$ such that
+if $i \in [m]$ is such that 
+\begin{align*}
+y^T \nabla c_i \left(x\right) \ge - \huffeps
+\end{align*}
 then
 \begin{align*}
--\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha.
+\huffdir(x, y)^T \nabla c_i \left(x\right) \ge \huffalpha.
 \end{align*}
-Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
 
 
-
-
-In this section, we discuss removing the need to make \cref{huffman_assumption}.
-We were able to a result similar to \cref{huffman_constant_is_bounded}, however it only uses the active constraints.
-This is weaker than we needed, because the active constraints may change across iterations.
-
-For each $k \in \naturals$, define
+Define
 \begin{align}
-\projk = \argmin_{x \in \activefeasiblek} \left\|\xk - \gk\right\| \label{define_projectionk} \\
-\activeprojk = \left\{ i \in \activeconstraintsk \bigg| \mcik\left(\xk\right) + \gmcik^T \left(\projk - \xk\right) = 0 \right\} \label{define_active_projection_indices}
-.
+\mathbb J(x, \Delta) = \left\{i \in [m] \bigg | \exists y \in B_{\infty}\left(x, \Delta\right) \quad \textrm{s.t.} \quad c_i(y) \ge 0\right\}.
 \end{align}
+
+
+\begin{assumption}
+\label{new_huffman_assumption}
+There exist $\huffeps, \huffalpha > 0$ such that
+for each $x \in \Omega$,
+there exists a unit vector $\huffdir(x) \in \Rn$ such that
+\begin{align*}
+\huffdir(x)^T \nabla c_i \left(x\right) \ge \huffalpha \quad \forall i \in \mathbb J(x, \huffeps).
+\end{align*}
+\end{assumption}
+
+
+\begin{lemma}
+% \activeprojkk \cup \activeprojkl \cup \trueactiveprojk
+We have that 
+\begin{align*}
+\activeconstraintsk \cup \activeconstraintsl \subseteq \mathbb J\left(\xk, \max\left\{\sqrt{n}\dk, \left\|\xk - \xl\right\| + \dl\right\}\right) 
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+By \cref{accuracy_is_satisfied}, there exists a $u \in \Rn$ with $\|u\| \le 1$ such that
+\begin{align*}
+\nabla c_i\left(\xk\right) \le \gmcik + \kappa_f \dk^2 u.
+\end{align*}
+\begin{comment}
+That one had assumptions...
+\end{comment}
+By \cref{mingradassumption}, there exists $\maxmodelgrad$ such that
+\begin{align*}
+\left\|\gmcik\right\| \ge \mingrad
+\Longrightarrow  \frac{1}{\left\|\gmcik\right\|} \ge \frac 1 {\maxmodelgrad}
+\end{align*}
+
+Let $\gamma = \left[1 + \frac{\kappa_f \dk^2}{\left\|\gmcik\right\|}\right]^{-1}$.
+
+
+If $k \in \activeconstraintsk$, then $\left\|\zik - \xk\right\|_{\infty} \le \dk$.
+Using \cref{define_z},
+
+
+By \cref{constraints_are_convex}, 
+\begin{align*}
+c_i\left(\xk + \gamma\left(\zik - \xk\right) \right) \ge c_i\left(\xk\right) + \gamma\nabla c_i\left(\xk\right)^T\left(\zik - \xk\right) \\
+= c_i\left(\xk\right) - \gamma\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|^2} \left[\gmcik + \kappa_f \dk^2 u \right]^T\gmcik \\
+\ge c_i\left(\xk\right) - \gamma c_i\left(\xk\right)\left[1 + \frac{\kappa_f \dk^2}{\left\|\gmcik\right\|}\right]
+= 0
+\end{align*}
+
+\paragraph{Case 1}
+
+Let $i \in \trueactiveprojk$
+
+% Let $i$ be such that 
+% \begin{align*}
+% \mcil\left(\xl\right) + \gmcil^T \left(\projkl([m]) - \xl\right) = 0
+% \end{align*}
+% then
+% \begin{align*}
+% \left|c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(P_{\truefeasible\left(\xk\right)}\left(\xk\right) - \xk\right)\right| \le \epsilon.
+% \end{align*}
+
+
+\end{proof}
+
+
+
+% \begin{lemma}
+% \label{bound_dot_product}
+% Suppose that $u_1, u_2, v_1, v_2 \in \Rn$ and $\epsilon, M > 0$ are such that
+% \begin{align*}
+% \|u_1 - u_2\| \le \epsilon, \quad
+% \|v_1 - v_2\| \le \epsilon, \quad
+% \|u_1\| \le M, \quad \textrm{and} \quad
+% \|v_2\| \le M.
+% \end{align*}
+% Then
+% \begin{align*}
+% \left|u_1^Tv_1 - u_2^Tv_2\right| \le 2M\epsilon.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% We have
+% \begin{align*}
+% \left|u_1^Tv_1 - u_2^Tv_2\right|
+% \le \left|u_1^Tv_1 - u_1^Tv_2\right\| + \left\|u_1^Tv_2 - u_2^Tv_2\right|
+% = \left|u_1^T\left(v_1 - v_2\right)\right| + \left|\left(u_1 - u_2\right)^Tv_2\right|  \\
+% \le \left\|u_1\right\|\left\|v_1 - v_2\right\| + \left\|u_1 - u_2\right\|\left\|v_2\right\|
+% \le 2M\epsilon.
+% \end{align*}
+% \end{proof}
+
+
+\color{red}
+
+\begin{lemma}
+\label{bp_combining_several}
+Let $\activeprojkl$ and $\huffalpha$ be defined by \cref{sha_proj_indices} and \cref{huffman_assumption}.
+Assume that \cref{huffman_assumption}, \cref{lipschitz_gradients_assumption}, \cref{criteria_from_contradiction} and the assumptions for
+\cref{model_gradients_are_cauchy}, \cref{bounded_gradients_lemma}, \cref{i_thought_i_proved_this_already}, \cref{delta_to_zero}, and \cref{accuracy_is_satisfied} hold.
+There exists $k_0 \in \naturals$ such that for any $k, l \ge k_0$ 
+there is a unit vector $ \huffdirk \in \Rn $ such that for all $i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk$, we have both
+\begin{align*}
+\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha
+\quad \textrm{and} \quad
+\left(\huffdirk\right)^T\nabla c_i\left(\xk\right)\ge \frac 1 2 \huffalpha.
+\end{align*}
+%  \quad \textrm{and} \quad
+%  u^T \gmcil \ge \frac 1 4 \alpha.
+\end{lemma}
+\begin{proof}
+Let $i \in [m]$ and let
+$\huffeps$ and $\maxmodelgrad$
+be defined by 
+\cref{huffman_assumption} and \cref{i_thought_i_proved_this_already}
+respectively.
+Define
+\begin{align}
+\epsilon = \frac {\huffeps} {4\maxmodelgrad}. \label{til_define_eps}
+\end{align}
+
+From \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, there exists $\kappa_g$ and $k_1$ such that if $k, l \ge k_1$, then
+\begin{align}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
+\left\|\gmcil - \nabla c_i\left(\xl\right)\right\| \le \kappa_g \dl^2. \label{til_acc_const}
+\end{align}
+%  \\
+% \left\|\gk - \nabla f\left(\xk\right)\right\| \le \kappa_g \dk^2 \quad \textrm{and} \quad
+% \left\|\gl - \nabla f \left(\xl\right)\right\| \le \kappa_g \dl^2. \label{til_acc_obj}
+
+By \cref{lipschitz_gradients_assumption}, we know that there exists $\lipgrad > 0$ such that
+\begin{align}
+\left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\|. \label{til_lip_cons}
+\end{align}
+%  \\
+% \quad \textrm{and} \quad
+% \left\|\nabla f\left(\xk\right) - \nabla f\left(\xl\right)\right\| \le \lipgrad \left\|\xk - \xl \right\|. \label{til_lip_obj}
+ 
+\cref{bounded_gradients_lemma}
+% , \cref{i_thought_i_proved_this_already}, and \cref{til_define_m} 
+tells us
+\begin{align}
+\label{til_upper_bounds}
+\left\|\gk\right\| \le \maxmodelgrad 
+\quad \textrm{and} \quad
+\left\|\gmcil \right\| \le \maxmodelgrad.
+\end{align}
+
+% \begin{align}
+% \label{til_upper_bounds}
+% \begin{array}{rrrr}
+% \left\|\gmcik\right\| \le M, & \left\|\gmcil\right\| \le M, &
+% \left\|\gk\right\| \le M, & \left\|\gl\right\| \le M, \\
+% \left\|\nabla c_i\left(\xk\right) \right\| \le M, & \left\|\nabla c_i\left(\xl\right) \right\| \le M, &
+% \left\|\nabla f\left(\xk\right) \right\| \le M, & \left\|\nabla f\left(\xl\right) \right\| \le M.
+% \end{array}
+% \end{align}
+
+By \cref{criteria_from_contradiction}, we know that there exists $k_2 \in \naturals$ such that if $k, l \ge k_2$, then
+\begin{align}
+\label{til_bound_dk}
+\left\|\xk - \xl \right\| \le \epsilon \min\left\{1, \frac{1}{2\lipgrad}\right\},
+\quad
+\dk \le \min\left\{
+\sqrt{\frac{\epsilon}{4\kappa_g}},
+\sqrt{\frac{\huffalpha}{2\kappa_g}}\right\},
+\quad \textrm{and} \quad
+\dl \le \sqrt{\frac{\epsilon}{4\kappa_g}}.
+\end{align}
+
+% \color{red}
+% By the triangle inequality, \cref{til_acc_obj}, \cref{til_lip_obj}, and \cref{til_bound_dk} we have
+% \begin{align}
+% \left\| \gk - \gl \right\|
+% \le \left\| \gk - \nabla f\left(\xk\right) \right\|
+% +   \left\| \nabla f\left(\xk\right) - \nabla f\left(\xl\right) \right\| \nonumber \\
+% +   \left\| \nabla f\left(\xl\right) - \gl \right\|
+% \le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmf_close}
+% \end{align}
+% \color{black}
+
+The triangle inequality, \cref{til_acc_const}, \cref{til_lip_cons}, and \cref{til_bound_dk} provide
+\begin{align}
+\left\| \gmcik - \gmcil \right\|
+\le \left\| \gmcik - \nabla c_i\left(\xk\right) \right\|
++   \left\| \nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right) \right\| \nonumber \\
++   \left\| \nabla c_i\left(\xl\right) - \gmcil \right\|
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl\right\|  \le \epsilon. \label{til_gmc_close}
+\end{align}
+
+
+% \color{red}
+% Using \cref{til_gmf_close}, \cref{til_gmc_close}, \cref{til_upper_bounds}, \cref{bound_dot_product}, and \cref{til_define_eps} we find
+% \begin{align}
+% \left\|\gk^T \gmcik - \gl^T \gmcil\right\| \le 2M\epsilon \le \frac 1 4 \huffeps. \label{til_case_one}
+% \end{align}
+% \color{black}
+
+
+\paragraph{Case 1}
+% \begin{comment}
+% \begin{align*}
+% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \left(\gmcil\right) \ge 0
+% \end{align*}
+% 
+% \begin{align*}
+% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \gmcil \ge 0, \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \left(\xk - \gk - \projkl\left( [m] \right)\right)^T \gmcil \ge 0, \\
+% \Longrightarrow - \gk^T \gmcil \ge \left(\projkl\left( [m] \right) - \xk \right)^T \gmcil \\
+% = \gmcil^T\left(\projkl\left( [m] \right) - \xl \right) + \gmcil^T\left(\xk - \xl \right) \\
+% = \mcil \left(\xl\right) + \gmcil^T\left(\xk - \xl \right)
+% \end{align*}
+
+% \begin{align*}
+% \left(\xk - \gk - \projkl\right)^T\left(\xl - \projkl\right) \le 0 \\
+% \gmcil^T\left(\projkl - \xl\right) = -\mcil\left(\xl\right) \ge 0 \\
+% \end{align*}
+
+% Does the following line need justification?
+% \end{comment}
+
+If $i \in \activeprojkl$, then $\xl \in \feasiblel\left([m]\right)$ implies
+\begin{align*}
+\left(\xk - \gk - \xl\right)^T \gmcil \ge 0. \\
+\end{align*}
+Using \cref{til_upper_bounds}, \cref{til_bound_dk}, and \cref{til_define_eps}, this becomes
+\begin{align*}
+0 \le \left\| \gmcil \right\| \left\|\xk - \xl \right\|- \gk^T \gmcil \\
+\le \maxmodelgrad \frac {\huffeps} {4\maxmodelgrad} - \gk^T \gmcil
+\end{align*}
+so that
+\begin{align}
+\label{til_replacement}
+- \gk^T \gmcil \ge -\frac 1 4 \huffeps .
+\end{align}
+Also note that \cref{til_upper_bounds}, \cref{til_gmc_close}, \cref{til_define_eps} imply
+\begin{align*}
+\left\|
+ \gk^T \gmcik
+-\gk^T \gmcil
+\right\| \\
+\le \left\|\gk\right\| \left\|\gmcik - \gmcil\right\|
+\le \maxmodelgrad \epsilon = \frac 1 {4} \huffeps.
+\end{align*}
+Combining this with \cref{til_replacement}, we see $-\gk^T \gmcik \ge - \frac 1 2 \huffeps$.
+\paragraph{Case 2}
+Instead, if $i \in \activeprojkk$, then $-\gk^T \gmcik \ge 0 \ge - \frac 1 2 \huffeps$.
+
+\paragraph{Case 3}
+Lastly, suppose that $i \in \trueactiveprojk$.
+Then, by \cref{til_acc_const}, \cref{til_upper_bounds}, \cref{til_bound_dk}, and \cref{til_define_eps}
+\begin{align*}
+-\gk^T \gmcik \ge -\gk^T \nabla c_i\left(\xk\right) - \left\|\gk\right\| \kappa_g \dk^2 \\
+\ge 0 - \maxmodelgrad \kappa_g \frac{\epsilon}{4\kappa_g} 
+=  - \frac{1}{16 } \huffeps
+\end{align*}
+
+
+Throughout the cases, we have established that
+\begin{align}
+\label{til_either_way}
+-\gk^T \gmcik \ge - \frac 1 2 \huffeps, \quad \forall i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk.
+\end{align}
+Combining this with \cref{til_define_eps}, \cref{til_acc_const}, \cref{til_upper_bounds}, \cref{til_bound_dk} we see
+\begin{align*}
+\left\| \gk^T \gmcik - \gk^T \nabla c_i \left(\xk\right)\right\| 
+\le M\kappa_g\dk^2 
+\le M\frac {\epsilon} {4} \le \frac 1 {16} \huffeps.
+\end{align*}
+This, along with \cref{til_either_way} gives
+\begin{align*}
+-\gk^T \nabla c_i \left(\xk\right) \ge -\huffeps.
+\end{align*}
+By \cref{huffman_assumption} there exists a unit vector $\huffdirk = \huffdir\left(\xk, -\gk\right) \in \Rn$ such that
+\begin{align*}
+\left(\huffdirk\right)^T \nabla c_i \left(\xk\right) \ge \huffalpha.
+\end{align*}
+By \cref{til_acc_const} and \cref{til_bound_dk}
+\begin{align*}
+\left\|
+\left(\huffdirk\right)^T \nabla c_i \left(\xk\right) -
+\left(\huffdirk\right)^T \gmcik
+\right\|
+\le ( 1 ) \kappa_g \dk^2 
+\le \frac 1 2 \huffalpha
+\end{align*}
+so that
+\begin{align*}
+\left(\huffdirk\right)^T \gmcik \ge \frac 1 2 \huffalpha.
+\end{align*}
+Thus, we only need to let $k_0 = \max\left\{k_1, k_2\right\}$.
+% 
+% 
+% \paragraph{Case 2}
+% If $i \in \activeprojkk$, then
+% \begin{align*}
+% \Longrightarrow  \\
+% \Longrightarrow u\left(\xk, -\gk\right)^T \gmcik \ge \frac 1 2 \alpha
+% .
+% \end{align*}
+% %  \\
+% % \Longrightarrow u\left(\xk, -\gk\right)^T \gmcil \ge \frac 1 4 \alpha
+
+\end{proof}
+
+\color{black}
+\begin{lemma}
+\label{huffman_constant_is_bounded}
+Let $\jackk$ and $\activeprojkk$ be defined by \cref{sha_jacobian} and \cref{sha_proj_indices} respectively.
+Suppose that \cref{huffman_assumption} and the assumptions for \cref{bp_combining_several} hold.
+There exists $k_0 \in \naturals$ and $\huff > 0$, such that if $k, l \ge k_0$, then 
+\begin{align*}
+H\left(\jackkl \right) \le \huff,
+\quad 
+H\left(\jackt\right) \le \huff,
+\quad \textrm{and} \quad
+H\left(\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right)\right) \le \huff.
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+Let $\huffalpha$ be defined by \cref{huffman_assumption}, and define $\huff = \frac 2 {\huffalpha}$.
+We know by \cref{bp_combining_several} that there exists
+$k_1 \in \naturals$ such that for any $k, l \ge k_1$ there is a unit vector 
+$ \huffdirk \in \Rn $
+such for any $i \in \activeprojkk \cup \activeprojkl \cup \trueactiveprojk$,
+\begin{align*}
+\left( \huffdirk \right)^T \gmcik \ge \frac 1 2 \huffalpha
+\quad \textrm{and} \quad
+\left( \huffdirk \right)^T \nabla c_i\left(\xk\right) \ge \frac 1 2 \huffalpha.
+\end{align*}
+
+% \jackkl
+% \jackt
+% \nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right)\right)
+
+That is,
+\begin{align*}
+\jackkl \huffdirk \ge \frac 1 2 \huffalpha e,
+\quad
+\jackt \huffdirk \ge \frac 1 2 \huffalpha e,
+\quad \textrm{and} \quad
+\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right) \huffdirk \ge \frac 1 2 \huffalpha e.
+\end{align*}
+
+Now, let 
+\begin{align*}
+(A, S) \in \left\{
+\left(\jackkl, \activeprojkk \cup \activeprojkl\right),
+\left(\jackt, \activeprojkk \cup \trueactiveprojk\right),
+\left(\nabla c_{\activeprojkk \cup \trueactiveprojk }\left(\xk\right), \activeprojkk \cup \trueactiveprojk\right)
+\right\},
+\end{align*}
+and $J \subseteq S$ with $|J| \ne 0$ be arbitrary.
+Suppose that $v_J \in \mathbb R^J_+$ with $\|v_J\| = 1$.
+Then, Cauchy-Schwarz implies
+ \begin{align*}
+ \left\|A_J^Tv\right\| = \left\|A_J^Tv\right\| \left\|\huffdirk\right\| \ge
+A_J^T\huffdirk
+= v^TA_J\huffdirk
+\ge \frac 1 2 \huffalpha v^Te
+\ge \frac 1 2 \sqrt{|J|} \huffalpha
+\ge \frac {\huffalpha} 2 .
+\end{align*}
+so that 
+\begin{align*}
+\left[ \left\|A_J^Tv\right\|\right]^{-1} \le \frac 2 {\huffalpha}.
+\end{align*}
+Because $v$ was arbitrary, we have
+\begin{align*}
+\left[\min_{v \in \mathbb R^J_+, \|v\| = 1} \left\|A_J^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha}.
+\end{align*}
+Because $J$ was arbitrary, we can substitute this into \cref{hoffman_theorem} to find
+\begin{align*}
+H\left(A\right) = \max_{J \in \mathcal S_h\left(A\right)} \left[\min_{v \in \mathbb R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1} \le \frac 2 {\huffalpha} = \huff.
+\end{align*}
+\end{proof}
+
+
+\subsubsection{Removed a while ago}
+
+
+
+For any $U \subseteq [m]$, define
+\begin{align}
+\feasiblek(U) &=  \left\{ x \in \Rn \bigg| \mcik\left(\xk\right) + \gmcik^T \left(x - \xk\right) \le 0 \quad \forall i \in U \right\} \label{sha_fks} \\
+\projkl(U) &= \argmin_{x \in \feasiblel(U)} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_projkl} \\
+\activeprojkl\left(U\right) &= \left\{ i \in U \bigg| \mcil\left(\xl\right) + \gmcil^T \left(\projkl(U) - \xl\right) = 0 \right\} \label{sha_proj_indices}
+\end{align}
+Also, let
+\begin{align}
+\jackk &= \nabla m_c\left(\xk\right) \label{sha_jacobian}.
+\end{align}
+Finally, the equivalent definitions for the linearizations of the true constraints are
+\begin{align}
+\truefeasible \left(x\right) &=  \left\{ y \in \Rn \bigg| c_i\left(x\right) + \nabla c_i\left(x\right)^T \left(y - x\right) \le 0 \; \forall i \in [m] \right\} \label{sha_truef} \\
+\truefeasiblek &=  \truefeasible\left(\xk\right) \label{sha_truefk} \\
+\trueprojk &= \argmin_{x \in \truefeasiblek} \left\|x - \left(\xk - \gk\right)\right\| \label{sha_trueproj} \\
+\trueactiveprojk &= \left\{ i \in [m] \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(\projkk([m]) - \xk\right) = 0 \right\} \label{sha_true_proj_indices}
+\end{align}
+
+
+
+
+
 Recall that $\activefeasiblek$ was defined by \cref{define_activefeasiblek}.
 
 
 \begin{lemma}
 \label{active_gradients_bounded_below}
-Let $\activeprojk$ be defined by \cref{define_active_projection_indices}.
+Let $\activeprojkl$ be defined by \cref{sha_proj_indices}.
 Suppose that \cref{mingradassumption} holds.
 Suppose that the assumptions for 
 \cref{accuracy_is_satisfied}, \cref{bounded_gradients_lemma}, and \cref{i_thought_i_proved_this_already} hold.
+Let $U \subseteq [m]$ be arbitrary.
 There exists $\minactivegraddelta > 0$ and $\minactivegrad > 0$ such that if 
-$\dk \le \minactivegraddelta$ and $i \in \activeprojk$, then both
+$\dk \le \minactivegraddelta$ and $i \in \activeprojkk(U)$, then both
 $\left\|\gmcik\right\| \ge \minactivegrad$
 and
 $\left\|\nabla c_i\left(\xk\right)\right\| \ge \minactivegrad$.
@@ -6218,7 +7675,7 @@ We define
 \minactivegraddelta = \min\left\{\sqrt{\frac{\minactivegrad}{\kappa_g}}, \sqrt{\frac{\mingrad}{2\kappa_g}}, \frac 1 2 \mingradepsilon \right\}\label{define_minactivedelta}
 ,
 \end{align}
-and let $i \in \activeprojk$ with $\dk \le \minactivegraddelta$.
+and let $i \in \activeprojkk(U)$ with $\dk \le \minactivegraddelta$.
 \paragraph{Case 1}
 If $-c_i\left(\xk\right) \le \mingradepsilon$, then by \cref{mingradassumption} we have 
 \begin{align*}
@@ -6235,12 +7692,13 @@ Using the triangle inequality and \cref{define_minactivedelta}, we see
 \end{align*}
 
 \paragraph{Case 2}
-On the other hand, suppose that $-c_i\left(\xk\right) > \mingradepsilon$.
+On the other hand, suppose that $-c_i\left(\xk\right) > \mingradepsilon$,
+and let $\projkl$ be defined by \cref{sha_projkl}.
 By \cref{i_thought_i_proved_this_already}, the contraction property of projections we have
 
 \begin{align*}
-\left\|\gmcik\right\| \maxmodelgrad \ge \left\|\gmcik\right\|\left\|\projk - \xk\right\|
-\ge \gmcik^T\left(\projk - \xk\right) \\
+\left\|\gmcik\right\| \maxmodelgrad \ge \left\|\gmcik\right\|\left\|\projkk(U) - \xk\right\|
+\ge \gmcik^T\left(\projkk(U) - \xk\right) \\
 = -c_i(\xk) > \mingradepsilon.
 \end{align*}
 Then, by \cref{define_minactivegrad} we have
@@ -6265,9 +7723,10 @@ Let $\minactivegrad$ be defined by \cref{active_gradients_bounded_below}.
 Suppose the assumptions for 
 \cref{active_gradients_bounded_below}, 
 \cref{lipschitz_gradients_assumption}, 
-\cref{criteria_from_contradiction},
 and \cref{accuracy_is_satisfied} hold.
-There exists $k_0 \in \naturals$ such that if $k, l \ge k_0$ and $i \in \activeprojk$,
+
+Let $S$ satisfy \cref{criteria_from_contradiction}, and $U \subseteq [m]$.
+There exists $k_0 \in \naturals$ such that if $k, l \ge k_0$, $(k, l) \in S$, and $i \in \activeprojkk(U)$,
 then both
 $\left\|\gmcil\right\| \ge \frac 1 2 \minactivegrad$
 and
@@ -6970,6 +8429,28 @@ H(A)
 \end{align*}
 \end{proof}
 
+
+
+% \color{red}
+% \begin{theorem}
+% \begin{align*}
+% \left\|\projkl([m]) - \projkk([m]) \right\| \le \epsilon
+% \end{align*}
+% \end{theorem}
+% \begin{proof}
+% \begin{align*}
+% \left\|\projkl([m]) - \projkk([m]) \right\| = \left\|\projkl\left(\activeprojkk \cup \activeprojkl \right) - \projkk\left(\activeprojkk \cup \activeprojkl \right) \right\|
+% \end{align*}
+% For $k \ge k_0$, 
+% \begin{align*}
+% \left\|A^{(k)}_{\activeprojkk \cup \activeprojkl} - A^{(l)}_{\activeprojkk \cup \activeprojkl}\right\| \le \epsilon_1 \\
+% \textrm{and} \quad \left\|c\left(\xk\right)_{\activeprojkk \cup \activeprojkl} - c\left(\xl\right)_{\activeprojkk \cup \activeprojkl}\right\| \le \epsilon_1 \\
+% \textrm{and} \quad H\left(A^{(k)}_{\activeprojkk \cup \activeprojkl}\right) \le \epsilon_1 \\
+% \textrm{and} \quad H\left(A^{(l)}_{\activeprojkk \cup \activeprojkl}\right) \le \epsilon_1 \\
+% \Longrightarrow \left\|\projkl\left(\activeprojkk \cup \activeprojkl\right) - \projkk\left(\activeprojkk \cup \activeprojkl\right) \right\| \le  \epsilon
+% \end{align*}
+% \end{proof}
+% \color{black}
 \section{No longer used}
 
 
