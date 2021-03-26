@@ -2277,7 +2277,7 @@ We use this optimization problem as a subroutine of the trust region subproblem 
 Another option is to simply decrease the trust region radius.
 However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
 In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
-Thus, we set $\searchtrk = \capcones$ by defining the trust region subproblem as
+Thus, we set $\searchtrk = \capcones \cap \tr$ by defining the trust region subproblem as
 \begin{align}
 \label{capcones_tr_subproblem}
 \begin{array}{ccc}
