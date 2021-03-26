@@ -1370,6 +1370,22 @@ with squared distance
 = \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}
 \end{align*}
 
+We summarize the previous statements here:
+
+
+\begin{lemma}
+Let $t \in \reals$, $y \in \mathbb R^{n-1}$, and $\beta' > 0$.
+Then the point
+\begin{align*}
+z = \left(1 + {\beta'} ^ 2\right)^{-1} \left({\beta'} \|y\| + t, \left({\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}\right) y\right)
+\end{align*}
+satisfies
+\begin{align*}
+z = \argmin_{\left\|x\right\| \le \beta' s} \left\|x - y\right\|^2 + \left\|s - t\right\|^2 \\
+\left\|z - (t, y)\right\|^2 = \left(1 + {\beta'}^2\right)^{-1}\left(t \beta' - \left\|y\right\| \right)^2.
+\end{align*}
+\end{lemma}
+
 After a shift and rotation from the vertex point $\wik$ and going direction $-\wik$:
 
 \begin{align*}
@@ -1432,7 +1448,7 @@ Note the criteria in \cref{ellipsoids_notation_definitions} only summarize one o
 For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
 We have the following definitions.
 \begin{itemize}
-\item The sequence $(\qk, \ck, \sdk)$ is \emph{bounded} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
+\item The sequence $(\qk, \ck, \sdk)$ is \emph{conditioned} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
 That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
 \begin{align}
 \sigma\left(Q^{(k)}\right) \le \sigmamax. \label{define_suitable_condition_numbers}
@@ -1495,27 +1511,30 @@ However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction
 \huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}. \label{define_u}
 \end{align}
 
-
-The angle between this direction and the nearest direction that is infeasible is then measured by
+\begin{comment}
+What isn't clear?
+\end{comment}
+We are interested in constructing a cone of directions known to be feasible: namely those unit vectors that make a negative dot product with each nearly active constraint.
+We measure the distance between the direction $\huk$ and the nearest direction that is not feasible by computing
 \begin{align}
 \thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{define_thetamink}.
 \end{align}
+For simplicity, define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
 
-The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
-\begin{align*}
-\begin{array}{ccc}
-\huk \in \argmax_{u\in\Rn, \pi \in\reals} & \pi \\
-& -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \pi & \forall i \in \activeconstraintsk \\
-& \|u \| = 1& 
-\end{array}.
-\end{align*}
-For simplicity, we will define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
+% The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
+% \begin{align*}
+% \begin{array}{ccc}
+% \huk \in \argmax_{u\in\Rn, \pi \in\reals} & \pi \\
+% & -u^T \frac{\gmcik}{\left\|\gmcik\right\|} \ge \pi & \forall i \in \activeconstraintsk \\
+% & \|u \| = 1& 
+% \end{array}.
+% \end{align*}
 
-We can then measure the maximum angle that is feasible with respect to each of the constraints with
+We can then measure the range of directions about $\huk$ that are feasible by computing
 \begin{align}
-\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)} \label{define_bsk}
+\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)}. \label{define_bsk}
 \end{align}
-so that the cone
+Namely, we will show that the cone
 \begin{align}
 \fcki = \left\{x \in \Rn \bigg| \quad x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
 \end{align}
@@ -1527,7 +1546,7 @@ This cone is depicted in \cref{feasible_direction}.
     \caption{
     	At times, the conservative ellipsoid may be much smaller than desired.
     	Here each cone $\fik$ is in blue, and $\fcki$ is in green.
-    	$\fcki$ is contained within the intersection of each $\fik$.
+    	$\fcki$ is contained within the intersection of the $\fik$ cones.
 	}
     \label{feasible_direction}
 \end{figure}
@@ -1690,89 +1709,131 @@ But,
 
 \begin{lemma}
 \label{boundbsk}
-% Let $\bsk$ and $\fcki$ be defined as in \cref{define_bsk} and \cref{define_inner_cone}.
-Let $\bsk$ and $\thetamink$ be defined by \cref{define_bsk} and \cref{define_thetamink}.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
-$\bsk \le 1 - \frac 1 4 \epsilon^2$.
+Let $\bsk$, $\thetamink$, and $p_{\beta}$ be defined by \cref{define_bsk}, \cref{define_thetamink}, and \cref{define_abpab}.
+
+If $\dk^{p_{\beta}} \le \frac {1} {4\beta}\left(\thetamink\right)^2$, then $\bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
 \end{lemma}
 
-\begin{proof}
-Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
-% Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
-Then we can let $\dacco(\epsilon)$ be defined by
-% \minangledelta,
-% 1,
-\begin{align}
-\dacco(\epsilon) < \min\left\{
-\left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
-\left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
-\right\}\label{define_delta_accuracy_old}.
-\end{align}
-If $\dk \le \dacco(\epsilon)$, then
-\begin{align}
-\beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
-2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
-\end{align}
-Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
-which combined with $\epsilon ^2 \le 1 \le 5$ shows
-\begin{align*}
--\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
-\end{align*}
-This means
-\begin{align*}
-\left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
-= 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
-\le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
-\end{align*}
-Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
-% 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
-% \Longrightarrow
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-= \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
-\end{align}
-Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
-Also,
-\begin{align*}
-1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
-= \left(1 - \frac 1 2 \epsilon^2 \right)^2 
-\Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
-\end{align*}
-so that
-\begin{align*}
-1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
-\Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
-\Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
-\end{align*}
-Dividing by $2$ yields:
-\begin{align}
-\frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\label{boundedbeta_eqn2}.
-\end{align}
 
-We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
+\begin{proof}
+
+
+First note that $\thetamink \le 1$ and $p_{\beta} \in (0, 1)$, so that $\beta \dk \le \frac 1 4$.
+Because $\left(\thetamink\right)^2 \ge 4\beta\dk^{p_{\beta}}$,
 \begin{align*}
-\sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
-\Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
+    \left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]
+\le \left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - 4\beta \dk^{p_{\beta}}\right] \\
+= 1 - 4 \beta \dk^{p_{\beta}} - \left(\beta \dk^{p_{\beta}}\right)^2 + 4 \left(\beta \dk^{p_{\beta}}\right)^3 \\
+= \left(1 - 2 \beta \dk^{p_{\beta}}\right)^2 - 5 \left(\beta\dk^{p_{\beta}}\right)^2 + 4 \left(\beta \dk^{p_{\beta}}\right)^3 \\
+\le \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
 \end{align*}
-Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
-so that
+Thus, 
+\begin{align}
+\label{steves_rewrite_eqn1}
+\sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le 1 - 2 \beta \dk^{p_{\beta}}.
+\end{align}
+Note also that $1 - \left(\beta  \dk ^{p_{\beta}}\right)^2 \le 1$, so
+\begin{align}
+\label{steves_rewrite_eqn2}
+\sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le \sqrt{1 - \left(\thetamink \right)^2} \le 1 - \frac 1 2 \left(\thetamink \right)^2.
+\end{align}
+Adding \cref{steves_rewrite_eqn1} and \cref{steves_rewrite_eqn2}, we find
 \begin{align*}
-\bsk 
-= \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
-\le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
-\le 1 -  \frac 1 4 \epsilon^2.
+2 \sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]} 
+\le 2 - 2 \beta \dk ^{p_{\beta}} - \frac 1 2 \left(\thetamink \right)^2
+\end{align*}
+and
+\begin{align*}
+\bsk = \beta \dk ^{p_{\beta}} + \sqrt{\left[1 - \left(\beta \dk ^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink \right)^2\right]}
+\le \beta \dk ^{p_{\beta}} + 1 - \beta \dk ^{p_{\beta}} - \frac 1 4 \left(\thetamink \right)^2 \\
+= 1 - \frac 1 4 \left(\thetamink \right)^2.
 \end{align*}
 \end{proof}
+
+% \begin{proof}
+% For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+% $\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have
+% $\bsk \le 1 - \frac 1 4 \epsilon^2$.
+% Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
+% % Also, let $\minangledelta$ be defined as in \cref{minangleassumption}.
+% Then we can let $\dacco(\epsilon)$ be defined by
+% % \minangledelta,
+% % 1,
+% \begin{align}
+% \dacco(\epsilon) < \min\left\{
+% \left(\frac {\epsilon ^2} {4\beta} \right)^{\frac 1 {p_{\beta}}},
+% \left(\frac 1 {2\beta}\right)^{\frac 1 {p_{\beta}}}
+% \right\}\label{define_delta_accuracy_old}.
+% \end{align}
+% If $\dk \le \dacco(\epsilon)$, then
+% \begin{align}
+% \beta\dk^{p_{\beta}} \le \frac 1 {4} \epsilon^2 \quad \textrm{and}\label{boundedbeta_deltasmall_2} \\
+% 2\beta\dk^{p_{\beta}} \le 1. \label{boundedbeta_deltasmall_3}
+% \end{align}
+% Rearranging \cref{boundedbeta_deltasmall_2}, provides $-\epsilon^2 \le -4\beta\dk^{p_{\beta}}$,
+% which combined with $\epsilon ^2 \le 1 \le 5$ shows
+% \begin{align*}
+% -\left[5- \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2  - \epsilon^2 \le -4\beta\dk^{p_{\beta}}.
+% \end{align*}
+% This means
+% \begin{align*}
+% \left(1 - \epsilon^2\right)\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right) 
+% = 1 - \epsilon^2 - \left[5 - \epsilon^2\right]\left(\beta\dk^{p_{\beta}}\right)^2 + 4\left(\beta\dk^{p_{\beta}}\right)^2 \\
+% \le 1 - 4\beta\dk^{p_{\beta}} + 4\left(\beta\dk^{p_{\beta}}\right)^2 = \left(1 - 2\beta\dk^{p_{\beta}}\right)^2.
+% \end{align*}
+% Dividing by $1 - \left(\beta\dk^{p_{\beta}}\right)^2$, taking the square root, and then dividing by $2$ we see
+% % 1 - \epsilon^2 \le \frac{\left(1 - 2\beta\dk^{p_{\beta}}\right)^2}{1 - \left(\beta\dk^{p_{\beta}}\right)^2}
+% % \Longrightarrow
+% \begin{align}
+% \frac 1 2 \sqrt{1 - \epsilon^2} \le \frac 1 2 \frac{1 -2\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% = \frac{\frac 1 2 -\beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}. \label{boundedbeta_eqn1}
+% \end{align}
+% Here, \cref{boundedbeta_deltasmall_3} ensures that the denominator is positive.
+% Also,
+% \begin{align*}
+% 1 - \epsilon^2 \le 1 - \epsilon^2 + \frac 1 4 \epsilon^4 
+% = \left(1 - \frac 1 2 \epsilon^2 \right)^2 
+% \Longrightarrow 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2}
+% \end{align*}
+% so that
+% \begin{align*}
+% 1 - \left(\beta\dk^{p_{\beta}}\right)^2 \le 1 \le \frac{\left(1 - \frac 1 2 \epsilon^2\right)^2}{1 - \epsilon^2} 
+% \Longrightarrow \sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}\le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \epsilon^2} } 
+% \Longrightarrow \sqrt{1 - \epsilon^2} \le \frac{1 - \frac 1 2 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}.
+% \end{align*}
+% Dividing by $2$ yields:
+% \begin{align}
+% \frac 1 2 \sqrt{1 - \epsilon^2} \le \frac{\frac 1 2 - \frac 1 4 \epsilon^2}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% \label{boundedbeta_eqn2}.
+% \end{align}
+% 
+% We then add \cref{boundedbeta_eqn1} and \cref{boundedbeta_eqn2} to find
+% \begin{align*}
+% \sqrt{1 - \epsilon^2} \le \frac{1 -  \frac 1 4 \epsilon^2 - \beta\dk^{p_{\beta}}}{\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2}}
+% \Longrightarrow \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \le 1 -  \frac 1 4 \epsilon^2.
+% \end{align*}
+% Because $\thetamink \ge \epsilon$, we have $\sqrt{1 - \epsilon^2} \ge \sqrt{1 - \left(\thetamink\right)^2}$
+% so that
+% \begin{align*}
+% \bsk 
+% = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right)^2\right)} 
+% \le \beta\dk^{p_{\beta}} + \left(\sqrt{1 - \epsilon^2}\right)\sqrt{1 - \left(\beta\dk^{p_{\beta}}\right)^2} \\
+% \le 1 -  \frac 1 4 \epsilon^2.
+% \end{align*}
+% \end{proof}
 
 
 
 \begin{lemma}
 \label{boundbeta}
 Let $\thetamink$ and $\qkpo$ be defined by \cref{define_thetamink} and \cref{define_ellipsek} respectively.
-For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qkpo) \le \frac{12}{\epsilon^2}$.
+
+If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\sigma\left(\qkpo\right) \le 12 \left(\thetamink\right)^{-2}$.
+
+% For any $0 < \epsilon < 1$ there exists $\dacco(\epsilon) > 0$, such that for any $k \in \naturals$ with
+% $\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, we have $\sigma(\qkpo) \le \frac{12}{\epsilon^2}$.
 \end{lemma}
 
 \begin{proof}
@@ -1787,26 +1848,27 @@ Also, during iteration $k$, let $\bs$ be defined by \cref{define_bs}.
 % \ck = \xk  + \frac 1 {2\gamma} \dk\huk, \quad
 % \sdk = \frac 1 {2\gamma} \dk.
 % \end{align*}
-First note that by \cref{define_bs} and \cref{boundbsk}, there exists $\dacco(\epsilon) > 0$ such that if 
-$\thetamink \ge \epsilon$ and $\dk \le \dacco(\epsilon)$, then
-$\frac {1} 2 \le \bs \le 1 - \frac 1 4 \epsilon^2$.
+First note that by \cref{define_bs} and \cref{boundbsk}, we have
+$\frac 1 2 \bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
 Squaring this yields
 \begin{align}
-\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \epsilon^2\right)^2 \le 1 - \frac 1 4 \epsilon^2 \label{p2_numerator}
+\frac {1} 4 \le \left(\bs\right)^2 \le \left(1 - \frac 1 4 \left(\thetamink\right)^2\right)^2 \le 1 - \frac 1 4 \left(\thetamink\right)^2 \label{p2_numerator}
 \end{align}
 so that
 \begin{align}
-\frac 1 4 \epsilon^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
+\frac 1 4  \left(\thetamink\right)^2 \le 1 - \left(\bs\right)^2 \le \frac 3 4. \label{p2_denominator}
 \end{align}
 Dividing \cref{p2_numerator} by \cref{p2_denominator}, we see that
 \begin{align*}
 \frac 1 3
 \le \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}
-\le \frac {4 - \epsilon^2}{\epsilon^2} \le \frac {4}{\epsilon^2}
-\Longrightarrow 
+\le \frac {4 - \left(\thetamink\right)^2}{\left(\thetamink\right)^2} \le \frac {4}{\left(\thetamink\right)^2}
+\end{align*}
+Now, using \cref{conservative_ellipsoid_details}, we can compute 
+\begin{align*}
 \sigma \left(\qkpo\right) 
-= \frac{\max\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}}{\min\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\}} 
-\le \frac {12}{\epsilon^2}
+= \frac{\max\left\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\right\}}{\min\left\{1, \frac{\left(\bs\right)^2}{1 - \left(\bs\right)^2}\right\}} 
+\le \frac {12}{\left(\thetamink\right)^2}
 \end{align*}
 as $\det(\rotk) = 1$.
 \end{proof}
@@ -2385,17 +2447,23 @@ The algorithm is as follows:
 
 \section{Convergence Analysis}
 
-Within this section we show that \cref{constrained_dfo} converges.
+Within this section we show that \cref{constrained_dfo} converges to a critical point.
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
 To use their analysis, we show that the accuracy and efficiency assumptions required for their proof hold, 
 this is done within \cref{ellipsoidal_lambda} and \cref{sufficient_reduction_section} respectively.
-Additionally, our criticallity measure \cref{define_criticality_measure} changes within each iteration.
+Additionally, our criticallity measure defined by \cref{define_criticality_measure}:
+$\chik = \left\|\xk - \text{Proj}_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|$
+depends on the current approximation of the constraints, which changes each iteration.
 Thus, we must also show that the criticallity measure converges to the true criticallity measure
 \begin{align}
 \label{verbiage_hoffman_use_one}
-\chik \approx \chi (x) = \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\chik \approx \chi (\xk)
 \end{align}
-For some results, we also show that the criticallity measure converges across iterations
+where 
+\begin{align*}
+\chi (x) = \left \| x - P_{\feasible}\left( x - \gradf\right) \right \|.
+\end{align*}
+For some results, we also show that the criticallity \cref{define_criticality_measure} measure converges across iterations:
 \begin{align}
 \label{verbiage_hoffman_use_two}
 \chik \approx \chil.
@@ -2405,7 +2473,7 @@ We summarize the steps of the proof here:
 \begin{itemize}
 \item Show that the accuracy condition \cref{accuracy} is satisfied. \\
 This is done within \cref{ellipsoidal_lambda}. 
-To do this, we must show our construction of $\sampletrk$ satisfies the boundedness requirement defined within \cref{ellipsoids_notation_definitions}.
+To do this, we must show our construction of $\sampletrk$ satisfies the conditioned requirement defined by \cref{ellipsoids_notation_definitions}.
 This is done within \cref{bounded_condition_numbers}.
 \item Show that the efficiency condition \cref{efficiency} is satisfied. \\
 This is the topic of \cref{sufficient_reduction_section}.
@@ -2414,7 +2482,7 @@ We use a slightly weaker efficiency condition, as stated in \cref{sufficient_red
 This is done within \cref{initial_convergence_results}, and is a fairly straight forward use of the analysis within \cite{Conejo:2013:GCT:2620806.2621814}.
 \item Show $\lim_{k\to\infty} \chik \to 0$ whenever $\gammabi > 0$. \\
 This is done within \cref{limit_of_criticallity_to_zero}.
-This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on bounding the Huffman constant of the constraint's model's Jacobians.
+This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on bounding the Hoffman constant of the constraint's model's Jacobians.
 This is done within \cref{bounding_the_projection_section}.
 This is complicated by the fact that we do not assume bounded level sets, so we do not have a gaurantee that the sequence $\left\{\xk\right\}$ is Cauchy.
 Thus, we introduce \cref{criteria_from_contradiction}, which
@@ -2434,6 +2502,20 @@ This relies on \cref{verbiage_hoffman_use_two}, which in turn relies on bounding
 Because of the similarity, this is done in parallel with bounding the constraint's model's Jacobian's Hoffman's constant in \cref{bounding_the_projection_section}.
 \end{itemize}
 
+Throughout this section, we assume that 
+$\left\{\xk\right\}$,
+$\left\{\dk\right\}$,
+$\left\{m_{c_i}\right\}$,
+and
+$\left\{m_{f}\right\}$
+are generated by 
+\cref{constrained_dfo}.
+Other quantities such as $\activeconstraintsk$, $\huk$, $\thetamink$, $\qk$, $\ck$, and $\sdk$ 
+that are generated by the conservative ellipsoid method described in
+\cref{ellipsoid_requirements} and \cref{constructing_and_analysizing_conservative_ellipsoid}
+include references to their definitions when used.
+
+
 \subsection{Assumptions}
 We will let $\Omega$ be some open region containing $\feasible$.
 
@@ -2446,8 +2528,8 @@ c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \Omega, \zeta \in [0, 
 \end{align*}
 \end{assumption}
 
-\paragraph{Bounded functions}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
+% \paragraph{Bounded functions}
+% The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
 
 \begin{assumption}
 \label{bounded_below_assumption}
@@ -2488,8 +2570,8 @@ The set $\feasible$ is bounded. That is, there exists $\maxnorm > 0$ such that
 \color{black}
 
 
-\paragraph{All functions are smooth}
-The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
+% \paragraph{All functions are smooth}
+% The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
 
 \begin{assumption}
 \label{lipschitz_gradients_assumption}
@@ -2698,19 +2780,21 @@ Therefore, $\thetamink \ge \minanglealpha$.
 
 \begin{lemma}
 \label{bounded_condition_numbers}
-Let $\qkpo$ and $\minanglealpha$ be defined by \cref{define_ellipsek} and \cref{minangleassumption} respectively.
+Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints};
+$\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise; and $\minanglealpha$ be defined by \cref{minangleassumption}.
 Suppose that \cref{minangleassumption} holds.
-Then the sequence $\left(\qk, \ck, \sk\right)$ is bounded as defined by \cref{ellipsoids_notation_definitions}.
-Namely, there exists a $\dacc > 0$, such that $\sigma(\qkpo) \le \frac {12}{\minanglealpha}$ whenever $\dk \le \dacc$.
+% Then the sequence $\left(\qk, \ck, \sk\right)$ is conditioned as defined by \cref{ellipsoids_notation_definitions}.
+There exists a $\dacc > 0$, such that $\sigma(\qkpo) \le {12}\left(\minanglealpha\right)^{-2}$ whenever $\dk \le \dacc$.
 \end{lemma}
 \begin{proof}
-Letting $\activeconstraintsk$ be defined by \cref{define_activeconstraints},
-we see that if $\activeconstraintsk = \emptyset$, then \cref{define_suitable_condition_numbers} is satisfied because $\sigma(\qkpo) = 1$.
+If $\activeconstraintsk = \emptyset$, then 
+% \cref{define_suitable_condition_numbers} is satisfied because 
+$\sigma\left(\qkpo\right) = 1$.
 If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{theta_min_is_bounded} and \cref{boundbeta} by letting
 \begin{align}
-\dacc = \min\left\{\minangledelta, \dacco(\minanglealpha) \right\} \label{define_delta_accuracy}
+\dacc = \min\left\{\minangledelta, \frac 1 {4 \beta} \left(\minanglealpha \right)^2 \right\} \label{define_delta_accuracy}
 \end{align}
-where $\minangledelta$ is defined by \cref{minangleassumption} and $\dacco(\epsilon)$ is defined by \cref{define_delta_accuracy_old}.
+where $\minangledelta$ is defined by \cref{minangleassumption}.
 \end{proof}
 
 
@@ -2722,8 +2806,12 @@ If $\dk \le \dacc$, then the tuple $(\qk, \ck, \sdk)$ defined in \cref{define_el
 is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
 \begin{proof}
-\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that $\bsk < 1 \Longrightarrow \frac{\bsk}{1 - \bsk} > 0$.
-Using \cref{define_bs}, \cref{define_inner_cone},
+Let $\minanglealpha$ be defined by \cref{minangleassumption}.
+\cref{theta_min_is_bounded} and \cref{boundbsk} tell us that 
+if $\dk \le \dacc$, then $\thetamink \ge \minanglealpha$, 
+so that the definitions \cref{define_bsk} and \cref{define_bs} imply
+$\bsk < 1 \Longrightarrow \frac{\bsk}{1 - \bsk} > 0$.
+Thus, the set of directions in \cref{define_inner_cone} is non empty, and
 $\fcki \ne \emptyset$.
 \end{proof}
 
@@ -4032,7 +4120,7 @@ which contradicts \cref{delta_to_zero}.
 \subsection{Bounded Projection}
 \label{bounding_the_projection_section}
 
-\subsubsection{The Huffman Constant}
+\subsubsection{The Hoffman Constant}
 
 We rely on results found within \cite{pena2020new}.
 We use the following terminology to state their results.
@@ -4050,6 +4138,7 @@ Also, define
 S_h(A) = \left\{J \subseteq [m] \; | \; \image(A_J) + \reals_+^J = \reals^J \right\}. \label{define_huff_subsets}
 \end{align}
 
+The following result is also from \cite{pena2020new}.
 \begin{lemma}
 For a given $j \times n$ matrix $A_J$, we have that 
 $\image(A_J) + \reals_+^J = \reals^J$
@@ -4057,13 +4146,23 @@ if and only if there exists an $x \in \Rn$ such that
 $A_J x < 0$.
 \end{lemma}
 
+\begin{definition}
+\label{hoffman_definition}
+Let $A \in \mathbb R^{m \times n}$ be given, and let $S_h$ be defined by \cref{define_huff_subsets}.
+Define the Hoffman constant of $A$, denoted $H(A)$, to be
+\begin{align*}
+H(A) = \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
+\end{align*}
+\end{definition}
 
+
+The following result is from \cite{pena2020new}.
 % Let $\left\|\cdot\right\|_1$ be any norm with dual $\left\|\cdot\right\|_2$.
 \begin{theorem}
-\label{hoffman_theorem}
-Let $A \in \mathbb R^{m \times n}$ be given, and let $S_h$ be defined by \cref{define_huff_subsets}.
-Define the Hoffman constant of $A$, denoted $H(A)$, to be such that for any 
-$b \in \image(A; \Rn) + \reals^m_+$, and any $y \in \Rn$
+\label{hoffmans_theorem}
+Let $A \in \mathbb R^{m \times n}$ be given, and let $H(A)$ be defined by \cref{hoffman_definition}.
+Then for any
+$b \in \image(A) + \reals^m_+$, and any $y \in \Rn$
 \begin{align*}
 \left\|y - z\right\| \le H(A) \left\|\left(Ay - b\right)_+\right\|
 \end{align*}
@@ -4074,13 +4173,7 @@ z = & \argmin_{x \in \Rn} & \|y - x\| \\
       & \textrm{s.t.}    & Ax \le b
 \end{array}.
 \end{align*}
-Then we have that
-\begin{align*}
-H(A) = \max_{J \in \mathcal S_h(A)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}.
-\end{align*}
-%  = \max_{J \in \mathcal S(A)} \max_{\|y\| \le 1} \min_{A_Jx \le y_J} \|x\|.
 \end{theorem}
-
 
 \begin{lemma}
 \label{huffman_of_infinity_ball}
@@ -4136,7 +4229,7 @@ so that $\left\|y - z\right\|_{\infty} = \left\| v_+ \right\|_{\infty}$.
 \end{proof}
 
 \begin{corollary}
-Let $H(A)$ and $\atr$ be defined by \cref{hoffman_theorem} and \cref{define_atr} respectively.
+Let $H(A)$ and $\atr$ be defined by \cref{hoffman_definition} and \cref{define_atr} respectively.
 Then $H(\atr) = \sqrt{n}$.
 \end{corollary}
 \begin{proof}
@@ -4231,7 +4324,7 @@ Then \cref{huffman_of_infinity_ball} implies
 
 \begin{lemma}
 \label{version_of_hoffman_with_infinity_ball}
-Let $H(A)$ be defined by \cref{hoffman_theorem}; and let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+Let $H(A)$ be defined by \cref{hoffman_definition}; and let $\atr$ and $\btr$ be defined by \cref{define_atr}.
 
 Let $A$ be an $m \times n$ matrix;
 $p, y \in \Rn$; $b \in \Rm$;
@@ -4500,7 +4593,7 @@ so
 % There is a $v$ such that $A_iv < 0$ for each $i$ and $s_i v_i < 0$ where $s_i \in \left\{1, -1\right\}$.
 % Because $Ap \le b$ ,
 
-\subsubsection{Bound on Huffman Constant}
+\subsubsection{Bound on Hoffman Constant}
 
 \begin{definition}
 \label{criteria_from_contradiction}
@@ -4665,7 +4758,7 @@ and once again,
 
 \begin{lemma}
 \label{the_hoffman_constants_are_bounded}
-Let $H(A)$ be defined by \cref{hoffman_theorem}.
+Let $H(A)$ be defined by \cref{hoffman_definition}.
 Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
 Suppose that the assumptions for \cref{yet_another_bound_on_a_u} hold.
 
@@ -5651,17 +5744,211 @@ Now that we have bounded the projection onto the set of constraints that are nea
 
 
 
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a, a', p, y \in \Rn$;
+and $d, \delta, M > 0$
+are given such that
+$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) \|a - a'\|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+If ${a}^T z' \le d$ and ${a'}^T z \le d$, then $z' - z = 0$.
+Without loss of generality, suppose that ${a'}^T (z - p) > d$.
+Then
+\begin{align*}
+0 < {a'}^T\left(z - p\right) - d 
+= \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
+\Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
+\le \left\|a' - a\right\| \left\|z - p\right\| 
+\le \left\|a' - a\right\| \left\|y\right\|
+\end{align*}
+For any $t \in [0, 1]$, we have
+\begin{align*}
+\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d 
+= (1 - t) \left[a^T\left(z - p\right) - d\right] + t \left[{a'}^T\left(z - p\right) - d\right]
+\le t \left[{a'}^T\left(z - p\right) - d\right] \\
+\le \left\|a - a'\right\| \left\|y\right\|
+\end{align*}
+and
+\begin{align*}
+\left[(1 - t) a + t a'\right]^T(y - p) = (1 - t) a^T(y - p) + t {a'}^T(y - p) \ge \left(1-t\right) \delta\left\|y - p\right\| + t \delta\left\|y - p\right\| = \delta\left\|y - p\right\| \\
+\Longrightarrow \frac 1 {\left[(1 - t) a + t a'\right]^T(y - p)} \le \frac {1} {\delta\left\|y - p\right\|}.
+\end{align*}
+Thus, by letting $\lambda = \left(\left\|y - p\right\| \delta\right)^{-1}\left\|a - a'\right\|\left\|y\right\|$, we see
+\begin{align*}
+\lambda
+\ge \frac{\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d}{\left[(1 - t) a + t a'\right]^T(y - p)} \\
+\Longrightarrow \left[(1 - t) a + t a'\right]^T \left[z - \lambda \left(y - p\right) - p\right] \le d
+\end{align*}
+and
+\begin{align*}
+\left\|z - \lambda\left(y - p\right) - z\right\| \le  \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+Thus,
+\begin{align*}
+\left\|p + y - z'\right\| \le \left\|p + y - z - \lambda \left(y - p\right)\right\| \le \left\|p + y - z\right\| + \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+
+\begin{comment}
+Some more logic here...
+\end{comment}
+
+\begin{align*}
+\left\|z - z'\right\| \le K \left\|a - a'\right\| \left\|y\right\|
+\end{align*}
+
+
+
+% Let 
+% \begin{align*}
+% r  = \left\|p + y - z\right\|
+% \quad \textrm{and} \quad
+% r' = \left\|p + y - z'\right\|
+% \end{align*}
+% and without loss of generality, suppose that $r \le r'$.
+
+
+% 
+% 
+% Let
+% \begin{align*}
+% \mathcal P(t) = \left\{
+% x \in \Rn \bigg | 
+% Ax \le b, 
+% \left[(1 - t) a + t a'\right]^T (x - p) \le d
+% \right\}
+% \end{align*}
+% so that
+% \begin{align*}
+% z = P_{\mathcal P(0)}(p + y) \\
+% z' = P_{\mathcal P(1)}(p + y) \\
+% \end{align*}
+% 
+% \begin{align*}
+% v(t) = P_{\mathcal P(t)}(p + y) \\
+% z(t) = \frac 1 2 \left\| z - v(t)\right\|^2 \\
+% \end{align*}
+% 
+% For any particular $t_0 \in [0, 1]$, there exists $\mu \in \mathbb R_{\ge 0}$ and $\lambda \in \mathbb R^m_{\ge 0}$ such that
+% \begin{align*}
+% p + y - v(t_0) = \mu \left[(1 - t_0) a + t_0 a'\right]^T + A^T\lambda
+% \end{align*}
+% 
+% \begin{align*}
+% z'(t) = 2 \nabla v(t)^T\left( z - v(t)\right) \\
+% \nabla v(t) = 
+% \end{align*}
+% 
+% Let $\mathcal I(t)$ be the set of active indices:
+% \begin{align*}
+% \mathcal I (t) = \left\{i \in [m] \bigg | A_i v(t) = b_i \right\}
+% \end{align*}
+% 
+% For some sufficiently small $h \in \reals$, we will have 
+% \begin{align*}
+% v(t+h) = 
+% \end{align*}
+% 
+\end{proof}
+% 
+% 
+% \begin{lemma}
+% Suppose
+% $A \in \reals^{m \times n}$;
+% $b \in \Rm$;
+% $a, a', p \in \Rn$;
+% and $d \in \reals$
+% are given such that
+% $Ap < b$ and $d > 0$.
+% Define
+% \begin{align*}
+% z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+% \quad \textrm{and} \quad
+% z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% If both $a^T\left(z' - p\right) \le d$ and ${a'}^T \left(z - p\right) \le d$, then we have $z - z' = 0$.
+% Without loss of generality, assume that 
+% $a^T\left(z' - p\right) > d \Longrightarrow a^T\left(z' - p\right) - d > 0$.
+% By the contraction property of projections
+% \begin{align*}
+% \left\|z' - p\right\|
+% \le \left\|P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p + y\right) - P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p\right)\right\|
+% \le \left\|p + y - p\right\|
+% = \|y\|.
+% \end{align*}
+% Combine this with ${a'}^T \left(z' - p\right) \le d \Longrightarrow {a'}^T \left(z' - p\right) - d \le 0$ to find
+% \begin{align*}
+% a^T\left(z' - p\right) - d 
+% = a^T\left(z' - p\right) - {a'}^T \left(z' - p\right) + {a'}^T \left(z' - p\right) - d 
+% \le \left(a - a'\right)^T \left(z' - p\right) \\
+% \le \left\|a - a'\right\| \left\|z' - p\right\|
+% \le \left\|a - a'\right\| \|y\|.
+% \end{align*}
+% We can compute
+% \begin{align*}
+% a^T\left(\frac{d + a^Tp}{a^Tz'}z' - p\right) = d + a^Tp - a^Tp = d
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|z' - \frac{d + a^Tp}{a^Tz'}z'\right\| 
+% = \left\|z'\right\|\left|\frac{a^Tz'}{a^Tz'} - \frac{d + a^Tp}{a^Tz'}\right|
+% \le \left\|z'\right\| \frac{\left\|y\right\|}{a^Tz} \left\|a - a'\right\|
+% \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% Let $s = \frac{a^Tz' - d}{a^T\left(z' - p\right)}$.
+% Notice that
+% $s a^T\left(p - z'\right) = d - a^Tz' \Longrightarrow  a^T\left[z' + s \left(p - z'\right)  \right] = d $
+% and
+% $\left\|z' - s\left(p - z'\right) - z'\right\| 
+% = \frac{a^Tz' - d}{a^T\left(z' - p\right)}\left\| z' - p\right\| 
+% \le \frac{\left\|z' - p\right\|}{a^T\left(z' - p\right)} \|a - a'\| \|z'\|$
+% \end{proof}
+
+
+
+
+
+
+
 
 \begin{lemma}
 \label{master_projection_lemma}
 Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+Let $H(A)$ be defined by \cref{hoffman_theorem}.
 
 Let $A, A'$ be $m \times n$ matrices;
 $p, y \in \Rn$; $b, b' \in \Rm$;
 and $M,\delta, r, \epsilon > 0$ be given 
 such that 
-
-% \left\|A_i\right\| = \left\| A'_i \right\| = 1 \quad \forall i \in [m], \\
+with the definition
+\begin{align*}
+J = \left\{i \in [m] \; \bigg | \; b_i \le \|A_i\|r  \right\}
+\end{align*}
+all the following identities are satisfied:
 \begin{align*}
 Ap \le b,
 \quad 
@@ -5675,225 +5962,255 @@ A'p \le b', \\
 \left|b_i\right| \le M \quad \forall i \in [m],
 \quad 
 \left|b'_i\right| \le M \quad \forall i \in [m], \\
-J = \left\{i \in [m] \; \bigg | \; b_i - A_ip \le \|A_i\|r  \right\} \\
-p_J = \argmin_{A_Jz\le b_J} \|y - z\|,
-\quad
-p'_J = \argmin_{A'_Jz\le b'_J} \|y - z\| \\
-z = \argmin_{Az\le b} \|y - z\|,
-\quad
-z' = \argmin_{A'z\le b'} \|y - z\| \\
-\|p_J\| \le M \quad \|p'_J\| \le M \\
-\|p_J - p'_J\| \le \epsilon \\
-\epsilon\left(1 + \|p\| + r\right) \le \frac 1 2 \delta r 
+H\left(A_J\right) \le M, \quad H\left(A'_J\right) \le M.
 \end{align*}
-then
+Then
 \begin{align*}
-\|z - z'\| \le ?
+\|z - z'\| \le \left(\ldots\right) \epsilon
+\end{align*}
+where
+\begin{align*}
+z  = \argmin_{x \in \Rn | A (x - p) \le b }\left\|p + y - x\right\|
+\quad \textrm{and} \quad
+z' = \argmin_{x \in \Rn | A'(x - p) \le b'}\left\|p + y - x\right\|.
 \end{align*}
 \end{lemma}
 \begin{proof}
-% Define
+
+
+
+Because $H\left(A_J\right) \le M$, we have that if 
+$\mathcal A = \left\{i \in J | A_i\left(y - p\right) \ge 0 \right\}$, and
+$\mathcal A' = \left\{i \in J | A'_i\left(y - p\right) \ge 0 \right\}$, then
+\begin{align*}
+M \ge H(A_J) 
+= \max_{\mathcal J \in \mathcal S_h(A_J)} \left[\min_{v \in R^{\mathcal J}_+, \|v\| = 1}  \left\|A_{\mathcal J}^Tv\right\| \right]^{-1}
+\ge \left[\min_{v \in R^{\mathcal A}_+, \|v\| = 1}  \left\|A_{\mathcal A}^Tv\right\| \right]^{-1}
+\ge \frac{\left\|y - p\right\|}{\left\|A_{\mathcal A}^T (y - p) \right\|} \\
+\Longrightarrow A_{\mathcal A}^T (y - p)  \ge \frac 1 M \left\|y - p\right\|.
+\end{align*}
+Also, if $i \in [m] \setminus J$ and $A_iy \ge b_i$, then
+\begin{align*}
+A_i \left(y - p\right) = A_i y - b_i + b_i - A_ip > \|A_i\| r 
+\end{align*}
+
+% 
+% 
 % \begin{align*}
-% K = M\|y - p\| + \max\left\{
-% \max_{i \in [m]}\left\{A_ip - b_i\right\},
-% \max_{i \in [m]}\left\{A'_ip - b'_i\right\},
-% \right\}
+% b_i - A_ip > \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
 % \end{align*}
 
-Note that
-\begin{align*}
-|A_ip_J - b_i| \le M(M+1) \\
-|A'_ip'_J - b'_i| \le M(M+1) \\
-\bigg|
-|A_ip_J - b_i| - |A'_ip'_J - b'_i|
-\bigg| \le |
-A_ip_J - b_i - A'_ip'_J + b'_i
-| \\
-\le |A_ip_J - A_i p'_J| + |A_ip'_J - A'_ip'_J| + |b'_i - b_i|
-\le M\epsilon + M\epsilon + \epsilon = \epsilon (2M + 1).
-\end{align*}
+
+\end{proof}
 
 
 
-Let 
-\begin{align*}
-v(t) = p_J + t(p - p_J)
-\quad
-v'(t) = p'_J + t(p - p'_J).
-\end{align*}
-Let $i \in [m] \setminus J$.
-If $A_ip_J > b_i$, then 
-\begin{align*}
-b_i - A_ip \le \|A_i\| r 
-\Longrightarrow - A_ip > \|A_i\|r - b_i
-\Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
-\Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
-\end{align*}
-If $s_i = \frac{A_ip_J - b_i}{A_i(p_J - p)}$, we have
-\begin{align*}
-t \ge s_i
-\Longrightarrow tA_i(p - p_J) \le b_i - A_ip_J 
-\Longrightarrow A_iv(t) \le b_i
-\end{align*}
-and
-\begin{align*}
-\left\|p_J - v\left(s_i\right)\right\|
-= \frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{A_i(p_J - p)}
-< 2\frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{\delta r}
-\le \frac{2K}{\delta r}\left\|p - p_J\right\|.
-\end{align*}
 
-
-Likewise, if $A'_ip'_J > b'_i$, then 
-\begin{align*}
-- A_ip > \|A_i\|r - b_i
-\Longrightarrow \epsilon\|p\| - A'_i p \ge \left(\|A'_i\| - \epsilon\right)r - b'_i - \epsilon \\
-\Longrightarrow -A'_ip > \|A'_i\|r - b'_i - \epsilon\left(1 + \|p\| + r\right) \\
-\Longrightarrow A'_i\left(p'_J - p\right) > \delta r - \frac 1 2 \delta r = \frac 1 2 \delta r > 0 \\
-\Longrightarrow \frac{1}{A'_i\left(p'_J - p\right)} < \frac{2}{\delta r}.
-\end{align*}
-If $s'_i = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}$, we have
-\begin{align*}
-t \ge s'_i
-\Longrightarrow tA'_i(p - p'_J) \le b'_i - A'_ip'_J 
-\Longrightarrow A'_iv(t) \le b'_i
-\end{align*}
-and
-\begin{align*}
-\left\|p'_J - v'\left(s'_i\right)\right\|
-= \frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{A'_i(p'_J - p)}
-< 2\frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{\delta r}
-\le \frac{2K}{\delta r}\left\|p - p'_J\right\|
-\end{align*}
-
-Consider any $i \in [m] \setminus J$,
-and let
-\begin{align*}
-\gamma_1 = \frac{A_ip_J - b_i}{A_i(p_J - p)}
-\quad \textrm{and} \quad
-\gamma_2 = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}.
-\end{align*}
-
-
-\paragraph{Case 1}
-Suppose that both $A_ip_J > b_i$ and $A'_ip'_J > b'_i$.
-
-Then
-\begin{align*}
-\gamma_1 - \gamma_2
-\end{align*}
-
-
-Notice that
-\begin{align*}
-\epsilon 
-\ge \left\|p_J - p'_J\right\|
-= \left\|p_J - p + \left(p - p'_J\right)\right\|
-\ge \bigg|
-\left\|p - p_J\right\| - \left\|p - p'_J\right\|
-\bigg| \\
-p_J - v(s_i) = p_J - p_J - s_i \left(p - p_J\right) \\
-p'_J - v'(s_i) = p'_J - p'_J - s'_i \left(p - p_J\right)
-\end{align*}
-implies
-\begin{align*}
-\bigg||s_i| - |s'_i|\bigg| =
-\bigg|
-\left\|p_J - v\left(s_i\right)\right\| -
-\left\|p'_J - v'\left(s'_i\right)\right\|
-\bigg| \le \frac{2K}{\delta r} \epsilon
-\end{align*}
-so that with
-we have
-\begin{align*}
-v\left(s_i\right) - v'\left(s'_i\right) 
-= \left(p_J - p'_J\right) + \left(p'_J - v(s'_i)\right) - \left(p_J - v(s_i)\right) \\
-= \left(p_J - p'_J\right) 
-+ \gamma_2 \left(p - p'_J\right)
-- \gamma_1 \left(p - p _J\right) \\
-= \left(p_J - p'_J\right) 
-+ \left(\gamma_2 - \gamma_1\right) p
-+ \gamma_1 p _J - \gamma_1 p'_J
-+ \gamma_1 p'_J - \gamma_2 p'_J \\
-\Longrightarrow \left\|v\left(s_i\right) - v'\left(s'_i\right) \right\|
-\le \left(1 + \gamma_1 \right)\left\|p_J - p'_J\right\| + \left(\|p\| + \|p'_J\|\right)\left|\gamma_1 - \gamma_2\right|
-\end{align*}
-
-\begin{align*}
-\gamma_1 p_J - \gamma_2 p'_J
-\end{align*}
-
-
+% % Define
+% % \begin{align*}
+% % K = M\|y - p\| + \max\left\{
+% % \max_{i \in [m]}\left\{A_ip - b_i\right\},
+% % \max_{i \in [m]}\left\{A'_ip - b'_i\right\},
+% % \right\}
+% % \end{align*}
+% 
+% Note that
+% \begin{align*}
+% |A_ip_J - b_i| \le M(M+1) \\
+% |A'_ip'_J - b'_i| \le M(M+1) \\
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| \le |
+% A_ip_J - b_i - A'_ip'_J + b'_i
+% | \\
+% \le |A_ip_J - A_i p'_J| + |A_ip'_J - A'_ip'_J| + |b'_i - b_i|
+% \le M\epsilon + M\epsilon + \epsilon = \epsilon (2M + 1).
+% \end{align*}
+% 
+% 
+% 
+% Let 
+% \begin{align*}
+% v(t) = p_J + t(p - p_J)
+% \quad
+% v'(t) = p'_J + t(p - p'_J).
+% \end{align*}
+% Let $i \in [m] \setminus J$.
+% If $A_ip_J > b_i$, then 
+% \begin{align*}
+% b_i - A_ip \le \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
+% \end{align*}
+% If $s_i = \frac{A_ip_J - b_i}{A_i(p_J - p)}$, we have
+% \begin{align*}
+% t \ge s_i
+% \Longrightarrow tA_i(p - p_J) \le b_i - A_ip_J 
+% \Longrightarrow A_iv(t) \le b_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p_J - v\left(s_i\right)\right\|
+% = \frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{A_i(p_J - p)}
+% < 2\frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p_J\right\|.
+% \end{align*}
+% 
+% 
+% Likewise, if $A'_ip'_J > b'_i$, then 
+% \begin{align*}
+% - A_ip > \|A_i\|r - b_i
+% \Longrightarrow \epsilon\|p\| - A'_i p \ge \left(\|A'_i\| - \epsilon\right)r - b'_i - \epsilon \\
+% \Longrightarrow -A'_ip > \|A'_i\|r - b'_i - \epsilon\left(1 + \|p\| + r\right) \\
+% \Longrightarrow A'_i\left(p'_J - p\right) > \delta r - \frac 1 2 \delta r = \frac 1 2 \delta r > 0 \\
+% \Longrightarrow \frac{1}{A'_i\left(p'_J - p\right)} < \frac{2}{\delta r}.
+% \end{align*}
+% If $s'_i = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}$, we have
+% \begin{align*}
+% t \ge s'_i
+% \Longrightarrow tA'_i(p - p'_J) \le b'_i - A'_ip'_J 
+% \Longrightarrow A'_iv(t) \le b'_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% = \frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{A'_i(p'_J - p)}
+% < 2\frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p'_J\right\|
+% \end{align*}
+% 
+% Consider any $i \in [m] \setminus J$,
+% and let
+% \begin{align*}
+% \gamma_1 = \frac{A_ip_J - b_i}{A_i(p_J - p)}
+% \quad \textrm{and} \quad
+% \gamma_2 = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}.
+% \end{align*}
+% 
+% 
+% \paragraph{Case 1}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J > b'_i$.
+% 
+% Then
+% \begin{align*}
+% \gamma_1 - \gamma_2
+% \end{align*}
+% 
+% 
+% Notice that
+% \begin{align*}
+% \epsilon 
+% \ge \left\|p_J - p'_J\right\|
+% = \left\|p_J - p + \left(p - p'_J\right)\right\|
+% \ge \bigg|
+% \left\|p - p_J\right\| - \left\|p - p'_J\right\|
+% \bigg| \\
+% p_J - v(s_i) = p_J - p_J - s_i \left(p - p_J\right) \\
+% p'_J - v'(s_i) = p'_J - p'_J - s'_i \left(p - p_J\right)
+% \end{align*}
+% implies
+% \begin{align*}
+% \bigg||s_i| - |s'_i|\bigg| =
+% \bigg|
+% \left\|p_J - v\left(s_i\right)\right\| -
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% \bigg| \le \frac{2K}{\delta r} \epsilon
+% \end{align*}
+% so that with
+% we have
 % \begin{align*}
 % v\left(s_i\right) - v'\left(s'_i\right) 
-% = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
-% = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
-% = \left(p_J - p'_J\right) + \left(p_J - v(s_i)\right) - \left(p'_J - v(s'_i)\right)
+% = \left(p_J - p'_J\right) + \left(p'_J - v(s'_i)\right) - \left(p_J - v(s_i)\right) \\
+% = \left(p_J - p'_J\right) 
+% + \gamma_2 \left(p - p'_J\right)
+% - \gamma_1 \left(p - p _J\right) \\
+% = \left(p_J - p'_J\right) 
+% + \left(\gamma_2 - \gamma_1\right) p
+% + \gamma_1 p _J - \gamma_1 p'_J
+% + \gamma_1 p'_J - \gamma_2 p'_J \\
+% \Longrightarrow \left\|v\left(s_i\right) - v'\left(s'_i\right) \right\|
+% \le \left(1 + \gamma_1 \right)\left\|p_J - p'_J\right\| + \left(\|p\| + \|p'_J\|\right)\left|\gamma_1 - \gamma_2\right|
 % \end{align*}
-
-% = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
-% = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
-
-
-
-
-
+% 
 % \begin{align*}
-% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-% = \left\|p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right)\right\| \\
-% = \left\|p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right)\right\| \\
-% \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_i p_J\right\| + \left\|s'_ip_J - s'_ip'_J\right\| \\
-% \le \left(\|p_J\| + \left\|p\right\|\right)\left|s'_i - s_i\right| + \left(1 + |s'_i|\right)\left\|p_J - p'_J\right\|
+% \gamma_1 p_J - \gamma_2 p'_J
 % \end{align*}
-
-
-
-
-
-
-
-\paragraph{Case 2}
-Suppose that both $A_ip_J > b_i$ and $A'_ip'_J \le b'_i$.
-Then 
-\begin{align*}
-\bigg|
-|A_ip_J - b_i| - |A'_ip'_J - b'_i|
-\bigg| 
-\le \epsilon (2M + 1).
-\end{align*}
-\paragraph{Case 3}
-Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J > b'_i$.
-
-\paragraph{Case 4}
-Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-Then
-\begin{align*}
-\left\|v\left(s_i\right) - v'\left(s'_i\right)\right\| 
-= \left\|p_J - p'_J\right\| \le \epsilon.
-\end{align*}
-
-Let $u = p_J$ if $A_ip_J \le b_i \forall i \in [m] \setminus J$ and $u' = p'_J$ if $A'_ip'_J \le b'_i \forall i \in [m] \setminus J$.
-Otherwise, let
-\begin{align*}
-j = \argmax_{\substack{
-i \in [m] \setminus J \\
-A_ip_J > b_i
-}}\{s_i\},
-\quad u = v\left(s_j\right),
-\quad 
-j' = \argmax_{\substack{
-i \in [m] \setminus J \\
-A'_ip'_J > b'_i
-}}\{s'_i\},
-\quad \textrm{and} \quad
-u' = v'\left(s'_{j'}\right).
-\end{align*}
-Then, both $Au \le b$ and
-$A'u' \le b'$.
+% 
+% 
+% % \begin{align*}
+% % v\left(s_i\right) - v'\left(s'_i\right) 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) + \left(p_J - v(s_i)\right) - \left(p'_J - v(s'_i)\right)
+% % \end{align*}
+% 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% 
+% 
+% 
+% 
+% 
+% % \begin{align*}
+% % \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% % = \left\|p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right)\right\| \\
+% % = \left\|p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right)\right\| \\
+% % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_i p_J\right\| + \left\|s'_ip_J - s'_ip'_J\right\| \\
+% % \le \left(\|p_J\| + \left\|p\right\|\right)\left|s'_i - s_i\right| + \left(1 + |s'_i|\right)\left\|p_J - p'_J\right\|
+% % \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% \paragraph{Case 2}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J \le b'_i$.
+% Then 
+% \begin{align*}
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| 
+% \le \epsilon (2M + 1).
+% \end{align*}
+% \paragraph{Case 3}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J > b'_i$.
+% 
+% \paragraph{Case 4}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\| 
+% = \left\|p_J - p'_J\right\| \le \epsilon.
+% \end{align*}
+% 
+% Let $u = p_J$ if $A_ip_J \le b_i \forall i \in [m] \setminus J$ and $u' = p'_J$ if $A'_ip'_J \le b'_i \forall i \in [m] \setminus J$.
+% Otherwise, let
+% \begin{align*}
+% j = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A_ip_J > b_i
+% }}\{s_i\},
+% \quad u = v\left(s_j\right),
+% \quad 
+% j' = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A'_ip'_J > b'_i
+% }}\{s'_i\},
+% \quad \textrm{and} \quad
+% u' = v'\left(s'_{j'}\right).
+% \end{align*}
+% Then, both $Au \le b$ and
+% $A'u' \le b'$.
 % 
 % \paragraph{Case 1}
 % Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
@@ -5926,7 +6243,6 @@ $A'u' \le b'$.
 % \bigg|
 % \end{align*}
 % 
-\end{proof}
 % 
 % 
 % 
@@ -5986,6 +6302,86 @@ $A'u' \le b'$.
 % \end{align*}
 
 % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_ip'_J\right\| \\
+
+
+% 
+% \begin{align*}
+% \left\|x\right\| \frac{y}{\left\|y\right\|}
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|y\right\| - \left\|x \right\| \le \left\|y - x\right\| \\
+% 1 - \frac{\left\|x \right\|}{\left\|y\right\|} \le \frac{\left\|y - x\right\|}{\left\|y\right\|} \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \left\|x -  \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% \le \left\|x - \frac{\left\|x\right\|}{\left\|y\right\|} x \right\|+ \left\|\frac{\left\|x\right\|}{\left\|y\right\|} x - \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% = \left\|x\right\|\left(1 - \frac{\left\|x\right\|}{\left\|y\right\|}\right) + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le \left\|x\right\|\frac{\left\|y - x\right\|}{\left\|y\right\|} + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le 2 \frac{\left\|x\right\|}{\left\|y\right\|} \left\|x - y\right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left|\left\|x\right\| - \left\|y\right\|\right|\le \left\|x - y \right\| \le a \left\|y\right\| \\
+% \left|\frac{\left\|x\right\|}{\left\|y\right\|} - 1\right|\le \left\|x - y \right\| \le a 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\|
+% \le \left\|x - y\right\| + 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s \frac{\left\|x\right\|}{\left\|y\right\|} y\right\| + \left\| s \frac{\left\|x\right\|}{\left\|y\right\|} y - s' y \right\|
+% \end{align*}
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s y\right\| + \left\| s y - s' y \right\|
+% \le s \left\|x - y\right\| + \left|s - s'\right| \left\| y \right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|p_J - \right\| \frac{p'_J - p}{\left\|p'_J - p\right\|} 
+% \end{align*}
+
+
+
+
+
+
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a, p, y \in \Rn$;
+and $d, d', \delta, M > 0$
+are given such that
+$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z' = \argmin_{\substack{Ax \le b \\ {a}^T \left(x - p\right) \le d'}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) |d - d'|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{comment}
+More logic here...
+\end{comment}
+\end{proof}
+
+
+
+
+
 
 Define
 
@@ -6481,7 +6877,6 @@ The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
 \label{bounded_level_sets}
 
 
-
 \section{Future Work}
 \subsection{Removing a regularity assumption}
 \label{alternative_assumptions_section}
@@ -6762,14 +7157,14 @@ Now, because $\| \nabla c_i(x) \| \ge \mingrad > 0$, we can divide by $\| \nabla
 \color{black}
 
 
-\subsection{Removing the Huffman assumption}
+\subsection{Removing the Hoffman assumption}
 \label{removing_the_huffman_assumption}
 
 
 
 \subsubsection{Just removed...}
 
-In order to show that the huffman constant is bounded across iterations, we make the following additional assumption.
+In order to show that the hoffman constant is bounded across iterations, we make the following additional assumption.
 We leave removing this assumption as future work, which is discussed in \cref{removing_the_huffman_assumption}.
 
 % \begin{align}
