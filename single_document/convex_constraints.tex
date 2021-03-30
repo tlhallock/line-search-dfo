@@ -142,7 +142,7 @@
 \newcommand{\rk}{\rho_k}
 \newcommand{\Rm}{\mathbb R^m}
 \newcommand{\Rn}{\mathbb R^n}
-\newcommand{\rotk}{{R^{(k)}}}
+\newcommand{\rotk}{{R^{(k+1)}}}
 \newcommand{\sampletrk}{{T_{\text{interp}}^{(k)}}}
 \newcommand{\sampletrkpo}{{T_{\text{interp}}^{(k+1)}}}
 \newcommand{\scaledunshiftedellipsoid}{{{\mathcal {\hat E}_{\text{feasible}}}^k}}
@@ -1506,30 +1506,23 @@ Note that during iteration $k$, we construct the ellipsoid for the next iteratio
 % \approxactiveconstraintskpo = \left\{i \in [m] | \zik \in B_{\infty}(\xkpo, \dkpo)\right\}. \label{define_active_approximation}
 % \end{align}
 
-First, we define the set of active constraints $\activeconstraintsk$ by \cref{define_activeconstraints}.
+First, we define the set of nearly active constraints $\activeconstraintsk$ by \cref{define_activeconstraints}.
 If there are no active constraints, $\activeconstraintsk = \emptyset$, then we simply let
 \begin{align}
-\qkpo = I, \quad \ckpo = \xkpo, \quad \sdkpo = \sqrt{2} \dkpo. \label{define_trivial_ellipsek}
+\qkpo = I, \quad \ckpo = \xkpo, \quad \sdkpo = \dkpo. \label{define_trivial_ellipsek}
 \end{align}
-\begin{comment}
-That obviously can't be right...
-\end{comment}
 
-However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction for these active constraints:
+However, if $\activeconstraintsk \ne \emptyset$, we compute a feasible direction for these nearly active constraints:
 \begin{align}
 \huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}. \label{define_u}
 \end{align}
-
-\begin{comment}
-What isn't clear?
-\end{comment}
-We are interested in constructing a cone of directions known to be feasible: namely those unit vectors that make a negative dot product with each nearly active constraint.
-We measure the distance between the direction $\huk$ and the nearest direction that is not feasible by computing
+We are interested in constructing a cone of directions that make a negative dot product with each nearly active constraint.
+We measure the distance between the direction $\huk$ and the nearest direction not in this cone by computing
 \begin{align}
 \thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \label{define_thetamink}.
 \end{align}
+Intuitively, larger values of $\thetamink$ imply $\huk$ is farther from the boundary of the cone.
 For simplicity, define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
-
 % The vector $\huk$ and and value $\thetamink$ can be computed with the following program:
 % \begin{align*}
 % \begin{array}{ccc}
@@ -1538,16 +1531,15 @@ For simplicity, define $\thetamink = 1$ if $\activeconstraintsk = \emptyset$.
 % & \|u \| = 1& 
 % \end{array}.
 % \end{align*}
-
-We can then measure the range of directions about $\huk$ that are feasible by computing
+We then buffer the directions about $\huk$ by computing
 \begin{align}
-\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left[1 - \left(\beta\dk^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink\right) ^2\right]}. \label{define_bsk}
+\bsk = \beta\dk^{p_{\beta}} + \sqrt{\left[1 - \left(\beta\dk^{p_{\beta}}\right)^2\right]\left[1 - \left(\thetamink\right) ^2\right]} \label{define_bsk}
 \end{align}
-Namely, we will show that the cone
+and defining the cone
 \begin{align}
-\fcki = \left\{x \in \Rn \; \bigg| \; x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\} \label{define_inner_cone}
+\fcki = \left\{x \in \Rn \; \bigg| \; x = \xkpo + ts, t > 0, \|s\| = 1, s^T\huk \ge \bsk \right\}. \label{define_inner_cone}
 \end{align}
-is feasible with respect to all active constraints.
+This cone is feasible with respect to all nearly active constraints.
 This cone is depicted in \cref{feasible_direction}.
 \begin{figure}[ht]
     \centering
@@ -2287,7 +2279,7 @@ We use this optimization problem as a subroutine of the trust region subproblem 
 Another option is to simply decrease the trust region radius.
 However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
 In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
-Thus, we set $\searchtrk = \capcones \cap \tr$ by defining the trust region subproblem as
+Thus, we set $ \searchtrk = \capcones \cap \tr$ by defining the trust region subproblem as
 \begin{align}
 \label{capcones_tr_subproblem}
 \begin{array}{ccc}
@@ -2300,7 +2292,7 @@ Thus, we set $\searchtrk = \capcones \cap \tr$ by defining the trust region subp
  & x \in \tr		& \\
 \end{array}
 \end{align}
-In \cref{sufficient_reduction_theorem} we show how to compute a point within $\capcones$ that satisfies the efficiency condition \cref{efficiency}.
+In \cref{sufficient_reduction_theorem} we show how to compute a point within $ \searchtrk $ that satisfies the efficiency condition \cref{efficiency}.
 
 
 % \begin{comment}
@@ -2411,9 +2403,9 @@ The algorithm is as follows:
 			$\kappa_{\chi}$ by \cref{define_kappa_chi};
 			$\ximin$ by \cref{define_ximin};
 			and $p_{\Delta}$ by \cref{define_p_delta}. \\
-        	Initialize iteration counter: $k=0$, initial iterate $\xinit \in \feasible$, trust region radius $\Delta_0 > 0$, and feasible ellipsoid as in \cref{initial_ellipsoid}.
+        	Initialize iteration counter: $k=0$, initial iterate $\xinit \in \feasible$, trust region radius $\Delta_0 > 0$, and feasible ellipsoid $T^{(0)}_{\textrm{interp}}$ as in \cref{initial_ellipsoid}.
             
-        \item[\textbf{Step 1}] \textbf{(Construct the model)} \\
+        \item[\textbf{Step 1}] \textbf{(Construct the models)} \\
 %         by \cref{define_ellipsek} if $\activeconstraintsk \ne \emptyset$ and \cref{define_trivial_ellipsek} if $\activeconstraintsk =\emptyset$.
         Call \cref{model_improving_algorithm} with respect to $\sampletrk$ to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}. \\
         Construct $\mfk$ and $\mcik$ as described in \cref{reg}.
@@ -2839,20 +2831,20 @@ We also use the following two theorems found within our convergence analysis for
 \begin{lemma}
 \label{change_radius} 
 Suppose that \cref{bounded_hessians_assumption} and \cref{lipschitz_gradients_assumption} hold.
-Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with Lipschitz constant $\liphess$.
+Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\Omega$ with bound $M$ and Lipschitz constant $\liphess$.
 % Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 % Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 Suppose there there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
 \left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
-\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3 % \Delta
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3. % \Delta
 \end{align*}
 Then let $r > 1$ be arbitrary.
 There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^0, r\Delta\right)$,
 \begin{align*}
-\left|f(x) - m_f(x)\right| \le \Lambda_1' r^? \\ % \Delta^3
-\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r^?\\ % \Delta^2
+\left|f(x) - m_f(x)\right| \le \Lambda_1' r^2 \\ % \Delta^3
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r\\ % \Delta^2
 \left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3' r .% \Delta
 \end{align*}
 \end{lemma}
@@ -2860,9 +2852,9 @@ There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x 
 \begin{proof}
 Let $x \in B\left(y^{0}, r\Delta\right)$, and define
 \begin{align*}
-\Lambda_1' = \Lambda_1 + \\
-\Lambda_2' = \Lambda_2 +  \\
-\Lambda_3' = \Lambda_3 + \liphess \Delta
+\Lambda_3' = \Lambda_3 + \liphess \Delta \\
+\Lambda_2' = 2 \Delta M + \Lambda_2 +  \Delta \Lambda_3'\\
+\Lambda_1' = \Lambda_1 + \Lambda_2' \Delta\\
 \end{align*}
 First, note that because $m_f$ is a quadratic model,
 \begin{align*}
@@ -2873,86 +2865,119 @@ First, note that because $m_f$ is a quadratic model,
 \end{align*}
 
 
-By the mean value theorem, 
+By the mean value theorem, there exists $\xi^1 \in [y^0, x]$ with
 \begin{align*}
 \left\|\nabla f(x) - \nabla f\left(y^0\right) \right\|
-\le \left\|x - y^0\right\| \max_{0\le t\le 1} \left\| \nabla^2 f\left(y^0 + t (x - y^0)\right) \right\| \\
-\le r \Delta \liphess
+\le \left\|x - y^0\right\| \left\| \nabla^2 f\left(\xi^1\right) \right\|
+\le r \Delta M \\
+\left\|\nabla m_f(x) - \nabla m_f\left(y^0\right) \right\|
+\le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+\le r \Delta \left(M + \Lambda_3'\right)
 \end{align*}
 Thus,
 \begin{align*}
 \left\|\nabla f(x) - \nabla m_f(x)\right\| \le 
 \left\| \nabla f(x) - \nabla f(y^0) \right\| + \left\|\nabla f(y^0) - \nabla m_f(y^0)\right\| + \left\|\nabla m_f(y^0) - \nabla m_f(x)\right\| \\
+\le r \Delta M + \Lambda_2 + r \Delta \left(M + \Lambda_3'\right)
+\le r \left(2 \Delta M + \Lambda_2 +  \Delta \Lambda_3'\right)
+\le r \Lambda_2'.
 \end{align*}
 
-
-Define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$, and notice $z \in B_{\infty}\left(y^0, \Delta\right)$.
-
-
-
-Subtracting this from
+Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 \begin{align*}
-m_f(x) = m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + (x - y^0)^T\nabla^2 m_f(y^0) (x - y^0),
+\left|f(x) - m_f(x)\right|
+\le \left| f(y^0) - m_f(y^0) \right| + \left\| \nabla f(\xi^2) - \nabla f(\xi^2) \right\| \left\|x - y^0\right\|
+\le \Lambda_1 + \Lambda_2' \Delta r^2
+\le \Lambda_1' r^2.
 \end{align*}
-
-
-
-and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
-Because $z \in B\left(y^0, \Delta\right)$, we know that
-
-\begin{align*}
-\left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
-\left\|\gradf(z) - \nabla m(z)\right\| \le \Lambda_2 \\ % \Delta^2
-\left\|\nabla^2 f(z) - \nabla^2 m(z)\right\| \le \Lambda_3 % \Delta
-\end{align*}
-and that there exists 
-% $\alpha \in [0, 1]$, 
-$\chi_1 \in [y^0, x]$ and
-$\chi_2 \in [z, x]$
-such that such that
-\begin{align*}
-f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
-f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
-m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
-\end{align*}
-we have
-\begin{align*}
-f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
-+ \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
-+ \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
-\left|f(x) - m_f(x)\right| 
-\le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
-+ \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
-\end{align*}
-
-
-
-\begin{align*}
-\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right) \right\| \\
-= \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y\right) \right\| 
-+ \left\| \nabla^2 f\left(y\right) - \nabla^2 m_f\left(y\right) \right\|
-+ \left\| \nabla^2 m_f\left(y\right) - \nabla^2 m_f\left(x\right) \right\| \\
-\le \liphess \left\|x - y \right\| + \Lambda_2 + 
-\end{align*}
-
-
-
-\begin{align*}
-\nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
-\left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
-\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| + \left\| \nabla^2 m_f\left(y^0\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
-\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
-\end{align*}
-
-
-
-
-\begin{align*}
-\phi_i\left(x\right) = \phi_i\left(y\right) + 
-\end{align*}
-
-
-
+% 
+% 
+% 
+% \begin{align*}
+% \left| f(x) -  f\left(y^0\right) \right|
+% \le \left\|x - y^0\right\| \left\| \nabla f\left(\xi\right) \right\|
+% \le r \Delta \liphess \\
+% \left\|\nabla m_f(x) - \nabla m_f\left(y^0\right) \right\|
+% \le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+% \le r \Delta \left(\liphess + \Lambda_3'\right)
+% \end{align*}
+% Thus,
+% \begin{align*}
+% \left\|\nabla f(x) - \nabla m_f(x)\right\| \le 
+% \left\| \nabla f(x) - \nabla f(y^0) \right\| + \left\|\nabla f(y^0) - \nabla m_f(y^0)\right\| + \left\|\nabla m_f(y^0) - \nabla m_f(x)\right\| \\
+% \le r \Delta \liphess + \Lambda_2 + r \Delta \left(\liphess + \Lambda_3'\right)
+% \le r \left(2 \Delta \liphess + \Lambda_2 +  \Delta \Lambda_3'\right)
+% \le r \Lambda_2'.
+% \end{align*} 
+% 
+% 
+% Define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$, and notice $z \in B_{\infty}\left(y^0, \Delta\right)$.
+% 
+% 
+% 
+% Subtracting this from
+% \begin{align*}
+% m_f(x) = m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + (x - y^0)^T\nabla^2 m_f(y^0) (x - y^0),
+% \end{align*}
+% 
+% 
+% 
+% and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
+% Because $z \in B\left(y^0, \Delta\right)$, we know that
+% 
+% \begin{align*}
+% \left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
+% \left\|\gradf(z) - \nabla m(z)\right\| \le \Lambda_2 \\ % \Delta^2
+% \left\|\nabla^2 f(z) - \nabla^2 m(z)\right\| \le \Lambda_3 % \Delta
+% \end{align*}
+% and that there exists 
+% % $\alpha \in [0, 1]$, 
+% $\chi_1 \in [y^0, x]$ and
+% $\chi_2 \in [z, x]$
+% such that such that
+% \begin{align*}
+% f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
+% f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
+% m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
+% \end{align*}
+% we have
+% \begin{align*}
+% f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
+% + \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
+% + \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
+% \left|f(x) - m_f(x)\right| 
+% \le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
+% + \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right) \right\| \\
+% = \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y\right) \right\| 
+% + \left\| \nabla^2 f\left(y\right) - \nabla^2 m_f\left(y\right) \right\|
+% + \left\| \nabla^2 m_f\left(y\right) - \nabla^2 m_f\left(x\right) \right\| \\
+% \le \liphess \left\|x - y \right\| + \Lambda_2 + 
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| + \left\| \nabla^2 m_f\left(y^0\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
+% \end{align*}
+% 
+% 
+% 
+% 
+% \begin{align*}
+% \phi_i\left(x\right) = \phi_i\left(y\right) + 
+% \end{align*}
+% 
+% 
+% 
 
 
 \end{proof}
@@ -3028,19 +3053,19 @@ there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_
 By \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \Lambda_2 \left(2\delta\right)^2 \liphess \sqrt{p+1} = {\kappa'}_g\delta^2, &
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &
 \left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2 \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \Lambda_3 \left(2\delta\right) \liphess \sqrt{p+1} = {\kappa'}_h\delta^2, &
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le 2\Lambda_3 \delta = {\kappa'}_h\delta^2, &
 \left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
 \end{array}
 \end{align*}
-where $\kappa_{g}' = 16 \Lambda_2 \liphess \sqrt{p+1}$ and $\kappa_{h}' = 8 \Lambda_3 \liphess \sqrt{p+1}$.
+where $\kappa_{g}' = 2 \Lambda_2$ and $\kappa_{h}' = 2\Lambda_3$.
 % Define $\kappa''_{g} =  \sqrt{\sigmamax}\kappa'_g$ and $\kappa''_h = \sigmamax\kappa'_h$.
 Notice that because $\sigma_{\textrm{min}} = 1$, we have that $\sigmamax = \sigma \left(\qk\right)$.
 \cref{shifted_ellipsoid} tells us for all $x_0 \in \scaledunshiftedellipsoid$:
 \begin{align*}
 \left\|\gradf\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le 
-\kappa'_g  \dk^2 \sqrt{\kappa\left(\frac 2 {\sdk} \qkmo\right)} \le \kappa'_g \sqrt{\sigma\left(\qkmo\right)}\dk^2 \\
+\kappa'_g  \dk^2 \sqrt{\sigma\left(\frac 2 {\sdk} \qkmo\right)} \le \kappa'_g \sqrt{\sigma\left(\qkmo\right)}\dk^2 \\
 \left\|\nabla {c_i}\left(x_0 \right) - \nabla m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_g\sqrt{\sigma\left(\qkmo\right)} \dk^2 \quad \forall i \in [m] \\
 \left\|\nabla^2\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le \kappa'_h\sigma\left(\qkmo\right)\dk, \\
 \left\|\nabla^2 {c_i}\left(x_0 \right) - \nabla^2 m^{(k)}_{c_i}\left(x_0\right)\right\| \le \kappa'_h\sigma\left(\qkmo\right)\dk \quad \forall i \in [m]
@@ -3433,6 +3458,10 @@ If $\dk \le \dfeas$, then $\cap_{i \in \activeconstraintsk} \fik \cap \left[\tr 
 \end{lemma}
 
 
+\begin{comment}
+Add corollary to be referenced when defining the inner cone.
+\end{comment}
+
 \begin{proof}
 This follows directly from the definitions and \cref{each_constraints_cone_is_feasible}.
 \end{proof}
@@ -3531,8 +3560,6 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % We construct a solution by
 
 % It can be shown that the \emph{generalized Cauchy point} satisfies this condition \cite{Conn:2000:TM:357813}.
-
-
 % A efficiency condition \cref{efficiency} is satisfied:
 % \begin{align}
 % \mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \Delta_k, 1 \}
@@ -3545,7 +3572,15 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 
 % We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
 
-
+% Unfortunately, this generalized Cauchy point is not guaranteed to lie within the buffered region $\capcones$, although our algorithm requires the trial point to lie in $\capcones$ to ensure it is feasible.
+% Although it is possible to construct a generalized Cauchy point for using the buffered region as the convex constraints, the criticality measure would then be interpreted as the projection onto the buffered region, rather than \cref{define_criticality_measure}.
+% Thus, we show a method using the generalized Cauchy point to construct a point within the feasible region that also satisfies the efficiency condition.
+% 
+% With explicit linear constraints, we could simply use $u_{GC}$ to satiwe know that this is satisfied by the Generalized Cauchy Point.
+% For convex constraints, we use the minimization within the buffered feasible region.
+% The point given by \cref{sufficient_reduction_theorem} does not satisfy the efficiency condition during every iteration.
+% Instead, we show convergence when the efficiency condition is satisfied for at least those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$.
+% We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
 % 
 % 
 % 
@@ -3703,20 +3738,19 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 
 
 
+
 \begin{theorem}
 \label{sufficient_reduction_theorem}
 Let 
 $\chik$,
 $\kappa_{\chi}$,
 $p_{\Delta}$,
-$u_{GC}$,
 $\kappa_f$,
 and $\capcones$
 be defined by
 \cref{define_criticality_measure}
 \cref{define_kappa_chi}
 \cref{define_p_delta}
-\cref{define_projected_gradient}
 \cref{sufficient_reduction_of_projected_gradient}
 and \cref{define_capcones}
 respectively.
@@ -3736,12 +3770,10 @@ and
 \end{align}
 then we can compute $v \in \capcones \cap \tr$ such that
 \begin{align*}
-m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \ge \left(\frac{\kappa_f}{2} \right)\chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
+m_f^{(k)}(\xk) - m_f^{(k)}(v)
+\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
 \end{align*}
-
-\begin{comment}
-Should that have been a $\frac 1 2$
-\end{comment}
+% \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
 
 \end{theorem}
 
@@ -3845,6 +3877,12 @@ By \cref{sufficient_reduction_of_projected_gradient}, $u_{GC}$ satisfies
 \begin{align*}
 \mfk(\xk) - \mfk(u_{GC}) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
 \end{align*}
+
+
+\begin{comment}
+Make 2 different $\kappa_f$
+\end{comment}
+
 After using \cref{sr_chi_big_enough}, \cref{bounded_model_hessian_lemma}, and $\dk \le 1$, this becomes
 \begin{align*}
 \mfk(\xk) - \mfk(u_{GC})
