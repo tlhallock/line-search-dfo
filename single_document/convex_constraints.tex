@@ -3738,84 +3738,6 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 
 
 
-
-\begin{theorem}
-\label{sufficient_reduction_theorem}
-Let 
-$\chik$,
-$\kappa_{\chi}$,
-$p_{\Delta}$,
-$\kappa_f$,
-and $\capcones$
-be defined by
-\cref{define_criticality_measure}
-\cref{define_kappa_chi}
-\cref{define_p_delta}
-\cref{sufficient_reduction_of_projected_gradient}
-and \cref{define_capcones}
-respectively.
-Suppose that
-% \cref{max_norm_assumption},
-\cref{minangleassumption_alt},
-\cref{bounded_hessians_assumption},
-\cref{lipschitz_gradients_assumption}
-hold.
-There exists a $\dsr > 0$, such that if, during iteration $k$, we have
-\begin{align}
-\chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \label{sr_chi_big_enough}
-\end{align}
-and
-\begin{align}
-\dk \le \dsr \label{sr_delta_small_enough}
-\end{align}
-then we can compute $v \in \capcones \cap \tr$ such that
-\begin{align*}
-m_f^{(k)}(\xk) - m_f^{(k)}(v)
-\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
-\end{align*}
-% \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
-
-\end{theorem}
-
-\begin{proof}
-
-Let
-$\kappa_{\chi}$,
-$\maxhessian$,
-$\maxgrad$,
-$\dacc$,
-$\dfeas$,
-$\deltalargzik$,
-$\activeconstraintsk$,
-and $\feasiblek$
-be defined by
-\cref{define_kappa_chi},
-\cref{bounded_hessians_assumption},
-\cref{bounded_gradients_lemma},
-\cref{define_delta_accuracy},
-\cref{define_delta_feasible},
-\cref{define_deltalargzik},
-\cref{define_activeconstraints},
-and \cref{define_feasiblek}
-respectively.
-Let $\alpha$, $\beta$ $p_{\alpha}$, and $p_{\beta}$
-be defined as in \cref{define_abpab}, as well as $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt}.
-We also define
-\begin{align}
-\delta_2 = \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, \frac 1 2 \right\} \label{define_delta2} \\
-\delta = \min\left\{1, \frac{\delta_2}{2\left(\maxgrad + 2\maxhessian\right)}\right\} \label{sr_define_delta} \\
-p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
-v = u_{GC} - \delta \dk^{p} \huk \label{define_v} \\
-\epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
-\dsr = \min\left\{
-\dfeas,
-\dacc,
-\deltalargzik,
-\frac{\minangledelta}{3\sqrt{n}},
-\left(\frac{\delta \minanglealpha}{\left(\delta + 2\sqrt{n}\right)\left(\beta +\alpha\right)}\right)^{\frac 1 {\epsilon_{\Delta}}}
-\right\} \label{define_delta_sufficient_reduction}
-\end{align}
-
 \color{red}
 Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
 Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
@@ -3829,13 +3751,107 @@ This is because the only way to quit iteration $k$ without reaching Step 3 is
 \end{itemize}
 \color{black}
 
+
+\begin{theorem}
+\label{sufficient_reduction_theorem}
+Let 
+$\chik$,
+$\kappa_{\chi}$,
+$p_{\Delta}$,
+and $\capcones$
+be defined by
+\cref{define_criticality_measure}
+\cref{define_kappa_chi}
+\cref{define_p_delta}
+and \cref{define_capcones}
+respectively.
+Suppose that
+% \cref{max_norm_assumption},
+\cref{minangleassumption_alt},
+% \cref{bounded_hessians_assumption},
+% \cref{lipschitz_gradients_assumption}
+and the assumptions for
+\cref{i_thought_i_proved_this_already},
+\cref{bounded_model_hessian_lemma}
+hold.
+There exist $\dsr>0$ and $\kappa_f > 0$, such that if
+\begin{align}
+\chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \label{sr_chi_big_enough}
+\end{align}
+and
+\begin{align}
+\dk \le \dsr \label{sr_delta_small_enough}
+\end{align}
+then there exists $v \in \capcones \cap \tr$ such that
+\begin{align*}
+m_f^{(k)}(\xk) - m_f^{(k)}(v)
+\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
+\end{align*}
+% \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
+
+\end{theorem}
+
+\begin{proof}
+
+Let $\kappa_f' > 0$ be a fixed constant, and $u_{\textrm{GC}}$ be any approximate solution to 
+\begin{align*}
+\begin{array}{cccc}
+u_{\textrm{GC}} \approx & \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
+& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+& & s \in B_{\infty}\left(\xk, \frac 1 2 \dk\right) & \\
+\end{array}.
+\end{align*}
+satisfying
+\begin{align}
+\label{what_ugc_satisfies}
+m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
+\end{align}
+
+Let
+$\kappa_{\chi}$,
+$\maxmodelhessian$,
+$\maxmodelgrad$,
+$\dacc$,
+$\dfeas$,
+$\deltalargzik$,
+$\activeconstraintsk$,
+and $\feasiblek$
+be defined by
+\cref{define_kappa_chi},
+\cref{bounded_model_hessian_lemma},
+\cref{i_thought_i_proved_this_already},
+\cref{define_delta_accuracy},
+\cref{define_delta_feasible},
+\cref{define_deltalargzik},
+\cref{define_activeconstraints},
+and \cref{define_feasiblek}
+respectively.
+
+Let $\alpha$, $\beta$ $p_{\alpha}$, and $p_{\beta}$
+be defined as in \cref{define_abpab}, as well as $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt}.
+Define
+\begin{align}
+\delta_2 = \kappa_f' \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxmodelhessian}, \frac 1 2 \right\} \label{define_delta2} \\
+\delta = \min\left\{1, \frac{\delta_2}{2\left(\maxmodelgrad + 2 \maxmodelhessian \right)}\right\} \label{sr_define_delta} \\
+p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
+v = u_{\textrm{GC}} - \delta \dk^{p} \huk \label{define_v} \\
+\epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
+\dsr = \min\left\{
+\dfeas,
+\dacc,
+\deltalargzik,
+\frac{\minangledelta}{3\sqrt{n}},
+\left(\frac{\delta \minanglealpha}{\left(\delta + 2\sqrt{n}\right)\left(\beta +\alpha\right)}\right)^{\frac 1 {\epsilon_{\Delta}}}
+\right\} \label{define_delta_sufficient_reduction}.
+\end{align}
+
 By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption_alt}
 tells us there is a $ \minangledirk \in \Rn$ with
 $-\frac {\gmcik}{\left\|\gmcik\right\|} ^T \minangledirk \ge \minanglealpha$ for any $i \in B_{\infty}\left(\xk, \minangledelta\right)$.
 Let $\huk$ be defined as in \cref{define_u},
 Then $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i \in B_{\infty}\left(\xk, \minangledelta\right)$.
 
-Note that by \cref{sr_def_p}, we have that
+Note that by \cref{sr_def_p}, we have
 \begin{align}
 p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2 \min\{p_{\alpha}, p_{\beta} \} \Longrightarrow 1 + p_{\Delta} < p \label{sr_p_big}
 \end{align}
@@ -3850,57 +3866,57 @@ Combine these with \cref{sr_def_epsilon_delta} to find
 \end{align}
 From \cref{define_v}, we see
 \begin{align}
-\|u_{GC} - v\| = \delta \dk^{p} \label{sr_v_close_u}
+\|u_{\textrm{GC}} - v\| = \delta \dk^{p} \label{sr_v_close_u}
 \end{align}
 % Observe that $\zeta \ge 0$ because $\xk \in \tr$.
-% We know that when $\zeta' = 0,  \zeta' \left(u_{GC} - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
-% Also, if $u_{GC} - \delta \dk^{p} \huk\in\tr$, then $\zeta' = 1 \Longrightarrow v \in \tr$.
-% When $u_{GC} - \delta \dk^{p} \huk \not\in\tr$, then because $\tr$ is a convex set, there is a unique, well defined value of $\zeta \in (0, 1)$.
-and because $u_{GC} \in B_{\infty}(\xk, \frac 1 2 \dk)$, $\delta \le \frac 1 2 $, $p > 1$, and $\dk \le 1$,
+% We know that when $\zeta' = 0,  \zeta' \left(u_{\textrm{GC}} - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
+% Also, if $u_{\textrm{GC}} - \delta \dk^{p} \huk\in\tr$, then $\zeta' = 1 \Longrightarrow v \in \tr$.
+% When $u_{\textrm{GC}} - \delta \dk^{p} \huk \not\in\tr$, then because $\tr$ is a convex set, there is a unique, well defined value of $\zeta \in (0, 1)$.
+and because $u_{\textrm{GC}} \in B_{\infty}(\xk, \frac 1 2 \dk)$, $\delta \le \frac 1 2 $, $p > 1$, and $\dk \le 1$,
 \begin{align*}
-\|u_{GC} - v\| = \delta \dk^{p} \le \frac 1 2\dk \Longrightarrow v \in \tr.
+\|u_{\textrm{GC}} - v\| = \delta \dk^{p} \le \frac 1 2\dk \Longrightarrow v \in \tr.
 \end{align*}
 % so that $v \in \tr$.
 % This means that $v \in \tr$ is well defined.
 % then $\zeta' = 1$ is not feasible, but $\zeta' = 0$ still is.
 % Thus, because $\tr$ is a convex set, there is a well defined value $\zeta \in (0, 1]$ to define $v$.
 
-% Note that because $u_{GC} \in \tr$, 
+% Note that because $u_{\textrm{GC}} \in \tr$, 
 % \begin{align}
-% \|u_{GC} - v\| \le \left\|u_{GC} - \left(u_{GC} - \delta \dk^{p} \huk\right)\right\| + \left\|\left(u_{GC} - \delta \dk^{p} \huk\right) - v\right\| \nonumber \\
-% \le \delta 2\dk^{p} + \left\|v - \xk \right\| + \left\|\xk - u_{GC}\right\|
+% \|u_{\textrm{GC}} - v\| \le \left\|u_{\textrm{GC}} - \left(u_{\textrm{GC}} - \delta \dk^{p} \huk\right)\right\| + \left\|\left(u_{\textrm{GC}} - \delta \dk^{p} \huk\right) - v\right\| \nonumber \\
+% \le \delta 2\dk^{p} + \left\|v - \xk \right\| + \left\|\xk - u_{\textrm{GC}}\right\|
 % \le 2 \delta\left(1 + \sqrt{n}\right) \dk^{p} \label{sr_v_close_u}
 % \end{align}
+% 
+% By \cref{sufficient_reduction_of_projected_gradient}, $u_{\textrm{GC}}$ satisfies
+% % Because $u_{\textrm{GC}}$ is the Cauchy point for the trust region subproblem with $\frac 1 2$ the current radius, it satisfies
+% \begin{align*}
+% \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
+% \end{align*}
 
-By \cref{sufficient_reduction_of_projected_gradient}, $u_{GC}$ satisfies
-% Because $u_{GC}$ is the Cauchy point for the trust region subproblem with $\frac 1 2$ the current radius, it satisfies
+
+% \begin{comment}
+% Make 2 different $\kappa_f$
+% \end{comment}
+
+After using \cref{sr_chi_big_enough}, \cref{bounded_model_hessian_lemma}, and $\dk \le 1$, \cref{what_ugc_satisfies} becomes
 \begin{align*}
-\mfk(\xk) - \mfk(u_{GC}) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
-\end{align*}
-
-
-\begin{comment}
-Make 2 different $\kappa_f$
-\end{comment}
-
-After using \cref{sr_chi_big_enough}, \cref{bounded_model_hessian_lemma}, and $\dk \le 1$, this becomes
-\begin{align*}
-\mfk(\xk) - \mfk(u_{GC})
-\ge \kappa_f \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk \right\} \\
-\ge \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, \frac 1 2  \right\}.
+\mfk(\xk) - \mfk(u_{\textrm{GC}})
+\ge \kappa_f' \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk \right\} \\
+\ge \kappa_f' \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxmodelhessian}, \frac 1 2  \right\}.
 \end{align*}
 We can use \cref{define_delta2} to simplify this:
 \begin{align*}
-\mfk(\xk) - \mfk(u_{GC}) \ge \delta_2 \dk^{1 + p_{\Delta}}.
+\mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge \delta_2 \dk^{1 + p_{\Delta}}.
 \end{align*}
 Then \cref{sr_define_delta} gives
 \begin{align*}
-\delta_2 \dk^{1 + p_{\Delta}} = \left(2\maxgrad + 4\maxhessian\right)\delta\dk^{1 + p_{\Delta}},
+\delta_2 \dk^{1 + p_{\Delta}} = \left(2\maxmodelgrad + 4\maxmodelhessian\right)\delta\dk^{1 + p_{\Delta}},
 \end{align*}
 and \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \dk^p$ so that
 \begin{align*}
-2\left(\maxgrad + 2\maxhessian\right)\delta\dk^{1 + p_{\Delta}}
-\ge \left(2\maxgrad + 4\maxhessian\right)\delta\dk^{p}
+2\left(\maxmodelgrad + 2\maxmodelhessian\right)\delta\dk^{1 + p_{\Delta}}
+\ge \left(2\maxmodelgrad + 4\maxmodelhessian\right)\delta\dk^{p}
 \end{align*}
 
 % \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, 1 \right\} 
@@ -3939,79 +3955,88 @@ and \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \dk^p$ so that
 
 Because $\dk \le 1$, $\delta \le 1$, and $p \ge 1$, we see that
 \begin{align*}
-2\left(\maxgrad + 2\maxhessian\right)\delta\dk^{p}
-= 2\maxgrad \delta \dk^p + 4\maxhessian\delta\dk^{p}
-\ge 2\maxgrad \delta \dk^p + 4\maxhessian\delta^2 \dk^{2p}
+2\left(\maxmodelgrad + 2\maxmodelhessian\right)\delta\dk^{p}
+= 2\maxmodelgrad \delta \dk^p + 4\maxmodelhessian\delta\dk^{p}
+\ge 2\maxmodelgrad \delta \dk^p + 4\maxmodelhessian\delta^2 \dk^{2p}
 \end{align*}
 
-Combining this with \cref{sr_v_close_u}, \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption} to see that
+Combining this with \cref{sr_v_close_u}, 
+\cref{i_thought_i_proved_this_already}
+% \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption}
+to see that
 \begin{align*}
-2\maxgrad \delta \dk^p + 4\maxhessian\delta^2 \dk^{2p} 
-\ge 2\left\|\gk\right \|  \left\|u_{GC}- v\right\| + 4 \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
-\ge \left|2\left(\gk\right)^T(u_{GC} - v) + 2\left(u_{GC} - v\right) ^T 2\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \right|\\
-= 2 \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right|
+2\maxmodelgrad \delta \dk^p + 4\maxmodelhessian\delta^2 \dk^{2p} 
+\ge 2\left\|\gk\right \|  \left\|u_{\textrm{GC}}- v\right\| + 4 \|u_{\textrm{GC}} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
+\ge \left|2\left(\gk\right)^T(u_{\textrm{GC}} - v) + 2\left(u_{\textrm{GC}} - v\right) ^T 2\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{\textrm{GC}} - v\right) \right|\\
+= 2 \left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v)\right|
 \end{align*}
 Putting these inequalities together yields
 \begin{align*}
-\mfk(\xk) - \mfk(u_{GC}) \ge 2\left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right| \\
-\Longrightarrow -\left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v)\right| \ge -\frac 1 2 \left(\mfk(\xk) - \mfk(u_{GC})\right)
+\mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge 2\left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v)\right| \\
+\Longrightarrow -\left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v)\right| \ge -\frac 1 2 \left(\mfk(\xk) - \mfk(u_{\textrm{GC}})\right)
 \end{align*}
 % Using this, \cref{sr_define_delta}, \cref{sr_p_big}, and \cref{sr_v_close_u} we know that
 % \begin{align*}
-% m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) = 
-% \left(\gk\right)^T(u_{GC} - v) + \left(u_{GC} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{GC} - v\right) \\
-% \le \left\|\gk\right \|  \left\|u_{GC}- v\right\|  + \|u_{GC} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
+% m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v) = 
+% \left(\gk\right)^T(u_{\textrm{GC}} - v) + \left(u_{\textrm{GC}} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{\textrm{GC}} - v\right) \\
+% \le \left\|\gk\right \|  \left\|u_{\textrm{GC}}- v\right\|  + \|u_{\textrm{GC}} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
 % \le \delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p}  + \delta^2 \left(\maxhessian - 1\right)\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
 % \le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}
-% \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC}) \\
+% \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \\
 % \end{align*}
 so that
 \begin{align}
-m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left[m_f^{(k)}(v) - m_f^{(k)}(u_{GC})\right] \nonumber \\
- \ge \left[\mfk(\xk) - \mfk(u_{GC})\right] - \left|m_f^{(k)}(u_{GC}) - m_f^{(k)}(v) \right| \nonumber \\
-\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \label{sr_sr}
+m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{\textrm{GC}})\right] - \left[m_f^{(k)}(v) - m_f^{(k)}(u_{\textrm{GC}})\right] \nonumber \\
+ \ge \left[\mfk(\xk) - \mfk(u_{\textrm{GC}})\right] - \left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v) \right| \nonumber \\
+\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right) \label{sr_sr}
 \end{align}
-and $v$ provides $\frac 1 2$ the reduction of $u_{GC}$.
+and $v$ provides $\frac 1 2$ the reduction of $u_{\textrm{GC}}$.
+Letting $\kappa_f = \frac 1 4 \kappa_f'$, we see that
+\begin{align*}
+m_f^{(k)}(\xk) - m_f^{(k)}(v)
+\ge \frac 1 2 \left[m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right] \\
+\ge \frac 1 2 \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\} \\
+\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}
+\end{align*}
+% \ge \frac 1 4 \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
 
 Next, we will show that $v \in \capcones$.
-\color{red}
 By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $i \not \in \activeconstraintsk$, then $v \in \tr \Longrightarrow v \in \fik$.
 Therefore, we only consider the case that $i \in \activeconstraintsk$.
-\color{black}
 First, we need some identities for constraint $c_i$.
 
 Because $i \in \activeconstraintsk$, and $\dk\le\minangledelta$ by \cref{sr_delta_small_enough} we can use \cref{minangleassumption_alt} to conclude
 \begin{align}
 -\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
 \end{align}
-Also, because $u_{GC}$ is feasible with respect to the linearization of the constraints, we also know that
+Also, because $u_{\textrm{GC}}$ is feasible with respect to the linearization of the constraints, we also know that
 \begin{align}
-\left(\zik - \xk\right)^T(u_{GC} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
+\left(\zik - \xk\right)^T(u_{\textrm{GC}} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
 
-If $u_l \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{GC} - \xk\right\|  = \left\|u_{l} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
-If $u_l \not \in \tr$, then a trust region constraint is active and $\left\|u_{GC} - \xk\right\| \ge \dk$.
+If $u_{\textrm{GC}} \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{\textrm{GC}} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
+If $u_{\textrm{GC}} \not \in \tr$, then a trust region constraint is active and $\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk$.
 In either case, we find that 
 \begin{align}
-\left\|u_{GC} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
+\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
 \end{align}
 
 
 Also, by the triangle inequality, \cref{define_z}, \cref{define_w}, $\dk \le 1$ from \cref{sr_delta_small_enough}, and \cref{sr_def_p}:
 \begin{align}
-\left\|v - \wik\right\| \le \left\|v - u_{GC}\right\| + \left\|u_{GC} - \xk \right\| + \left\|\xk - \wik\right\| \le \delta \dk^p + 2\sqrt{n}\dk \le \left(\delta + 2\sqrt{n}\right)\dk \label{sr_v_minus_w_small} \\
+\left\|v - \wik\right\| \le \left\|v - u_{\textrm{GC}}\right\| + \left\|u_{\textrm{GC}} - \xk \right\| + \left\|\xk - \wik\right\| \le \delta \dk^p + 2\sqrt{n}\dk \le \left(\delta + 2\sqrt{n}\right)\dk \label{sr_v_minus_w_small} \\
 \|\zik - \xk \| \le \sqrt{n}\dk \le \left(\delta + 2\sqrt{n}\right)\dk \label{sr_z_minus_x_small}
 \end{align}
 
 However, using \cref{define_w}, \cref{define_v}
 \begin{align*}
 \left(v - \wik \right)^T\left(\xk - \zik \right) \\
-=\left( u_{GC} - \delta\dk^{p}u - \xk - \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right) \right)^T\left(\xk - \zik \right)
+=\left( u_{\textrm{GC}} - \delta\dk^{p}u - \xk - \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right) \right)^T\left(\xk - \zik \right)
 \end{align*}
 After rearranging, we see that this is
 \begin{align*}
 =\left[
--\left( u_{GC}- \xk\right)^T\left(\zik - \xk \right) 
+-\left( u_{\textrm{GC}}- \xk\right)^T\left(\zik - \xk \right) 
 +\left(1 - \alpha\dk^{p_{\alpha}}\right)\left\|\zik - \xk\right\|^2
 \right]
 + \delta\dk^{p}\left[ -\left(\zik - \xk\right)^Tu\right]
