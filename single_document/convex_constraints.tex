@@ -227,6 +227,10 @@
 
 
 \newcommand{\activeindicesk}{{ \mathbb I_h^{(k)} }}
+\newcommand{\huffindicesk}{{ \mathbb H_h^{(k)} }}
+
+
+
 \newcommand{\minactivealpha}{{ \alpha_{\textrm{h}} }}
 \newcommand{\activedirk}{{ u_{h}^{(k)} }}
 \newcommand{\activegradmin}{{ g_{\textrm{h}} }}
@@ -870,10 +874,16 @@ We define these cones within this section.
 
 The first step is to identify the set of constraints that are nearly active relative to the size of the current trust region.
 Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
-Specifically, for each $i$ with $\left\|\gmcik\right\| \ne 0$, define
+Specifically, for each $i$ with either $\left\|\gmcik\right\| \ne 0$ or $c_i\left(\xk\right) = 0$, define
 \begin{align}
-\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik. \label{define_z}
+\label{define_z}
+\zik =
+\begin{cases}
+\xk &  c_i\left(\xk\right) = 0 \\
+\xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik & \left\|\gmcik\right\| \ne 0
+\end{cases}
 \end{align}
+Note that this definition is consistent when both $c_i\left(\xk\right) = 0$ and $\left\|\gmcik\right\| \ne 0$.
 If $\zik$ lies sufficiently near the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
 Specifically, the set of nearly active constraints is defined by
 \begin{align}
@@ -2556,18 +2566,18 @@ Each function $c_i$ for $i \in [m]$ and $f$ has bounded Hessian. That is, there 
 % \end{align}
 % \end{assumption}
 
-\color{red}
-We believe that the following assumption is stronger than required.
-This assumption is used while bounding differences in criticality measure across iterations, 
-so that it we would likely only need the intersection of $\feasiblek$ and the half space of vectors whose dot product with the negative gradient of the objective is positive to be bounded.
-\begin{assumption}
-\label{max_norm_assumption}
-The set $\feasible$ is bounded. That is, there exists $\maxnorm > 0$ such that
-\begin{align*}
-\|x\| \le \maxnorm \quad \forall x \in \feasible.
-\end{align*}
-\end{assumption}
-\color{black}
+% \color{red}
+% We believe that the following assumption is stronger than required.
+% This assumption is used while bounding differences in criticality measure across iterations, 
+% so that it we would likely only need the intersection of $\feasiblek$ and the half space of vectors whose dot product with the negative gradient of the objective is positive to be bounded.
+% \begin{assumption}
+% \label{max_norm_assumption}
+% The set $\feasible$ is bounded. That is, there exists $\maxnorm > 0$ such that
+% \begin{align*}
+% \|x\| \le \maxnorm \quad \forall x \in \feasible.
+% \end{align*}
+% \end{assumption}
+% \color{black}
 
 
 % \paragraph{All functions are smooth}
@@ -2595,28 +2605,28 @@ The functions $c_i$ for all $i \in [m]$ and $f$ are twice differentiable and the
 
 \paragraph{Regularity Assumptions}
 
-We use the following assumptions as our regularity assumptions.
+% We use the following assumptions as our regularity assumptions.
 
-The following is similar to the Mangasarian Fromovitz constraint qualifications with only inequality constraints.
-However, this provides a uniform bound across all points, not just a critical point.
+The following was inspired by the Mangasarian Fromovitz constraint qualifications with only inequality constraints.
+It provides a uniform bound across all points, rather than at just a critical point.
 
-For an alternative to this assumption, please see \cref{alternative_assumptions_section}.
+% For an alternative to this assumption, please see \cref{alternative_assumptions_section}.
+% 
+% \color{red}
+% \begin{assumption}
+% \label{minangleassumption}
+% Define $\activeconstraintsk$ by \cref{define_activeconstraints}.
+% There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ with $\dk \le \minangledelta$ there exists
+% a unit vector $\minangledirk \in \Rn$
+% such that
+% \begin{align*}
+% -\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \quad \forall i \in \activeconstraintsk.
+% \end{align*}
+% Without loss of generality, $\minanglealpha \le \frac 1 2$.
+% \end{assumption}
+% \color{black}
 
-\color{red}
-\begin{assumption}
-\label{minangleassumption}
-Define $\activeconstraintsk$ by \cref{define_activeconstraints}.
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ with $\dk \le \minangledelta$ there exists
-a unit vector $\minangledirk \in \Rn$
-such that
-\begin{align*}
--\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \quad \forall i \in \activeconstraintsk.
-\end{align*}
-Without loss of generality, $\minanglealpha \le \frac 1 2$.
-\end{assumption}
-\color{black}
-
-Within the following assumption, remember that $\zik$ is defined by \cref{define_z}.
+Remember that $\zik$ is defined by \cref{define_z}.
 \begin{assumption}
 \label{minangleassumption_alt}
 There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
@@ -2699,55 +2709,55 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 
 \paragraph{Simple Theorems}
 
-\begin{lemma}
+\begin{assumption}
 \label{bounded_gradients_lemma}
-Suppose \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
-The functions $f$ and $c_i$ for all $ i \in [m]$ have bounded gradient in $ \feasible $.
+% Suppose \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
+The functions $f$ and $c_i$ for all $ i \in [m]$ have bounded gradient in $ \Omega $.
 That is, there exists $\maxgrad > 0$ such that
-\begin{align}
-\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
-\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible, \quad \forall i \in [m]
-\end{align}
-\end{lemma}
-\begin{proof}
-\begin{comment}
-The result follows from these being continuous functions over compact sets.
-\end{comment}
-
-We are given a $\xinit \in \feasible$. Let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf\left(\xinit\right)|, \max_{i \in [m]}\left\{\nabla c_i\left(\xinit\right)|\right\} \right\}$.
-Thus, for any $x \in \Omega$,
 \begin{align*}
-\gradf(x) \le \left|\gradf\left(\xinit\right)\right| + \lipgrad \left\|x - 0 - \left(\xinit - 0\right)\right\| \le \left|\gradf\left(\xinit\right)\right| + 2\lipgrad \maxnorm \le \maxgrad.
+\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
+\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible, \quad \forall i \in [m].
 \end{align*}
-The same applies to each $c_i$.
-\end{proof}
+\end{assumption}
+% \begin{proof}
+% \begin{comment}
+% The result follows from these being continuous functions over compact sets.
+% \end{comment}
+% 
+% We are given a $\xinit \in \feasible$. Let $\maxgrad = 2\lipgrad \maxnorm + \max\left\{|\gradf\left(\xinit\right)|, \max_{i \in [m]}\left\{\nabla c_i\left(\xinit\right)|\right\} \right\}$.
+% Thus, for any $x \in \Omega$,
+% \begin{align*}
+% \gradf(x) \le \left|\gradf\left(\xinit\right)\right| + \lipgrad \left\|x - 0 - \left(\xinit - 0\right)\right\| \le \left|\gradf\left(\xinit\right)\right| + 2\lipgrad \maxnorm \le \maxgrad.
+% \end{align*}
+% The same applies to each $c_i$.
+% \end{proof}
 
 
-\begin{lemma}
+\begin{assumption}
 \label{maximum_constraint_value_lemma}
-Suppose that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
+% Suppose that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
 There exists $M_c>0$ such that
 \begin{align*}
-c_i(x) \ge -M_c \quad \forall i \in [m], x \in \feasible
+c_i(x) \ge -M_c \quad \forall i \in [m], x \in \feasible.
 \end{align*}
-\end{lemma}
-\begin{proof}
-\begin{comment}
-The result follows from these being continuous functions over compact sets.
-\end{comment}
-
-Let $M_c = -c_i\left(\xinit\right) + \maxgrad\maxnorm + \maxhessian \maxnorm^2$.
-Because $\xinit \in\feasible$, $M_c > 0$.
-But, for all $i \in [m]$ and all $x \in \feasible$ we have by 
-\cref{constraints_are_convex} and \cref{bounded_hessians_assumption}
-\begin{align*}
-c_i(x) \ge c_i\left(\xinit\right) + \left(\nabla c_i\left(\xinit\right)\right)^T\left(x - \xinit\right) - \maxhessian \left\|x - \xinit\right\|^2
-\end{align*}
-and by \cref{bounded_gradients_lemma}, and \cref{max_norm_assumption}
-\begin{align*}
-c_i(x) \ge c_i\left(\xinit\right) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = -M_c.
-\end{align*}
-\end{proof}
+\end{assumption}
+% \begin{proof}
+% \begin{comment}
+% The result follows from these being continuous functions over compact sets.
+% \end{comment}
+% 
+% Let $M_c = -c_i\left(\xinit\right) + \maxgrad\maxnorm + \maxhessian \maxnorm^2$.
+% Because $\xinit \in\feasible$, $M_c > 0$.
+% But, for all $i \in [m]$ and all $x \in \feasible$ we have by 
+% \cref{constraints_are_convex} and \cref{bounded_hessians_assumption}
+% \begin{align*}
+% c_i(x) \ge c_i\left(\xinit\right) + \left(\nabla c_i\left(\xinit\right)\right)^T\left(x - \xinit\right) - \maxhessian \left\|x - \xinit\right\|^2
+% \end{align*}
+% and by \cref{bounded_gradients_lemma}, and \cref{max_norm_assumption}
+% \begin{align*}
+% c_i(x) \ge c_i\left(\xinit\right) - \maxgrad\maxnorm - \maxhessian \maxnorm^2 = -M_c.
+% \end{align*}
+% \end{proof}
 
 
 
@@ -2757,9 +2767,9 @@ In this section, we show that the condition numbers $\sigma(\qk)$ are bounded.
 
 \begin{lemma}
 \label{theta_min_is_bounded}
-Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption}, and
+Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption_alt}, and
 define $\thetamink$ by \cref{define_thetamink}.
-Suppose that \cref{minangleassumption} holds.
+Suppose that \cref{minangleassumption_alt} holds.
 % Let $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption} and 
 If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \end{lemma}
@@ -2767,7 +2777,7 @@ If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \begin{proof}
 Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.
 If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
-Otherwise, by \cref{minangleassumption}, there is a $\minangledirk$ such that 
+Otherwise, by \cref{minangleassumption_alt}, there is a $\minangledirk$ such that 
 $-\minangledirk^T\frac{\gmcik}{\|\gmcik\|} \ge \minanglealpha$ for any $i \in \activeconstraintsk$.
 But, by definition of $\huk$ in \cref{define_u}:
 $\huk = -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T\frac{\gmcik}{\left\|\gmcik\right\|}$
@@ -2781,8 +2791,9 @@ Therefore, $\thetamink \ge \minanglealpha$.
 \begin{lemma}
 \label{bounded_condition_numbers}
 Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints};
-$\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise; and $\minanglealpha$ be defined by \cref{minangleassumption}.
-Suppose that \cref{minangleassumption} holds.
+$\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise;
+and $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
+Suppose that \cref{minangleassumption_alt} holds.
 % Then the sequence $\left(\qk, \ck, \sk\right)$ is conditioned as defined by \cref{ellipsoids_notation_definitions}.
 There exists a $\dacc > 0$, such that $\sigma(\qkpo) \le {12}\left(\minanglealpha\right)^{-2}$ whenever $\dk \le \dacc$.
 \end{lemma}
@@ -2794,19 +2805,19 @@ If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{
 \begin{align}
 \dacc = \min\left\{\minangledelta, \frac 1 {4 \beta} \left(\minanglealpha \right)^2 \right\} \label{define_delta_accuracy}
 \end{align}
-where $\minangledelta$ is defined by \cref{minangleassumption}.
+where $\minangledelta$ is defined by \cref{minangleassumption_alt}.
 \end{proof}
 
 
 \begin{lemma}
 \label{sampletrk_is_nonempty}
 Let $\dacc$ and $\fcki$ be defined by \cref{define_delta_accuracy} and \cref{define_inner_cone}.
-Suppose that \cref{minangleassumption} holds.
+Suppose that \cref{minangleassumption_alt} holds.
 If $\dk \le \dacc$, then the tuple $(\qk, \ck, \sdk)$ defined in \cref{define_ellipsek}
 is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
 \begin{proof}
-Let $\minanglealpha$ be defined by \cref{minangleassumption}.
+Let $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
 \cref{theta_min_is_bounded} and \cref{boundbsk} tell us that 
 if $\dk \le \dacc$, then $\thetamink \ge \minanglealpha$, 
 so that the definitions \cref{define_bsk} and \cref{define_bs} imply
@@ -3001,7 +3012,7 @@ Let $\activeconstraintsk$ and $\dacc$ be defined by \cref{define_activeconstrain
 Also, let $\qk$, $\ck$, and $\sdk$ 
 be as generated by \cref{constrained_dfo}.
 Suppose that 
-\cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption} hold.
+\cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption_alt} hold.
 There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 \begin{align*}
 \begin{array}{ccc}
@@ -3018,7 +3029,7 @@ This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoi
 \begin{lemma}
 \label{bounded_model_hessian_lemma}
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
-Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption} hold.
+Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption_alt} hold.
 Then there exists a $\maxmodelhessian > 0$ such that 
 \begin{align*}
 \| \hk \| \le \maxmodelhessian \quad \forall x \in \feasible \\
@@ -3076,9 +3087,8 @@ that is, $\sampletrk \subseteq \feasible$.
 Let $\zik$ and $\mingrad$ be defined by \cref{define_z} and \cref{mingradassumption} respectively.
 Suppose that 
 \cref{bounded_hessians_assumption},
-\cref{max_norm_assumption},
 \cref{lipschitz_gradients_assumption},
-\cref{minangleassumption},
+\cref{minangleassumption_alt},
 and \cref{mingradassumption} hold.
 There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for all $i \in [m]$ either
 \begin{itemize}
@@ -3170,9 +3180,8 @@ Continuing with \cref{define_z}, \cref{define_mingraddelta}, and $\dk \le 1$ we 
 \label{each_constraints_cone_is_feasible}
 Suppose that 
 \cref{bounded_hessians_assumption},
-\cref{max_norm_assumption},
 \cref{lipschitz_gradients_assumption},
-\cref{minangleassumption},
+\cref{minangleassumption_alt},
 and \cref{mingradassumption} hold.
 There exists $\dfeas > 0$ such that
 if $\dk \le \dfeas$, then
@@ -3372,9 +3381,9 @@ be defined by
 \cref{define_feasible}.
 Suppose that 
 \cref{bounded_hessians_assumption},
-\cref{max_norm_assumption},
+% \cref{max_norm_assumption},
 \cref{lipschitz_gradients_assumption},
-\cref{minangleassumption},
+\cref{minangleassumption_alt},
 and \cref{mingradassumption} hold.
 If $\dk \le \dfeas$, then $\cap_{i \in \activeconstraintsk} \fik \cap \left[\tr \cup \trkpo\right] \subseteq \feasible$.
 \end{lemma}
@@ -3393,9 +3402,9 @@ be defined by
 \cref{define_feasible}.
 Suppose that 
 \cref{bounded_hessians_assumption},
-\cref{max_norm_assumption},
+% \cref{max_norm_assumption},
 \cref{lipschitz_gradients_assumption},
-\cref{minangleassumption},
+\cref{minangleassumption_alt},
 and \cref{mingradassumption} hold.
 If $\dk \le \dfeas$, then $\unshiftedellipsoid$ as defined in \cref{define_ellipsek} and \cref{define_trivial_ellipsek} is feasible according to 
 \cref{ellipsoids_notation_definitions}:
@@ -3419,9 +3428,9 @@ and
 \cref{define_feasible}.
 Suppose that 
 \cref{bounded_hessians_assumption},
-\cref{max_norm_assumption},
+% \cref{max_norm_assumption},
 \cref{lipschitz_gradients_assumption},
-\cref{minangleassumption},
+\cref{minangleassumption_alt},
 and \cref{mingradassumption} hold.
 If $\dk \le \dfeas$, then $\searchtrk = \capcones$ is feasible:
 $\capcones \cap \tr \subseteq \feasible$.
@@ -3450,7 +3459,34 @@ To ensure sufficient reduction of the objective's model function during each ite
 \end{align}
 where $\kappa_f$ is a constant independent of $k$.
 This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
-It can be shown that the \emph{generalized Cauchy point} satisfies this condition \cite{Conn:2000:TM:357813}.
+
+In most applications, an algorithm computes an approximate solution to
+\begin{align}
+\label{whole_trust_region_subproblem}
+\begin{array}{ccc}
+\min_{s \in \Rn} & m_{f}(\xk + s) & \\
+\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+& s \in \tr & \\
+\end{array}.
+\end{align}
+There are methods, such as the projected gradient descent method described in \cite{Conn:2000:TM:357813},
+that can efficiently compute an approximate solution to \cref{whole_trust_region_subproblem} satisfying \cref{efficiency}.
+However, to maintain feasibility, we have restricted our trial point to lie within a smaller domain:
+\begin{align}
+\label{capcones_trust_region_subproblem}
+\begin{array}{ccc}
+\min_{s \in \Rn} & m_{f}(\xk + s) & \\
+\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+& s \in \tr \cap \capcones &
+\end{array}.
+\end{align}
+In general, there may be no solution to \cref{capcones_trust_region_subproblem} that satisfies \cref{efficiency}.
+However, we show there is for those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$ and sufficiently small $\dk$.
+This statement is formalized in \cref{sufficient_reduction_theorem}.
+
+% We construct a solution by
+
+% It can be shown that the \emph{generalized Cauchy point} satisfies this condition \cite{Conn:2000:TM:357813}.
 
 
 % A efficiency condition \cref{efficiency} is satisfied:
@@ -3458,13 +3494,12 @@ It can be shown that the \emph{generalized Cauchy point} satisfies this conditio
 % \mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \Delta_k, 1 \}
 % \end{align}
 
-With explicit constraints, we know that this is satisfied by the Generalized Cauchy Point.
-For convex constraints, we use the minimization within the buffered feasible region.
-However, we show that this is not required during every iteration, but those iterations in which $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$.
+% With explicit constraints, we know that this is satisfied by the Generalized Cauchy Point.
+% For convex constraints, we use the minimization within the buffered feasible region.
+% However, we show that this is not required during every iteration, but those iterations in which $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$.
 
 
-We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
-This statement is formalized in \cref{sufficient_reduction_theorem}.
+% We wish to show that the projection onto the linearization of the constraints provides a fraction of the reduction of the linearized Cauchy Point.
 
 
 % 
@@ -3642,8 +3677,8 @@ be defined by
 and \cref{define_capcones}
 respectively.
 Suppose that
-\cref{max_norm_assumption},
-\cref{minangleassumption},
+% \cref{max_norm_assumption},
+\cref{minangleassumption_alt},
 \cref{bounded_hessians_assumption},
 \cref{lipschitz_gradients_assumption}
 hold.
@@ -3688,7 +3723,7 @@ be defined by
 and \cref{define_feasiblek}
 respectively.
 Let $\alpha$, $\beta$ $p_{\alpha}$, and $p_{\beta}$
-be defined as in \cref{define_abpab}, as well as $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption}.
+be defined as in \cref{define_abpab}, as well as $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt}.
 We also define
 \begin{align}
 \delta_2 = \kappa_f \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxhessian}, \frac 1 2 \right\} \label{define_delta2} \\
@@ -3718,7 +3753,7 @@ This is because the only way to quit iteration $k$ without reaching Step 3 is
 \end{itemize}
 \color{black}
 
-By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption}
+By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption_alt}
 tells us there is a $ \minangledirk \in \Rn$ with
 $-\frac {\gmcik}{\left\|\gmcik\right\|} ^T \minangledirk \ge \minanglealpha$ for any $i \in B_{\infty}\left(\xk, \minangledelta\right)$.
 Let $\huk$ be defined as in \cref{define_u},
@@ -3863,7 +3898,7 @@ Therefore, we only consider the case that $i \in \activeconstraintsk$.
 \color{black}
 First, we need some identities for constraint $c_i$.
 
-Because $i \in \activeconstraintsk$, and $\dk\le\minangledelta$ by \cref{sr_delta_small_enough} we can use \cref{minangleassumption} to conclude
+Because $i \in \activeconstraintsk$, and $\dk\le\minangledelta$ by \cref{sr_delta_small_enough} we can use \cref{minangleassumption_alt} to conclude
 \begin{align}
 -\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\|. \label{u_is_feasible}
 \end{align}
@@ -4646,14 +4681,28 @@ By our choice of $N_0$, we see that
 
 
 
-Let $\minangledelta$ be defined by \cref{minangleassumption_alt},
+Let $\minangledelta$ be defined by \cref{minangleassumption_alt} and $\zik$ by \cref{define_z},
 and define
 % such that if $\dk \le \minangledelta$ and
 \begin{align}
-\activeindicesk = \left\{i \in [m] \bigg| \zik \in B_{\infty}\left(\xk, \minangledelta \right) \right\} \label{define_activeindicesk}
+\activeindicesk = \left\{i \in [m] \bigg| -c_i\left(\xk\right) \le \minangledelta \left\|\gmcik\right\| \right\} \label{define_activeindicesk} \\
+\huffindicesk = \left\{i \in [m] \bigg| \gmcik^T\gk > -c_i\left(\xk\right) \right\}. \label{define_huffindicesk}
 \end{align}
 
-
+The following observation follows directly from the definition:
+\begin{lemma}
+\label{doesntreallyneedtobesaid}
+Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
+If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
+\end{lemma}
+\begin{proof}
+If $c_i\left(\xk\right) = 0$, then $\zik = \xk \in B_{\infty}\left(\xk, \minangledelta \right)$.
+Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta} \ge 0$, so
+\begin{align*}
+\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik 
+\Longrightarrow \left\|\xk - \zik \right\|= -\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|} \le \minangledelta.
+\end{align*}
+\end{proof}
 
 \begin{lemma}
 \label{underbound}
@@ -4724,11 +4773,11 @@ By \cref{delta_to_zero}, we know there exists $k_1 \in \naturals$ such that if $
 \begin{align*}
 \dk \le \minangledelta \quad \textrm{and} \quad  \dk \le \sqrt{\frac {\minanglealpha \activegradmin} {2 \kappa_g}}.
 \end{align*}
-Thus, by \cref{minangleassumption_alt} and \cref{underbound} we know 
+Thus, by \cref{doesntreallyneedtobesaid}, \cref{minangleassumption_alt}, and \cref{underbound} we know 
 there exists a unit vector $\minangledirk\in\Rn$ and $k_2 \in \naturals$ such that 
 for all $i \in \mathbb I^{(k)}$, $k \ge k_2$:
 \begin{align*}
--\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \Longrightarrow \gmcik\left(-\minangledirk\right) \ge \minanglealpha \activegradmin
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \Longrightarrow \gmcik^T\left(-\minangledirk\right) \ge \minanglealpha \activegradmin
 \end{align*}
 Also, by \cref{accuracy_is_satisfied}, we have
 \begin{align*}
@@ -4772,7 +4821,6 @@ Furthermore, if $S$ satisfies \cref{criteria_from_contradiction}, $l \ge k_0$, $
 \begin{align*}
 H\left(\left[\modeljacl\right]_{\activeindicesk}\right) \le \huff.
 \end{align*}
-
 \end{lemma}
 \begin{proof}
 By \cref{yet_another_bound_on_a_u}, 
@@ -4814,6 +4862,134 @@ H\left(A_{\activeindicesk}\right)
 \le \max_{J \in \mathcal S_h(A)} \frac 1 {\minactivealpha} = \frac 1 {\minactivealpha}.
 \end{align*}
 Thus, we only need to let $\huff = \frac 1 {\minactivealpha}$, and $k_0 = k_1$.
+\end{proof}
+
+\begin{lemma}
+\label{huffman_constants_of_hoffman_indices_are_bounded}
+
+Let $H(A)$ be defined by \cref{hoffman_definition}.
+Let $\huffindicesk$ be defined by \cref{define_huffindicesk}.
+Suppose that 
+\cref{mingradassumption}
+and the assumptions for
+\cref{the_hoffman_constants_are_bounded}, \cref{accuracy_is_satisfied}, \cref{model_gradients_are_cauchy}, and \cref{delta_to_zero}
+hold.
+
+There exists $\huff > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
+\begin{align*}
+H\left(\left[\modeljack\right]_{\huffindicesk}\right) \le \huff
+\quad \textrm{and} \quad
+H\left(\left[\truejack\right]_{\huffindicesk}\right) \le \huff.
+\end{align*}
+Furthermore, if $S$ satisfies \cref{criteria_from_contradiction}, $l \ge k_0$, $(k, l) \in S$, then
+\begin{align*}
+H\left(\left[\modeljacl\right]_{\huffindicesk}\right) \le \huff.
+\end{align*}
+\end{lemma}
+\begin{proof}
+Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption};
+$\activeindicesk$ be defined by \cref{define_activeindicesk};
+and $\gamma = \min\left\{\frac 1 2 \minangledelta \mingrad, \mingradepsilon\right\}$.
+
+
+
+By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, there exists $k_2 \in \naturals$ such that if $k \ge k_2$ then
+\begin{align}
+\label{hcohiab_mctc}
+\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \min\left\{\frac 1 2 \mingrad, \frac 1 2 \gamma\right\}.
+\end{align}
+Also, by \cref{model_gradients_are_cauchy}, there exists $k_3 \in \naturals$ such that if $k, l \ge k_3$, $(k, l) \in S$, then
+\begin{align}
+\label{hcohiab_mlctmk}
+\left\|\gmcik - \gmcil \right\| \le \min\left\{\frac 1 2 \gamma\right\}.
+\end{align}
+
+
+
+
+Suppose that $i \not \in \activeindicesk$.
+If $-c_i\left(\xk\right) > \mingradepsilon$, then because $i \in \huffindicesk$, 
+\begin{align*}
+\gmcik^T\gk \ge -c_i\left(\xk\right) > \mingradepsilon \ge \gamma.
+\end{align*}
+Otherwise, by \cref{mingradassumption} we have
+\begin{align*}
+\gmcik^T\gk \ge -c_i\left(\xk\right) > \minangledelta \left\|\gmcik\right\| \\
+\ge \minangledelta\left(\left\|c_i\left(\xk\right)\right\| - \frac 1 2 \mingrad \right)
+\ge  \frac 1 2 \minangledelta \mingrad \ge \gamma.
+\end{align*}
+In either case,
+\begin{align*}
+\gmcik^T\gk \ge \gamma.
+\end{align*}
+Combining with \cref{hcohiab_mctc} and \cref{hcohiab_mlctmk}:
+\begin{align*}
+\nabla c_i\left(\xk\right)^T\gk \ge \frac 1 2 \gamma
+\quad \textrm{and} \quad 
+\gmcil^T\gk \ge \frac 1 2 \gamma.
+\end{align*}
+
+
+Thus, for any $J \subset \huffindicesk \setminus \activeindicesk$, any $v \in \mathbb R^{J}_+$, and any $A \in \left\{
+\left[\modeljack\right]_{J},
+\left[\truejack\right]_{J},
+\left[\modeljacl\right]_{J}
+\right\}$ we have
+\begin{align*}
+\|A_J^Tv\| 
+= \|A_J^Tv\| \left\|\frac{\gk}{\left\|\gk\right\|} \right\| 
+\ge \frac{\|v^TA_J \gk\|}{\left\|\gk\right\|} \ge \frac {\gamma} {2\left\|\gk\right\|}  v^Te.
+\end{align*}
+
+For any $A \in \left\{
+\left[\modeljack\right]_{\huffindicesk},
+\left[\truejack\right]_{\huffindicesk},
+\left[\modeljacl\right]_{\huffindicesk}
+\right\}$,
+$J \in S_h\left(A\right)$, 
+$J = J_1 \cup J_2$, 
+$J_1 \subseteq \huffindicesk \setminus \activeindicesk$,
+$J_2 \subseteq S_h\left(A_{\activeindicesk}\right)$,
+$v^1 \in \mathbb R^{J_1}_+$, 
+$v^2 \in \mathbb R^{J_2}_+$, 
+$v = 
+\begin{pmatrix}
+v^1 \\ v^2
+\end{pmatrix}$, we have
+\begin{align*}
+\left\|A_J^T v\right\|^2 = 
+\left\|
+\begin{pmatrix}
+A_{J_1}^T & A_{J_2}^T
+\end{pmatrix}
+\begin{pmatrix}
+v^1 \\ v^2
+\end{pmatrix}
+\right\|^2 = 
+\left\| A_{J_1}^T v^1\right\|^2 + \left\| A_{J_2}^T v^2\right\|^2
+\ge 
+\left[\frac {\gamma} {2} \left(v^1\right)^Te\right]^2 + \left\| A_{J_2}^T v^2\right\|^2.
+\end{align*}
+
+Now, we know from \cref{the_hoffman_constants_are_bounded} that there exist $k_1 \in \naturals$ and $\huff'>0$ such that
+$k,l \ge k_0$ and $(k,l) \in S$, then
+\begin{align*}
+H\left(\left[\modeljack\right]_{\activeindicesk}\right) \le \huff', \\
+H\left(\left[\truejack\right]_{\activeindicesk}\right) \le \huff', \\
+H\left(\left[\modeljacl\right]_{\activeindicesk}\right) \le \huff'.
+\end{align*}
+In particular,
+\begin{align*}
+\huff' \ge H\left(A_{?}\right)
+= \max_{J \in \mathcal S_h(A_J)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\ge \left[\min_{v \in R^{J_2}_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\ge \left\|v^2\right\|\left[\left\|A_{J_2}^Tv^2\right\| \right]^{-1}
+\end{align*}
+
+
+
+
+
 \end{proof}
 
 
@@ -5728,6 +5904,7 @@ Now that we have bounded the projection onto the set of constraints that are nea
 % \activedirk
 % \activegradmin
 
+\newpage
 \begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/complicated_lemma.png}
@@ -5740,6 +5917,7 @@ Now that we have bounded the projection onto the set of constraints that are nea
 	}
     \label{complicated_lemma}
 \end{figure}
+\newpage
 
 
 
@@ -5748,16 +5926,19 @@ Now that we have bounded the projection onto the set of constraints that are nea
 Suppose
 $A \in \reals^{m \times n}$;
 $b \in \Rm$;
-$a, a', p, y \in \Rn$;
+$a^{(0)}, a^{(1)}, p, y \in \Rn$;
 and $d, \delta, M > 0$
 are given such that
-$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+$b > 0$,
+$A y \ge \delta$, 
+$\left(a^{(0)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$,
+$\left(a^{(1)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$.
 
 Define
 \begin{align*}
-z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+z^{(0)}  = \argmin_{\substack{A(x - p)x \le b \\ \left(a^{(0)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|
 \quad \textrm{and} \quad
-z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+z^{(1)} = \argmin_{\substack{A(x - p) \le b \\ \left(a^{(1)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|.
 \end{align*}
 Then, 
 \begin{align*}
@@ -5765,37 +5946,165 @@ Then,
 \end{align*}
 \end{lemma}
 \begin{proof}
-If ${a}^T z' \le d$ and ${a'}^T z \le d$, then $z' - z = 0$.
-Without loss of generality, suppose that ${a'}^T (z - p) > d$.
-Then
+If $y = 0$, then $z^{(1)} = z^{(2)} = p$ and $z^{(1)} - z^{(2)} = 0$.
+From here on, we assume $y \ne 0$.
+
+Note that for $i=0,1$:
 \begin{align*}
-0 < {a'}^T\left(z - p\right) - d 
-= \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
-\Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
-\le \left\|a' - a\right\| \left\|z - p\right\| 
-\le \left\|a' - a\right\| \left\|y\right\|
+\left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d 
+= \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) + \left(a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) - d \\
+\le \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right)
 \end{align*}
-For any $t \in [0, 1]$, we have
+so that
 \begin{align*}
-\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d 
-= (1 - t) \left[a^T\left(z - p\right) - d\right] + t \left[{a'}^T\left(z - p\right) - d\right]
-\le t \left[{a'}^T\left(z - p\right) - d\right] \\
-\le \left\|a - a'\right\| \left\|y\right\|
+\left| \left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d \right| 
+\le \left\|a^{(i)} - a^{(1-i)}\right\| \left\|z^{(1-i)} - p\right\| 
+\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
 \end{align*}
-and
+Also, for $i = 0,1$ and any $t \in [0, 1]$, we have
 \begin{align*}
-\left[(1 - t) a + t a'\right]^T(y - p) = (1 - t) a^T(y - p) + t {a'}^T(y - p) \ge \left(1-t\right) \delta\left\|y - p\right\| + t \delta\left\|y - p\right\| = \delta\left\|y - p\right\| \\
-\Longrightarrow \frac 1 {\left[(1 - t) a + t a'\right]^T(y - p)} \le \frac {1} {\delta\left\|y - p\right\|}.
+\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d 
+= (1 - t) \left[\left(a^{(i)}\right)^T\left(z^{(i)} - p\right) - d\right] + t \left[{\left(a^{(1-i)}\right)}^T\left(z^{(i)} - p\right) - d\right] \\
+\le t \left[\left(a^{(1-i)}\right)^T\left(z^{(i)} - p\right) - d\right] 
+\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
 \end{align*}
-Thus, by letting $\lambda = \left(\left\|y - p\right\| \delta\right)^{-1}\left\|a - a'\right\|\left\|y\right\|$, we see
+Also,
 \begin{align*}
+\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty
+= (1 - t) \left(a^{(i)}\right)^Ty + t \left(a^{(1-i)}\right)^Ty  
+\ge \left(1-t\right) \delta\left\|y\right\| + t \delta\left\|y\right\|
+= \delta\left\|y \right\| \\
+\Longrightarrow \frac 1 {\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty} \le \frac {1} {\delta\left\|y\right\|}.
+\end{align*}
+% = (1 - t) a^Ty + t {a'}^Ty              - \left[(1 - t) a^Tp + t {a'}^Tp \right]\\
+
+
+% If ${a}^T z' \le d$ and ${a'}^T z \le d$, then once again, $z' - z = 0$.
+% Without loss of generality, suppose that ${a'}^T (z - p) > d$.
+% Now,
+% \begin{align*}
+% {a'}^T\left(z - p\right) - d 
+% = \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
+% \Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
+% \le \left\|a' - a\right\| \left\|z - p\right\| 
+% \le \left\|a' - a\right\| \left\|y\right\|
+% \end{align*}
+
+
+
+
+Thus, by letting $\lambda = \delta^{-1}\left\|a^{(0)} - a^{(1)}\right\|$, we see for $i=0,1$
+\begin{align}
 \lambda
-\ge \frac{\left[(1 - t) a + t a'\right]^T\left(z - p\right) - d}{\left[(1 - t) a + t a'\right]^T(y - p)} \\
-\Longrightarrow \left[(1 - t) a + t a'\right]^T \left[z - \lambda \left(y - p\right) - p\right] \le d
+= \frac{\left\|a^{(0)} - a^{(1)}\right\|\left\|y\right\|}{\delta \|y\|}
+\ge \frac{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d}{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty}  \\
+\Longrightarrow \left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T \left[z^{(i)} - \lambda y - p\right] \le d \label{plhsop_1}.
+\end{align}
+We can use $(i,t)=(1, 0)$ and $(i,t)=(0, 1)$ in \cref{plhsop_1} to find for $i=0, 1$
+\begin{align*}
+\left(a^{(i)}\right)^T\left[\left(z^{(1-i)} - \lambda y\right) - p\right].
+\end{align*}
+By optimality of the projection, for $i=0,1$:
+\begin{align}
+\label{plhsop_eqn1}
+\|p + y - z^{(i)}\| \le \|p + y - \left(z^{(1-i)} - \lambda y\right)\| \le \|p + y - z^{(1-i)}\| +  \lambda\left\|y\right\|.
+\end{align}
+With a change of variables, $u^{(i)} = p + y - z^{(i)}$ for $i=0,1$ this becomes
+\begin{align*}
+\|u^{(i)}\| \le \|u^{(1-i)}\| + \lambda\left\|y\right\|.
+\end{align*}
+If $\left(a^{(i)}\right)^T z^{(1-i)} \le d$ for both $i=0$ and $1$, then $z^{(0)} = z^{(1)}$ so that $z^{(0)} - z^{(1)} = 0$.
+Otherwise, without loss of generality, let $\left(a^{(0)}\right)^T z^{(1)} > d$ so that
+convexity of the set $\left\{x \in \Rn | A(x - p) \le b, \left(a^{(0)}\right)^T (x-p) \le d\right\}$ implies
+\begin{align}
+\label{plhsop_eqn2}
+(p + y - z')^T z' \le (p + y - z')^Tz.
+\end{align}
+
+
+
+
+Also, by the optimality conditions,
+\begin{align*}
+y^T\left(z^{(i)} - p\right) \ge 0
+\end{align*}
+so that
+\begin{align*}
+\left(u^{(0)}\right)^Tu^{(1)} = \left[y - \left(z^{(0)} - p\right)\right]^T\left[y - \left(z^{(1)} - p\right)\right] \\
+= \left\|y\right\|^2 - y^T\left(z^{(0)} - p + z^{(1)} - p\right) + \left(z^{(0)} - p\right)^T\left(z^{(1)} - p\right) \\
+\ge \left\|y\right\|^2 + \left\|z^{(0)} - p\right\|^T\left\|z^{(1)} - p\right\|
+\end{align*}
+
+
+Suppose that both
+\begin{align*}
+\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(0)} \right \|^2 			\quad \textrm{and} \quad
+\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(1)} \right \|^2.
+\end{align*}
+\begin{align*}
+\left\|u^{(0)} - u^{(1)}\right\|^2 =  \left \| u^{(0)} \right \|^2 + \left \| u^{(1)} \right \|^2 - 2 \left(u^{(0)}\right)^Tu^{(1)}
+\end{align*}
+
+Also, $a' z \ge d$ and 
+
+
+% \begin{align*}
+% (p + y - z)^T z' \le (p + y - z)^Tz.
+% \end{align*}
+
+With the variables $u = p + y - z$, $u' = p + y - z'$, and $\gamma = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|$, we can summarize \cref{plhsop_eqn1} and \cref{plhsop_eqn2}
+with 
+\begin{align*}
+\|u'\| \le \|u\| + \gamma
+\Longrightarrow \|u'\|^2 \le \|u\|^2 + 2\|u\| \gamma + \gamma^2
 \end{align*}
 and
 \begin{align*}
-\left\|z - \lambda\left(y - p\right) - z\right\| \le  \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+{u'}^Tz' \le {u'}^T z
+\Longrightarrow -{u'}^Tz' + {u'}^T\left(p + y\right) 
+\ge -{u'}^T z + {u'}^T \left(p + y\right) \\
+\Longrightarrow {u'}^T\left(p + y - z'\right) \ge {u'}^T \left(p + y - z\right)
+\Longrightarrow {u'}^Tu' \ge {u'}^T u
+\Longrightarrow -{u'}^Tu' \le -{u'}^T u.
+\end{align*}
+
+
+\begin{align*}
+u^Tu' \le \|u'\|^2 \\
+u^T\frac{u'}{\|u'\|} \le \|u'\| \\
+u^T\frac{u'}{\|u'\|} \le \|u\| + \gamma \\
+\frac{u^T}{\|u\|}\frac{u'}{\|u'\|} \le 1 + \gamma\|u\|^{-1}
+\end{align*}
+
+
+Finally, we can compute
+\begin{align*}
+\|z - z'\|^2 
+= \|u - u'\|^2 
+= \|u\|^2 - 2u^Tu' + \|u'\|^2
+= \|u\|^2 - 2u^Tu' + \|u'\|^2
+\end{align*}
+
+
+\begin{align*}
+\|z - z'\|^2 
+= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
+\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
+\le \delta^2
+\end{align*}
+
+
+\begin{align*}
+\\
+\\
+\\
+\\
+\\
+\end{align*}
+
+and
+\begin{align*}
+\left\|z - \lambda y - z\right\| = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
 \end{align*}
 Thus,
 \begin{align*}
@@ -5863,6 +6172,44 @@ Some more logic here...
 % \end{align*}
 % 
 \end{proof}
+
+
+
+
+
+
+
+
+
+\begin{lemma}
+Suppose that 
+\begin{align*}
+\|z \|^2 \le \|z'\|^2 \le \|z \|^2 + \delta^2 \\
+\|z\|^2 \le {z}^Tz'
+\end{align*}
+then
+\begin{align*}
+\|z - z'\| \le ?
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{align*}
+\|z - z'\|^2 
+= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
+\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
+\le \delta^2 \\
+\Longrightarrow \|z - z'\| \le \delta
+\end{align*}
+\end{proof}
+
+
+
+
+
+
+
+
+
 % 
 % 
 % \begin{lemma}
@@ -5989,9 +6336,28 @@ M \ge H(A_J)
 \ge \frac{\left\|y - p\right\|}{\left\|A_{\mathcal A}^T (y - p) \right\|} \\
 \Longrightarrow A_{\mathcal A}^T (y - p)  \ge \frac 1 M \left\|y - p\right\|.
 \end{align*}
-Also, if $i \in [m] \setminus J$ and $A_iy \ge b_i$, then
+Also, if $i \in [m] \setminus J$ and $A_i(y - p) \ge b_i$, then
 \begin{align*}
-A_i \left(y - p\right) = A_i y - b_i + b_i - A_ip > \|A_i\| r 
+A_i \left(y - p\right) \ge b_i - A_ip + A_ip \ge \|A_i\| r + A_ip
+\end{align*}
+
+
+\begin{align*}
+\| y - p \| \le \|y\| + \|p\| \\
+\frac 1{\| y - p \|} \ge \frac 1 {\|y\| + \|p\|} \\
+\end{align*}
+
+
+
+\begin{align*}
+A_i \left(y - p\right) \ge A_i y + r \|A_i\| - b_i 
+\end{align*}
+
+
+
+\begin{align*}
+\|A_i\| r + A_ip \ge \|A_i\| \left\|y - p\right\| \\
+r + \frac{A_i}{\|A_i\|}p \ge  \left\|y - p\right\| \\
 \end{align*}
 
 % 
@@ -6003,6 +6369,16 @@ A_i \left(y - p\right) = A_i y - b_i + b_i - A_ip > \|A_i\| r
 % \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
 % \end{align*}
 
+
+\begin{align*}
+b_i \le \|A_i\| r \\
+A_i \left(p + t \frac {A_i^T} {\|A_i\|} \right) = b_i \\
+A_i p + t \frac {A_i A_i^T} {\|A_i\|} = b_i \\
+A_i p + t \|A_i\| = b_i \\
+t \|A_i\| = b_i - A_i p\\
+t = \frac{b_i - A_i p}{\|A_i\|} \ge r \\
+b_i - A_i p \ge r\|A_i\| \\
+\end{align*}
 
 \end{proof}
 
@@ -6881,7 +7257,7 @@ The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
 \subsection{Removing a regularity assumption}
 \label{alternative_assumptions_section}
 
-We have made \cref{minangleassumption}, which is an assumption about the constraint's models.
+We have made \cref{minangleassumption_alt}, which is an assumption about the constraint's models.
 We would have preferred to make an assumption about the true constraints: \cref{minangleassumption_alt}.
 However, the boundededness of the ellipsoids according to \cref{ellipsoids_notation_definitions} shown in \cref{bounded_condition_numbers}
 is required to show prove \cref{accuracy_is_satisfied}.
