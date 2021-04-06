@@ -246,7 +246,13 @@
 \newcommand{\truejack}{{ \nabla c\left(\xk\right) }}
 
 
+\newcommand{\zmk}{{z_m^{(k)}}}
+\newcommand{\zlk}{{z_l^{(k)}}}
+\newcommand{\zck}{{z_c^{(k)}}}
 
+\newcommand{\Amk}{{\mathbb A_m^{(k)}}}
+\newcommand{\Alk}{{\mathbb A_l^{(k)}}}
+\newcommand{\Ack}{{\mathbb A_c^{(k)}}}
 
 
 %=======================================
@@ -4617,12 +4623,12 @@ Let $x \in S$, and define
 \begin{array}{cccccc}
 \lambda &=& \delta_{\alpha}^{-1}(r + 1) (\delta_u + 2), &
 \gamma &=& 2\lambda(\delta_r \delta_u)^{-1}, \\
-\nu    &=& \frac 1 2 \epsilon\delta_{\alpha}(r+2)^{-1}(r + 1)^{-1}, &
+\eta    &=& \frac 1 2 \epsilon\delta_{\alpha}(r+2)^{-1}(r + 1)^{-1}, &
 \delta &=& \min\bigg\{
 1,
 \gamma^{-1},
 \frac 1 2 {\epsilon} (\gamma r)^{-1},
-\nu
+\eta
 \bigg\}, \\
 s &=& \delta(r + 1)\delta_{\alpha}^{-1}, &
 z &=& x - su, \\
@@ -4728,7 +4734,7 @@ r - tr + s - ts \le r \\
 \end{comment}
 
 Finally, we will show $\|v - x\| \le \epsilon$.
-Notice that $\delta \le \nu = \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)} \Longrightarrow s \le \frac{\epsilon}{4 + 2r - \epsilon}$, which implies two things.
+Notice that $\delta \le \eta = \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)} \Longrightarrow s \le \frac{\epsilon}{4 + 2r - \epsilon}$, which implies two things.
 First, it means $s \le \frac{\epsilon}{2r - \epsilon}$ so that
 $\frac {s}{1 + s} \le \frac {\epsilon} {2r}. $
 Combine this with $\delta \le \frac {\epsilon} {2\gamma r}$ to find that $tr \le \frac 1 2 \epsilon$.
@@ -4971,27 +4977,29 @@ Define
 \begin{align}
 \truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
 \end{align}
+
+
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, for any fixed $k$, define
 \begin{align}
-\mathbb A_1^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
-\mathbb A_2^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\}, \label{tbbt_a2} \\
-\mathbb A_3^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}. \label{tbbt_a3}
+\Amk &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
+\Alk &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\}, \label{tbbt_a2} \\
+\Ack &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}. \label{tbbt_a3}
 \end{align}
 
 \begin{lemma}
 \label{norm_of_active_constraints_bounded_below}
-For some fixed $k$, suppose that $\mathbb A_1^{(k)}$, $\mathbb A_2^{(k)}$, $\mathbb A_3^{(k)}$
+For some fixed $k$, suppose that $\Amk$, $\Alk$, $\Ack$
 are defined by
 \cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3}.
 Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
 There exists $\delta > 0$ and $k_0 \in \naturals$ such that,
 \begin{itemize}
-\item if $k \ge k_0$, then if $i \in \mathbb A_1^{(k)} \cup \mathbb A_3^{(k)}$, we have
+\item if $k \ge k_0$, then if $i \in \Amk \cup \Ack$, we have
 \begin{align*}
 \left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
 \left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
 \end{align*}
-\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1^{(k)} \cup \mathbb A_2^{(k)}$, we have
+\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \Amk \cup \Alk$, we have
 \begin{align*}
 \left\|\gmcil\right\| \ge \delta.
 \end{align*}
@@ -5022,7 +5030,7 @@ $.
 \paragraph{Case 1}
 If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
 \paragraph{Case 2}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1^{(k)}$.
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Amk$.
 \begin{align*}
 \left\|\gmcik\right\| \maxmodelgrad
 \ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
@@ -5031,7 +5039,7 @@ Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1^{(k
 By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
 
 \paragraph{Case 3}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2^{(k)}$.
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Alk$.
 \begin{align*}
 \left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
 \ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
@@ -5040,7 +5048,7 @@ Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2^{(k
 
 
 \paragraph{Case 4}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_3^{(k)}$.
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Ack$.
 \color{red}
 We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
 \color{black}
@@ -5063,10 +5071,17 @@ Then, by \cref{model_gradients_are_cauchy}, there is a $k_4 \in \naturals$ such 
 \end{align*}
 \end{proof}
 
+With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
+\begin{align}
+z_m^{(k)} =& P_{\feasiblek}\left(\xk - \gk\right), \label{define_zmk} \\
+z_l^{(k)} =& P_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
+z_c^{(k)} =& P_{\truefeasiblek}\left(\xk - \gk\right). \label{define_zck}
+\end{align}
 
 
 \begin{theorem}
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
+Let $\zmk$, $\zlk$, $\zck$ be defined by \cref{define_zmk}, \cref{define_zlk}, \cref{define_zck} respectively.
 
 Suppose that the assumptions for
 \cref{i_thought_i_proved_this_already},
@@ -5081,13 +5096,13 @@ Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
 For any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that
 \begin{itemize}
 \item if $k \ge k_0$, then
-\begin{align*}
-\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right)\right\| \le \epsilon
-\end{align*}
+$
+\left\|\zmk - \zck\right\| \le \epsilon
+$
 \item if $k, l \ge k_0$ and $(k, l) \in S$, then 
-\begin{align*}
-\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right)\right\| \le \epsilon.
-\end{align*}
+$
+\left\|\zmk - \zlk\right\| \le \epsilon.
+$
 \end{itemize}
 \end{theorem}
 \begin{proof}
@@ -5097,24 +5112,22 @@ For any $\mathcal U \subseteq [m]$, define
 \feasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \gmcik^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
 \truefeasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
 \end{align*}
-Notice that if $\mathbb A_1^{(k)}$, $\mathbb A_2^{(k)}$, $\mathbb A_3^{(k)}$
+Notice that if $\Amk$, $\Alk$, $\Ack$
 are defined by
 \cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3},
-the result immediately follows from showing that
+Notice that
 \begin{align*}
-\left\|P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right) - P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right)}\left(\xk - \gk\right)\right\| \le \epsilon \\
-\left\|P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right) - P_{\feasiblel\left(\mathbb A_2^{(k)}\right)}\left(\xk - \gk\right)\right\| \le \epsilon.
+\zmk =& P_{\feasiblek\left(\Amk\right)}\left(\xk - \gk\right) \\
+\zlk =& P_{\feasiblel\left(\Alk\right)}\left(\xk - \gk\right) \\
+\zck =& P_{\truefeasiblek\left(\Ack\right)}\left(\xk - \gk\right)
 \end{align*}
 Further, notice that by \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, for sufficiently large $k, l$,
 $\|\gk\| \le \maxmodelgrad$
-so that
+so
 \begin{align*}
-P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right)
-= P_{\feasiblek\left(\mathbb A_1^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_m^{(k)}, \\
-P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right)}\left(\xk - \gk\right)
-= P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_l^{(k)}, \\
-P_{\feasiblel\left(\mathbb A_2^{(k)}\right)}\left(\xk - \gk\right)
-= P_{\feasiblel\left(\mathbb A_2^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_c^{(k)}.
+\zmk =& P_{\feasiblek\left(\Amk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) \\
+\zlk =& P_{\feasiblel\left(\Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) \\
+\zck =& P_{\truefeasiblek\left(\Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right)
 \end{align*}
 Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
 By assigning $\delta_r \gets \minangledelta$ and partitioning either
@@ -7314,8 +7327,11 @@ We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied
 \le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\| \label{chi2zero2_comp1}
 \end{align}
 
+
+% Let $\zmk$, $\zlk$, $\zck$ be defined by \cref{define_zmk}, \cref{define_zlk}, \cref{define_zck} respectively.
+Let $\zmk$ and $\zlk$ be defined by \cref{define_zmk} and \cref{define_zlk} respectively.
 Using the triangle inequality, the contraction property of projections, 
-\cref{sha_projkl}, \cref{define_criticality_measure}, and \cref{chi2zero2_comp1} we have 
+\cref{define_criticality_measure}, and \cref{chi2zero2_comp1} we have 
 \begin{align*}
 \frac{\epsilon}{2} \le \chik - \chi^{(l)} \\
 =     \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right \| 
@@ -7325,11 +7341,11 @@ Using the triangle inequality, the contraction property of projections,
  \le  \left\|\xk - \xl\right\|
  + \left\|P_{\feasiblek}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xk - \gk\right) \right\| \\
  + \left\|P_{\feasiblel}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xl - \gl\right) \right\| \\
-\le \left\|\xk - \xl\right\| + \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\| 
+\le \left\|\xk - \xl\right\| + \left\|\zmk - \zlk\right\| 
 + \left\| \xk - \gk - \xl + \gl  \right\| \\
 \le \left(2 + \lipgrad\right) \left\|\xk - \xl\right\| 
 + \kappa_g \left(\dk^2 + \dl^2\right)
-+ \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\|
++ \left\|\zmk - \zlk\right\|
 \end{align*}
         
 % \begin{align*}
@@ -7347,7 +7363,7 @@ So that
 \begin{align}
 \frac{\epsilon_{lb}} 2 \le \left(2 + \lipgrad\right) \left\|\xk - \xl\right\| 
 + \kappa_g \left(\dk^2 + \dl^2\right)
-+ \left\|\projkk\left([m]\right) - \projkl\left([m]\right)\right\|
++ \left\|\zmk - \zlk\right\|
 \label{chi2zero2_conv}.
 \end{align}
 
@@ -7360,10 +7376,6 @@ This is a contradiction, and \cref{the_contradiction} must be false.
 \subsubsection{Convergence of Criticallity Measure}
 \label{limit_of_true_criticallity}
 
-\begin{comment}
-Change to simply $\feasible$.
-\end{comment}
-
 \begin{theorem}
 \label{the_convergence_theorem}
 Suppose that \cref{lipschitz_gradients_assumption}, \cref{bounded_below_assumption}, \cref{bounded_hessians_assumption}, and 
@@ -7371,12 +7383,12 @@ the assumptions for \cref{accuracy_is_satisfied} hold.
 
 If $\gammabi = 0$, then
 \begin{align}
-\liminf_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf(\xk)\right) - \xk \right\| = 0.
+\liminf_{k\to\infty} \left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align}
 
 If $\gammabi > 0$, then
 \begin{align}
-\lim_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf(\xk)\right) - \xk \right\| = 0.
+\lim_{k\to\infty} \left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align}
 
 \end{theorem}
@@ -7384,11 +7396,10 @@ If $\gammabi > 0$, then
 
 
 \begin{proof}
-
 Let 
-$\feasiblek$, $\projkk$, $ \truefeasiblek $, $\trueprojk$
+$\feasiblek$, $\zmk$, $ \truefeasiblek $, $\zck$
 be defined by 
-\cref{define_feasiblek}, \cref{sha_projkl}, \cref{sha_truefk}, \cref{sha_trueproj}
+\cref{define_feasiblek}, \cref{define_zmk}, \cref{sha_truefk}, \cref{define_zck}
 respectively.
 Let $\epsilon > 0$ be fixed.
 By the triangle inequality, the contraction property of projections, we have
@@ -7405,8 +7416,8 @@ By the triangle inequality, the contraction property of projections, we have
 \bigg\| \\
 \le \left\|
 \xk - \gradf\left(\xk\right) - \xk + \gk
-\right\| + \left\|\trueprojk - \projkk\right\| \\
-\le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\trueprojk - \projkk\right\|
+\right\| + \left\|\zck - \zmk\right\| \\
+\le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\zck - \zmk\right\|
 \end{align*}
 With $\chik$ defined by \cref{define_criticality_measure}, the triangle inequality implies
 \begin{align*}
@@ -7416,7 +7427,7 @@ With $\chik$ defined by \cref{define_criticality_measure}, the triangle inequali
 -P_{\feasiblek}\left(\xk - \gk \right)
 +P_{\feasiblek}\left(\xk - \gk \right)
 - \xk\right\| \\
-\le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\trueprojk - \projkk\right\| + \chik.
+\le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\zck - \zmk\right\| + \chik.
 \end{align*}
 \end{proof}
 Using \cref{delta_to_zero}, \cref{accuracy_is_satisfied}, \cref{bounded_projection_theorem}, 
@@ -7424,13 +7435,19 @@ there is a $k_0$ such that if $k \ge k_1$, then
 \begin{align*}
 \left\|\gk - \gradf\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \frac 1 2 \epsilon
 \quad \textrm{and} \quad
-\left\|\trueprojk - \projkk\right\| \le \frac 1 2 \epsilon
+\left\|\zck - \zmk\right\| \le \frac 1 2 \epsilon
 \end{align*}
 so that
 \begin{align*}
-\lim_{k\to\infty} \left[\left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\trueprojk - \projkk\right\|\right] = 0.
+\lim_{k\to\infty} \left[\left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\zck - \zmk\right\|\right] = 0.
 \end{align*}
-The result follows from \cref{liminf_chi_to_zero} and \cref{lim_chi_to_zero}.
+
+
+The result follows from \cref{liminf_chi_to_zero}, \cref{lim_chi_to_zero} and convexity:
+\begin{align*}
+\left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| 
+\le \left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\|.
+\end{align*}
 
 \subsection{Bounded Level Sets}
 \label{bounded_level_sets}
