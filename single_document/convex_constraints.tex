@@ -2,7 +2,7 @@
 
 \usepackage{hyperref}
 \usepackage[fleqn]{amsmath}
-\usepackage[demo]{graphicx}
+\usepackage{graphicx}
 \usepackage{color}
 \usepackage{xspace}
 \usepackage{cite}
@@ -223,11 +223,16 @@
 \newcommand{\activeprojl}{{active projection l}}
 
 
+\newcommand{\convexdistance}{{D}}
+
+
 
 
 
 \newcommand{\activeindicesk}{{ \mathbb I_h^{(k)} }}
 \newcommand{\huffindicesk}{{ \mathbb H_h^{(k)} }}
+\newcommand{\inactiveindicesk}{{ \mathbb J_h^{(k)} }}
+\newcommand{\huffthreshold}{{\Delta_{\textrm{H}}}}
 
 
 
@@ -410,8 +415,9 @@ Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
 % For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.
 \begin{align*}
 a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end{cases}\\
-\|x\|_{\infty} = \max_{1\le i\le n}|x_i| \\
-\|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2}
+\|x\|_{\infty} = \max_{1\le i\le n}|x_i| \quad
+\|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2} \quad
+\|x\|_1 = \sum_{i = 1}^n |x_i|
 \end{align*}
 For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
@@ -2447,7 +2453,7 @@ The algorithm is as follows:
 \end{algorithm}
 
 \section{Convergence Analysis}
-
+\label{convergence_discussion}
 Within this section we show that \cref{constrained_dfo} converges to a critical point.
 Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2621814}.
 To use their analysis, we show that the accuracy and efficiency assumptions required for their proof hold, 
@@ -2488,7 +2494,7 @@ This is done within \cref{bounding_the_projection_section}.
 This is complicated by the fact that we do not assume bounded level sets, so we do not have a gaurantee that the sequence $\left\{\xk\right\}$ is Cauchy.
 Thus, we introduce \cref{criteria_from_contradiction}, which
 \begin{itemize}
-\item sufficient to proof \cref{verbiage_hoffman_use_two},
+\item is sufficient to prove \cref{verbiage_hoffman_use_two},
 \item follows from a false assumption within a proof of contradiction \cref{the_contradiction},
 \item would be true under the stronger assumption of bounded level sets.
 \end{itemize}
@@ -2497,7 +2503,7 @@ Thus, we introduce \cref{criteria_from_contradiction}, which
 % \item This is one uses of the hoffman bound
 % \item motivate criteria mention contradiction
 % \end{itemize}
-\item Show lim of true criticallity measure is zero \\
+\item Show the limit of true criticallity measure is zero \\
 This is done within \cref{limit_of_true_criticallity}.
 This relies on \cref{verbiage_hoffman_use_two}, which in turn relies on bounding the Hoffman constant of the Jacobians of the constraints.
 Because of the similarity, this is done in parallel with bounding the constraint's model's Jacobian's Hoffman's constant in \cref{bounding_the_projection_section}.
@@ -3807,6 +3813,13 @@ satisfying
 m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 \end{align}
 
+
+
+
+\begin{comment}
+Add more explanation here...
+\end{comment}
+
 Let
 $\kappa_{\chi}$,
 $\maxmodelhessian$,
@@ -3847,9 +3860,9 @@ v = u_{\textrm{GC}} - \delta \dk^{p} \huk \label{define_v} \\
 
 By \cref{sr_delta_small_enough}, $\dk \le \dsr \le \minangledelta$ so that \cref{minangleassumption_alt}
 tells us there is a $ \minangledirk \in \Rn$ with
-$-\frac {\gmcik}{\left\|\gmcik\right\|} ^T \minangledirk \ge \minanglealpha$ for any $i \in B_{\infty}\left(\xk, \minangledelta\right)$.
+$-\frac {\gmcik}{\left\|\gmcik\right\|} ^T \minangledirk \ge \minanglealpha$ for any $i$ with $\zik \in B_{\infty}\left(\xk, \minangledelta\right)$.
 Let $\huk$ be defined as in \cref{define_u},
-Then $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i \in B_{\infty}\left(\xk, \minangledelta\right)$.
+Then $-\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha$ for any $i$ with $\zik \in B_{\infty}\left(\xk, \minangledelta\right)$.
 
 Note that by \cref{sr_def_p}, we have
 \begin{align}
@@ -4014,12 +4027,12 @@ Also, because $u_{\textrm{GC}}$ is feasible with respect to the linearization of
 \left(\zik - \xk\right)^T(u_{\textrm{GC}} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
 
-If $u_{\textrm{GC}} \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{\textrm{GC}} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
-If $u_{\textrm{GC}} \not \in \tr$, then a trust region constraint is active and $\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk$.
-In either case, we find that 
-\begin{align}
-\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
-\end{align}
+% If $u_{\textrm{GC}} \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{\textrm{GC}} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
+% If $u_{\textrm{GC}} \not \in \tr$, then a trust region constraint is active and $\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk$.
+% In either case, we find that 
+% \begin{align}
+% \left\|u_{\textrm{GC}} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
+% \end{align}
 
 
 Also, by the triangle inequality, \cref{define_z}, \cref{define_w}, $\dk \le 1$ from \cref{sr_delta_small_enough}, and \cref{sr_def_p}:
@@ -4261,8 +4274,910 @@ which contradicts \cref{delta_to_zero}.
 
 \subsection{Bounded Projection}
 \label{bounding_the_projection_section}
+As discussed at the beginning of \cref{convergence_discussion}, this section is devoted to showing convergence of the difference
+between a projection onto an iterate's constraint's linearization and
+\begin{itemize}
+\item a different iterate's constraint's linearization 
+\item the true constraint's linearization.
+\end{itemize}
+This is required within \cref{convergence_section}.
+
+We initially attempted to prove this result using the results found within \cite{pena2020new},
+which rely heavily on a quantity called the Hoffman constant.
+This Hoffman constant can be used to bound differences in projections of similar sets.
+However, to use the Hoffman constant across iterations, we needed to provide a uniform bound on the Hoffman constant.
+While were able to do this for a subset of the constraints, we found a simpler method that applied to all constraints.
+Thus, the strategy relying on the Hoffman constant is not required, but is still presented as it is an interesting result.
+The simplified proof lies within \cref{simplifed_bounded_projection}, 
+while the method we show a bound on the Hoffman constant in \cref{introducing_the_hoffman_constant}, 
+bound the difference in projections based on this bound in \cref{bounding_projection_onto_two_polyhedra},
+and finally show that the projection onto active constraints is bounded within \cref{bounding_the_difference_in_the_active_projection}.
+
+\subsubsection{Simple Properties}
+
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=300px]{images/first_lemma.png}
+	\caption{
+		The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
+		Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
+	}
+	\label{first_lemma}
+\end{figure}
+The following lemma is illustrated in \cref{first_lemma}.
+\begin{lemma}
+\label{properties_of_a_circle}
+Suppose that $x, y, u, v, a \in \Rn$ and $0 < \epsilon \le 1$ are given satisfying
+\begin{align*}
+\|x\| \le \|a\|, \quad
+\|y \| \le \|a\|, \quad
+\|x - u \| \le \epsilon, \quad
+\|y - v \| \le \epsilon, \quad
+a^T u \ge a^T a, \quad
+a^T v \ge a^T a.
+\end{align*}
+Then
+\begin{align*}
+\|x - y\| \le 8(1 + \|a\|) \sqrt{\epsilon}.
+\end{align*}
+\end{lemma}
+\begin{proof}
+If $\|a\| = 0$, then $x = y = 0$ so that $\|x - y\| = 0$.
+We may now assume that $a \ne 0$.
+We can combine
+$
+a^Tx  \le \|a\| \|x\| \le \|a\|^2 = a^T a
+% a^Ty  \le \|a\| \|y\| \le \|a\|^2 = a^T a
+$
+with
+$
+a^Tx = a^T(x - u) + a^T u \ge a^Ta - \|a\| \epsilon
+% a^Ty = a^T(y - v) + a^T v \ge a^Ta - \|a\| \epsilon
+$
+to see
+$
+a^Ta - \|a\|\epsilon \le a^Tx \le a^Ta \Longrightarrow 0 \le a^Ta - a^Tx \le \|a\| \epsilon.
+% a^Ta - \|a\|\epsilon \le a^Ty \le a^Ta \Longleftrightarrow 0 \le a^Ta - a^Ty \le \|a\| \epsilon 
+$
+By symmetry, $0 \le a^Ta - a^Ty \le \|a\| \epsilon$ so that
+\begin{align*}
+\left| a^Tx - a^Ty \right| \le \|a\|\epsilon.
+\end{align*}
+
+
+% 
+% \begin{align*}
+% \left(a^Ta - a^Tx\right)^2 \le \|a\|^2 \epsilon
+% \end{align*}
+% 
+% \begin{align*}
+% \end{align*}
+
+Considering this identity further, we see
+$
+a^Ta - \|a\| \epsilon \le a^Tx \le \|a\|\|x\| 
+\Longrightarrow \|a\| - \epsilon \le  \frac{a}{\|a\|}^T x \le \|x\| 
+\Longrightarrow -\|a\| + \epsilon \ge  -\frac{a}{\|a\|}^T x \ge -\|x\| 
+\Longrightarrow 0 \le \|x\| -\frac{a}{\|a\|}^T x \le \|x\|-\|a\| + \epsilon \le \epsilon
+$
+and
+$
+|\|x\| + \frac{a}{\|a\|}^T x| \le \|x - \frac{a}{\|a\|}^T x\| + 2|\frac{a}{\|a\|}^T x| \le \epsilon + 2\|x\| \le 2\|a\| + \epsilon
+$.
+We multiply these to find
+\begin{align*}
+\sqrt{\|x\|^2 - \frac{\left(a^Tx\right)^2}{a^Ta}}
+= \sqrt{\left(\|x\| - \frac{a}{\|a\|}^Tx\right)\left(\|x\| + \frac{a}{\|a\|}^Tx\right)}
+\le \sqrt{2\|a\|\epsilon + \epsilon^2} \le \epsilon + \sqrt{2\|a\|\epsilon}.
+\end{align*}
+
+
+
+% Also, we see
+% $
+% 0 \le \left\|a - x\right\|^2 
+% = \|a\|^2 + \|x\|^2 - 2a^Tx 
+% \le \|a\|^2 + \|x\|^2 - 2\left(a^Ta - \|a\|\epsilon\right)
+% = \|x\|^2 - \|a\|^2 + 2\|a\|\epsilon
+% $
+% so that
+% $
+% \|a\|^2 - 2\|a\|\epsilon \le \|x\|^2 \le \|a\|^2
+% \Longrightarrow 0 \le \|a\|^2 - \|x\|^2 \le 2\|a\|\epsilon.
+% $
+% By symmetry,
+% $
+% 0 \le \|a\|^2 - \|y\|^2 \le 2\|a\|\epsilon
+% $
+% and we see
+% \begin{align*}
+% \left|\|x\|^2 - \|y\|^2\right| \le 2 \|a\|\epsilon.
+% \end{align*}
+
+Because
+$
+\left(x - \frac{a^Tx}{a^Ta} a\right)^T \frac{a^Tx}{a^Ta} a = \frac{a^Tx}{a^Ta} a^Tx - \left(\frac{a^Tx}{a^Ta}\right)^2a^Ta = 0,
+$
+% \left(y - \frac{a^Ty}{a^Ta} a\right)^T \frac{a^Ty}{a^Ta} a = \frac{a^Ty}{a^Ta} a^Ty - \left(\frac{a^Ty}{a^Ta}\right)^2a^Ta = 0 \\
+we can compute
+$
+\|x\|^2 = \left\|x - \frac{a^Tx}{a^Ta} a + \frac{a^Tx}{a^Ta} a\right\|^2 = \left\|x - \frac{a^Tx}{a^Ta} a \right\|^2 +\frac{\left|a^Tx\right|^2}{a^Ta}
+$
+% \|y\|^2 = \left\|y - \frac{a^Ty}{a^Ta} a + \frac{a^Ty}{a^Ta} a\right\|^2 = \left\|y - \frac{a^Ty}{a^Ta} a \right\|^2 +\left|a^Ty\right|^2
+so that 
+$
+\left\|x - \frac{a^Tx}{a^Ta} a \right\| = \sqrt{\|x\|^2 - \frac{\left|a^Tx\right|^2}{a^Ta}}.
+$
+%  \left\|y - \frac{a^Ty}{a^Ta} a \right\| = \sqrt{\|y\|^2 - \left|a^Ty\right|^2}
+By symmetry,
+$
+\left\|y - \frac{a^Ty}{a^Ta} a \right\| = \sqrt{\|y\|^2 - \frac{\left|a^Ty\right|^2}{a^Ta}},
+$
+so that
+
+\begin{align*}
+\left\|x - \frac{a^Tx}{a^Ta} a - y + \frac{a^Ty}{a^Ta} a \right\|
+\le \left\|x - \frac{a^Tx}{a^Ta} a \right\| + \left\|y - \frac{a^Ty}{a^Ta} a \right\|
+\le 2\epsilon + 2\sqrt{2\|a\|\epsilon}.
+\end{align*}
+
+% \begin{align*}
+% \left\|x - \frac{a^Tx}{a^Ta} a \right\|^2 - \left\|y - \frac{a^Ty}{a^Ta} a \right\|^2
+% = \|x\|^2 - \|y\|^2 + \left(-\left|a^Tx\right|^2 + \left|a^Ty\right|^2\right) \\
+% \left|\left\|x - \frac{a^Tx}{a^Ta} a \right\|^2 - \left\|y - \frac{a^Ty}{a^Ta} a \right\|^2\right|
+% \le \left|\|x\|^2 - \|y\|^2\right| + \left|\left|a^Tx\right|^2 - \left|a^Ty\right|^2\right| \\
+% \le 2 \|a\|\epsilon + 2 |a^Tx| \|a\|\epsilon + \|a\|^2\epsilon^2 \\
+% \Longrightarrow 
+% \left|\left\|x - \frac{a^Tx}{a^Ta} a \right\| - \left\|y - \frac{a^Ty}{a^Ta} a \right\|\right|
+% \le \sqrt{2 \|a\|\epsilon + 2 |a^Tx| \|a\|\epsilon + \|a\|^2\epsilon^2}
+% \le \|a\|\epsilon + \sqrt{2 \|a\|\epsilon\left(1 + |a^Tx|\right)}
+% \end{align*}
+
+
+% \begin{align*}
+% \left\|x - \frac{a^Tx}{a^Ta} a - \left(y - \frac{a^Ty}{a^Ta} a\right)\right\|^2
+% = \left\|x - \frac{a^Tx}{a^Ta} a\right\|^2 + \left\|y - \frac{a^Ty}{a^Ta} a\right\|^2 - 2\left(x - \frac{a^Tx}{a^Ta} a\right)^T\left(y - \frac{a^Ty}{a^Ta} a\right) \\
+% = \left\|x - \frac{a^Tx}{a^Ta} a\right\|^2 + \left\|y - \frac{a^Ty}{a^Ta} a\right\|^2 - 2\left(x^Ty - \frac{a^Tya^Tx}{a^Ta}\right) \\
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|x - \frac{a^Tx}{a^Ta} a - \left(y - \frac{a^Ty}{a^Ta} a\right)\right\|^2
+% = \left\|x - \frac{a^Tx}{a^Ta} a\right\|^2 + \left\|y - \frac{a^Ty}{a^Ta} a\right\|^2 - 2\left(x - \frac{a^Tx}{a^Ta} a\right)^T\left(y - \frac{a^Ty}{a^Ta} a\right) \\
+% = \left\|x - \frac{a^Tx}{a^Ta} a\right\|^2 + \left\|y - \frac{a^Ty}{a^Ta} a\right\|^2 - 2\left(x^Ty - \frac{a^Tya^Tx}{a^Ta}\right) \\
+% \end{align*}
+
+
+
+Finally, we combine everything to see
+\begin{align*}
+\|x - y\| 
+\le \left\|x - \frac{a^Tx}{a^Ta} a - \left(y - \frac{a^Ty}{a^Ta} a\right)\right\| + |a^Tx - a^Ty|
+\le (2 + \|a\|)\epsilon + 2\sqrt{2\|a\|\epsilon} \\
+\le \left(2 + 2\sqrt{2\|a\|} + \|a\|\right)\sqrt{\epsilon}
+\le \left(\sqrt{2} + \sqrt{\|a\|}\right)^2 \sqrt{\epsilon}
+\le \left(2\max\{\sqrt{2},\sqrt{\|a\|}\}\right)^2 \sqrt{\epsilon} \\
+\le 4\max\{2,\|a\|\} \sqrt{\epsilon}
+\le 8\max\{1,\|a\|\} \sqrt{\epsilon}
+\le 8(1 + \|a\|) \sqrt{\epsilon}
+\end{align*}
+% is small.
+% = \epsilon \|a\| \left(2 + 2|a^Tx| + \|a\|\epsilon\right) \\
+
+% \begin{align*}
+% \left\|x - \frac{a^Tx}{a^Ta} a \right\| - \left\|y - \frac{a^Ty}{a^Ta} a \right\|
+% = \sqrt{\|x\|^2 - \|y\|^2} - \sqrt{\left|a^Tx\right|^2 + \left|a^Ty\right|^2}
+% \end{align*}
+
+% \begin{align*}
+% |x - y| \le \epsilon \\
+% \Longleftrightarrow x - \epsilon \le y \le x + \epsilon \\
+% \Longleftrightarrow x^2 - 2x\epsilon - \epsilon^2 \le x^2 - 2x\epsilon + \epsilon^2 \le y^2 \le x^2 + 2x\epsilon + \epsilon^2 \\
+% \Longleftrightarrow  |x^2 - y^2| \le 2 x \epsilon + \epsilon^2
+% \end{align*}
+% 
+% \begin{align*}
+% \epsilon \le x^2 \\
+% \Longrightarrow \sqrt{\epsilon} \le x \\
+% \Longrightarrow 2\epsilon \le 2x\sqrt{\epsilon} \\
+% \Longrightarrow x^2 - 2x\sqrt{\epsilon} + \epsilon \le x^2 - \epsilon \\
+% \Longrightarrow x - \sqrt{\epsilon} \le \sqrt{x^2 - \epsilon}
+% \end{align*}
+% 
+% \begin{align*}
+% \left|x^2 - y^2\right| \le \epsilon \\
+% \Longleftrightarrow x^2 - \epsilon \le y^2 \le x^2 + \epsilon \\
+% \Longleftrightarrow x - \sqrt{\epsilon} \le \sqrt{x^2 - \epsilon} \le y \le \sqrt{x^2 + \epsilon} \le x + \sqrt{\epsilon} \\
+% \Longleftrightarrow |x - y| \le \sqrt{\epsilon}
+% \end{align*}
+
+% \begin{align*}
+% x^Tx \ge \frac{\|x\|}{\|a\|} a^T x
+% \ge \frac{\|x\|}{\|a\|}\left(a^Ta - \|a\|\epsilon\right)
+% \ge \|x\|\|a\| - \|x\| \epsilon 
+% \ge \|x\|\left(\|a\| - \epsilon\right)
+% \end{align*}
+% 
+% \begin{align*}
+% x = x - \frac{a^Tx}{a^Ta} a + \frac{a^Tx}{a^Ta} a \\
+% y = y - \frac{a^Ty}{a^Ta} a + \frac{a^Ty}{a^Ta} a
+% \end{align*}
+% 
+% \begin{align*}
+% \|x - y\| =
+% \left\| x - \frac{a^Tx}{a^Ta} a  \right\|
+% \end{align*}
+
+\end{proof}
+
+
+
+For any two convex sets $S_1$ and $S_2$, define
+\begin{align}
+\convexdistance\left(S_1, S_2\right) = \max_{s' \in S_1 \cup S_2} \min_{s \in S_1 \cap S_2} \|s' - s\|. \label{define_a_difference_between_sets}
+\end{align}
+
+\begin{lemma}
+\label{board_tied_to_sphere}
+Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
+Let $g \in \Rn$ and let $S, S' \subseteq \Rn$ be convex and non-empty.
+Suppose that $0 < \epsilon \le 1$ is given with $D\left(S, S'\right) \le \epsilon$.
+Then 
+\begin{align*}
+\|P_{S}(g) - P_{S'}(g)\| \le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}.
+\end{align*}
+\end{lemma}
+\begin{proof}
+Because $\convexdistance(S, S') \le \epsilon$, we know that $S \cap S' \ne \emptyset$.
+Let $x = P_S(g) - g$ and $y = P_{S'}(g) - g$, $u = P_{S \cap S'}(g + x) - g$, $v = P_{S \cap S'}(g + y) - g$, $a = P_{S \cap S'}(g) - g$.
+Then, because $S \cap S' \subseteq S$ and $S \cap S' \subseteq S'$ we have
+$\|x\| = \|P_S(g) - g\| \le \|P_{S \cap S'} (g) - g\| = \|a\|$ and $\|y\| \le \|a\|$.
+Also, by optimality conditions of $a$, we know that the plane $a^Tx \ge a^Ta$ separates $S \cap S'$ from $g$.
+In particular, $a^Tu \ge a^Ta$ and $a^Tv \ge a^Ta$.
+Finally, because $\convexdistance(S, S') \le \epsilon$, we have $\|x - u\| = \|P_{S \cap S'}\left(P_S(g)\right)\| \le \epsilon$ and $\|y - v\| \le \epsilon$.
+Thus, \cref{properties_of_a_circle} informs us
+$\|P_S(g) - P_{S'}(g)\| = \|x - y\| \le 8(1 + \|a\|) \sqrt{\epsilon}$.
+\end{proof}
+
+
+\begin{corollary}
+Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
+Let $g, g' \in \Rn$ and let $S, S' \subseteq \Rn$ be convex and non-empty.
+Suppose that $0 < \epsilon \le 1$ is given with $D\left(S, S'\right) \le \epsilon$ and $\|g - g'\| \le \epsilon$.
+Then $\|P_S(g) - P_{S'}(g')\| \le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}$.
+\end{corollary}
+\begin{proof}
+Notice
+\begin{align*}
+\|P_S(g) - P_{S'}(g')\| 
+\le \|P_S(g) - P_{S'}(g)\| + \|P_{S'}(g) - P_{S'}(g')\| 
+\le \|P_S(g) - P_{S'}(g)\| + \|g - g'\| \\
+\le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon} + \epsilon
+\le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}.
+\end{align*}
+\end{proof}
+
+\begin{lemma}
+\label{the_lemma_to_end_all_lemmas}
+Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
+
+Let
+$A, A' \in \mathbb \mathbb R^{m \times n}$;
+$b, b' \in \mathbb \mathbb R^{m}_{\ge 0}$;
+$C, C' \in \mathbb \mathbb R^{m' \times n}$;
+$d, d' \in \mathbb \mathbb R^{m'}_{\ge 0}$;
+unit vector $u \in \Rn$;
+$\delta_l, \delta_u, \delta_{\alpha}, \delta_r > 0$;
+be given such that 
+\begin{align*}
+\begin{array}{cccc}
+\delta_r \|A_i\| \le b_i,			&
+Cu \ge \delta_{\alpha} e,			&
+\delta_l \le \|A_i\| \le \delta_u	\\
+\delta_r \|A_i'\| \le b_i',			&
+C'u \ge \delta_{\alpha} e, 			&
+\delta_l \le \|A'_i\| \le \delta_u.
+\end{array}
+\end{align*}
+For any $p \in \Rn$ and $r > 0$ define the sets
+\begin{align*}
+\begin{array}{ccccc}
+S  &= \bigg\{x \in \Rn \bigg|& A (x - p) \le b ,& C (x - p) \le d ,& \|x - p\| \le r \bigg\}, \\
+S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\}.
+\end{array}
+\end{align*}
+For any $0 < \epsilon < r$ there exists $\delta > 0$ such that if
+\begin{align*}
+\begin{array}{cccc}
+\|A - A'\|_{\infty} \le \delta,	& \|b - b'\|_{\infty} \le \delta,		& \|C - C'\|_{\infty} \le \delta,	& \|d - d'\|_{\infty} \le \delta
+\end{array}
+\end{align*}
+then
+\begin{align*}
+D(S, S') \le \epsilon.
+\end{align*}
+
+
+
+% \delta_1 \le \delta_2 \|A_i\| \le b_i, 
+% \delta_1 \le \delta_2 \|A'_i\| \le b'_i, \\
+% \gamma = \frac{2}{\delta_1}\left(1 + \|y\|\right), 
+% \epsilon \le \min\left\{\gamma^{-1}\right\}.
+
+
+\end{lemma}
+% y - z  =       A        ^T\mu  + C^T\lambda  \\
+% y - z' = \left(A'\right)^T\mu' + C^T\lambda' \\
+% t &=  \max_{\substack{i \in [m] \\ A'_i(z - p) > b'_i}} \frac{A'_i (z - p) - b'_i}{A'_i (z - p)} \\
+
+\begin{proof}
+% (1 + r)\left[1 + \delta_{\alpha}^{-1} \left(\delta_2 + 1\right)\right]
+Let $x \in S$, and define
+\begin{align*}
+\begin{array}{cccccc}
+\lambda &=& \delta_{\alpha}^{-1}(r + 1) (\delta_u + 2), &
+\gamma &=& 2\lambda(\delta_r \delta_u)^{-1}, \\
+\nu    &=& \frac 1 2 \epsilon\delta_{\alpha}(r+2)^{-1}(r + 1)^{-1}, &
+\delta &=& \min\bigg\{
+1,
+\gamma^{-1},
+\frac 1 2 {\epsilon} (\gamma r)^{-1},
+\nu
+\bigg\}, \\
+s &=& \delta(r + 1)\delta_{\alpha}^{-1}, &
+z &=& x - su, \\
+t &=& \max\left\{\gamma \delta, s(r+s)^{-1}\right\}, &
+v &=& (1-t)z + t p.
+\end{array}
+\end{align*}
+The construction of $v$ has the following intuition:
+to travel to $v$ from $x$, we
+\begin{itemize}
+\item first travel a distance $s$ along $-u$ to reach $z$ (where we will show $C'(z-p) \le d'$),
+\item then travel a fraction $t$ of the distance back to $p$ (where both $A'(v - p) \le b'$ and $\|v-p\| \le r$).
+\end{itemize}
+Throughout the remainder of this proof, we will show $v \in S'$ and $\|x - v\| \le \epsilon$.
+The result then follows from the symmetry of $S$ and $S'$.
+
+
+For each $i \in [m]$,
+\begin{align*}
+0 \le C_i'(x-p) - d_i'
+\le C_i(x - p) - d_i + (C_i' - C_i)(x-p) + d_i - d_i'  \\
+\le 0 + \|C_i' - C_i\| \|x - p\| + \|d_i - d_i'\| 
+\le \delta (r+1)
+= \delta_{\alpha} s \le sC_i'u
+\end{align*}
+so that
+\begin{align}
+-sC_i'u \le d_i' - C_i'(x - p) \Longrightarrow C'(z - p) = C'(x - su - p) \le d'. \label{reun_eqn3}
+\end{align}
+
+\begin{comment}
+Explanation for next sentence:
+\begin{align*}
+s\delta_u + \delta \left(s + r\right) + \delta 
+&= \frac{\delta(r + 1)}{\delta_{\alpha}}\delta_u + \delta \left(s + r\right) + \delta \\
+&\le \delta \left[(r + 1)\frac{\delta_u}{\delta_{\alpha}} + (r+1)\frac{\delta}{\delta_{\alpha}} + r + 1\right] \\
+&\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{\delta}{\delta_{\alpha}} + 1\right] \\
+&\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}}\right] \\
+&\le \delta \delta_{\alpha}^{-1}(r + 1) (\delta_u + 2)
+\end{align*}
+\end{comment}
+Also, without loss of generality, $\delta_{\alpha} \le 1$, so that
+\begin{align}
+A_i'(z - p) - b_i' 
+&= - s A_iu + A_i(x - p) - b_i + (A_i' - A_i)(z - x + x - p) + (b_i' - b_i) \nonumber \\
+&\le s \|A_i\|\|u\| + 0 + \|A_i' - A_i\|\left[\|z - x\| + \|x - p\|\right] + \|b_i'-b_i\| \nonumber \\
+&\le s\delta_u + \delta \left(s + r\right) + \delta \le \lambda \delta \label{reun_eqn1}
+\end{align}
+so that whenever $A_i'(z - p) > b_i'$,
+\begin{align}
+\left|A_i'(z - p)\right| 
+\ge |b_i'| - \left| A_i'(z - p) - b_i'\right| 
+\ge \delta_r\|A_i'\| - \lambda \delta 
+\ge \delta_r \delta_u - \lambda \delta \ge \frac 1 2 \delta_r \delta_u. \label{reun_eqn2}
+\end{align}
+% \Longrightarrow \frac 1 {\left|A_i'(z - p)\right|} \le \frac 2 {\delta_1 \delta_3}. 
+
+% &= A_i(z - p) - b_i + (A_i' - A_i)(z - p) + (b_i' - b_i) \\
+% \begin{align*}
+% A_i(z - p) - b_i = A_i(x - p) - b_i - s A_iu \le 0 + s \|A_i\| \|u\| \le s\delta_2
+% \end{align*}
+% so that
+
+% \begin{align*}
+% \lambda \delta \le \frac 1 2 \delta_1 \delta_3
+% \end{align*}
+% \begin{align*}
+% (1 - t) A_i'\left[z - p\right] \le b_i' \\
+% A_i'\left[(1-t) z + tp - p\right] \le b_i'
+% \end{align*}
+
+Dividing \cref{reun_eqn1} by \cref{reun_eqn2}, we find
+\begin{align*}
+\frac{A'_i (z - p) - b'_i}{A'_i (z - p)} \le \frac{2\lambda}{\delta_r \delta_u}\delta = \gamma \delta \le 1
+\end{align*}
+which means $t = \max\left\{\gamma \delta, \frac{s}{r+s}\right\} \in [0, 1]$.
+Also, note that for each $i \in [m]$, if $A_i'(z - p) > b_i'$, then
+\begin{align*}
+t \ge \frac{A'_i (z - p) - b'_i}{A'_i (z - p)}
+\Longrightarrow (1-t) A'_i (z - p) \le b'_i.
+\end{align*}
+But if $A_i'(z - p) \le b_i'$, then $t \le 1$ and $b_i' \ge 0$ provide the same identity.
+Therefore, 
+\begin{align*}
+A'(v - p) = A' \bigg[(1-t) z + tp - p\bigg] = (1-t) A' (z - p) \le b'.
+\end{align*}
+Because $t \in [0, 1]$, \cref{reun_eqn3} and convexity imply $C'(v - p) \le d$.
+Lastly, $t \ge \frac{s}{r + s} \Longrightarrow (1 - t) \left(r + s\right) \le r$, so that
+\begin{align*}
+\|v - p\| = \|(1-t)z + t p - p\| = (1 - t) \|z - p\| \le (1 - t) \left(\|x - p\| + s\right) \le (1 - t) \left(r + s\right) \le r
+\end{align*}
+and $v \in S'$.
+\begin{comment}
+Explanation:
+\begin{align*}
+t \ge \frac{s}{r + s} \\
+ tr + ts \ge s \\
+- tr - ts \le -s \\
+r - tr + s - ts \le r \\
+(1 - t) r + (1 - t)s \le r \\
+(1 - t) \left(r + s\right) \le r \\
+\end{align*}
+\end{comment}
+
+Finally, we will show $\|v - x\| \le \epsilon$.
+Notice that $\delta \le \nu = \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)} \Longrightarrow s \le \frac{\epsilon}{4 + 2r - \epsilon}$, which implies two things.
+First, it means $s \le \frac{\epsilon}{2r - \epsilon}$ so that
+$\frac {s}{1 + s} \le \frac {\epsilon} {2r}. $
+Combine this with $\delta \le \frac {\epsilon} {2\gamma r}$ to find that $tr \le \frac 1 2 \epsilon$.
+Secondly, it means that
+$s \le \frac{\epsilon}{4}$ so that $(1 + t)s \le \frac 1 2 \epsilon$.
+Combining these produces,
+\begin{align*}
+\|x - v\| 
+\le \|x - z\| - \|z - v\| 
+= s + t \|p - z\| 
+\le s + t \left(r + s\right) 
+= (1 + t)s + tr
+\le \frac 1 2 \epsilon + \frac 1 2 \epsilon = \epsilon.
+\end{align*}
+% = s + \|(1-t) z + tp - z\| 
+
+\begin{comment}
+Explanations:
+\begin{align*}
+\delta \le \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)}
+\le \frac{\epsilon\delta_{\alpha}}{(4 + 2r - \epsilon)(r + 1)} 
+\Longrightarrow \frac{\delta(r + 1)}{\delta_{\alpha}}  \le \frac{\epsilon}{4 + 2r - \epsilon} \Longrightarrow
+s\le \frac{\epsilon}{4 + 2r - \epsilon}
+\end{align*}
+\begin{align*}
+s\le \frac{\epsilon}{(2r - \epsilon)} \Longrightarrow
+s(2r - \epsilon)\le \epsilon \Longrightarrow
+2rs \le \epsilon(1 + s) \Longrightarrow
+\frac {s}{1 + s} \le \frac {\epsilon} {2r}
+\end{align*}
+\begin{align*}
+s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
+(1 + t)s \le 2s \le \frac 1 2 \epsilon
+\end{align*}
+\end{comment}
+\end{proof}
+
+\subsubsection{Simplifed Results}
+\label{simplifed_bounded_projection}
+
+
+\begin{definition}
+\label{criteria_from_contradiction}
+A sequence $S \subseteq\naturals \times \naturals$ satisfies this definition if
+% is called a \emph{Cauchy pair-subsequence} if
+% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
+for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
+then 
+$\left\|\xk - \xl \right\| \le \epsilon$.
+% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
+\end{definition}
+
+
+\begin{lemma}
+\label{model_gradients_are_cauchy}
+Suppose that the assumptions for
+\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}, \cref{accuracy_is_satisfied}
+hold.
+
+If $S$ satisfies \cref{criteria_from_contradiction}, then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
+such that if $(k, l) \in S$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
+\end{lemma}
+\begin{proof}
+Let $\epsilon > 0$ be arbitrary.
+By \cref{delta_to_zero}, we can choose $N_1$ such that $\lipgrad \left\|\xk - \xl \right\| \le \frac 1 3 \epsilon$.
+Also, because every convergent sequence is Cauchy, we can choose an $N_2 \in \naturals$ such that $\kappa_g \dk^2 \le \frac 1 3 \epsilon $ whenever $k \ge N_2$.
+Choose $N_0 = \max\{N_1, N_2\}$, and let $d, k \ge N_2$.
+The triangle inequality states
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le 
+\left\|\nabla \mcik\left(\xk\right) - \nabla c_i\left(\xk\right) \right\|
++ \left \| \nabla \mcil\left(\xl\right) - \nabla c_i\left(\xl\right) \right \| \\
++ \left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\|.
+\end{align*}
+Using \cref{accuracy_is_satisfied} and \cref{lipschitz_gradients_assumption}, we see
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\|.
+\end{align*}
+By our choice of $N_0$, we see that
+\begin{align*}
+\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
+\le \frac 1 3 \epsilon + \frac 1 3 \epsilon + \frac 1 3 \epsilon = \epsilon.
+\end{align*}
+\end{proof}
+% \left\|\mcik\left(\xk\right) - \mcik\left(\xl\right) \right\| + \left \| \mcik\left(\xl\right) - \mcil\left(\xl\right) \right\|
+
+
+
+
+
+Let $\minangledelta$ be defined by \cref{minangleassumption_alt} and define
+% such that if $\dk \le \minangledelta$ and
+\begin{align}
+\activeindicesk = \left\{i \in [m] \bigg| -c_i\left(\xk\right) \le \minangledelta \left\|\gmcik\right\| \right\}. \label{define_activeindicesk}
+\end{align}
+
+
+% \begin{align*}
+% ? =  \\
+% c_i\left(\xk\right) + \gmcik^T \gk
+% \end{align*}
+
+The following observation follows directly from the definition:
+\begin{lemma}
+\label{doesntreallyneedtobesaid}
+Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
+If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
+\end{lemma}
+\begin{proof}
+If $c_i\left(\xk\right) = 0$, then $\zik = \xk \in B_{\infty}\left(\xk, \minangledelta \right)$.
+Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta} \ge 0$, so
+\begin{align*}
+\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik 
+\Longrightarrow \left\|\xk - \zik \right\|= -\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|} \le \minangledelta.
+\end{align*}
+\end{proof}
+
+
+\begin{lemma}
+\label{underbound}
+Suppose that \cref{mingradassumption} holds.
+
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+There exists $\activegradmin > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
+for all $i \in \activeindicesk$,
+\begin{align*}
+\left\|\gmcik\right\| \ge \activegradmin.
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption}.
+Define
+\begin{align}
+\label{define_activegradmin}
+\activegradmin = \min\left\{\mingrad, \frac{\mingradepsilon}{\sqrt{n} \minangledelta}\right\}.
+\end{align}
+
+By \cref{mingradassumption}, if $-c_i\left(\xk\right) \le \mingradepsilon$, then $\nabla c_i\left(\xk\right) \ge \mingrad \ge \activegradmin$.
+We may now assume that $-c_i\left(\xk\right) \ge \mingradepsilon$.
+Because $i \in \activeindicesk$, using \cref{define_z}, we have
+\begin{align*}
+\sqrt{n} \minangledelta \ge \left\|\xk - \zik \right\|
+= \frac{-c_i\left(\xk\right)}{\left\|\gmcik\right\|}
+\ge \frac{\mingradepsilon}{\left\|\gmcik\right\|}
+\Longrightarrow
+\left\|\gmcik\right\| \ge \frac{\mingradepsilon}{\sqrt{n} \minangledelta} \ge \activegradmin
+\end{align*}
+\end{proof}
+
+
+
+\begin{lemma}
+\label{yet_another_bound_on_a_u}
+Suppose that the assumptions for \cref{underbound}, \cref{accuracy_is_satisfied} hold.
+Suppose that the assumptions for \cref{model_gradients_are_cauchy} hold.
+
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+There exists $k_0 \in \naturals$, scalar $\minactivealpha > 0$, and unit vector $\activedirk \in \Rn$ such that if 
+$k \ge k_0$, then $\forall i \in \activeindicesk$
+\begin{align*}
+\gmcik^T \activedirk \ge \minactivealpha
+\quad \textrm{and} \quad
+\nabla c_i\left(\xk\right)^T \activedirk \ge \minactivealpha.
+\end{align*}
+
+Furthermore, if a set $S$ satisfies \cref{criteria_from_contradiction}, and $(k, l) \in S$, $l \ge k_0$, then $\forall i \in \activeindicesk$
+\begin{align*}
+\gmcil^T \activedirk \ge \minactivealpha.
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+Let 
+$\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt};
+$\kappa_g$ be defined by \cref{accuracy_is_satisfied}; 
+and $\activegradmin$ be defined by \cref{define_activegradmin}.
+
+Define 
+\begin{align}
+\minactivealpha = \frac 1 2 \minanglealpha \activegradmin. \label{define_minactivealpha}
+\end{align}
+
+By \cref{delta_to_zero}, we know there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then
+\begin{align*}
+\dk \le \minangledelta \quad \textrm{and} \quad  \dk \le \sqrt{\frac {\minanglealpha \activegradmin} {2 \kappa_g}}.
+\end{align*}
+Thus, by \cref{doesntreallyneedtobesaid}, \cref{minangleassumption_alt}, and \cref{underbound} we know 
+there exists a unit vector $\minangledirk\in\Rn$ and $k_2 \in \naturals$ such that 
+for all $i \in \mathbb I^{(k)}$, $k \ge k_2$:
+\begin{align*}
+-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \Longrightarrow \gmcik^T\left(-\minangledirk\right) \ge \minanglealpha \activegradmin
+\end{align*}
+Also, by \cref{accuracy_is_satisfied}, we have
+\begin{align*}
+\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \kappa_g \dk^2 \le \frac 1 2 \minanglealpha \activegradmin
+\end{align*}
+so that
+\begin{align*}
+\nabla c_i\left(\xk\right)^T \left(-\minangledirk\right) = 
+\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \nabla c_i\left(\xk\right) \right)^T\left(-\minangledirk\right) \\
+\ge \minanglealpha \activegradmin - \left\|\gmcik - \nabla c_i\left(\xk\right) \right\|\left\|\minangledirk\right\|
+\ge \minanglealpha \activegradmin - \frac 1 2 \minanglealpha \activegradmin = \minactivealpha.
+\end{align*}
+
+Furthermore, if $(k, l) \in S$, then by \cref{model_gradients_are_cauchy} there exists $k_3 \in \naturals$ such that if $(k, l) \in S$ and $k, l \ge k_3$
+\begin{align*}
+\left\|\gmcik - \gmcil\right\| \le \frac {\minanglealpha \activegradmin} {2}
+\end{align*}
+and once again,
+\begin{align*}
+\gmcil \left(-\minangledirk\right) = 
+\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \gmcil \right)^T\left(-\minangledirk\right)
+\ge \minactivealpha.
+\end{align*}
+\end{proof}
+
+
+
+
+% 
+% 
+% 
+% \begin{align*}
+% \left\|z - p\right\| = r \\
+% r \le \left\|z' - p\right\| = r + \epsilon \\
+% (z - p)^T (z' - p) \ge \|z - p\|^2
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|z - z'\right\|
+% \end{align*}
+% 
+% 
+% 
+
+Define
+\begin{align}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
+\end{align}
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, for any fixed $k$, define
+\begin{align}
+\mathbb A_1^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
+\mathbb A_2^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\}, \label{tbbt_a2} \\
+\mathbb A_3^{(k)} &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}. \label{tbbt_a3}
+\end{align}
+
+\begin{lemma}
+\label{norm_of_active_constraints_bounded_below}
+For some fixed $k$, suppose that $\mathbb A_1^{(k)}$, $\mathbb A_2^{(k)}$, $\mathbb A_3^{(k)}$
+are defined by
+\cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3}.
+Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
+There exists $\delta > 0$ and $k_0 \in \naturals$ such that,
+\begin{itemize}
+\item if $k \ge k_0$, then if $i \in \mathbb A_1^{(k)} \cup \mathbb A_3^{(k)}$, we have
+\begin{align*}
+\left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
+\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
+\end{align*}
+\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1^{(k)} \cup \mathbb A_2^{(k)}$, we have
+\begin{align*}
+\left\|\gmcil\right\| \ge \delta.
+\end{align*}
+\end{itemize}
+\end{lemma}
+\begin{proof}
+
+Let $\mingradepsilon > 0$ and $\mingrad > 0$ be defined by \cref{mingradassumption}.
+Define
+\begin{align*}
+\delta = \min\left\{\frac 1 3 \mingrad, \frac 1 4 \mingradepsilon\right\}
+\end{align*}
+
+Before going through cases, we make some observations.
+By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists $k_1 \naturals$ such that if $k \ge k_1$, then
+\begin{align}
+\label{hmoydihtp_eqn1}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \min\left \{\frac 1 2 \mingrad, \delta \right\}.
+\end{align}
+
+By \cref{i_thought_i_proved_this_already}, we know that there exists $\maxmodelgrad > 0$ with 
+$
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
+\le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad
+$.
+
+
+\paragraph{Case 1}
+If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
+\paragraph{Case 2}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1^{(k)}$.
+\begin{align*}
+\left\|\gmcik\right\| \maxmodelgrad
+\ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
+\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\end{align*}
+By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
+
+\paragraph{Case 3}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2^{(k)}$.
+\begin{align*}
+\left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
+\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
+\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\end{align*}
+
+
+\paragraph{Case 4}
+Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_3^{(k)}$.
+\color{red}
+We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
+\color{black}
+\begin{align*}
+\left\|\gmcil\right\| \maxmodelgrad
+\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right)
+\ge -c_i\left(\xl\right) > \frac 1 2 \mingradepsilon
+\end{align*}
+
+
+
+Throughout the cases, we have established that $\left\| \nabla c_i\left(\xl\right) \right\| \ge 3 \delta$.
+Thus, \cref{hmoydihtp_eqn1} implies 
+\begin{align*}
+\left\|\gmcik\right\| \ge 2 \delta.
+\end{align*}
+Then, by \cref{model_gradients_are_cauchy}, there is a $k_4 \in \naturals$ such that if $k, l \ge k_4$ and $(k,l) \in S$, we have
+\begin{align*}
+\left\|\gmcil\right\| \ge \delta.
+\end{align*}
+\end{proof}
+
+
+
+\begin{theorem}
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
+
+Suppose that the assumptions for
+\cref{i_thought_i_proved_this_already},
+\cref{the_lemma_to_end_all_lemmas},
+\cref{delta_to_zero},
+\cref{accuracy_is_satisfied},
+\cref{board_tied_to_sphere},
+and \cref{model_gradients_are_cauchy}
+are satisfied.
+
+Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
+For any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that
+\begin{itemize}
+\item if $k \ge k_0$, then
+\begin{align*}
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right)\right\| \le \epsilon
+\end{align*}
+\item if $k, l \ge k_0$ and $(k, l) \in S$, then 
+\begin{align*}
+\left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right)\right\| \le \epsilon.
+\end{align*}
+\end{itemize}
+\end{theorem}
+\begin{proof}
+
+For any $\mathcal U \subseteq [m]$, define
+\begin{align*}
+\feasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \gmcik^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
+\truefeasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
+\end{align*}
+Notice that if $\mathbb A_1^{(k)}$, $\mathbb A_2^{(k)}$, $\mathbb A_3^{(k)}$
+are defined by
+\cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3},
+the result immediately follows from showing that
+\begin{align*}
+\left\|P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right) - P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right)}\left(\xk - \gk\right)\right\| \le \epsilon \\
+\left\|P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right) - P_{\feasiblel\left(\mathbb A_2^{(k)}\right)}\left(\xk - \gk\right)\right\| \le \epsilon.
+\end{align*}
+Further, notice that by \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, for sufficiently large $k, l$,
+$\|\gk\| \le \maxmodelgrad$
+so that
+\begin{align*}
+P_{\feasiblek\left(\mathbb A_1^{(k)}\right)}\left(\xk - \gk\right)
+= P_{\feasiblek\left(\mathbb A_1^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_m^{(k)}, \\
+P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right)}\left(\xk - \gk\right)
+= P_{\truefeasiblek\left(\mathbb A_3^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_l^{(k)}, \\
+P_{\feasiblel\left(\mathbb A_2^{(k)}\right)}\left(\xk - \gk\right)
+= P_{\feasiblel\left(\mathbb A_2^{(k)}\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) := z_c^{(k)}.
+\end{align*}
+Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
+By assigning $\delta_r \gets \minangledelta$ and partitioning either
+\begin{align*}
+\begin{array}{cc}
+C  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
+C' \gets \left[\nabla c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
+A  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
+A' \gets \left[\nabla c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
+d  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
+d' \gets \left[-c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
+b  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
+b' \gets \left[-c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
+\end{array}
+\end{align*}
+or
+\begin{align*}
+\begin{array}{cc}
+C  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
+C' \gets \left[\nabla m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
+A  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
+A' \gets \left[\nabla m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
+d  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
+d' \gets \left[-m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
+b  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
+b' \gets \left[-m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}}
+\end{array}
+\end{align*}
+we know that we immediately have $\delta_r \|A_i\| \le b_i$ and $\delta_r \|A_i'\| \le b_i'$.
+If $\delta$ is defined by \cref{norm_of_active_constraints_bounded_below},
+then for sufficiently large $k, l$, \cref{norm_of_active_constraints_bounded_below} and \cref{i_thought_i_proved_this_already} provide
+$\delta_l \le \|A_i\| \le \delta_u$ and $\delta_l \le \|A'_i\| \le \delta_u$
+where
+$\delta_l \gets \delta$ and $\delta_u \gets \maxmodelgrad$.
+Also, sufficiently large $k, l$, \cref{yet_another_bound_on_a_u} provides $u \gets \activedirk$ and $\delta_{\alpha} \gets \minactivealpha$ such that
+$Cu \ge \delta_{\alpha} e$ and $C'u \ge \delta_{\alpha} e$.
+By \cref{delta_to_zero}, \cref{accuracy_is_satisfied}, and \cref{model_gradients_are_cauchy} we know that there exists $k_1 \in \naturals$ such that
+\begin{align*}
+\|\gmcik - \nabla c_i\left(\xk\right)\| \le ? \\
+\|\gmcik - \gmcil\| \le ? \\
+\dk \le ? \\
+\end{align*}
+so that
+\begin{align*}
+\begin{array}{cccc}
+\|A - A'\|_{\infty} \le \delta,	& \|b - b'\|_{\infty} \le \delta,		& \|C - C'\|_{\infty} \le \delta,	& \|d - d'\|_{\infty} \le \delta.
+\end{array}
+\end{align*}
+We can then assign $r \gets \maxmodelgrad$ and $p \gets \xk$
+so that \cref{the_lemma_to_end_all_lemmas} applies, for sufficiently large $k, l$, if
+\begin{align*}
+\begin{array}{ccccc}
+S  &= \bigg\{x \in \Rn \bigg|& A (x - p) \le b ,& C (x - p) \le d ,& \|x - p\| \le r \bigg\}, \\
+S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\}.
+\end{array}
+\end{align*}
+we have $\convexdistance(S, S') \le \epsilon$ where $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
+The result then follows from \cref{board_tied_to_sphere}.
+\end{proof}
+
 
 \subsubsection{The Hoffman Constant}
+\label{introducing_the_hoffman_constant}
 
 We rely on results found within \cite{pena2020new}.
 We use the following terminology to state their results.
@@ -4737,181 +5652,6 @@ so
 
 \subsubsection{Bound on Hoffman Constant}
 
-\begin{definition}
-\label{criteria_from_contradiction}
-A sequence $S \subseteq\naturals \times \naturals$ satisfies this definition if
-% is called a \emph{Cauchy pair-subsequence} if
-% Let $l, k \in S \subseteq \naturals$, where $S$ is such that the subsequence $\{\xk\}_{k \in S}$ is Cauchy.
-for any $\epsilon > 0$, there exists $k_0 \in \naturals$ such that if $(k, l) \in S$ with $k, l \ge k_0$, 
-then 
-$\left\|\xk - \xl \right\| \le \epsilon$.
-% There exists $x^{\star}$ such that $\lim_{k\to\infty} \xk = x^{\star}$.
-\end{definition}
-
-
-\begin{lemma}
-\label{model_gradients_are_cauchy}
-Suppose that the assumptions for
-\cref{lipschitz_gradients_assumption}, \cref{huffman_constant_is_bounded}, \cref{accuracy_is_satisfied}
-hold.
-
-If $S$ satisfies \cref{criteria_from_contradiction}, then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
-such that if $(k, l) \in S$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
-\end{lemma}
-\begin{proof}
-Let $\epsilon > 0$ be arbitrary.
-By \cref{delta_to_zero}, we can choose $N_1$ such that $\lipgrad \left\|\xk - \xl \right\| \le \frac 1 3 \epsilon$.
-Also, because every convergent sequence is Cauchy, we can choose an $N_2 \in \naturals$ such that $\kappa_g \dk^2 \le \frac 1 3 \epsilon $ whenever $k \ge N_2$.
-Choose $N_0 = \max\{N_1, N_2\}$, and let $d, k \ge N_2$.
-The triangle inequality states
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le 
-\left\|\nabla \mcik\left(\xk\right) - \nabla c_i\left(\xk\right) \right\|
-+ \left \| \nabla \mcil\left(\xl\right) - \nabla c_i\left(\xl\right) \right \| \\
-+ \left\|\nabla c_i\left(\xk\right) - \nabla c_i\left(\xl\right)\right\|.
-\end{align*}
-Using \cref{accuracy_is_satisfied} and \cref{lipschitz_gradients_assumption}, we see
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\|.
-\end{align*}
-By our choice of $N_0$, we see that
-\begin{align*}
-\left\|\nabla \mcik\left(\xk\right) - \nabla \mcil\left(\xl\right) \right\|
-\le \frac 1 3 \epsilon + \frac 1 3 \epsilon + \frac 1 3 \epsilon = \epsilon.
-\end{align*}
-\end{proof}
-% \left\|\mcik\left(\xk\right) - \mcik\left(\xl\right) \right\| + \left \| \mcik\left(\xl\right) - \mcil\left(\xl\right) \right\|
-
-
-
-
-
-Let $\minangledelta$ be defined by \cref{minangleassumption_alt} and $\zik$ by \cref{define_z},
-and define
-% such that if $\dk \le \minangledelta$ and
-\begin{align}
-\activeindicesk = \left\{i \in [m] \bigg| -c_i\left(\xk\right) \le \minangledelta \left\|\gmcik\right\| \right\} \label{define_activeindicesk} \\
-\huffindicesk = \left\{i \in [m] \bigg| \gmcik^T\gk > -c_i\left(\xk\right) \right\}. \label{define_huffindicesk}
-\end{align}
-
-The following observation follows directly from the definition:
-\begin{lemma}
-\label{doesntreallyneedtobesaid}
-Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
-If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
-\end{lemma}
-\begin{proof}
-If $c_i\left(\xk\right) = 0$, then $\zik = \xk \in B_{\infty}\left(\xk, \minangledelta \right)$.
-Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta} \ge 0$, so
-\begin{align*}
-\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik 
-\Longrightarrow \left\|\xk - \zik \right\|= -\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|} \le \minangledelta.
-\end{align*}
-\end{proof}
-
-\begin{lemma}
-\label{underbound}
-Suppose that \cref{mingradassumption} holds.
-
-Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
-There exists $\activegradmin > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
-for all $i \in \activeindicesk$,
-\begin{align*}
-\left\|\gmcik\right\| \ge \activegradmin.
-\end{align*}
-\end{lemma}
-\begin{proof}
-
-Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption}.
-Define
-\begin{align}
-\label{define_activegradmin}
-\activegradmin = \min\left\{\mingrad, \frac{\mingradepsilon}{\sqrt{n} \minangledelta}\right\}.
-\end{align}
-
-By \cref{mingradassumption}, if $-c_i\left(\xk\right) \le \mingradepsilon$, then $\nabla c_i\left(\xk\right) \ge \mingrad \ge \activegradmin$.
-We may now assume that $-c_i\left(\xk\right) \ge \mingradepsilon$.
-Because $i \in \activeindicesk$, using \cref{define_z}, we have
-\begin{align*}
-\sqrt{n} \minangledelta \ge \left\|\xk - \zik \right\|
-= \frac{-c_i\left(\xk\right)}{\left\|\gmcik\right\|}
-\ge \frac{\mingradepsilon}{\left\|\gmcik\right\|}
-\Longrightarrow
-\left\|\gmcik\right\| \ge \frac{\mingradepsilon}{\sqrt{n} \minangledelta} \ge \activegradmin
-\end{align*}
-\end{proof}
-
-
-
-\begin{lemma}
-\label{yet_another_bound_on_a_u}
-Suppose that the assumptions for \cref{underbound}, \cref{accuracy_is_satisfied} hold.
-Suppose that the assumptions for \cref{model_gradients_are_cauchy} hold.
-
-Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
-There exists $k_0 \in \naturals$, scalar $\minactivealpha > 0$, and unit vector $\activedirk \in \Rn$ such that if 
-$k \ge k_0$, then $\forall i \in \activeindicesk$
-\begin{align*}
-\gmcik^T \activedirk \ge \minactivealpha
-\quad \textrm{and} \quad
-\nabla c_i\left(\xk\right)^T \activedirk \ge \minactivealpha.
-\end{align*}
-
-Furthermore, if a set $S$ satisfies \cref{criteria_from_contradiction}, and $(k, l) \in S$, $l \ge k_0$, then $\forall i \in \activeindicesk$
-\begin{align*}
-\gmcil^T \activedirk \ge \minactivealpha.
-\end{align*}
-\end{lemma}
-\begin{proof}
-
-Let 
-$\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt};
-$\kappa_g$ be defined by \cref{accuracy_is_satisfied}; 
-and $\activegradmin$ be defined by \cref{define_activegradmin}.
-
-Define 
-\begin{align}
-\minactivealpha = \frac 1 2 \minanglealpha \activegradmin. \label{define_minactivealpha}
-\end{align}
-
-By \cref{delta_to_zero}, we know there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then
-\begin{align*}
-\dk \le \minangledelta \quad \textrm{and} \quad  \dk \le \sqrt{\frac {\minanglealpha \activegradmin} {2 \kappa_g}}.
-\end{align*}
-Thus, by \cref{doesntreallyneedtobesaid}, \cref{minangleassumption_alt}, and \cref{underbound} we know 
-there exists a unit vector $\minangledirk\in\Rn$ and $k_2 \in \naturals$ such that 
-for all $i \in \mathbb I^{(k)}$, $k \ge k_2$:
-\begin{align*}
--\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk \ge \minanglealpha \Longrightarrow \gmcik^T\left(-\minangledirk\right) \ge \minanglealpha \activegradmin
-\end{align*}
-Also, by \cref{accuracy_is_satisfied}, we have
-\begin{align*}
-\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \kappa_g \dk^2 \le \frac 1 2 \minanglealpha \activegradmin
-\end{align*}
-so that
-\begin{align*}
-\nabla c_i\left(\xk\right)^T \left(-\minangledirk\right) = 
-\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \nabla c_i\left(\xk\right) \right)^T\left(-\minangledirk\right) \\
-\ge \minanglealpha \activegradmin - \left\|\gmcik - \nabla c_i\left(\xk\right) \right\|\left\|\minangledirk\right\|
-\ge \minanglealpha \activegradmin - \frac 1 2 \minanglealpha \activegradmin = \minactivealpha.
-\end{align*}
-
-Furthermore, if $(k, l) \in S$, then by \cref{model_gradients_are_cauchy} there exists $k_3 \in \naturals$ such that if $(k, l) \in S$ and $k, l \ge k_3$
-\begin{align*}
-\left\|\gmcik - \gmcil\right\| \le \frac {\minanglealpha \activegradmin} {2}
-\end{align*}
-and once again,
-\begin{align*}
-\gmcil \left(-\minangledirk\right) = 
-\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \gmcil \right)^T\left(-\minangledirk\right)
-\ge \minactivealpha.
-\end{align*}
-\end{proof}
-
-
-
 \begin{lemma}
 \label{the_hoffman_constants_are_bounded}
 Let $H(A)$ be defined by \cref{hoffman_definition}.
@@ -4971,139 +5711,9 @@ H\left(A_{\activeindicesk}\right)
 Thus, we only need to let $\huff = \frac 1 {\minactivealpha}$, and $k_0 = k_1$.
 \end{proof}
 
-\begin{lemma}
-\label{huffman_constants_of_hoffman_indices_are_bounded}
-
-Let $H(A)$ be defined by \cref{hoffman_definition}.
-Let $\huffindicesk$ be defined by \cref{define_huffindicesk}.
-Suppose that 
-\cref{mingradassumption}
-and the assumptions for
-\cref{the_hoffman_constants_are_bounded}, \cref{accuracy_is_satisfied}, \cref{model_gradients_are_cauchy}, and \cref{delta_to_zero}
-hold.
-
-There exists $\huff > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$, then
-\begin{align*}
-H\left(\left[\modeljack\right]_{\huffindicesk}\right) \le \huff
-\quad \textrm{and} \quad
-H\left(\left[\truejack\right]_{\huffindicesk}\right) \le \huff.
-\end{align*}
-Furthermore, if $S$ satisfies \cref{criteria_from_contradiction}, $l \ge k_0$, $(k, l) \in S$, then
-\begin{align*}
-H\left(\left[\modeljacl\right]_{\huffindicesk}\right) \le \huff.
-\end{align*}
-\end{lemma}
-\begin{proof}
-Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption};
-$\activeindicesk$ be defined by \cref{define_activeindicesk};
-and $\gamma = \min\left\{\frac 1 2 \minangledelta \mingrad, \mingradepsilon\right\}$.
-
-
-
-By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, there exists $k_2 \in \naturals$ such that if $k \ge k_2$ then
-\begin{align}
-\label{hcohiab_mctc}
-\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \min\left\{\frac 1 2 \mingrad, \frac 1 2 \gamma\right\}.
-\end{align}
-Also, by \cref{model_gradients_are_cauchy}, there exists $k_3 \in \naturals$ such that if $k, l \ge k_3$, $(k, l) \in S$, then
-\begin{align}
-\label{hcohiab_mlctmk}
-\left\|\gmcik - \gmcil \right\| \le \min\left\{\frac 1 2 \gamma\right\}.
-\end{align}
-
-
-
-
-Suppose that $i \not \in \activeindicesk$.
-If $-c_i\left(\xk\right) > \mingradepsilon$, then because $i \in \huffindicesk$, 
-\begin{align*}
-\gmcik^T\gk \ge -c_i\left(\xk\right) > \mingradepsilon \ge \gamma.
-\end{align*}
-Otherwise, by \cref{mingradassumption} we have
-\begin{align*}
-\gmcik^T\gk \ge -c_i\left(\xk\right) > \minangledelta \left\|\gmcik\right\| \\
-\ge \minangledelta\left(\left\|c_i\left(\xk\right)\right\| - \frac 1 2 \mingrad \right)
-\ge  \frac 1 2 \minangledelta \mingrad \ge \gamma.
-\end{align*}
-In either case,
-\begin{align*}
-\gmcik^T\gk \ge \gamma.
-\end{align*}
-Combining with \cref{hcohiab_mctc} and \cref{hcohiab_mlctmk}:
-\begin{align*}
-\nabla c_i\left(\xk\right)^T\gk \ge \frac 1 2 \gamma
-\quad \textrm{and} \quad 
-\gmcil^T\gk \ge \frac 1 2 \gamma.
-\end{align*}
-
-
-Thus, for any $J \subset \huffindicesk \setminus \activeindicesk$, any $v \in \mathbb R^{J}_+$, and any $A \in \left\{
-\left[\modeljack\right]_{J},
-\left[\truejack\right]_{J},
-\left[\modeljacl\right]_{J}
-\right\}$ we have
-\begin{align*}
-\|A_J^Tv\| 
-= \|A_J^Tv\| \left\|\frac{\gk}{\left\|\gk\right\|} \right\| 
-\ge \frac{\|v^TA_J \gk\|}{\left\|\gk\right\|} \ge \frac {\gamma} {2\left\|\gk\right\|}  v^Te.
-\end{align*}
-
-For any $A \in \left\{
-\left[\modeljack\right]_{\huffindicesk},
-\left[\truejack\right]_{\huffindicesk},
-\left[\modeljacl\right]_{\huffindicesk}
-\right\}$,
-$J \in S_h\left(A\right)$, 
-$J = J_1 \cup J_2$, 
-$J_1 \subseteq \huffindicesk \setminus \activeindicesk$,
-$J_2 \subseteq S_h\left(A_{\activeindicesk}\right)$,
-$v^1 \in \mathbb R^{J_1}_+$, 
-$v^2 \in \mathbb R^{J_2}_+$, 
-$v = 
-\begin{pmatrix}
-v^1 \\ v^2
-\end{pmatrix}$, we have
-\begin{align*}
-\left\|A_J^T v\right\|^2 = 
-\left\|
-\begin{pmatrix}
-A_{J_1}^T & A_{J_2}^T
-\end{pmatrix}
-\begin{pmatrix}
-v^1 \\ v^2
-\end{pmatrix}
-\right\|^2 = 
-\left\| A_{J_1}^T v^1\right\|^2 + \left\| A_{J_2}^T v^2\right\|^2
-\ge 
-\left[\frac {\gamma} {2} \left(v^1\right)^Te\right]^2 + \left\| A_{J_2}^T v^2\right\|^2.
-\end{align*}
-
-Now, we know from \cref{the_hoffman_constants_are_bounded} that there exist $k_1 \in \naturals$ and $\huff'>0$ such that
-$k,l \ge k_0$ and $(k,l) \in S$, then
-\begin{align*}
-H\left(\left[\modeljack\right]_{\activeindicesk}\right) \le \huff', \\
-H\left(\left[\truejack\right]_{\activeindicesk}\right) \le \huff', \\
-H\left(\left[\modeljacl\right]_{\activeindicesk}\right) \le \huff'.
-\end{align*}
-In particular,
-\begin{align*}
-\huff' \ge H\left(A_{?}\right)
-= \max_{J \in \mathcal S_h(A_J)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
-\ge \left[\min_{v \in R^{J_2}_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
-\ge \left\|v^2\right\|\left[\left\|A_{J_2}^Tv^2\right\| \right]^{-1}
-\end{align*}
-
-
-
-
-
-\end{proof}
-
-
-
-
 
 \subsubsection{Bound on Arbitrary Polyhedra}
+\label{bounding_projection_onto_two_polyhedra}
 
 In this section, we show that the projection onto the linearization of the constraints converges to the projection onto the true constraints as $\dk \to 0$.
 We make constants found in a simplification of 
@@ -5493,7 +6103,7 @@ to see
 
 
 \subsubsection{Bound on Active Projection}
-
+\label{bounding_the_difference_in_the_active_projection}
 
 % \begin{criteria}
 % \label{xlxkdifftozero}
@@ -6015,979 +6625,6 @@ The result then follows by taking $k_0 = \max\left\{k_1, k_2\right\}$.
 
 \subsubsection{Bound on Full Projection}
 
-
-\begin{align*}
-\left\|z - p\right\| = r \\
-r \le \left\|z' - p\right\| = r + \epsilon \\
-(z - p)^T (z' - p) \ge \|z - p\|^2
-\end{align*}
-
-\begin{align*}
-\left\|z - z'\right\|
-\end{align*}
-
-
-
-Now that we have bounded the projection onto the set of constraints that are near the current iterate, we bound the distance between projections onto all constraints.
-
-% \minactivealpha
-% \activeindicesk
-% \activedirk
-% \activegradmin
-
-\newpage
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=300px]{images/complicated_lemma.png}
-    \caption{
-    	Here, we bound the distance between the projections of $y$ onto two different polyhedra.
-    	The polyhedra are defined by matrices that are arbitrarily close to eachother.
-    	The constraints of the polyhedra are split into two different sets, those that intersect a ball of radius $r$ about a point $p$,
-    	and those that do not.
-    	The left hand side matrix for the constraints that intersect this ball have a bounded hoffman constant.
-	}
-    \label{complicated_lemma}
-\end{figure}
-\newpage
-
-
-
-
-\begin{lemma}
-Suppose
-$A \in \reals^{m \times n}$;
-$b \in \Rm$;
-$a^{(0)}, a^{(1)}, p, y \in \Rn$;
-and $d, \delta, M > 0$
-are given such that
-$b > 0$,
-$A y \ge \delta$, 
-$\left(a^{(0)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$,
-$\left(a^{(1)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$.
-
-Define
-\begin{align*}
-z^{(0)}  = \argmin_{\substack{A(x - p)x \le b \\ \left(a^{(0)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|
-\quad \textrm{and} \quad
-z^{(1)} = \argmin_{\substack{A(x - p) \le b \\ \left(a^{(1)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|.
-\end{align*}
-Then, 
-\begin{align*}
-\left\|z - z'\right\| \le \left(\ldots\right) \|a - a'\|.
-\end{align*}
-\end{lemma}
-\begin{proof}
-If $y = 0$, then $z^{(1)} = z^{(2)} = p$ and $z^{(1)} - z^{(2)} = 0$.
-From here on, we assume $y \ne 0$.
-
-Note that for $i=0,1$:
-\begin{align*}
-\left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d 
-= \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) + \left(a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) - d \\
-\le \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right)
-\end{align*}
-so that
-\begin{align*}
-\left| \left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d \right| 
-\le \left\|a^{(i)} - a^{(1-i)}\right\| \left\|z^{(1-i)} - p\right\| 
-\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
-\end{align*}
-Also, for $i = 0,1$ and any $t \in [0, 1]$, we have
-\begin{align*}
-\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d 
-= (1 - t) \left[\left(a^{(i)}\right)^T\left(z^{(i)} - p\right) - d\right] + t \left[{\left(a^{(1-i)}\right)}^T\left(z^{(i)} - p\right) - d\right] \\
-\le t \left[\left(a^{(1-i)}\right)^T\left(z^{(i)} - p\right) - d\right] 
-\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
-\end{align*}
-Also,
-\begin{align*}
-\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty
-= (1 - t) \left(a^{(i)}\right)^Ty + t \left(a^{(1-i)}\right)^Ty  
-\ge \left(1-t\right) \delta\left\|y\right\| + t \delta\left\|y\right\|
-= \delta\left\|y \right\| \\
-\Longrightarrow \frac 1 {\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty} \le \frac {1} {\delta\left\|y\right\|}.
-\end{align*}
-% = (1 - t) a^Ty + t {a'}^Ty              - \left[(1 - t) a^Tp + t {a'}^Tp \right]\\
-
-
-% If ${a}^T z' \le d$ and ${a'}^T z \le d$, then once again, $z' - z = 0$.
-% Without loss of generality, suppose that ${a'}^T (z - p) > d$.
-% Now,
-% \begin{align*}
-% {a'}^T\left(z - p\right) - d 
-% = \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
-% \Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
-% \le \left\|a' - a\right\| \left\|z - p\right\| 
-% \le \left\|a' - a\right\| \left\|y\right\|
-% \end{align*}
-
-
-
-
-Thus, by letting $\lambda = \delta^{-1}\left\|a^{(0)} - a^{(1)}\right\|$, we see for $i=0,1$
-\begin{align}
-\lambda
-= \frac{\left\|a^{(0)} - a^{(1)}\right\|\left\|y\right\|}{\delta \|y\|}
-\ge \frac{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d}{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty}  \\
-\Longrightarrow \left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T \left[z^{(i)} - \lambda y - p\right] \le d \label{plhsop_1}.
-\end{align}
-We can use $(i,t)=(1, 0)$ and $(i,t)=(0, 1)$ in \cref{plhsop_1} to find for $i=0, 1$
-\begin{align*}
-\left(a^{(i)}\right)^T\left[\left(z^{(1-i)} - \lambda y\right) - p\right].
-\end{align*}
-By optimality of the projection, for $i=0,1$:
-\begin{align}
-\label{plhsop_eqn1}
-\|p + y - z^{(i)}\| \le \|p + y - \left(z^{(1-i)} - \lambda y\right)\| \le \|p + y - z^{(1-i)}\| +  \lambda\left\|y\right\|.
-\end{align}
-With a change of variables, $u^{(i)} = p + y - z^{(i)}$ for $i=0,1$ this becomes
-\begin{align*}
-\|u^{(i)}\| \le \|u^{(1-i)}\| + \lambda\left\|y\right\|.
-\end{align*}
-If $\left(a^{(i)}\right)^T z^{(1-i)} \le d$ for both $i=0$ and $1$, then $z^{(0)} = z^{(1)}$ so that $z^{(0)} - z^{(1)} = 0$.
-Otherwise, without loss of generality, let $\left(a^{(0)}\right)^T z^{(1)} > d$ so that
-convexity of the set $\left\{x \in \Rn | A(x - p) \le b, \left(a^{(0)}\right)^T (x-p) \le d\right\}$ implies
-\begin{align}
-\label{plhsop_eqn2}
-(p + y - z')^T z' \le (p + y - z')^Tz.
-\end{align}
-
-
-
-
-Also, by the optimality conditions,
-\begin{align*}
-y^T\left(z^{(i)} - p\right) \ge 0
-\end{align*}
-so that
-\begin{align*}
-\left(u^{(0)}\right)^Tu^{(1)} = \left[y - \left(z^{(0)} - p\right)\right]^T\left[y - \left(z^{(1)} - p\right)\right] \\
-= \left\|y\right\|^2 - y^T\left(z^{(0)} - p + z^{(1)} - p\right) + \left(z^{(0)} - p\right)^T\left(z^{(1)} - p\right) \\
-\ge \left\|y\right\|^2 + \left\|z^{(0)} - p\right\|^T\left\|z^{(1)} - p\right\|
-\end{align*}
-
-
-Suppose that both
-\begin{align*}
-\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(0)} \right \|^2 			\quad \textrm{and} \quad
-\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(1)} \right \|^2.
-\end{align*}
-\begin{align*}
-\left\|u^{(0)} - u^{(1)}\right\|^2 =  \left \| u^{(0)} \right \|^2 + \left \| u^{(1)} \right \|^2 - 2 \left(u^{(0)}\right)^Tu^{(1)}
-\end{align*}
-
-Also, $a' z \ge d$ and 
-
-
-% \begin{align*}
-% (p + y - z)^T z' \le (p + y - z)^Tz.
-% \end{align*}
-
-With the variables $u = p + y - z$, $u' = p + y - z'$, and $\gamma = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|$, we can summarize \cref{plhsop_eqn1} and \cref{plhsop_eqn2}
-with 
-\begin{align*}
-\|u'\| \le \|u\| + \gamma
-\Longrightarrow \|u'\|^2 \le \|u\|^2 + 2\|u\| \gamma + \gamma^2
-\end{align*}
-and
-\begin{align*}
-{u'}^Tz' \le {u'}^T z
-\Longrightarrow -{u'}^Tz' + {u'}^T\left(p + y\right) 
-\ge -{u'}^T z + {u'}^T \left(p + y\right) \\
-\Longrightarrow {u'}^T\left(p + y - z'\right) \ge {u'}^T \left(p + y - z\right)
-\Longrightarrow {u'}^Tu' \ge {u'}^T u
-\Longrightarrow -{u'}^Tu' \le -{u'}^T u.
-\end{align*}
-
-
-\begin{align*}
-u^Tu' \le \|u'\|^2 \\
-u^T\frac{u'}{\|u'\|} \le \|u'\| \\
-u^T\frac{u'}{\|u'\|} \le \|u\| + \gamma \\
-\frac{u^T}{\|u\|}\frac{u'}{\|u'\|} \le 1 + \gamma\|u\|^{-1}
-\end{align*}
-
-
-Finally, we can compute
-\begin{align*}
-\|z - z'\|^2 
-= \|u - u'\|^2 
-= \|u\|^2 - 2u^Tu' + \|u'\|^2
-= \|u\|^2 - 2u^Tu' + \|u'\|^2
-\end{align*}
-
-
-\begin{align*}
-\|z - z'\|^2 
-= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
-\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
-\le \delta^2
-\end{align*}
-
-
-\begin{align*}
-\\
-\\
-\\
-\\
-\\
-\end{align*}
-
-and
-\begin{align*}
-\left\|z - \lambda y - z\right\| = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
-\end{align*}
-Thus,
-\begin{align*}
-\left\|p + y - z'\right\| \le \left\|p + y - z - \lambda \left(y - p\right)\right\| \le \left\|p + y - z\right\| + \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
-\end{align*}
-
-\begin{comment}
-Some more logic here...
-\end{comment}
-
-\begin{align*}
-\left\|z - z'\right\| \le K \left\|a - a'\right\| \left\|y\right\|
-\end{align*}
-
-
-
-% Let 
-% \begin{align*}
-% r  = \left\|p + y - z\right\|
-% \quad \textrm{and} \quad
-% r' = \left\|p + y - z'\right\|
-% \end{align*}
-% and without loss of generality, suppose that $r \le r'$.
-
-
-% 
-% 
-% Let
-% \begin{align*}
-% \mathcal P(t) = \left\{
-% x \in \Rn \bigg | 
-% Ax \le b, 
-% \left[(1 - t) a + t a'\right]^T (x - p) \le d
-% \right\}
-% \end{align*}
-% so that
-% \begin{align*}
-% z = P_{\mathcal P(0)}(p + y) \\
-% z' = P_{\mathcal P(1)}(p + y) \\
-% \end{align*}
-% 
-% \begin{align*}
-% v(t) = P_{\mathcal P(t)}(p + y) \\
-% z(t) = \frac 1 2 \left\| z - v(t)\right\|^2 \\
-% \end{align*}
-% 
-% For any particular $t_0 \in [0, 1]$, there exists $\mu \in \mathbb R_{\ge 0}$ and $\lambda \in \mathbb R^m_{\ge 0}$ such that
-% \begin{align*}
-% p + y - v(t_0) = \mu \left[(1 - t_0) a + t_0 a'\right]^T + A^T\lambda
-% \end{align*}
-% 
-% \begin{align*}
-% z'(t) = 2 \nabla v(t)^T\left( z - v(t)\right) \\
-% \nabla v(t) = 
-% \end{align*}
-% 
-% Let $\mathcal I(t)$ be the set of active indices:
-% \begin{align*}
-% \mathcal I (t) = \left\{i \in [m] \bigg | A_i v(t) = b_i \right\}
-% \end{align*}
-% 
-% For some sufficiently small $h \in \reals$, we will have 
-% \begin{align*}
-% v(t+h) = 
-% \end{align*}
-% 
-\end{proof}
-
-
-
-
-
-
-
-
-
-\begin{lemma}
-Suppose that 
-\begin{align*}
-\|z \|^2 \le \|z'\|^2 \le \|z \|^2 + \delta^2 \\
-\|z\|^2 \le {z}^Tz'
-\end{align*}
-then
-\begin{align*}
-\|z - z'\| \le ?
-\end{align*}
-\end{lemma}
-\begin{proof}
-\begin{align*}
-\|z - z'\|^2 
-= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
-\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
-\le \delta^2 \\
-\Longrightarrow \|z - z'\| \le \delta
-\end{align*}
-\end{proof}
-
-
-
-
-
-
-
-
-
-% 
-% 
-% \begin{lemma}
-% Suppose
-% $A \in \reals^{m \times n}$;
-% $b \in \Rm$;
-% $a, a', p \in \Rn$;
-% and $d \in \reals$
-% are given such that
-% $Ap < b$ and $d > 0$.
-% Define
-% \begin{align*}
-% z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
-% \quad \textrm{and} \quad
-% z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
-% \end{align*}
-% \end{lemma}
-% \begin{proof}
-% If both $a^T\left(z' - p\right) \le d$ and ${a'}^T \left(z - p\right) \le d$, then we have $z - z' = 0$.
-% Without loss of generality, assume that 
-% $a^T\left(z' - p\right) > d \Longrightarrow a^T\left(z' - p\right) - d > 0$.
-% By the contraction property of projections
-% \begin{align*}
-% \left\|z' - p\right\|
-% \le \left\|P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p + y\right) - P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p\right)\right\|
-% \le \left\|p + y - p\right\|
-% = \|y\|.
-% \end{align*}
-% Combine this with ${a'}^T \left(z' - p\right) \le d \Longrightarrow {a'}^T \left(z' - p\right) - d \le 0$ to find
-% \begin{align*}
-% a^T\left(z' - p\right) - d 
-% = a^T\left(z' - p\right) - {a'}^T \left(z' - p\right) + {a'}^T \left(z' - p\right) - d 
-% \le \left(a - a'\right)^T \left(z' - p\right) \\
-% \le \left\|a - a'\right\| \left\|z' - p\right\|
-% \le \left\|a - a'\right\| \|y\|.
-% \end{align*}
-% We can compute
-% \begin{align*}
-% a^T\left(\frac{d + a^Tp}{a^Tz'}z' - p\right) = d + a^Tp - a^Tp = d
-% \end{align*}
-% and
-% \begin{align*}
-% \left\|z' - \frac{d + a^Tp}{a^Tz'}z'\right\| 
-% = \left\|z'\right\|\left|\frac{a^Tz'}{a^Tz'} - \frac{d + a^Tp}{a^Tz'}\right|
-% \le \left\|z'\right\| \frac{\left\|y\right\|}{a^Tz} \left\|a - a'\right\|
-% \end{align*}
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% Let $s = \frac{a^Tz' - d}{a^T\left(z' - p\right)}$.
-% Notice that
-% $s a^T\left(p - z'\right) = d - a^Tz' \Longrightarrow  a^T\left[z' + s \left(p - z'\right)  \right] = d $
-% and
-% $\left\|z' - s\left(p - z'\right) - z'\right\| 
-% = \frac{a^Tz' - d}{a^T\left(z' - p\right)}\left\| z' - p\right\| 
-% \le \frac{\left\|z' - p\right\|}{a^T\left(z' - p\right)} \|a - a'\| \|z'\|$
-% \end{proof}
-
-
-
-
-
-
-
-
-\begin{lemma}
-\label{master_projection_lemma}
-Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
-Let $H(A)$ be defined by \cref{hoffman_theorem}.
-
-Let $A, A'$ be $m \times n$ matrices;
-$p, y \in \Rn$; $b, b' \in \Rm$;
-and $M,\delta, r, \epsilon > 0$ be given 
-such that 
-with the definition
-\begin{align*}
-J = \left\{i \in [m] \; \bigg | \; b_i \le \|A_i\|r  \right\}
-\end{align*}
-all the following identities are satisfied:
-\begin{align*}
-Ap \le b,
-\quad 
-A'p \le b', \\
-\left\|A_i - A'_i \right\| \le \epsilon\quad \forall i \in [m],
-\quad 
-\left|b_i - b'_i \right| \le \epsilon \quad \forall i \in [m], \\
-\delta \le \left\|A_i\right\| \le M \quad \forall i \in [m],
-\quad 
-\delta \le \left\|A'_i\right\| \le M \quad \forall i \in [m], \\
-\left|b_i\right| \le M \quad \forall i \in [m],
-\quad 
-\left|b'_i\right| \le M \quad \forall i \in [m], \\
-H\left(A_J\right) \le M, \quad H\left(A'_J\right) \le M.
-\end{align*}
-Then
-\begin{align*}
-\|z - z'\| \le \left(\ldots\right) \epsilon
-\end{align*}
-where
-\begin{align*}
-z  = \argmin_{x \in \Rn | A (x - p) \le b }\left\|p + y - x\right\|
-\quad \textrm{and} \quad
-z' = \argmin_{x \in \Rn | A'(x - p) \le b'}\left\|p + y - x\right\|.
-\end{align*}
-\end{lemma}
-\begin{proof}
-
-
-
-Because $H\left(A_J\right) \le M$, we have that if 
-$\mathcal A = \left\{i \in J | A_i\left(y - p\right) \ge 0 \right\}$, and
-$\mathcal A' = \left\{i \in J | A'_i\left(y - p\right) \ge 0 \right\}$, then
-\begin{align*}
-M \ge H(A_J) 
-= \max_{\mathcal J \in \mathcal S_h(A_J)} \left[\min_{v \in R^{\mathcal J}_+, \|v\| = 1}  \left\|A_{\mathcal J}^Tv\right\| \right]^{-1}
-\ge \left[\min_{v \in R^{\mathcal A}_+, \|v\| = 1}  \left\|A_{\mathcal A}^Tv\right\| \right]^{-1}
-\ge \frac{\left\|y - p\right\|}{\left\|A_{\mathcal A}^T (y - p) \right\|} \\
-\Longrightarrow A_{\mathcal A}^T (y - p)  \ge \frac 1 M \left\|y - p\right\|.
-\end{align*}
-Also, if $i \in [m] \setminus J$ and $A_i(y - p) \ge b_i$, then
-\begin{align*}
-A_i \left(y - p\right) \ge b_i - A_ip + A_ip \ge \|A_i\| r + A_ip
-\end{align*}
-
-
-\begin{align*}
-\| y - p \| \le \|y\| + \|p\| \\
-\frac 1{\| y - p \|} \ge \frac 1 {\|y\| + \|p\|} \\
-\end{align*}
-
-
-
-\begin{align*}
-A_i \left(y - p\right) \ge A_i y + r \|A_i\| - b_i 
-\end{align*}
-
-
-
-\begin{align*}
-\|A_i\| r + A_ip \ge \|A_i\| \left\|y - p\right\| \\
-r + \frac{A_i}{\|A_i\|}p \ge  \left\|y - p\right\| \\
-\end{align*}
-
-% 
-% 
-% \begin{align*}
-% b_i - A_ip > \|A_i\| r 
-% \Longrightarrow - A_ip > \|A_i\|r - b_i
-% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
-% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
-% \end{align*}
-
-
-\begin{align*}
-b_i \le \|A_i\| r \\
-A_i \left(p + t \frac {A_i^T} {\|A_i\|} \right) = b_i \\
-A_i p + t \frac {A_i A_i^T} {\|A_i\|} = b_i \\
-A_i p + t \|A_i\| = b_i \\
-t \|A_i\| = b_i - A_i p\\
-t = \frac{b_i - A_i p}{\|A_i\|} \ge r \\
-b_i - A_i p \ge r\|A_i\| \\
-\end{align*}
-
-\end{proof}
-
-
-
-
-% % Define
-% % \begin{align*}
-% % K = M\|y - p\| + \max\left\{
-% % \max_{i \in [m]}\left\{A_ip - b_i\right\},
-% % \max_{i \in [m]}\left\{A'_ip - b'_i\right\},
-% % \right\}
-% % \end{align*}
-% 
-% Note that
-% \begin{align*}
-% |A_ip_J - b_i| \le M(M+1) \\
-% |A'_ip'_J - b'_i| \le M(M+1) \\
-% \bigg|
-% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
-% \bigg| \le |
-% A_ip_J - b_i - A'_ip'_J + b'_i
-% | \\
-% \le |A_ip_J - A_i p'_J| + |A_ip'_J - A'_ip'_J| + |b'_i - b_i|
-% \le M\epsilon + M\epsilon + \epsilon = \epsilon (2M + 1).
-% \end{align*}
-% 
-% 
-% 
-% Let 
-% \begin{align*}
-% v(t) = p_J + t(p - p_J)
-% \quad
-% v'(t) = p'_J + t(p - p'_J).
-% \end{align*}
-% Let $i \in [m] \setminus J$.
-% If $A_ip_J > b_i$, then 
-% \begin{align*}
-% b_i - A_ip \le \|A_i\| r 
-% \Longrightarrow - A_ip > \|A_i\|r - b_i
-% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
-% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
-% \end{align*}
-% If $s_i = \frac{A_ip_J - b_i}{A_i(p_J - p)}$, we have
-% \begin{align*}
-% t \ge s_i
-% \Longrightarrow tA_i(p - p_J) \le b_i - A_ip_J 
-% \Longrightarrow A_iv(t) \le b_i
-% \end{align*}
-% and
-% \begin{align*}
-% \left\|p_J - v\left(s_i\right)\right\|
-% = \frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{A_i(p_J - p)}
-% < 2\frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{\delta r}
-% \le \frac{2K}{\delta r}\left\|p - p_J\right\|.
-% \end{align*}
-% 
-% 
-% Likewise, if $A'_ip'_J > b'_i$, then 
-% \begin{align*}
-% - A_ip > \|A_i\|r - b_i
-% \Longrightarrow \epsilon\|p\| - A'_i p \ge \left(\|A'_i\| - \epsilon\right)r - b'_i - \epsilon \\
-% \Longrightarrow -A'_ip > \|A'_i\|r - b'_i - \epsilon\left(1 + \|p\| + r\right) \\
-% \Longrightarrow A'_i\left(p'_J - p\right) > \delta r - \frac 1 2 \delta r = \frac 1 2 \delta r > 0 \\
-% \Longrightarrow \frac{1}{A'_i\left(p'_J - p\right)} < \frac{2}{\delta r}.
-% \end{align*}
-% If $s'_i = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}$, we have
-% \begin{align*}
-% t \ge s'_i
-% \Longrightarrow tA'_i(p - p'_J) \le b'_i - A'_ip'_J 
-% \Longrightarrow A'_iv(t) \le b'_i
-% \end{align*}
-% and
-% \begin{align*}
-% \left\|p'_J - v'\left(s'_i\right)\right\|
-% = \frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{A'_i(p'_J - p)}
-% < 2\frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{\delta r}
-% \le \frac{2K}{\delta r}\left\|p - p'_J\right\|
-% \end{align*}
-% 
-% Consider any $i \in [m] \setminus J$,
-% and let
-% \begin{align*}
-% \gamma_1 = \frac{A_ip_J - b_i}{A_i(p_J - p)}
-% \quad \textrm{and} \quad
-% \gamma_2 = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}.
-% \end{align*}
-% 
-% 
-% \paragraph{Case 1}
-% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J > b'_i$.
-% 
-% Then
-% \begin{align*}
-% \gamma_1 - \gamma_2
-% \end{align*}
-% 
-% 
-% Notice that
-% \begin{align*}
-% \epsilon 
-% \ge \left\|p_J - p'_J\right\|
-% = \left\|p_J - p + \left(p - p'_J\right)\right\|
-% \ge \bigg|
-% \left\|p - p_J\right\| - \left\|p - p'_J\right\|
-% \bigg| \\
-% p_J - v(s_i) = p_J - p_J - s_i \left(p - p_J\right) \\
-% p'_J - v'(s_i) = p'_J - p'_J - s'_i \left(p - p_J\right)
-% \end{align*}
-% implies
-% \begin{align*}
-% \bigg||s_i| - |s'_i|\bigg| =
-% \bigg|
-% \left\|p_J - v\left(s_i\right)\right\| -
-% \left\|p'_J - v'\left(s'_i\right)\right\|
-% \bigg| \le \frac{2K}{\delta r} \epsilon
-% \end{align*}
-% so that with
-% we have
-% \begin{align*}
-% v\left(s_i\right) - v'\left(s'_i\right) 
-% = \left(p_J - p'_J\right) + \left(p'_J - v(s'_i)\right) - \left(p_J - v(s_i)\right) \\
-% = \left(p_J - p'_J\right) 
-% + \gamma_2 \left(p - p'_J\right)
-% - \gamma_1 \left(p - p _J\right) \\
-% = \left(p_J - p'_J\right) 
-% + \left(\gamma_2 - \gamma_1\right) p
-% + \gamma_1 p _J - \gamma_1 p'_J
-% + \gamma_1 p'_J - \gamma_2 p'_J \\
-% \Longrightarrow \left\|v\left(s_i\right) - v'\left(s'_i\right) \right\|
-% \le \left(1 + \gamma_1 \right)\left\|p_J - p'_J\right\| + \left(\|p\| + \|p'_J\|\right)\left|\gamma_1 - \gamma_2\right|
-% \end{align*}
-% 
-% \begin{align*}
-% \gamma_1 p_J - \gamma_2 p'_J
-% \end{align*}
-% 
-% 
-% % \begin{align*}
-% % v\left(s_i\right) - v'\left(s'_i\right) 
-% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
-% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
-% % = \left(p_J - p'_J\right) + \left(p_J - v(s_i)\right) - \left(p'_J - v(s'_i)\right)
-% % \end{align*}
-% 
-% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
-% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
-% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
-% 
-% 
-% 
-% 
-% 
-% % \begin{align*}
-% % \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-% % = \left\|p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right)\right\| \\
-% % = \left\|p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right)\right\| \\
-% % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_i p_J\right\| + \left\|s'_ip_J - s'_ip'_J\right\| \\
-% % \le \left(\|p_J\| + \left\|p\right\|\right)\left|s'_i - s_i\right| + \left(1 + |s'_i|\right)\left\|p_J - p'_J\right\|
-% % \end{align*}
-% 
-% 
-% 
-% 
-% 
-% 
-% 
-% \paragraph{Case 2}
-% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J \le b'_i$.
-% Then 
-% \begin{align*}
-% \bigg|
-% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
-% \bigg| 
-% \le \epsilon (2M + 1).
-% \end{align*}
-% \paragraph{Case 3}
-% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J > b'_i$.
-% 
-% \paragraph{Case 4}
-% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-% Then
-% \begin{align*}
-% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\| 
-% = \left\|p_J - p'_J\right\| \le \epsilon.
-% \end{align*}
-% 
-% Let $u = p_J$ if $A_ip_J \le b_i \forall i \in [m] \setminus J$ and $u' = p'_J$ if $A'_ip'_J \le b'_i \forall i \in [m] \setminus J$.
-% Otherwise, let
-% \begin{align*}
-% j = \argmax_{\substack{
-% i \in [m] \setminus J \\
-% A_ip_J > b_i
-% }}\{s_i\},
-% \quad u = v\left(s_j\right),
-% \quad 
-% j' = \argmax_{\substack{
-% i \in [m] \setminus J \\
-% A'_ip'_J > b'_i
-% }}\{s'_i\},
-% \quad \textrm{and} \quad
-% u' = v'\left(s'_{j'}\right).
-% \end{align*}
-% Then, both $Au \le b$ and
-% $A'u' \le b'$.
-% 
-% \paragraph{Case 1}
-% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
-% 
-% \paragraph{Case 2}
-% Suppose that 
-% 
-% 
-% 
-% Suppose that 
-% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
-% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
-% 
-% 
-% and
-% \begin{align*}
-% \epsilon\left(M + \left\|p'_J\right\| + 1\right)
-% \ge \left|A_ip_J - A_i p'_J\right| + \left|A_i p'_J- A'_ip'_J\right| + \left| b_i + b'_i\right| \\
-% \ge \left|A_ip_J - A'_ip'_J - b_i + b'_i\right|
-% \ge \bigg|
-% \left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|
-% \bigg|
-% \end{align*}
-% imply
-% \begin{align*}
-% \bigg|
-% \left(\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|\right)
-% \left(\left\|p - p_J\right\| - \left\|p - p'_J\right\|\right)
-% \bigg|
-% \end{align*}
-% 
-% 
-% 
-% 
-% If $|x - x'| \le \epsilon$ and $|y - y'| \le \delta$, then
-% \begin{align*}
-% x - \epsilon \le x' \le x + \epsilon \\
-% y - \delta \le y' \le y + \delta \\
-% \end{align*}
-% 
-% \begin{align*}
-% |xy - x'y'| 
-% = |xy - xy' + xy' - x'y'| 
-% = |x(y - y') + y'(x - x')| 
-% \le |x||y - y'| + |y'||x - x'|
-% \le \delta |x| + \epsilon|y'|
-% \end{align*}
-% 
-% 
-% 
-% \begin{align*}
-% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
-% \end{align*}
-% % \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_1y + t_1y - t_2 y\|
-% % \le \|x(1 - t_1) - y(1 - t_2) + t_1p - t_2p)\| 
-% 
-% 
-% 
-% \begin{align*}
-% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-% \le \|p_J - p'_J\| + \left\|\left(p_J - v\left(s_i\right)\right) - \left(p'_J - v'\left(s'_i\right)\right)\right\|
-% \end{align*}
-% 
-% 
-% 
-% \begin{align*}
-% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
-% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\| \\
-% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\|
-% \end{align*}
-% 
-% 
-% \begin{align*}
-% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
-% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
-% \end{align*}
-% 
-% 
-% 
-% \begin{align*}
-% \|t_1(p - x) - t_2(p - y)\| \le \|t_1(p - x) - t_1(p-y)\| + \|t_1(p-y) - t_2(p - y)\| \\
-% \le |t_1|\|p - x - p + y\| + \left|t_1 - t_2\right|\left\|p - y\right\|
-% \end{align*}
-
-% \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_ip'_J\right\| \\
-
-
-% 
-% \begin{align*}
-% \left\|x\right\| \frac{y}{\left\|y\right\|}
-% \end{align*}
-% 
-% \begin{align*}
-% \left\|y\right\| - \left\|x \right\| \le \left\|y - x\right\| \\
-% 1 - \frac{\left\|x \right\|}{\left\|y\right\|} \le \frac{\left\|y - x\right\|}{\left\|y\right\|} \\
-% \end{align*}
-% 
-% 
-% \begin{align*}
-% \left\|x -  \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
-% \le \left\|x - \frac{\left\|x\right\|}{\left\|y\right\|} x \right\|+ \left\|\frac{\left\|x\right\|}{\left\|y\right\|} x - \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
-% = \left\|x\right\|\left(1 - \frac{\left\|x\right\|}{\left\|y\right\|}\right) + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
-% \le \left\|x\right\|\frac{\left\|y - x\right\|}{\left\|y\right\|} + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
-% \le 2 \frac{\left\|x\right\|}{\left\|y\right\|} \left\|x - y\right\|
-% \end{align*}
-% 
-% \begin{align*}
-% \left|\left\|x\right\| - \left\|y\right\|\right|\le \left\|x - y \right\| \le a \left\|y\right\| \\
-% \left|\frac{\left\|x\right\|}{\left\|y\right\|} - 1\right|\le \left\|x - y \right\| \le a 
-% \end{align*}
-% 
-% \begin{align*}
-% \left\|s x - s' y\right\|
-% \le \left\|x - y\right\| + 
-% \end{align*}
-% 
-% \begin{align*}
-% \left\|s x - s' y\right\| 
-% \le \left\|s x -  s \frac{\left\|x\right\|}{\left\|y\right\|} y\right\| + \left\| s \frac{\left\|x\right\|}{\left\|y\right\|} y - s' y \right\|
-% \end{align*}
-% \begin{align*}
-% \left\|s x - s' y\right\| 
-% \le \left\|s x -  s y\right\| + \left\| s y - s' y \right\|
-% \le s \left\|x - y\right\| + \left|s - s'\right| \left\| y \right\|
-% \end{align*}
-% 
-% \begin{align*}
-% \left\|p_J - \right\| \frac{p'_J - p}{\left\|p'_J - p\right\|} 
-% \end{align*}
-
-
-
-
-
-
-\begin{lemma}
-Suppose
-$A \in \reals^{m \times n}$;
-$b \in \Rm$;
-$a, p, y \in \Rn$;
-and $d, d', \delta, M > 0$
-are given such that
-$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
-
-Define
-\begin{align*}
-z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
-\quad \textrm{and} \quad
-z' = \argmin_{\substack{Ax \le b \\ {a}^T \left(x - p\right) \le d'}} \|p + y - x\|.
-\end{align*}
-Then, 
-\begin{align*}
-\left\|z - z'\right\| \le \left(\ldots\right) |d - d'|.
-\end{align*}
-\end{lemma}
-\begin{proof}
-\begin{comment}
-More logic here...
-\end{comment}
-\end{proof}
-
-
-
-
-
-
-Define
-
-\begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek} \\
-\end{align}
-
-
-Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, for any fixed $k$, define
-\begin{align}
-\mathbb A_1 &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\} \label{tbbt_a1} \\
-\mathbb A_2 &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\} \label{tbbt_a2}\\
-\mathbb A_3 &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\} \label{tbbt_a3}
-\end{align}
-
-\begin{lemma}
-For some fixed $k$, suppose that $\mathbb A_1$, $\mathbb A_2$, $\mathbb A_3$
-are defined by
-\cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3}.
-Suppose that $S$ is a set that satisfies \cref{criteria_from_contradiction}.
-There exists a $\delta > 0$ and $k_0 \in \naturals$ such that,
-\begin{itemize}
-\item if $k \ge k_0$, then if $i \in \mathbb A_1 \cup \mathbb A_3$, we have
-\begin{align*}
-\left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
-\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
-\end{align*}
-\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \mathbb A_1 \cup \mathbb A_2$, we have
-\begin{align*}
-\left\|\gmcil\right\| \ge \delta.
-\end{align*}
-\end{itemize}
-\end{lemma}
-\begin{proof}
-
-Let $\mingradepsilon > 0$ and $\mingrad > 0$ be defined by \cref{mingradassumption}.
-Define
-\begin{align*}
-\delta = \min\left\{\frac 1 3 \mingrad, \frac 1 4 \mingradepsilon\right\}
-\end{align*}
-
-Before going through cases, we make some observations.
-By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists $k_1 \naturals$ such that if $k \ge k_1$, then
-\begin{align}
-\label{hmoydihtp_eqn1}
-\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \min\left \{\frac 1 2 \mingrad, \delta \right\}.
-\end{align}
-
-By \cref{i_thought_i_proved_this_already}, we know that there exists $\maxmodelgrad > 0$ with 
-$
-\left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
-\le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad
-$.
-
-
-\paragraph{Case 1}
-If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
-\paragraph{Case 2}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_1$.
-\begin{align*}
-\left\|\gmcik\right\| \maxmodelgrad
-\ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
-\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
-\end{align*}
-By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
-
-\paragraph{Case 3}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_2$.
-\begin{align*}
-\left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
-\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
-\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
-\end{align*}
-
-
-\paragraph{Case 4}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \mathbb A_3$.
-\color{red}
-We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
-\color{black}
-\begin{align*}
-\left\|\gmcil\right\| \maxmodelgrad
-\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right)
-\ge -c_i\left(\xl\right) > \frac 1 2 \mingradepsilon
-\end{align*}
-
-
-
-Throughout the cases, we have established that $\left\| \nabla c_i\left(\xl\right) \right\| \ge 3 \delta$.
-Thus, \cref{hmoydihtp_eqn1} implies 
-\begin{align*}
-\left\|\gmcik\right\| \ge 2 \delta.
-\end{align*}
-Then, by \cref{model_gradients_are_cauchy}, there is a $k_4 \in \naturals$ such that if $k, l \ge k_4$ and $(k,l) \in S$, we have
-\begin{align*}
-\left\|\gmcil\right\| \ge \delta.
-\end{align*}
-\end{proof}
-
 \begin{theorem}
 \label{bounded_projection_theorem}
 Suppose that the assumptions for
@@ -7008,7 +6645,7 @@ $\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\ri
 \end{theorem}
 \begin{proof}
 Let 
-$\minangledelta$ be define by \cref{minangleassumption};
+$\minangledelta$ be define by \cref{minangleassumption_alt};
 $\activeindicesk$ by \cref{define_activeindicesk};
 $M_c$ by \cref{maximum_constraint_value_lemma};
 $\maxgrad$ by \cref{bounded_gradients_lemma};
@@ -7041,7 +6678,7 @@ By \cref{delta_to_zero} there is a $k_2$ such that if $k, l \ge k_2$, then
 
 To show that
 $\left\| P_{\feasiblek}\left(\xk - \gk\right) - P_{\truefeasiblek}\left(\xk - \gk\right) \right\| \le \epsilon$
-we invoke \cref{master_projection_lemma} with 
+we invoke \cref{simplified_projections_lemma} with 
 \begin{align*}
 A			\gets \modeljack, \quad
 b			\gets c_i\left(\xk\right), \quad
@@ -7126,13 +6763,428 @@ P_{\feasiblel}\left(\xk - \gk\right) = z' \\
 \left\|P_{\feasiblek}\left(\xk - \gk\right) - P_{\feasiblel}\left(\xk - \gk\right) \right\| \le ?
 \end{align*}
 
-
-
-
 \end{proof}
 
 
+
+
+
+\subsubsection{Unused results}
+
+
+
+
+Let $\minangledelta$ be defined by \cref{minangleassumption_alt}; $\zik$ by \cref{define_z}; $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption};
+and define
+\begin{align}
+\huffthreshold = \min\left\{\frac 1 2 \mingradepsilon, \frac 1 4 \minangledelta \mingrad \right\}, \label{define_huffthreshold} \\
+\inactiveindicesk = \left\{i \in [m] \bigg| -c_i\left(\xk\right) > \maxmodelgrad \left\|\gmcik\right\| \right\} \label{define_inactiveindicesk} \\
+\huffindicesk = \left\{i \in [m] \bigg| \gmcik^T\gk > -c_i\left(\xk\right) - \huffthreshold\right\}. \label{define_huffindicesk}
+\end{align}
+
+
+
+
+\begin{lemma}
+\label{sayingwhatdoesntneedtobesaidagain}
+Let $?$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
+If $i \in ?$, then $\zik \not \in B_{2}\left(\xk, \maxmodelgrad \right)$.
+\end{lemma}
+\begin{proof}
+
+Suppose that $y \in B_{2}\left(\xk, \maxmodelgrad\right)$.
+Then 
+\begin{align*}
+c_i\left(\xk\right) + \gmcik^T\left(y - \xk\right) \le - \maxmodelgrad \left\|\gmcik\right\| + \maxmodelgrad \left\|\gmcik\right\| \le 0
+\end{align*}
+
+
+If $c_i\left(\xk\right) = 0$, then $\zik = \xk \in B_{\infty}\left(\xk, \minangledelta \right)$.
+Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta} \ge 0$, so
+\begin{align*}
+\zik = \xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik 
+\Longrightarrow \left\|\xk - \zik \right\|= -\frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|} \ge \maxmodelgrad.
+\end{align*}
+\end{proof}
+
+
+
+\begin{lemma}
+\label{huffman_constants_of_hoffman_indices_are_bounded}
+
+Let $H(A)$ be defined by \cref{hoffman_definition}.
+Let $\huffindicesk$ be defined by \cref{define_huffindicesk}.
+Suppose that 
+\cref{mingradassumption}
+and the assumptions for
+\cref{the_hoffman_constants_are_bounded}, \cref{i_thought_i_proved_this_already}, \cref{accuracy_is_satisfied}, \cref{model_gradients_are_cauchy}, and \cref{delta_to_zero}
+hold.
+
+There exists $\huff > 0$ and $k_0 \in \naturals$ such that if $k \ge k_0$ and $\left\|\gk\right\| \ne 0$, then
+\begin{align*}
+H\left(\left[\modeljack\right]_{\huffindicesk}\right) \le \huff
+\quad \textrm{and} \quad
+H\left(\left[\truejack\right]_{\huffindicesk}\right) \le \huff.
+\end{align*}
+Furthermore, if $S$ satisfies \cref{criteria_from_contradiction}, $l \ge k_0$, $(k, l) \in S$, then
+\begin{align*}
+H\left(\left[\modeljacl\right]_{\huffindicesk}\right) \le \huff.
+\end{align*}
+\end{lemma}
+\begin{proof}
+Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption};
+$\activeindicesk$ be defined by \cref{define_activeindicesk};
+$\maxmodelgrad$ by \cref{i_thought_i_proved_this_already};
+$\huffthreshold$ by \cref{define_huffthreshold};
+and 
+\begin{align*}
+\gamma = \frac{1}{\maxmodelgrad} \min\left\{\frac 1 4 \minangledelta \mingrad, \frac 1 2 \mingradepsilon\right\}.
+\end{align*}
+
+
+By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, there exists $k_2 \in \naturals$ such that if $k \ge k_2$ then
+\begin{align}
+\label{hcohiab_mctc}
+\left\|\gmcik - \nabla c_i\left(\xk\right) \right\| \le \min\left\{\frac 1 2 \mingrad, \frac 1 2 \gamma\right\}.
+\end{align}
+Also, by \cref{model_gradients_are_cauchy}, there exists $k_3 \in \naturals$ such that if $k, l \ge k_3$, $(k, l) \in S$, then
+\begin{align}
+\label{hcohiab_mlctmk}
+\left\|\gmcik - \gmcil \right\| \le \min\left\{\frac 1 2 \gamma\right\}.
+\end{align}
+
+By \cref{i_thought_i_proved_this_already},
+\begin{align*}
+\left\|\gk\right\| \le \maxmodelgrad \Longrightarrow 
+\frac 1 {\left\|\gk\right\|} \ge \frac 1 {\maxmodelgrad}.
+\end{align*}
+
+
+Suppose that $i \not \in \activeindicesk$.
+If $-c_i\left(\xk\right) > \mingradepsilon$, then because $i \in \huffindicesk$, 
+\begin{align*}
+\gmcik^T\gk \ge -c_i\left(\xk\right) - \huffthreshold > \frac 1 2 \mingradepsilon \\
+\Longrightarrow \gmcik^T\frac{\gk}{\left\|\gk\right\|} > \frac{\mingradepsilon}{2\maxmodelgrad} \ge \gamma
+\end{align*}
+Otherwise, because $i \not \in \activeindicesk$ and \cref{mingradassumption} we have
+\begin{align*}
+\gmcik^T\gk \ge -c_i\left(\xk\right) - \huffthreshold
+> \minangledelta \left\|\gmcik\right\| - \huffthreshold \\
+\ge \minangledelta\left(\left\|c_i\left(\xk\right)\right\| - \frac 1 2 \mingrad \right) - \huffthreshold
+\ge  \frac 1 2 \minangledelta \mingrad - \huffthreshold 
+\ge \frac 1 4 \minangledelta \mingrad \\
+\Longrightarrow 
+\gmcik^T\frac{\gk}{\left\|\gk\right\|} \ge \frac {\minangledelta \mingrad} {4\maxmodelgrad}  \ge \gamma
+\end{align*}
+In either case,
+\begin{align*}
+\gmcik^T\frac{\gk}{\left\|\gk\right\|} \ge \gamma.
+\end{align*}
+Combining with \cref{hcohiab_mctc} and \cref{hcohiab_mlctmk} we have
+\begin{align*}
+\left\|\nabla c_i\left(\xk\right)^T\frac{\gk}{\left\|\gk\right\|}\right\| \\
+= \left\|\gmcik^T\frac{\gk}{\left\|\gk\right\|} \right\|
++ \left\|\left[\nabla c_i\left(\xk\right) - \gmcik\right]^T\frac{\gk}{\left\|\gk\right\|}\right\| \\
+\le (1) \gamma - (1) \frac 1 2 \gamma = \frac 1 2 \gamma
+\end{align*}
+so that
+\begin{align*}
+\nabla c_i\left(\xk\right)^T\frac{\gk}{\left\|\gk\right\|} \ge \frac 1 2 \gamma
+\quad \textrm{and} \quad 
+\gmcil^T\frac{\gk}{\left\|\gk\right\|} \ge \frac 1 2 \gamma.
+\end{align*}
+
+Let $S_h$ be defined by \cref{define_huff_subsets}.
+From here on, we will let 
+$A \in \left\{
+\modeljack,
+\truejack,
+\modeljacl
+\right\}$ be arbitrary.
+Let $J$ be an arbitrary subset $J \in S_h\left(A_{\huffindicesk}\right)$,
+and let $J_1 = J \setminus \activeindicesk $, $J_2 = J \cap \activeindicesk$.
+Notice that $J_2 \in S_h\left(A_{\activeindicesk}\right) \Longleftrightarrow J_2 \in S_h\left(A_{\huffindicesk}\right)$.
+Let $v \in \mathbb R^{J}_+$ with $\|v\| = 1$ be arbitrary.
+% partitioned into $v = \begin{pmatrix} v^1 \\ v^2 \end{pmatrix}$
+% where $v^1 \in \mathbb R^{J_1}_+$ and $v^2 \in \mathbb R^{J_1}_+$.
+% Lastly, perform the corresponding partition for $A_{\huffindicesk}$ into $A = \begin{pmatrix} A^1 \\ A^2 \end{pmatrix}$.
+We see
+\begin{align*}
+\left\|A_{J_1}^Tv_{J_1}\right\| 
+= \left\|A_{J_1}^Tv_{J_1}\right\| \left\|\frac{\gk}{\left\|\gk\right\|} \right\| 
+\ge v_{J_1}^TA_{J_1}\frac{\gk}{\left\|\gk\right\|}
+\ge \frac {\gamma} {2}  v_{J_1}^Te.
+\end{align*}
+
+
+
+
+
+Now, we know from \cref{the_hoffman_constants_are_bounded} that there exist $k_1 \in \naturals$ and $\huff'>0$ such that
+$k,l \ge k_0$ and $(k,l) \in S$, then
+$H\left(A_{\activeindicesk}\right) \le \huff'$.
+That is,
+\begin{align*}
+\huff' \ge H\left(A_{\activeindicesk}\right)
+= \max_{J \in \mathcal S_h\left(A_{\activeindicesk}\right)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\ge \max_{J \in \mathcal S_h\left(A_{\activeindicesk \cap \huffindicesk}\right)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1} \\
+\ge \left[\min_{v \in R^{J_2}_+, \|v\| = 1}  \left\|A_{J_2}^Tv\right\| \right]^{-1}
+\ge \left\|v_{J_2}\right\|\left[\left\|A_{J_2}^Tv_{J_2}\right\| \right]^{-1}
+\end{align*}
+and $\left\|A_{J_2}^Tv_{J_2}\right\| \ge \frac{\left\|v_{J_2}\right\|}{\huff'}$.
+Combining these, we find
+\begin{align*}
+\left\|A_J^T v\right\|^2 = 
+\left\|
+\begin{pmatrix}
+A_{J_1}^T & A_{J_2}^T
+\end{pmatrix}
+\begin{pmatrix}
+v_{J_1} \\ v_{J_2}
+\end{pmatrix}
+\right\|^2 = 
+\left\| A_{J_1}^T v_{J_1}\right\|^2 + \left\| A_{J_2}^T v_{J_2}\right\|^2
+\ge 
+\frac {\gamma^2} {4} \left[v_{J_1}^Te\right]^2 + \frac{\left\|v_{J_2}\right\|^2}{\left(\huff'\right)^2}.
+\end{align*}
+We can simplify this further by noting that 
+$1 = \|v\|^2 = \|v_{J_1}\|^2 + \|v_{J_2}\|^2$ and
+$v \ge 0$ implies $v_{J_1}^Te = \|v_{J_1}\|_{1} \le \|v_{J_1}\|$.
+This becomes 
+\begin{align*}
+\left\|A_J^T v\right\|^2
+\ge \frac {\gamma^2} {4} \left\|v_{J_1}\right\|^2 + \frac{\left\|v_{J_2}\right\|^2}{\left(\huff'\right)^2}
+\ge \min\left\{\frac {\gamma^2} {4}, \left(\huff'\right)^{-2}\right\} \left[\left\|v_{J_1}\right\|^2 + \left\|v_{J_2}\right\|^2\right]
+= \min\left\{\frac {\gamma^2} {4}, \left(\huff'\right)^{-2}\right\} \left\|v\right\|^2.
+\end{align*}
+
+
+
+
+
+
+
+% Thus, for any $J \subset \huffindicesk \setminus \activeindicesk$, any $v \in \mathbb R^{J}_+$, and any $A \in \left\{
+% \left[\modeljack\right]_{J},
+% \left[\truejack\right]_{J},
+% \left[\modeljacl\right]_{J}
+% \right\}$ we have
+% \begin{align*}
+% \|A_J^Tv\| 
+% = \|A_J^Tv\| \left\|\frac{\gk}{\left\|\gk\right\|} \right\| 
+% \ge \frac{\|v^TA_J \gk\|}{\left\|\gk\right\|} \ge \frac {\gamma} {2\left\|\gk\right\|}  v^Te.
+% \end{align*}
+% 
+% For any $A \in \left\{
+% \left[\modeljack\right]_{\huffindicesk},
+% \left[\truejack\right]_{\huffindicesk},
+% \left[\modeljacl\right]_{\huffindicesk}
+% \right\}$,
+% $J \in S_h\left(A\right)$, 
+% $J = J_1 \cup J_2$, 
+% $J_1 \subseteq \huffindicesk \setminus \activeindicesk$,
+% $J_2 \subseteq S_h\left(A_{\activeindicesk}\right)$,
+% $v^1 \in \mathbb R^{J_1}_+$, 
+% $v^2 \in \mathbb R^{J_2}_+$, 
+% $v = 
+% \begin{pmatrix}
+% v^1 \\ v^2
+% \end{pmatrix}$, we have
+
+
+
+\begin{align*}
+\left[\frac {\gamma} {2} \left(v^1\right)^Te\right]^2 + \min \left\| A_{J_2}^T v^2\right\|^2.
+\end{align*}
+
+Now, we know from \cref{the_hoffman_constants_are_bounded} that there exist $k_1 \in \naturals$ and $\huff'>0$ such that
+$k,l \ge k_0$ and $(k,l) \in S$, then
+\begin{align*}
+H\left(\left[\modeljack\right]_{\activeindicesk}\right) \le \huff', \\
+H\left(\left[\truejack\right]_{\activeindicesk}\right) \le \huff', \\
+H\left(\left[\modeljacl\right]_{\activeindicesk}\right) \le \huff'.
+\end{align*}
+
+
+For each $A \in \left\{
+\left[\modeljack\right]_{\activeindicesk},
+\left[\truejack\right]_{\activeindicesk},
+\left[\modeljacl\right]_{\activeindicesk}
+\right\}$
+\begin{align*}
+\huff' \ge H\left(A\right)
+= \max_{J \in \mathcal S_h(A_J)} \left[\min_{v \in R^J_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\ge \max_{J \in \mathcal S_h\left(A_{\huffindicesk}\right)} \left[\min_{v \in R^{J_2}_+, \|v\| = 1}  \left\|A_J^Tv\right\| \right]^{-1}
+\ge \left\|v^2\right\|\left[\left\|A_{J_2}^Tv^2\right\| \right]^{-1}
+\end{align*}
+\end{proof}
+
+
+\color{red}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=300px]{images/second_lemma.png}
+	\caption{
+		The constraints $A(x-p) \le b$ are perturbed to $A'(x-p) \le b'$ and do not intersect the sphere of radius $\delta_2$ centered at $p$.
+		Then the projections of $p+y$ onto these polyhedra intersected another polyhedra $C(x-p) \le d$ are bounded from eachother.
+	}
+	\label{second_lemma}
+\end{figure}
+The following lemma is illustrated in \cref{second_lemma}.
+
+
+\begin{lemma}
+\label{simplified_projections_lemma}
+Let
+$A, A' \in \mathbb \mathbb R^{m \times n}$;
+$b, b' \in \mathbb \mathbb R^{m}_{\ge 0}$;
+$C \in \mathbb \mathbb R^{m' \times n}$;
+$d \in \mathbb \mathbb R^{m'}_{\ge 0}$;
+$p, y \in \Rn$;
+$\delta_1, \delta_2, \gamma, \epsilon > 0$;
+be given such that
+\begin{align*}
+\begin{array}{cccccc}
+\|A - A'\| \le \epsilon, &
+\|b - b'\| \le \epsilon, \\
+\delta_1 \le \delta_2 \|A_i\| \le b_i, &
+\delta_1 \le \delta_2 \|A'_i\| \le b'_i, \\
+\gamma = \frac{2}{\delta_1}\left(1 + \|y\|\right), &
+\epsilon \le \min\left\{\gamma^{-1}\right\}.
+\end{array}
+\end{align*}
+Then
+\begin{align*}
+\|z - z'\| \le \left(2 + \|y\|\right) \gamma \epsilon + 2 \sqrt{2\|y\|\gamma \epsilon}
+\end{align*}
+where
+\begin{align*}
+z  = \argmin_{\substack{C(x - p) \le d \\ A (x - p) \le b }} \|p + y - x\| \quad \textrm{and} \quad
+z' = \argmin_{\substack{C(x - p) \le d \\ A'(x - p) \le b'}} \|p + y - x\|.
+\end{align*}
+\end{lemma}
+% y - z  =       A        ^T\mu  + C^T\lambda  \\
+% y - z' = \left(A'\right)^T\mu' + C^T\lambda' \\
+
+\begin{proof}
+% Let $\zeta : \mathbb R^{m \times n} \to \mathbb R^m_+$ be defined by
+% \begin{align*}
+% \zeta (A) = \begin{pmatrix}
+% \|A_1\| \\ \|A_2\| \\ \vdots \\ \|A_m\|
+% \end{pmatrix}.
+% \end{align*}
+Define
+\begin{align*}
+t' = \max_{\substack{i \in [m] \\ A_i'(z - p) > b_i'}} \frac{A'_i (z - p) - b'_i}{A'_i (z - p)}
+\quad \textrm{and} \quad
+t = \max_{\substack{i \in [m] \\ A_i(z' - p) > b_i}} \frac{A_i (z' - p) - b_i}{A_i (z' - p)}.
+\end{align*}
+First, we bound $t$ and $t'$.
+Let $i$ be such that $A_i'(z - p) > b_i'$.
+Observe
+\begin{align*}
+A_i'(z - p) - b_i' 
+= A_i(z - p) - b_i + (A_i' - A_i)(z - p) + (b_i' - b_i)
+\le 0 + \epsilon \|z - p\| + \epsilon = \epsilon (1 + \|z - p\|)
+\end{align*}
+so that
+\begin{align*}
+\left|A_i'(z - p)\right| \ge |b_i'| - \left| A_i'(z - p) - b_i'\right| \ge \delta_l\|A_i'\| - \epsilon (1 + \|z - p\|) \ge \delta_l \delta_m - \epsilon \ge \frac 1 2 \delta_l \delta_m\\
+\Longrightarrow \frac 1 {\left|A_i'(z - p)\right|} \le \frac 2 {\delta_l \delta_m}.
+\end{align*}
+Multiplying these, we find
+\begin{align*}
+\frac{A'_i (z - p) - b'_i}{A'_i (z - p)} \le \frac{2}{\delta_l \delta_m}\epsilon \left[1 + \|z - p\|\right] \le \gamma \epsilon.
+\end{align*}
+By symmetry, both
+$
+t \le \gamma \epsilon \le 1
+$ and $
+t' \le \gamma \epsilon \le 1.
+$
+
+
+% \color{red}
+% \begin{align*}
+% x \le \frac a 2
+% \Longrightarrow a \le 2a - 2x
+% \Longrightarrow ax \le 2x(a-x)
+% \Longrightarrow \frac x {a - x} \le \frac 2 a x
+% \end{align*}
+% \color{black}
+
+Also, note that for each $i \in [m]$, if $A_i'(z - p) > b_i'$,
+\begin{align*}
+t' \ge \frac{A'_i (z - p) - b'_i}{A'_i (z - p)}
+\Longrightarrow (1-t') A'_i (z - p) \le b'_i
+\end{align*}
+%  t A'_i (z - p) \ge A'_i (z - p) - b'_i \\
+Because $t' \le 1$, this is also satisfied when $A_i'(z - p) \le b_i'$, 
+so that 
+\begin{align*}
+(1-t') A' (z - p) \le b'
+\Longrightarrow
+A' \bigg[\big((1-t') z + t'p\big) - p\bigg] \le b'
+\end{align*}
+% A' \left[(1-t) z - (1 - t)p\right] \le b' \\
+with
+\begin{align*}
+\|(1-t') z + t'p - z\| = t' \|p - z\| \le \gamma \epsilon \|y\|.
+\end{align*}
+
+Notice that $C (p-p) \le d$, $A (p-p) \le b$, and $A' (p-p) \le b'$.
+Thus, by convexity of linear constraints, and with the definitions
+$v = (1-t') z + t'p - p$ and $v' = (1-t) z' + tp - p$
+we have established
+\begin{align*}
+\begin{array}{cccc}
+A'v  \le b', & Av  \le b, & Cv  \le d, & \|z  - p - v \| \le \gamma \epsilon \|y\|, \\
+A'v' \le b', & Av' \le b, & Cv' \le d, & \|z' - p - v'\| \le \gamma \epsilon \|y\|.
+\end{array}
+\end{align*}
+Define $w$ such that
+\begin{align*}
+\begin{array}{ccc}
+p + w = & \argmin_{x \in \Rn}	& \|p + y - x\|			\\
+		& \textrm{s.t.}			& C(x - p) \le d		\\
+		& 						& A (x - p) \le b		\\
+		& 						& A' (x - p) \le b'		\\
+\end{array}.
+\end{align*}
+We can immediately see by optimality of $w$ that 
+$\|y - w\| = \|p + y - p - w\| \le \|p + y - p\| = \|y\|$.
+% $\|y - w\| \le \|y - v\|$, 
+% and $\|y - w\| \le \|y - v'\|$.
+By the definition of $z$ and $z'$ as minimizers over a superset of $w$'s feasible region, we see
+$\|y - (z - p)\| = \|p + y - z\| \le \|p + y - p - w\| = \|y - w\|$
+and 
+$\|y - (z' - p)\| \le \|y - w\|$.
+Also by optimality of $w$, we see that 
+$(w - y)^T x \ge (w - y)^T(w - y)$ for all $x \in \Rn$ with $C(x - p) \le d$, $A(x - p) \le b$, and $A'(x - p) \le b'$.
+In particular, $(w - y)^T v \ge (w - y)^T(w - y)$ and $(w - y)^T v' \ge (w - y)^T(w - y)$.
+With the assignment
+\begin{align*}
+a \gets w - y,			\quad
+x \gets	z  - p,			\quad
+y \gets	z' - p,			\quad
+u \gets v - p,			\quad
+v \gets v' - p,			\quad
+\epsilon \gets \gamma \epsilon
+\end{align*}
+we satisfy the assumptions for
+\cref{properties_of_a_circle}
+and conclude
+\begin{align*}
+\|z - z'\| = \|z - p - z' + p\|
+\le \left(2 + \|w - y\|\right) \gamma \epsilon + 2 \sqrt{2\|w - y\|\gamma \epsilon}
+\le \left(2 + \|y\|\right) \gamma \epsilon + 2 \sqrt{2\|y\|\gamma \epsilon}.
+\end{align*}
+\end{proof}
+
+\color{black}
+
 \subsection{Convergence}
+\label{convergence_section}
 
 
 \subsubsection{Criticallity Goes to Zero, Part 2}
@@ -8952,6 +9004,881 @@ H(A)
 % \end{proof}
 % \color{black}
 \section{No longer used}
+
+
+\subsection{From whole projection}
+
+
+\begin{align*}
+\left\|z - p\right\| = r \\
+r \le \left\|z' - p\right\| = r + \epsilon \\
+(z - p)^T (z' - p) \ge \|z - p\|^2
+\end{align*}
+
+\begin{align*}
+\left\|z - z'\right\|
+\end{align*}
+
+
+
+Now that we have bounded the projection onto the set of constraints that are near the current iterate, we bound the distance between projections onto all constraints.
+
+% \minactivealpha
+% \activeindicesk
+% \activedirk
+% \activegradmin
+
+\newpage
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/complicated_lemma.png}
+    \caption{
+    	Here, we bound the distance between the projections of $y$ onto two different polyhedra.
+    	The polyhedra are defined by matrices that are arbitrarily close to eachother.
+    	The constraints of the polyhedra are split into two different sets, those that intersect a ball of radius $r$ about a point $p$,
+    	and those that do not.
+    	The left hand side matrix for the constraints that intersect this ball have a bounded hoffman constant.
+	}
+    \label{complicated_lemma}
+\end{figure}
+\newpage
+
+
+
+
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a^{(0)}, a^{(1)}, p, y \in \Rn$;
+and $d, \delta, M > 0$
+are given such that
+$b > 0$,
+$A y \ge \delta$, 
+$\left(a^{(0)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$,
+$\left(a^{(1)}\right)^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z^{(0)}  = \argmin_{\substack{A(x - p)x \le b \\ \left(a^{(0)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z^{(1)} = \argmin_{\substack{A(x - p) \le b \\ \left(a^{(1)}\right)^T \left(x - p\right) \le d}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) \|a - a'\|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+If $y = 0$, then $z^{(1)} = z^{(2)} = p$ and $z^{(1)} - z^{(2)} = 0$.
+From here on, we assume $y \ne 0$.
+
+Note that for $i=0,1$:
+\begin{align*}
+\left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d 
+= \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) + \left(a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right) - d \\
+\le \left(a^{(i)} - a^{(1-i)}\right)^T\left(z^{(1-i)} - p\right)
+\end{align*}
+so that
+\begin{align*}
+\left| \left(a^{(i)}\right)^T \left(z^{(1-i)} - p\right) - d \right| 
+\le \left\|a^{(i)} - a^{(1-i)}\right\| \left\|z^{(1-i)} - p\right\| 
+\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
+\end{align*}
+Also, for $i = 0,1$ and any $t \in [0, 1]$, we have
+\begin{align*}
+\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d 
+= (1 - t) \left[\left(a^{(i)}\right)^T\left(z^{(i)} - p\right) - d\right] + t \left[{\left(a^{(1-i)}\right)}^T\left(z^{(i)} - p\right) - d\right] \\
+\le t \left[\left(a^{(1-i)}\right)^T\left(z^{(i)} - p\right) - d\right] 
+\le \left\|a^{(0)} - a^{(1)}\right\| \left\|y\right\|.
+\end{align*}
+Also,
+\begin{align*}
+\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty
+= (1 - t) \left(a^{(i)}\right)^Ty + t \left(a^{(1-i)}\right)^Ty  
+\ge \left(1-t\right) \delta\left\|y\right\| + t \delta\left\|y\right\|
+= \delta\left\|y \right\| \\
+\Longrightarrow \frac 1 {\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty} \le \frac {1} {\delta\left\|y\right\|}.
+\end{align*}
+% = (1 - t) a^Ty + t {a'}^Ty              - \left[(1 - t) a^Tp + t {a'}^Tp \right]\\
+
+
+% If ${a}^T z' \le d$ and ${a'}^T z \le d$, then once again, $z' - z = 0$.
+% Without loss of generality, suppose that ${a'}^T (z - p) > d$.
+% Now,
+% \begin{align*}
+% {a'}^T\left(z - p\right) - d 
+% = \left({a'} - a\right)^T\left(z - p\right) + a^T\left(z - p\right) - d \le \left({a'} - a\right)^T\left(z - p\right) \\
+% \Longrightarrow \left|{a'}^T\left(z - p\right) - d\right| 
+% \le \left\|a' - a\right\| \left\|z - p\right\| 
+% \le \left\|a' - a\right\| \left\|y\right\|
+% \end{align*}
+
+
+
+
+Thus, by letting $\lambda = \delta^{-1}\left\|a^{(0)} - a^{(1)}\right\|$, we see for $i=0,1$
+\begin{align}
+\lambda
+= \frac{\left\|a^{(0)} - a^{(1)}\right\|\left\|y\right\|}{\delta \|y\|}
+\ge \frac{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T\left(z^{(i)} - p\right) - d}{\left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^Ty}  \\
+\Longrightarrow \left[(1 - t) a^{(i)} + t a^{(1-i)}\right]^T \left[z^{(i)} - \lambda y - p\right] \le d \label{plhsop_1}.
+\end{align}
+We can use $(i,t)=(1, 0)$ and $(i,t)=(0, 1)$ in \cref{plhsop_1} to find for $i=0, 1$
+\begin{align*}
+\left(a^{(i)}\right)^T\left[\left(z^{(1-i)} - \lambda y\right) - p\right].
+\end{align*}
+By optimality of the projection, for $i=0,1$:
+\begin{align}
+\label{plhsop_eqn1}
+\|p + y - z^{(i)}\| \le \|p + y - \left(z^{(1-i)} - \lambda y\right)\| \le \|p + y - z^{(1-i)}\| +  \lambda\left\|y\right\|.
+\end{align}
+With a change of variables, $u^{(i)} = p + y - z^{(i)}$ for $i=0,1$ this becomes
+\begin{align*}
+\|u^{(i)}\| \le \|u^{(1-i)}\| + \lambda\left\|y\right\|.
+\end{align*}
+If $\left(a^{(i)}\right)^T z^{(1-i)} \le d$ for both $i=0$ and $1$, then $z^{(0)} = z^{(1)}$ so that $z^{(0)} - z^{(1)} = 0$.
+Otherwise, without loss of generality, let $\left(a^{(0)}\right)^T z^{(1)} > d$ so that
+convexity of the set $\left\{x \in \Rn | A(x - p) \le b, \left(a^{(0)}\right)^T (x-p) \le d\right\}$ implies
+\begin{align}
+\label{plhsop_eqn2}
+(p + y - z')^T z' \le (p + y - z')^Tz.
+\end{align}
+
+
+
+
+Also, by the optimality conditions,
+\begin{align*}
+y^T\left(z^{(i)} - p\right) \ge 0
+\end{align*}
+so that
+\begin{align*}
+\left(u^{(0)}\right)^Tu^{(1)} = \left[y - \left(z^{(0)} - p\right)\right]^T\left[y - \left(z^{(1)} - p\right)\right] \\
+= \left\|y\right\|^2 - y^T\left(z^{(0)} - p + z^{(1)} - p\right) + \left(z^{(0)} - p\right)^T\left(z^{(1)} - p\right) \\
+\ge \left\|y\right\|^2 + \left\|z^{(0)} - p\right\|^T\left\|z^{(1)} - p\right\|
+\end{align*}
+
+
+Suppose that both
+\begin{align*}
+\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(0)} \right \|^2 			\quad \textrm{and} \quad
+\left(u^{(0)}\right)^Tu^{(1)} \le \left \| u^{(1)} \right \|^2.
+\end{align*}
+\begin{align*}
+\left\|u^{(0)} - u^{(1)}\right\|^2 =  \left \| u^{(0)} \right \|^2 + \left \| u^{(1)} \right \|^2 - 2 \left(u^{(0)}\right)^Tu^{(1)}
+\end{align*}
+
+Also, $a' z \ge d$ and 
+
+
+% \begin{align*}
+% (p + y - z)^T z' \le (p + y - z)^Tz.
+% \end{align*}
+
+With the variables $u = p + y - z$, $u' = p + y - z'$, and $\gamma = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|$, we can summarize \cref{plhsop_eqn1} and \cref{plhsop_eqn2}
+with 
+\begin{align*}
+\|u'\| \le \|u\| + \gamma
+\Longrightarrow \|u'\|^2 \le \|u\|^2 + 2\|u\| \gamma + \gamma^2
+\end{align*}
+and
+\begin{align*}
+{u'}^Tz' \le {u'}^T z
+\Longrightarrow -{u'}^Tz' + {u'}^T\left(p + y\right) 
+\ge -{u'}^T z + {u'}^T \left(p + y\right) \\
+\Longrightarrow {u'}^T\left(p + y - z'\right) \ge {u'}^T \left(p + y - z\right)
+\Longrightarrow {u'}^Tu' \ge {u'}^T u
+\Longrightarrow -{u'}^Tu' \le -{u'}^T u.
+\end{align*}
+
+
+\begin{align*}
+u^Tu' \le \|u'\|^2 \\
+u^T\frac{u'}{\|u'\|} \le \|u'\| \\
+u^T\frac{u'}{\|u'\|} \le \|u\| + \gamma \\
+\frac{u^T}{\|u\|}\frac{u'}{\|u'\|} \le 1 + \gamma\|u\|^{-1}
+\end{align*}
+
+
+Finally, we can compute
+\begin{align*}
+\|z - z'\|^2 
+= \|u - u'\|^2 
+= \|u\|^2 - 2u^Tu' + \|u'\|^2
+= \|u\|^2 - 2u^Tu' + \|u'\|^2
+\end{align*}
+
+
+\begin{align*}
+\|z - z'\|^2 
+= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
+\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
+\le \delta^2
+\end{align*}
+
+
+\begin{align*}
+\\
+\\
+\\
+\\
+\\
+\end{align*}
+
+and
+\begin{align*}
+\left\|z - \lambda y - z\right\| = \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+Thus,
+\begin{align*}
+\left\|p + y - z'\right\| \le \left\|p + y - z - \lambda \left(y - p\right)\right\| \le \left\|p + y - z\right\| + \delta^{-1}\left\|a - a'\right\|\left\|y\right\|.
+\end{align*}
+
+\begin{comment}
+Some more logic here...
+\end{comment}
+
+\begin{align*}
+\left\|z - z'\right\| \le K \left\|a - a'\right\| \left\|y\right\|
+\end{align*}
+
+
+
+% Let 
+% \begin{align*}
+% r  = \left\|p + y - z\right\|
+% \quad \textrm{and} \quad
+% r' = \left\|p + y - z'\right\|
+% \end{align*}
+% and without loss of generality, suppose that $r \le r'$.
+
+
+% 
+% 
+% Let
+% \begin{align*}
+% \mathcal P(t) = \left\{
+% x \in \Rn \bigg | 
+% Ax \le b, 
+% \left[(1 - t) a + t a'\right]^T (x - p) \le d
+% \right\}
+% \end{align*}
+% so that
+% \begin{align*}
+% z = P_{\mathcal P(0)}(p + y) \\
+% z' = P_{\mathcal P(1)}(p + y) \\
+% \end{align*}
+% 
+% \begin{align*}
+% v(t) = P_{\mathcal P(t)}(p + y) \\
+% z(t) = \frac 1 2 \left\| z - v(t)\right\|^2 \\
+% \end{align*}
+% 
+% For any particular $t_0 \in [0, 1]$, there exists $\mu \in \mathbb R_{\ge 0}$ and $\lambda \in \mathbb R^m_{\ge 0}$ such that
+% \begin{align*}
+% p + y - v(t_0) = \mu \left[(1 - t_0) a + t_0 a'\right]^T + A^T\lambda
+% \end{align*}
+% 
+% \begin{align*}
+% z'(t) = 2 \nabla v(t)^T\left( z - v(t)\right) \\
+% \nabla v(t) = 
+% \end{align*}
+% 
+% Let $\mathcal I(t)$ be the set of active indices:
+% \begin{align*}
+% \mathcal I (t) = \left\{i \in [m] \bigg | A_i v(t) = b_i \right\}
+% \end{align*}
+% 
+% For some sufficiently small $h \in \reals$, we will have 
+% \begin{align*}
+% v(t+h) = 
+% \end{align*}
+% 
+\end{proof}
+
+
+
+
+
+
+
+
+
+\begin{lemma}
+Suppose that 
+\begin{align*}
+\|z \|^2 \le \|z'\|^2 \le \|z \|^2 + \delta^2 \\
+\|z\|^2 \le {z}^Tz'
+\end{align*}
+then
+\begin{align*}
+\|z - z'\| \le ?
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{align*}
+\|z - z'\|^2 
+= \|z\|^2 - 2 z^Tz' + \|z'\|^2 
+\le \|z\|^2 - 2 \|z\|^2 + \|z'\|^2 = \|z'\|^2 - \|z\|^2
+\le \delta^2 \\
+\Longrightarrow \|z - z'\| \le \delta
+\end{align*}
+\end{proof}
+
+
+
+
+
+
+
+
+
+% 
+% 
+% \begin{lemma}
+% Suppose
+% $A \in \reals^{m \times n}$;
+% $b \in \Rm$;
+% $a, a', p \in \Rn$;
+% and $d \in \reals$
+% are given such that
+% $Ap < b$ and $d > 0$.
+% Define
+% \begin{align*}
+% z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+% \quad \textrm{and} \quad
+% z' = \argmin_{\substack{Ax \le b \\ {a'}^T \left(x - p\right) \le d}} \|p + y - x\|.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% If both $a^T\left(z' - p\right) \le d$ and ${a'}^T \left(z - p\right) \le d$, then we have $z - z' = 0$.
+% Without loss of generality, assume that 
+% $a^T\left(z' - p\right) > d \Longrightarrow a^T\left(z' - p\right) - d > 0$.
+% By the contraction property of projections
+% \begin{align*}
+% \left\|z' - p\right\|
+% \le \left\|P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p + y\right) - P_{\{x | Ax \le b, {a'}^T(x-p) \le d\}}\left(p\right)\right\|
+% \le \left\|p + y - p\right\|
+% = \|y\|.
+% \end{align*}
+% Combine this with ${a'}^T \left(z' - p\right) \le d \Longrightarrow {a'}^T \left(z' - p\right) - d \le 0$ to find
+% \begin{align*}
+% a^T\left(z' - p\right) - d 
+% = a^T\left(z' - p\right) - {a'}^T \left(z' - p\right) + {a'}^T \left(z' - p\right) - d 
+% \le \left(a - a'\right)^T \left(z' - p\right) \\
+% \le \left\|a - a'\right\| \left\|z' - p\right\|
+% \le \left\|a - a'\right\| \|y\|.
+% \end{align*}
+% We can compute
+% \begin{align*}
+% a^T\left(\frac{d + a^Tp}{a^Tz'}z' - p\right) = d + a^Tp - a^Tp = d
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|z' - \frac{d + a^Tp}{a^Tz'}z'\right\| 
+% = \left\|z'\right\|\left|\frac{a^Tz'}{a^Tz'} - \frac{d + a^Tp}{a^Tz'}\right|
+% \le \left\|z'\right\| \frac{\left\|y\right\|}{a^Tz} \left\|a - a'\right\|
+% \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% Let $s = \frac{a^Tz' - d}{a^T\left(z' - p\right)}$.
+% Notice that
+% $s a^T\left(p - z'\right) = d - a^Tz' \Longrightarrow  a^T\left[z' + s \left(p - z'\right)  \right] = d $
+% and
+% $\left\|z' - s\left(p - z'\right) - z'\right\| 
+% = \frac{a^Tz' - d}{a^T\left(z' - p\right)}\left\| z' - p\right\| 
+% \le \frac{\left\|z' - p\right\|}{a^T\left(z' - p\right)} \|a - a'\| \|z'\|$
+% \end{proof}
+
+
+
+
+
+
+
+
+\begin{lemma}
+\label{master_projection_lemma}
+Let $\atr$ and $\btr$ be defined by \cref{define_atr}.
+Let $H(A)$ be defined by \cref{hoffman_theorem}.
+
+Let $A, A'$ be $m \times n$ matrices;
+$p, y \in \Rn$; $b, b' \in \Rm$;
+and $M,\delta, r, \epsilon > 0$ be given 
+such that 
+with the definition
+\begin{align*}
+J = \left\{i \in [m] \; \bigg | \; b_i \le \|A_i\|r  \right\}
+\end{align*}
+all the following identities are satisfied:
+\begin{align*}
+Ap \le b,
+\quad 
+A'p \le b', \\
+\left\|A_i - A'_i \right\| \le \epsilon\quad \forall i \in [m],
+\quad 
+\left|b_i - b'_i \right| \le \epsilon \quad \forall i \in [m], \\
+\delta \le \left\|A_i\right\| \le M \quad \forall i \in [m],
+\quad 
+\delta \le \left\|A'_i\right\| \le M \quad \forall i \in [m], \\
+\left|b_i\right| \le M \quad \forall i \in [m],
+\quad 
+\left|b'_i\right| \le M \quad \forall i \in [m], \\
+H\left(A_J\right) \le M, \quad H\left(A'_J\right) \le M.
+\end{align*}
+Then
+\begin{align*}
+\|z - z'\| \le \left(\ldots\right) \epsilon
+\end{align*}
+where
+\begin{align*}
+z  = \argmin_{x \in \Rn | A (x - p) \le b }\left\|p + y - x\right\|
+\quad \textrm{and} \quad
+z' = \argmin_{x \in \Rn | A'(x - p) \le b'}\left\|p + y - x\right\|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+
+
+
+Because $H\left(A_J\right) \le M$, we have that if 
+$\mathcal A = \left\{i \in J | A_i\left(y - p\right) \ge 0 \right\}$, and
+$\mathcal A' = \left\{i \in J | A'_i\left(y - p\right) \ge 0 \right\}$, then
+\begin{align*}
+M \ge H(A_J) 
+= \max_{\mathcal J \in \mathcal S_h(A_J)} \left[\min_{v \in R^{\mathcal J}_+, \|v\| = 1}  \left\|A_{\mathcal J}^Tv\right\| \right]^{-1}
+\ge \left[\min_{v \in R^{\mathcal A}_+, \|v\| = 1}  \left\|A_{\mathcal A}^Tv\right\| \right]^{-1}
+\ge \frac{\left\|y - p\right\|}{\left\|A_{\mathcal A}^T (y - p) \right\|} \\
+\Longrightarrow A_{\mathcal A}^T (y - p)  \ge \frac 1 M \left\|y - p\right\|.
+\end{align*}
+Also, if $i \in [m] \setminus J$ and $A_i(y - p) \ge b_i$, then
+\begin{align*}
+A_i \left(y - p\right) \ge b_i - A_ip + A_ip \ge \|A_i\| r + A_ip
+\end{align*}
+
+
+\begin{align*}
+\| y - p \| \le \|y\| + \|p\| \\
+\frac 1{\| y - p \|} \ge \frac 1 {\|y\| + \|p\|} \\
+\end{align*}
+
+
+
+\begin{align*}
+A_i \left(y - p\right) \ge A_i y + r \|A_i\| - b_i 
+\end{align*}
+
+
+
+\begin{align*}
+\|A_i\| r + A_ip \ge \|A_i\| \left\|y - p\right\| \\
+r + \frac{A_i}{\|A_i\|}p \ge  \left\|y - p\right\| \\
+\end{align*}
+
+% 
+% 
+% \begin{align*}
+% b_i - A_ip > \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
+% \end{align*}
+
+
+\begin{align*}
+b_i \le \|A_i\| r \\
+A_i \left(p + t \frac {A_i^T} {\|A_i\|} \right) = b_i \\
+A_i p + t \frac {A_i A_i^T} {\|A_i\|} = b_i \\
+A_i p + t \|A_i\| = b_i \\
+t \|A_i\| = b_i - A_i p\\
+t = \frac{b_i - A_i p}{\|A_i\|} \ge r \\
+b_i - A_i p \ge r\|A_i\| \\
+\end{align*}
+
+\end{proof}
+
+
+
+
+% % Define
+% % \begin{align*}
+% % K = M\|y - p\| + \max\left\{
+% % \max_{i \in [m]}\left\{A_ip - b_i\right\},
+% % \max_{i \in [m]}\left\{A'_ip - b'_i\right\},
+% % \right\}
+% % \end{align*}
+% 
+% Note that
+% \begin{align*}
+% |A_ip_J - b_i| \le M(M+1) \\
+% |A'_ip'_J - b'_i| \le M(M+1) \\
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| \le |
+% A_ip_J - b_i - A'_ip'_J + b'_i
+% | \\
+% \le |A_ip_J - A_i p'_J| + |A_ip'_J - A'_ip'_J| + |b'_i - b_i|
+% \le M\epsilon + M\epsilon + \epsilon = \epsilon (2M + 1).
+% \end{align*}
+% 
+% 
+% 
+% Let 
+% \begin{align*}
+% v(t) = p_J + t(p - p_J)
+% \quad
+% v'(t) = p'_J + t(p - p'_J).
+% \end{align*}
+% Let $i \in [m] \setminus J$.
+% If $A_ip_J > b_i$, then 
+% \begin{align*}
+% b_i - A_ip \le \|A_i\| r 
+% \Longrightarrow - A_ip > \|A_i\|r - b_i
+% \Longrightarrow A_i\left(p_J - p\right) > \|A_i\|r \ge \delta r > 0 \\
+% \Longrightarrow \frac{1}{A_i\left(p_J - p\right)} < \frac{1}{\delta r} < \frac 2 {\delta r}.
+% \end{align*}
+% If $s_i = \frac{A_ip_J - b_i}{A_i(p_J - p)}$, we have
+% \begin{align*}
+% t \ge s_i
+% \Longrightarrow tA_i(p - p_J) \le b_i - A_ip_J 
+% \Longrightarrow A_iv(t) \le b_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p_J - v\left(s_i\right)\right\|
+% = \frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{A_i(p_J - p)}
+% < 2\frac{\left(A_ip_J - b_i\right)\left\|p - p_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p_J\right\|.
+% \end{align*}
+% 
+% 
+% Likewise, if $A'_ip'_J > b'_i$, then 
+% \begin{align*}
+% - A_ip > \|A_i\|r - b_i
+% \Longrightarrow \epsilon\|p\| - A'_i p \ge \left(\|A'_i\| - \epsilon\right)r - b'_i - \epsilon \\
+% \Longrightarrow -A'_ip > \|A'_i\|r - b'_i - \epsilon\left(1 + \|p\| + r\right) \\
+% \Longrightarrow A'_i\left(p'_J - p\right) > \delta r - \frac 1 2 \delta r = \frac 1 2 \delta r > 0 \\
+% \Longrightarrow \frac{1}{A'_i\left(p'_J - p\right)} < \frac{2}{\delta r}.
+% \end{align*}
+% If $s'_i = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}$, we have
+% \begin{align*}
+% t \ge s'_i
+% \Longrightarrow tA'_i(p - p'_J) \le b'_i - A'_ip'_J 
+% \Longrightarrow A'_iv(t) \le b'_i
+% \end{align*}
+% and
+% \begin{align*}
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% = \frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{A'_i(p'_J - p)}
+% < 2\frac{\left(A'_ip'_J - b'_i\right)\left\|p - p'_J\right\|}{\delta r}
+% \le \frac{2K}{\delta r}\left\|p - p'_J\right\|
+% \end{align*}
+% 
+% Consider any $i \in [m] \setminus J$,
+% and let
+% \begin{align*}
+% \gamma_1 = \frac{A_ip_J - b_i}{A_i(p_J - p)}
+% \quad \textrm{and} \quad
+% \gamma_2 = \frac{A'_ip'_J - b'_i}{A'_i(p'_J - p)}.
+% \end{align*}
+% 
+% 
+% \paragraph{Case 1}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J > b'_i$.
+% 
+% Then
+% \begin{align*}
+% \gamma_1 - \gamma_2
+% \end{align*}
+% 
+% 
+% Notice that
+% \begin{align*}
+% \epsilon 
+% \ge \left\|p_J - p'_J\right\|
+% = \left\|p_J - p + \left(p - p'_J\right)\right\|
+% \ge \bigg|
+% \left\|p - p_J\right\| - \left\|p - p'_J\right\|
+% \bigg| \\
+% p_J - v(s_i) = p_J - p_J - s_i \left(p - p_J\right) \\
+% p'_J - v'(s_i) = p'_J - p'_J - s'_i \left(p - p_J\right)
+% \end{align*}
+% implies
+% \begin{align*}
+% \bigg||s_i| - |s'_i|\bigg| =
+% \bigg|
+% \left\|p_J - v\left(s_i\right)\right\| -
+% \left\|p'_J - v'\left(s'_i\right)\right\|
+% \bigg| \le \frac{2K}{\delta r} \epsilon
+% \end{align*}
+% so that with
+% we have
+% \begin{align*}
+% v\left(s_i\right) - v'\left(s'_i\right) 
+% = \left(p_J - p'_J\right) + \left(p'_J - v(s'_i)\right) - \left(p_J - v(s_i)\right) \\
+% = \left(p_J - p'_J\right) 
+% + \gamma_2 \left(p - p'_J\right)
+% - \gamma_1 \left(p - p _J\right) \\
+% = \left(p_J - p'_J\right) 
+% + \left(\gamma_2 - \gamma_1\right) p
+% + \gamma_1 p _J - \gamma_1 p'_J
+% + \gamma_1 p'_J - \gamma_2 p'_J \\
+% \Longrightarrow \left\|v\left(s_i\right) - v'\left(s'_i\right) \right\|
+% \le \left(1 + \gamma_1 \right)\left\|p_J - p'_J\right\| + \left(\|p\| + \|p'_J\|\right)\left|\gamma_1 - \gamma_2\right|
+% \end{align*}
+% 
+% \begin{align*}
+% \gamma_1 p_J - \gamma_2 p'_J
+% \end{align*}
+% 
+% 
+% % \begin{align*}
+% % v\left(s_i\right) - v'\left(s'_i\right) 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) + \left(p_J - v(s_i)\right) - \left(p'_J - v(s'_i)\right)
+% % \end{align*}
+% 
+% % = p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right) \\
+% % = p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(1 - s_i\right)\left(p_J - p\right) - \left(1 - s'_i\right)\left(p'_J - p\right) \\
+% % = \left(p_J - p'_J\right) - s_i\left(p_J - p\right) + s'_i\left(p'_J - p\right) \\
+% 
+% 
+% 
+% 
+% 
+% % \begin{align*}
+% % \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% % = \left\|p_J + s_i\left(p - p_J\right) - p'_J - s'_i\left(p - p'_J\right)\right\| \\
+% % = \left\|p + \left(1 - s_i\right)\left(p_J - p\right) - p - \left(1 - s'_i\right)\left(p'_J - p\right)\right\| \\
+% % \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_i p_J\right\| + \left\|s'_ip_J - s'_ip'_J\right\| \\
+% % \le \left(\|p_J\| + \left\|p\right\|\right)\left|s'_i - s_i\right| + \left(1 + |s'_i|\right)\left\|p_J - p'_J\right\|
+% % \end{align*}
+% 
+% 
+% 
+% 
+% 
+% 
+% 
+% \paragraph{Case 2}
+% Suppose that both $A_ip_J > b_i$ and $A'_ip'_J \le b'_i$.
+% Then 
+% \begin{align*}
+% \bigg|
+% |A_ip_J - b_i| - |A'_ip'_J - b'_i|
+% \bigg| 
+% \le \epsilon (2M + 1).
+% \end{align*}
+% \paragraph{Case 3}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J > b'_i$.
+% 
+% \paragraph{Case 4}
+% Suppose that both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\| 
+% = \left\|p_J - p'_J\right\| \le \epsilon.
+% \end{align*}
+% 
+% Let $u = p_J$ if $A_ip_J \le b_i \forall i \in [m] \setminus J$ and $u' = p'_J$ if $A'_ip'_J \le b'_i \forall i \in [m] \setminus J$.
+% Otherwise, let
+% \begin{align*}
+% j = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A_ip_J > b_i
+% }}\{s_i\},
+% \quad u = v\left(s_j\right),
+% \quad 
+% j' = \argmax_{\substack{
+% i \in [m] \setminus J \\
+% A'_ip'_J > b'_i
+% }}\{s'_i\},
+% \quad \textrm{and} \quad
+% u' = v'\left(s'_{j'}\right).
+% \end{align*}
+% Then, both $Au \le b$ and
+% $A'u' \le b'$.
+% 
+% \paragraph{Case 1}
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% \paragraph{Case 2}
+% Suppose that 
+% 
+% 
+% 
+% Suppose that 
+% Suppose that for each $i \in [m] \setminus J$, we have both $A_ip_J \le b_i$ and $A'_ip'_J \le b'_i$.
+% Then $\|u - u'\| = \|p_J - p'_J\| \le \epsilon$.
+% 
+% 
+% and
+% \begin{align*}
+% \epsilon\left(M + \left\|p'_J\right\| + 1\right)
+% \ge \left|A_ip_J - A_i p'_J\right| + \left|A_i p'_J- A'_ip'_J\right| + \left| b_i + b'_i\right| \\
+% \ge \left|A_ip_J - A'_ip'_J - b_i + b'_i\right|
+% \ge \bigg|
+% \left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|
+% \bigg|
+% \end{align*}
+% imply
+% \begin{align*}
+% \bigg|
+% \left(\left|A_ip_J - b_i\right| - \left|A'_ip'_J - b'_i\right|\right)
+% \left(\left\|p - p_J\right\| - \left\|p - p'_J\right\|\right)
+% \bigg|
+% \end{align*}
+% 
+% 
+% 
+% 
+% If $|x - x'| \le \epsilon$ and $|y - y'| \le \delta$, then
+% \begin{align*}
+% x - \epsilon \le x' \le x + \epsilon \\
+% y - \delta \le y' \le y + \delta \\
+% \end{align*}
+% 
+% \begin{align*}
+% |xy - x'y'| 
+% = |xy - xy' + xy' - x'y'| 
+% = |x(y - y') + y'(x - x')| 
+% \le |x||y - y'| + |y'||x - x'|
+% \le \delta |x| + \epsilon|y'|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% % \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_1y + t_1y - t_2 y\|
+% % \le \|x(1 - t_1) - y(1 - t_2) + t_1p - t_2p)\| 
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \|p_J - p'_J\| + \left\|\left(p_J - v\left(s_i\right)\right) - \left(p'_J - v'\left(s'_i\right)\right)\right\|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\|v\left(s_i\right) - v'\left(s'_i\right)\right\|
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\| \\
+% \le \left\|p_J + s_i \left(p - p_J\right) -p'_J - s'_i \left(p - p'_J\right)\right\|
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \|x + t_1(p - x) - y - t_2(p - y)\|  \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|t_1x - t_2 x\| + \|t_2 x - t_2 y\| \\
+% \le |t_1 - t_2| \|p\| + \|x - y\| + \|x\| \|t_1 - t_2\| + |t_2| \|x - y\| \\
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \|t_1(p - x) - t_2(p - y)\| \le \|t_1(p - x) - t_1(p-y)\| + \|t_1(p-y) - t_2(p - y)\| \\
+% \le |t_1|\|p - x - p + y\| + \left|t_1 - t_2\right|\left\|p - y\right\|
+% \end{align*}
+
+% \le \left\|p\right\|\left|s'_i - s_i\right| + \left\|p_J - p'_J\right\| + \left\|s_ip_J - s'_ip'_J\right\| \\
+
+
+% 
+% \begin{align*}
+% \left\|x\right\| \frac{y}{\left\|y\right\|}
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|y\right\| - \left\|x \right\| \le \left\|y - x\right\| \\
+% 1 - \frac{\left\|x \right\|}{\left\|y\right\|} \le \frac{\left\|y - x\right\|}{\left\|y\right\|} \\
+% \end{align*}
+% 
+% 
+% \begin{align*}
+% \left\|x -  \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% \le \left\|x - \frac{\left\|x\right\|}{\left\|y\right\|} x \right\|+ \left\|\frac{\left\|x\right\|}{\left\|y\right\|} x - \frac{\left\|x\right\|}{\left\|y\right\|} y\right\|
+% = \left\|x\right\|\left(1 - \frac{\left\|x\right\|}{\left\|y\right\|}\right) + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le \left\|x\right\|\frac{\left\|y - x\right\|}{\left\|y\right\|} + \frac{\left\|x\right\|}{\left\|y\right\|} \left\| x - y\right\| \\
+% \le 2 \frac{\left\|x\right\|}{\left\|y\right\|} \left\|x - y\right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left|\left\|x\right\| - \left\|y\right\|\right|\le \left\|x - y \right\| \le a \left\|y\right\| \\
+% \left|\frac{\left\|x\right\|}{\left\|y\right\|} - 1\right|\le \left\|x - y \right\| \le a 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\|
+% \le \left\|x - y\right\| + 
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s \frac{\left\|x\right\|}{\left\|y\right\|} y\right\| + \left\| s \frac{\left\|x\right\|}{\left\|y\right\|} y - s' y \right\|
+% \end{align*}
+% \begin{align*}
+% \left\|s x - s' y\right\| 
+% \le \left\|s x -  s y\right\| + \left\| s y - s' y \right\|
+% \le s \left\|x - y\right\| + \left|s - s'\right| \left\| y \right\|
+% \end{align*}
+% 
+% \begin{align*}
+% \left\|p_J - \right\| \frac{p'_J - p}{\left\|p'_J - p\right\|} 
+% \end{align*}
+
+
+
+
+
+
+\begin{lemma}
+Suppose
+$A \in \reals^{m \times n}$;
+$b \in \Rm$;
+$a, p, y \in \Rn$;
+and $d, d', \delta, M > 0$
+are given such that
+$\|y\| \le M$, $Ap < b$, $A (y - p) \ge \delta$, $a^T(y - p) \ge \delta \left\|y - p\right\|$, ${a'}^T(y - p) \ge \delta \left\|y - p\right\|$.
+
+Define
+\begin{align*}
+z  = \argmin_{\substack{Ax \le b \\ a^T \left(x - p\right) \le d}} \|p + y - x\|
+\quad \textrm{and} \quad
+z' = \argmin_{\substack{Ax \le b \\ {a}^T \left(x - p\right) \le d'}} \|p + y - x\|.
+\end{align*}
+Then, 
+\begin{align*}
+\left\|z - z'\right\| \le \left(\ldots\right) |d - d'|.
+\end{align*}
+\end{lemma}
+\begin{proof}
+\begin{comment}
+More logic here...
+\end{comment}
+\end{proof}
+
+
 
 
 % First, we will state some well known theorems without proof.
