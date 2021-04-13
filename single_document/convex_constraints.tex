@@ -235,6 +235,8 @@
 \newcommand{\huffthreshold}{{\Delta_{\textrm{H}}}}
 
 
+\newcommand{\deltalb}{{\delta_{\textrm{min}}}}
+
 
 \newcommand{\minactivealpha}{{ \alpha_{\textrm{h}} }}
 \newcommand{\activedirk}{{ u_{h}^{(k)} }}
@@ -2553,6 +2555,27 @@ f(x) \ge \fmin \quad  \forall x \in \Omega.
 \end{assumption}
 
 \begin{assumption}
+\label{maximum_constraint_value_lemma}
+% Suppose that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
+The functions $c_i$ for $i \in [m]$ are bounded below in $ \Omega $.
+That is, there exists $M_c>0$ such that
+\begin{align*}
+c_i(x) \ge -M_c \quad \forall i \in [m], x \in \Omega.
+\end{align*}
+\end{assumption}
+
+\begin{assumption}
+\label{bounded_gradients_lemma}
+% Suppose \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
+The functions $f$ and $c_i$ for all $ i \in [m]$ have bounded gradient in $ \Omega $.
+That is, there exists $\maxgrad > 0$ such that
+\begin{align*}
+\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \Omega \\
+\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \Omega, \quad \forall i \in [m].
+\end{align*}
+\end{assumption}
+
+\begin{assumption}
 \label{bounded_hessians_assumption}
 Each function $c_i$ for $i \in [m]$ and $f$ has bounded Hessian. That is, there exists $ \maxhessian > 0$ such that:
 \begin{align*}
@@ -2647,7 +2670,7 @@ Without loss of generality, $\minanglealpha \le \frac 1 2$.
 
 \begin{assumption}
 \label{mingradassumption}
-There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$, if $c_i(x) \le \mingradepsilon$, then
+There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$, if $\left|c_i(x)\right| \le \mingradepsilon$, then
 \begin{align*}
 \| \nabla c_i(x) \| \ge \mingrad.
 \end{align*}
@@ -2710,18 +2733,8 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 
 
 
-\paragraph{Simple Theorems}
+% \paragraph{Simple Theorems}
 
-\begin{assumption}
-\label{bounded_gradients_lemma}
-% Suppose \cref{max_norm_assumption} and \cref{lipschitz_gradients_assumption} hold.
-The functions $f$ and $c_i$ for all $ i \in [m]$ have bounded gradient in $ \Omega $.
-That is, there exists $\maxgrad > 0$ such that
-\begin{align*}
-\|\gradf(x)\| \le \maxgrad \quad  \forall x \in \feasible \\
-\|\nabla c_i(x)\| \le \maxgrad \quad  \forall x \in \feasible, \quad \forall i \in [m].
-\end{align*}
-\end{assumption}
 % \begin{proof}
 % \begin{comment}
 % The result follows from these being continuous functions over compact sets.
@@ -2736,14 +2749,6 @@ That is, there exists $\maxgrad > 0$ such that
 % \end{proof}
 
 
-\begin{assumption}
-\label{maximum_constraint_value_lemma}
-% Suppose that \cref{constraints_are_convex}, \cref{bounded_hessians_assumption}, \cref{max_norm_assumption}, and \cref{lipschitz_gradients_assumption} hold.
-There exists $M_c>0$ such that
-\begin{align*}
-c_i(x) \ge -M_c \quad \forall i \in [m], x \in \feasible.
-\end{align*}
-\end{assumption}
 % \begin{proof}
 % \begin{comment}
 % The result follows from these being continuous functions over compact sets.
@@ -3140,6 +3145,7 @@ There exists a $\maxmodelgrad$ such that for each $k \in \naturals$,
 \textrm{and} \quad \left\|\gmcik\right\| \le \maxmodelgrad \quad \forall i \in [m]
 \end{align*}
 whenever $\dk \le \dacc$.
+Without loss of generality, we may assume that $\maxmodelgrad \ge 1$.
 \end{lemma}
 \begin{proof}
 Let $\kappa_g$ and $\maxgrad$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_gradients_lemma} respectively,
@@ -3819,6 +3825,10 @@ satisfying
 m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 \end{align}
 
+\begin{comment}
+Make a reference...
+\end{comment}
+
 
 
 
@@ -3850,12 +3860,12 @@ Let $\alpha$, $\beta$ $p_{\alpha}$, and $p_{\beta}$
 be defined as in \cref{define_abpab}, as well as $\minanglealpha$ and $\minangledelta$ be defined by \cref{minangleassumption_alt}.
 Define
 \begin{align}
-\delta_2 = \kappa_f' \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxmodelhessian}, \frac 1 2 \right\} \label{define_delta2} \\
-\delta = \min\left\{1, \frac{\delta_2}{2\left(\maxmodelgrad + 2 \maxmodelhessian \right)}\right\} \label{sr_define_delta} \\
-p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
-v = u_{\textrm{GC}} - \delta \dk^{p} \huk \label{define_v} \\
-\epsilon_{\Delta} = 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
-\dsr = \min\left\{
+\delta_2 =& \kappa_f' \kappa_{\chi} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxmodelhessian}, \frac 1 2 \right\} \label{define_delta2} \\
+\delta =& \min\left\{1, \frac{\delta_2}{2\left(\maxmodelgrad + 2 \maxmodelhessian \right)}\right\} \label{sr_define_delta} \\
+p =& 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
+v =& u_{\textrm{GC}} - \delta \dk^{p} \huk \label{define_v} \\
+\epsilon_{\Delta} =& 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
+\dsr =& \min\left\{
 \dfeas,
 \dacc,
 \deltalargzik,
@@ -3930,7 +3940,7 @@ We can use \cref{define_delta2} to simplify this:
 \end{align*}
 Then \cref{sr_define_delta} gives
 \begin{align*}
-\delta_2 \dk^{1 + p_{\Delta}} = \left(2\maxmodelgrad + 4\maxmodelhessian\right)\delta\dk^{1 + p_{\Delta}},
+\delta_2 \dk^{1 + p_{\Delta}} \ge \left(2\maxmodelgrad + 4\maxmodelhessian\right)\delta\dk^{1 + p_{\Delta}},
 \end{align*}
 and \cref{sr_p_big} implies $\dk^{1+p_{\Delta}} \ge \dk^p$ so that
 \begin{align*}
@@ -4973,6 +4983,16 @@ and once again,
 % 
 % 
 
+
+% \begin{lemma}
+% aabbcc
+% \end{lemma}
+% \begin{proof}
+% By the mean value theorem, there exists $t \in [0, 1]$ such that
+% \begin{align*}
+% \end{align*}
+% \end{proof}
+
 Define
 \begin{align}
 \truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
@@ -4988,87 +5008,111 @@ Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cr
 
 \begin{lemma}
 \label{norm_of_active_constraints_bounded_below}
-For some fixed $k$, suppose that $\Amk$, $\Alk$, $\Ack$
+Suppose that $\Amk$, $\Alk$, $\Ack$
 are defined by
 \cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3}.
+
+Suppose that
+\cref{mingradassumption}
+and the assumptions for
+\cref{accuracy_is_satisfied}, \cref{i_thought_i_proved_this_already}, and \cref{delta_to_zero}
+are satisfied.
 Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
-There exists $\delta > 0$ and $k_0 \in \naturals$ such that,
+There exists $\deltalb > 0$ and $k_0 \in \naturals$ such that,
 \begin{itemize}
-\item if $k \ge k_0$, then if $i \in \Amk \cup \Ack$, we have
+\item if $k \ge k_0$ and $i \in \Amk \cup \Ack$,
 \begin{align*}
-\left\|\gmcik\right\| \ge \delta \quad \textrm{and} \quad
-\left\|\nabla c_i\left(\xk\right) \right\| \ge \delta.
+\left\|\gmcik\right\| \ge \deltalb \quad \textrm{and} \quad
+\left\|\nabla c_i\left(\xk\right) \right\| \ge \deltalb.
 \end{align*}
-\item if $k, l \ge k_0$ and $(k, l) \in S$, then if $i \in \Amk \cup \Alk$, we have
+\item if $k, l \ge k_0$, $(k, l) \in S$, and $i \in \Amk \cup \Alk$,
 \begin{align*}
-\left\|\gmcil\right\| \ge \delta.
+\left\|\gmcil\right\| \ge \deltalb.
 \end{align*}
 \end{itemize}
 \end{lemma}
 \begin{proof}
 
-Let $\mingradepsilon > 0$ and $\mingrad > 0$ be defined by \cref{mingradassumption}.
+Let $\mingradepsilon > 0$ and $\mingrad > 0$ be defined by \cref{mingradassumption}
+and $\maxmodelgrad \ge 1$ be defined by \cref{i_thought_i_proved_this_already}.
+% and $\maxgrad$ be defined by \cref{bounded_gradients_lemma}.
 Define
 \begin{align*}
-\delta = \min\left\{\frac 1 3 \mingrad, \frac 1 4 \mingradepsilon\right\}
+\deltalb = \min\left\{\frac 1 3 \mingrad, \frac 1 {6} \frac{\mingradepsilon}{\maxmodelgrad} \right\}.
 \end{align*}
 
-Before going through cases, we make some observations.
-By \cref{accuracy_is_satisfied} and \cref{delta_to_zero}, we know that there exists $k_1 \naturals$ such that if $k \ge k_1$, then
-\begin{align}
-\label{hmoydihtp_eqn1}
-\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \min\left \{\frac 1 2 \mingrad, \delta \right\}.
-\end{align}
-
-By \cref{i_thought_i_proved_this_already}, we know that there exists $\maxmodelgrad > 0$ with 
-$
+Before going through several cases, we make four observations.
+First, \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero} imply the existence of $k_1 \in \naturals$
+such that if $k \ge k_1$, then
+\begin{align*}
 \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
-\le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad
-$.
-
+\le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad.
+\end{align*}
+Secondly, \cref{accuracy_is_satisfied} and \cref{delta_to_zero} imply the existence of $k_2 \in \naturals$ such that if $k \ge k_2$, then
+\begin{align}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \deltalb. \label{hmoydihtp_eqn1}
+\end{align}
+Similarily, \cref{model_gradients_are_cauchy} implies the existence of $k_3 \in \naturals$ such that if $k, l \ge k_3$, then 
+\begin{align}
+\left\|\gmcik - \gmcil\right\| \le \deltalb. \label{hmoydihtp_eqn2}
+\end{align}
+% \min\left \{\frac 1 2 \mingrad, \deltalb \right\}
+Lastly, by the mean value theorem, there exists $t \in [0, 1]$ such that
+\begin{align*}
+c_i\left(\xl\right) = c_i\left(\xk\right) + \nabla c_i\left((1 - t)\xk + t \xl\right)^T\left(\xl - \xk\right) \quad \forall i \in [m].
+\end{align*}
+Thus, $(k, l) \in S$ which satisfies \cref{criteria_from_contradiction}, and
+\cref{bounded_gradients_lemma} imply the existence of $\maxgrad > 0$ and $k_4 \in \naturals$ such that if $k, l \ge k_4$, 
+then
+\begin{align}
+\left\|c_i\left(\xk\right) - c_i\left(\xl\right) \right\| \le \maxgrad \left\|\xl - \xk\right\| \le \deltalb. \label{hmoydihtp_eqn3}
+\end{align}
+We choose $k_0 = \max\left\{k_1, k_2, k_3, k_4\right\}$.
 
 \paragraph{Case 1}
-If $-c_i\left(\xl\right) \le \mingradepsilon$, then $\| \nabla c_i\left(\xl\right) \| \ge \mingrad \ge 3\delta$.
-\paragraph{Case 2}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Amk$.
-\begin{align*}
-\left\|\gmcik\right\| \maxmodelgrad
-\ge \gmcik^T\left(P_{\feasiblek}\left(\xk - \gk\right) - \xk\right)
-\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
-\end{align*}
-By \cref{hmoydihtp_eqn1}, we have $\| \nabla c_i\left(\xl\right) \| \ge 3\delta$.
+If $-c_i\left(\xl\right) \le \mingradepsilon$, then \cref{mingradassumption} implies $\left\| \nabla c_i\left(\xl\right) \right\| \ge \mingrad \ge 3 \deltalb$.
 
-\paragraph{Case 3}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Alk$.
+\paragraph{Case 2}
+Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Ack$.
+Then
 \begin{align*}
 \left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
-\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right)
-\ge -c_i\left(\xk\right) > \mingradepsilon \ge 4 \delta.
+\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) \\
+= -c_i\left(\xk\right) > \mingradepsilon \ge 6 \deltalb \maxmodelgrad.
 \end{align*}
+and $\left\|\nabla c_i\left(\xk\right)  \right\| \ge 6 \deltalb$.
 
+% (1 - x) = 4x
+
+\paragraph{Case 3}
+Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Amk$.
+Then
+\begin{align*}
+\left\|\gmcik\right\| \maxmodelgrad
+\ge \gmcik^T\left[P_{\feasiblek}\left(\xk - \gk\right) - \xk\right] \\
+= -c_i\left(\xk\right) > \mingradepsilon \ge 6 \deltalb \maxmodelgrad.
+\end{align*}
+so that $\left\|\gmcik\right\| \ge 6 \deltalb$, and \cref{hmoydihtp_eqn1} implies $\| \nabla c_i\left(\xl\right) \| \ge 5 \deltalb$.
 
 \paragraph{Case 4}
-Suppose that $-c_i\left(\xl\right) > \mingradepsilon$ and $i \in \Ack$.
-\color{red}
-We get to $-c_i\left(\xl\right) \ge \frac 1 2 \mingradepsilon$
-\color{black}
+Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Alk$.
+Then \cref{hmoydihtp_eqn3} implies that $-c_i\left(\xl\right) > \mingradepsilon - \deltalb \ge (6 - 1) \deltalb $, so that
 \begin{align*}
 \left\|\gmcil\right\| \maxmodelgrad
-\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right)
-\ge -c_i\left(\xl\right) > \frac 1 2 \mingradepsilon
+\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right) \\
+= -c_i\left(\xl\right) > 5 \deltalb \maxmodelgrad
 \end{align*}
+and $\left\|\gmcil\right\| \ge 5 \deltalb$.
+Then by \cref{hmoydihtp_eqn2}, $\left\|\gmcik\right\| \ge 4 \deltalb$, and by \cref{hmoydihtp_eqn1} $\left\|\nabla c_i\left(\xk\right) \right\| \ge 3 \deltalb$.
+
+
+% Without loss of generality, we may assume that $\maxmodelgrad \ge 1$, so that 
 
 
 
-Throughout the cases, we have established that $\left\| \nabla c_i\left(\xl\right) \right\| \ge 3 \delta$.
-Thus, \cref{hmoydihtp_eqn1} implies 
-\begin{align*}
-\left\|\gmcik\right\| \ge 2 \delta.
-\end{align*}
-Then, by \cref{model_gradients_are_cauchy}, there is a $k_4 \in \naturals$ such that if $k, l \ge k_4$ and $(k,l) \in S$, we have
-\begin{align*}
-\left\|\gmcil\right\| \ge \delta.
-\end{align*}
+Throughout the cases, we have established if $i \in \Amk \cup \Ack \cup \Alk$, then $\left\| \nabla c_i\left(\xk\right) \right\| \ge 3 \deltalb$.
+Then \cref{hmoydihtp_eqn1} implies $\left\|\gmcik\right\| \ge 2 \deltalb$, 
+and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 \end{proof}
 
 With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
@@ -5083,13 +5127,17 @@ z_c^{(k)} =& P_{\truefeasiblek}\left(\xk - \gk\right). \label{define_zck}
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
 Let $\zmk$, $\zlk$, $\zck$ be defined by \cref{define_zmk}, \cref{define_zlk}, \cref{define_zck} respectively.
 
-Suppose that the assumptions for
-\cref{i_thought_i_proved_this_already},
-\cref{the_lemma_to_end_all_lemmas},
-\cref{delta_to_zero},
+Suppose that 
+\cref{bounded_gradients_lemma}
+and the assumptions for
 \cref{accuracy_is_satisfied},
+\cref{i_thought_i_proved_this_already},
+\cref{delta_to_zero},
 \cref{board_tied_to_sphere},
-and \cref{model_gradients_are_cauchy}
+\cref{the_lemma_to_end_all_lemmas},
+\cref{model_gradients_are_cauchy},
+\cref{yet_another_bound_on_a_u},
+and \cref{norm_of_active_constraints_bounded_below}
 are satisfied.
 
 Suppose that a set $S$ satisfies \cref{criteria_from_contradiction}.
@@ -5110,82 +5158,122 @@ $
 For any $\mathcal U \subseteq [m]$, define
 \begin{align*}
 \feasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \gmcik^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
-\truefeasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\} \\
+\truefeasiblek(\mathcal U)  = \left\{x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T\left(x - \xk\right) \le 0 \; \forall i \in \mathcal U \right\}.
 \end{align*}
 Notice that if $\Amk$, $\Alk$, $\Ack$
 are defined by
 \cref{tbbt_a1}, \cref{tbbt_a2}, and \cref{tbbt_a3},
-Notice that
+then
 \begin{align*}
-\zmk =& P_{\feasiblek\left(\Amk\right)}\left(\xk - \gk\right) \\
-\zlk =& P_{\feasiblel\left(\Alk\right)}\left(\xk - \gk\right) \\
-\zck =& P_{\truefeasiblek\left(\Ack\right)}\left(\xk - \gk\right)
+\zmk =& P_{\feasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right) = P_{\feasiblek\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right)\\
+\zlk =& P_{\feasiblel\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right) \\
+\zck =& P_{\truefeasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right).
 \end{align*}
-Further, notice that by \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, for sufficiently large $k, l$,
-$\|\gk\| \le \maxmodelgrad$
-so
+Further, notice that by \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k, l \ge k_1$, 
+then
+$\|\gk\| \le \maxmodelgrad$.
+Combining this with $\xk \in \feasible \subseteq \feasiblel\left(\Amk \cup \Alk\right)$, we have 
+\begin{align}
+\begin{array}{ccc}
+\zmk &=& P_{\feasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right)  \\
+     &=& P_{\feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
+\zlk &=& P_{\feasiblel\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
+\zck &=& P_{\truefeasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right).
+\end{array}\label{cbpt_eqn1}
+\end{align}
+
+We wish to apply \cref{the_lemma_to_end_all_lemmas} by assigning values to
+$A$, $A'$, $b$, $b'$, $C$, $C'$, $d$, $d'$, $u$, $\delta_l$, $\delta_u$, $\delta_{\alpha}$, and $\delta_r$.
+We can let $\activeindicesk$ be defined by \cref{define_activeindicesk}, and partition either
+
+\paragraph{Case 1}
 \begin{align*}
-\zmk =& P_{\feasiblek\left(\Amk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) \\
-\zlk =& P_{\feasiblel\left(\Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right) \\
-\zck =& P_{\truefeasiblek\left(\Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right)
-\end{align*}
-Let $\activeindicesk$ be defined by \cref{define_activeindicesk}.
-By assigning $\delta_r \gets \minangledelta$ and partitioning either
-\begin{align*}
-\begin{array}{cc}
-C  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
-C' \gets \left[\nabla c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
-A  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
-A' \gets \left[\nabla c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
-d  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
-d' \gets \left[-c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
-b  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
-b' \gets \left[-c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
+\begin{array}{cclccl}
+C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, &
+C' &\gets& \left[\nabla c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, \\
+A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)}, &
+A' &\gets& \left[\nabla c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)} \\
+d  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, &
+d' &\gets& \left[-c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, \\
+b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)}, &
+b' &\gets& \left[-c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)} \\
 \end{array}
 \end{align*}
 or
+\paragraph{Case 2}
 \begin{align*}
-\begin{array}{cc}
-C  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
-C' \gets \left[\nabla m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
-A  \gets \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
-A' \gets \left[\nabla m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}} \\
-d  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_1^{(k)}}, &
-d' \gets \left[-m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \mathbb A_3^{(k)}}, \\
-b  \gets \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_1^{(k)}}, &
-b' \gets \left[-m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \mathbb A_2^{(k)}}
+\begin{array}{cclccl}
+C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, &
+C' &\gets& \left[\nabla m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, \\
+A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}, &
+A' &\gets& \left[\nabla m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)} \\
+d  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, &
+d' &\gets& \left[-m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, \\
+b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}, &
+b' &\gets& \left[-m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}.
 \end{array}
 \end{align*}
-we know that we immediately have $\delta_r \|A_i\| \le b_i$ and $\delta_r \|A_i'\| \le b_i'$.
-If $\delta$ is defined by \cref{norm_of_active_constraints_bounded_below},
-then for sufficiently large $k, l$, \cref{norm_of_active_constraints_bounded_below} and \cref{i_thought_i_proved_this_already} provide
-$\delta_l \le \|A_i\| \le \delta_u$ and $\delta_l \le \|A'_i\| \le \delta_u$
-where
-$\delta_l \gets \delta$ and $\delta_u \gets \maxmodelgrad$.
-Also, sufficiently large $k, l$, \cref{yet_another_bound_on_a_u} provides $u \gets \activedirk$ and $\delta_{\alpha} \gets \minactivealpha$ such that
+We see from \cref{define_activeindicesk}, that in either case, with the assignment $\delta_r = \minangledelta$, we immediately have 
+$\delta_r \|A_i\| \le b_i$ and $\delta_r \|A_i'\| \le b_i'$.
+Also, because $\xk$ and $\xl$ are both feasible, $b, b', d, d' \ge 0$.
+By \cref{norm_of_active_constraints_bounded_below}, there exists $\delta_l = \deltalb > 0$ and $k_2 \in \naturals$ such that if $k, l \ge k_2$,
+$\delta_l \le \|A_i\|$ and $\delta_l \le \|A'_i\|$.
+By \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, there exists $k_3 \in \naturals$ and $\delta_u = \maxmodelgrad > 0$ such that if $k, l \ge k_3$,
+then
+$\|A_i\| \le \delta_u$ and $\|A_i'\| \le \delta_u$.
+Also, by \cref{yet_another_bound_on_a_u}, there exists $k_4 \in \naturals$, unit vector $u = \activedirk$, and $\delta_{\alpha} = \minactivealpha > 0$ such that if $k, l \ge k_4$
 $Cu \ge \delta_{\alpha} e$ and $C'u \ge \delta_{\alpha} e$.
-By \cref{delta_to_zero}, \cref{accuracy_is_satisfied}, and \cref{model_gradients_are_cauchy} we know that there exists $k_1 \in \naturals$ such that
+By the mean value theorem, there exists $t \in [0, 1]$ such that
 \begin{align*}
-\|\gmcik - \nabla c_i\left(\xk\right)\| \le ? \\
-\|\gmcik - \gmcil\| \le ? \\
-\dk \le ? \\
+c_i\left(\xl\right) = c_i\left(\xk\right) + \nabla c_i\left((1 - t)\xk + t \xl\right)^T(\xl - \xk) \quad \forall i \in [m].
 \end{align*}
-so that
+Thus, for any $\delta > 0$, we have
+$(k, l) \in S$ satisfying \cref{criteria_from_contradiction} and
+\cref{bounded_gradients_lemma} imply the existence of $\maxgrad > 0$ and $k_5 \in \naturals$ such that if $k, l \ge k_5$, 
+then
+\begin{align}
+\left\|c_i\left(\xk\right) - c_i\left(\xl\right) \right\| \le \maxgrad \left\|\xl - \xk\right\| \le \delta. \label{cbpt_eqn2}
+\end{align}
+Also, by \cref{delta_to_zero}, \cref{accuracy_is_satisfied}, and \cref{model_gradients_are_cauchy}, 
+there exists $k_6 \in \naturals$ such that if $k, l \ge k_6$, then
+\begin{align}
+\left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \delta \quad \textrm{and} \quad
+\left\|\gmcik - \gmcil\right\| \le \delta. \label{cbpt_eqn3}
+\end{align}
+Now, \cref{cbpt_eqn2}, \cref{cbpt_eqn3}, and $m_{c_i}^{(k)}\left(\xk\right) = c_i\left(\xk\right) \forall i \in[m], \forall k \in \naturals$ imply
 \begin{align*}
 \begin{array}{cccc}
 \|A - A'\|_{\infty} \le \delta,	& \|b - b'\|_{\infty} \le \delta,		& \|C - C'\|_{\infty} \le \delta,	& \|d - d'\|_{\infty} \le \delta.
 \end{array}
 \end{align*}
-We can then assign $r \gets \maxmodelgrad$ and $p \gets \xk$
-so that \cref{the_lemma_to_end_all_lemmas} applies, for sufficiently large $k, l$, if
+Finally, we assign $\epsilon' = \left(\frac {\epsilon}{8\left(1 + \maxmodelgrad\right)}\right)^2$,
+$r \gets \maxmodelgrad$ and $p \gets \xk$ and use \cref{the_lemma_to_end_all_lemmas}
+to conclude that if $k, l \ge k_0 = \max\left\{k_1, k_2, k_3, k_4, k_5, k_6\right\}$ and
 \begin{align*}
 \begin{array}{ccccc}
-S  &= \bigg\{x \in \Rn \bigg|& A (x - p) \le b ,& C (x - p) \le d ,& \|x - p\| \le r \bigg\}, \\
-S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\}.
+\mathcal S  &= \bigg\{x \in \Rn \bigg|& A (x - p) \le b ,& C (x - p) \le d ,& \|x - p\| \le r \bigg\}, \\
+\mathcal S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\}
 \end{array}
 \end{align*}
-we have $\convexdistance(S, S') \le \epsilon$ where $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
-The result then follows from \cref{board_tied_to_sphere}.
+then $\convexdistance(\mathcal S, \mathcal S') \le \epsilon'$ where $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
+By using $g \gets \xk - \gk$, \cref{board_tied_to_sphere} implies
+\begin{align*}
+\left\|P_{\mathcal S}(g) - P_{\mathcal S'}(g)\right\| 
+\le 8\left(1 + \left\|P_{\mathcal S \cap \mathcal S'}(g) - g\right\|\right) \sqrt{\epsilon'} 
+\le 8\left(1 + \left\|\gk\right\|\right) \sqrt{\epsilon'} 
+\le \epsilon.
+\end{align*}
+Notice that in Case 1, we have 
+\begin{align*}
+\mathcal S  = \feasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right) \quad \textrm{and} \quad
+\mathcal S' = \truefeasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right), 
+\end{align*}
+while in Case 2 we have 
+\begin{align*}
+\mathcal S  = \feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right) \quad \textrm{and} \quad
+\mathcal S' = \feasiblel\left(\Amk \cup \Alk \right) \cap B_2\left(\xk, \maxmodelgrad\right).
+\end{align*}
+Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zlk\| \le \epsilon$.
 \end{proof}
 
 
@@ -7453,7 +7541,20 @@ The result follows from \cref{liminf_chi_to_zero}, \cref{lim_chi_to_zero} and co
 \label{bounded_level_sets}
 
 We would have been able to make a number of simplifications if we assume bounded level sets.
-With bounded level sets.
+
+
+\begin{assumption}
+\label{bounded_level_sets}
+All level sets of the function $f$ are bounded. That is, for each $r \in \reals$, there exists an $M$ such that 
+\begin{align*}
+\|y\| \le M \quad \forall y \in \Omega \quad \textrm{s.t.} \quad f(y) = r.
+\end{align*}
+\end{assumption}
+
+% Notice that \cref{bounded_level_sets}
+
+
+
 
 
 \section{Future Work}
