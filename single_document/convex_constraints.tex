@@ -2677,6 +2677,10 @@ Without loss of generality, $\minanglealpha \le \frac 1 2$.
 
 
 
+\begin{comment}
+Use continuity to make $c_i(x) = 0$, then....
+\end{comment}
+
 \begin{assumption}
 \label{mingradassumption}
 There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$, if $\left|c_i(x)\right| \le \mingradepsilon$, then
@@ -5117,9 +5121,15 @@ and once again,
 
 Define
 \begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
 \end{align}
 
+\begin{comment}
+Use a superscript of $(k, l)$
+\end{comment}
+
+
+% https://mirror.las.iastate.edu/tex-archive/info/symbols/comprehensive/symbols-a4.pdf#page=123
 
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, for any fixed $k$, define
 \begin{align}
@@ -5237,6 +5247,12 @@ Then \cref{hmoydihtp_eqn1} implies $\left\|\gmcik\right\| \ge 2 \deltalb$,
 and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 \end{proof}
 
+
+
+\begin{comment}
+Use a superscript of $(k, l)$
+\end{comment}
+
 With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
 \begin{align}
 z_m^{(k)} =& P_{\feasiblek}\left(\xk - \gk\right), \label{define_zmk} \\
@@ -5313,12 +5329,12 @@ We can let $\activeindicesk$ be defined by \cref{define_activeindicesk}, and par
 \begin{array}{cclccl}
 C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, &
 C' &\gets& \left[\nabla c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, \\
-A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)}, &
-A' &\gets& \left[\nabla c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)} \\
+A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Ack\right)}, &
+A' &\gets& \left[\nabla c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Ack\right)} \\
 d  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, &
 d' &\gets& \left[-c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, \\
-b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)}, &
-b' &\gets& \left[-c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Ack\right)} \\
+b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Ack\right)}, &
+b' &\gets& \left[-c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Ack\right)} \\
 \end{array}
 \end{align*}
 or
@@ -5327,12 +5343,12 @@ or
 \begin{array}{cclccl}
 C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, &
 C' &\gets& \left[\nabla m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, \\
-A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}, &
-A' &\gets& \left[\nabla m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)} \\
+A  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Alk \right)}, &
+A' &\gets& \left[\nabla m^{(l)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Alk \right)} \\
 d  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, &
 d' &\gets& \left[-m^{(l)}\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, \\
-b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}, &
-b' &\gets& \left[-m^{(l)}_c\left(\xk\right)\right]_{([m] \setminus \activeindicesk) \cap \left(\Amk \cup \Alk \right)}.
+b  &\gets& \left[-m^{(k)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Alk \right)}, &
+b' &\gets& \left[-m^{(l)}_c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\right) \cap \left(\Amk \cup \Alk \right)}.
 \end{array}
 \end{align*}
 We see from \cref{define_activeindicesk}, that in either case, with the assignment $\delta_r = \minangledelta$, we immediately have 
