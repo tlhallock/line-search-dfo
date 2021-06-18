@@ -887,16 +887,18 @@ We define these cones within this section.
 
 The first step is to identify the set of constraints that are nearly active relative to the size of the current trust region.
 Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
-Specifically, for each $i$ with either $\left\|\gmcik\right\| \ne 0$ or $c_i\left(\xk\right) = 0$, define
+% Specifically, for each $i$ with either $\left\|\gmcik\right\| \ne 0$ or $c_i\left(\xk\right) = 0$, define
+Specifically, define
 \begin{align}
 \label{define_z}
 \zik =
 \begin{cases}
 \xk &  c_i\left(\xk\right) = 0 \\
-\xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik & \left\|\gmcik\right\| \ne 0
+\xk - \frac{m^{(k)}_{c_i}\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik & c_i\left(\xk\right) \ne 0 \quad \textrm{and} \quad \left\|\gmcik\right\| \ne 0 \\
+\infty & c_i\left(\xk\right) \ne 0 \quad \textrm{and} \quad \left\|\gmcik\right\| = 0 \\
 \end{cases}
 \end{align}
-Note that this definition is consistent when both $c_i\left(\xk\right) = 0$ and $\left\|\gmcik\right\| \ne 0$.
+% Note that this definition is consistent when both $c_i\left(\xk\right) = 0$ and $\left\|\gmcik\right\| \ne 0$.
 If $\zik$ lies sufficiently near the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
 Specifically, the set of nearly active constraints is defined by
 \begin{align}
@@ -912,7 +914,7 @@ For each nearly active constraint, we define a buffering cone with user defined 
 \end{align}
 The vertex $\wik$ of this cone is located along the line segment connecting $\xk$ to $\zik$:
 \begin{align}
-\wik = \xk + \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right). \label{define_w}
+\wik = \xk + \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right) \forall i \in \activeconstraintsk. \label{define_w}
 \end{align}
 The cone for constraint $i$ is then defined by
 \begin{align}
@@ -1197,10 +1199,10 @@ y
 for all $x$ with $x^Tv = 0$.
 Then
 \begin{align*}
-\left(x - {v^{(i)}}\right)^TM_i\left(x - {v^{(i)}}\right) = 0 \\
-\Longleftrightarrow x^TM_ix - 2x^TM_i{v^{(i)}} + {v^{(i)}}^TM_i{v^{(i)}} = 0 \\
-\Longleftrightarrow x^T{R^i}^TM_i'{R^i}x - 2x^T{R^i}^TM_i'{R^i}{v^{(i)}} + {v^{(i)}}^T{R^i}^TM_i'{R^i}{v^{(i)}} = 0 \\
-\Longleftrightarrow y^T{W_i}y - 2y^T{w_1^i}\|v^{(i)}\| + {w_{1,1}^i}\|v^{(i)}\|^2 = 0 \\
+0 = \left(x - {v^{(i)}}\right)^TM_i\left(x - {v^{(i)}}\right) \\
+= x^TM_ix - 2x^TM_i{v^{(i)}} + {v^{(i)}}^TM_i{v^{(i)}} \\
+= x^T{R^i}^TM_i'{R^i}x - 2x^T{R^i}^TM_i'{R^i}{v^{(i)}} + {v^{(i)}}^T{R^i}^TM_i'{R^i}{v^{(i)}} \\
+= y^T{W_i}y - 2\|v^{(i)}\|y^Tw_1^i + {w_{1,1}^i}\|v^{(i)}\|^2 \\
 \Longleftrightarrow y^T{W_i}y - 2\|v^{(i)}\|y^T{W_i}{W_i}^{-1}{w_1^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
 = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
 \Longleftrightarrow \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{{w_1^i}}}^T{W_i}^{-1}{{w_1^i}} \\
@@ -1215,7 +1217,7 @@ Thus, to find the maximum norm $x$ with $\left(v^{(i)}\right)^Tx = 0$, we wish t
 After a change of variables
 \begin{align*}
 w_c \gets \|v^{(i)}\|{W_i}^{-1}w_1^i \\
-w_r \gets  - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^Tw_c \\
+w_r \gets  - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|{{w_1^i}}^Tw_c \\
 s \gets y - w_c
 \end{align*}
 this becomes:
@@ -1228,14 +1230,15 @@ this becomes:
  \end{array}
 \end{align}
 
-This is the well known optimization problem of projecting a point onto the surface of an ellipsoid.
-No explicit solution exists, which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
-However, there is an efficient, binary-search algorithm to solve this \cite{projecttoellipsoid}.
+% This is the well known optimization problem of projecting a point onto the surface of an ellipsoid.
+To our knowledge, no explicit solution exists, which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
+However, there is an efficient, binary-search algorithm to solve this.
+% \cite{projecttoellipsoid}.
 
 
 Namely, given 
-$p \in \Rn$ and a positive definite, symmetric, $n \times n$ matrix $Q$,
-we can consider how to project the point $p$ onto the ellipsoid $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
+$p \in \Rn$ and a matrix $Q$,
+we can consider how to project the point $p$ onto the set $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
 \begin{align*}
 \begin{array}{ccc}
 x^{\star} = &\argmin_{x \in \Rn} & \|x - p\|^2 \\
@@ -1254,7 +1257,12 @@ Using $\left(x^{\star}\right)^TQx^{\star} = 1$, the problem reduces to finding z
 \begin{align*}
 f(\lambda) = p^T\left(\lambda Q - I\right)^{-1}Q\left(\lambda Q - I\right)^{-1}p - 1.
 \end{align*}
-Notice that $f(0) = p^TQp - 1 > 0$, and the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$.
+Notice 
+\begin{itemize}
+\item $f(0) = p^TQp - 1 > 0$
+\item $\lim_{\lambda \to \frac 1 {\lambda_i}} f(\lambda) = \infty$ for any eigenvalue $\lambda_i$
+\item the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$
+\end{itemize}
 The authors show that a binary search on $\lambda$ can find the zeros of $f$.
 
 % \subsubsection{Numerical Solution}
@@ -3049,7 +3057,7 @@ the model function $m_f(x) = \hat m_f(T(x))$ will satisfy
 \label{accuracy_is_satisfied_lemma}
 Fix an iterate $k$.
 Suppose that $\qkmo$, $\ckmo$, and $\sdkmo$ are non-empty according to \cref{ellipsoids_notation_definitions}.
-Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption} hold.
+Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{lipschitz_hessians_assumption} hold.
 There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 \begin{align*}
 \|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \sqrt{\sigma \left(\qkmo\right)} \dk^2, \\
@@ -3111,7 +3119,7 @@ Let $\activeconstraintsk$ and $\dacc$ be defined by \cref{define_activeconstrain
 Also, let $\qk$, $\ck$, and $\sdk$ 
 be as generated by \cref{constrained_dfo}.
 Suppose that 
-\cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption_alt} hold.
+\cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, \cref{lipschitz_hessians_assumption}, and \cref{minangleassumption_alt} hold.
 There exist $\kappa_g>0$ and $\kappa_h>0$ such that
 \begin{align*}
 \begin{array}{ccc}
@@ -3128,7 +3136,7 @@ This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoi
 \begin{lemma}
 \label{bounded_model_hessian_lemma}
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
-Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{minangleassumption_alt} hold.
+Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, \cref{lipschitz_hessians_assumption}, and \cref{minangleassumption_alt} hold.
 Then there exists a $\maxmodelhessian > 0$ such that 
 \begin{align*}
 \| \hk \| \le \maxmodelhessian \quad \forall x \in \feasible \\
@@ -3150,7 +3158,9 @@ The same applies to each $\nabla^2 m_{c_i}^{(k)}(\xk)$.
 \label{i_thought_i_proved_this_already}
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 Suppose the assumptions for
+\cref{lipschitz_hessians_assumption},
 \cref{bounded_gradients_lemma},
+and
 \cref{accuracy_is_satisfied}
 hold.
 There exists a $\maxmodelgrad$ such that for each $k \in \naturals$, 
@@ -4404,6 +4414,110 @@ which contradicts \cref{delta_to_zero}.
 
 
 
+
+
+\begin{criteria}
+\label{the_contradiction}
+This is to be removed...
+\end{criteria}
+
+By \cref{liminf_chi_to_zero}, we are able to define the sequence of pairs
+\begin{align}
+\label{define_slb}
+S_{\textrm{lb}} = \left\{\left(k,
+\min_{i \in \naturals, i > k, \chi_{i} \le \frac{\epsilon_{\textrm{lb}}}2} i
+\right)\right\}_{k=1}^{\infty}.
+\end{align}
+
+Using the same constants as in \cref{define_reduceiterates}, we define
+\begin{align}
+\Delta_{\textrm{lb}}\left(\epsilon_{\textrm{lb}}\right) = \min\left\{
+\dsr,
+\frac{\epsilon_{\textrm{lb}}}{\maxmodelhessian}, 
+\frac{(1-\gammasm)}{\theirc}\epsilon_{\textrm{lb}}, 
+\left(\frac 1 {\kappa_{\chi}}  \epsilon_{\textrm{lb}} \right)^{\frac 1 {p_{\Delta}}}, 
+1
+\right\}. \label{define_delta_lb}
+\end{align}
+
+
+Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.
+Observe that if this limit does hold, then there exists an $\epsilon_{\textrm{lb}} > 0$ such that the set
+\begin{align}
+\mathcal U(\epsilon_{\textrm{lb}}) = \left\{k \in \naturals | \chik \ge \epsilon_{\textrm{lb}} \right\} \label{define_the_finite_set}
+\end{align}
+is infinite.
+
+
+Using the same , \cref{delta_to_zero} implies the existence of $k_0 \in \naturals$ such that for all $k \ge k_0$,
+
+\begin{lemma}
+\label{contradiction_portion}
+Let $\mathcal U\left(\epsilon_{\textrm{lb}} \right)$ and $S_{\textrm{lb}}$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
+Let $ \epsilon_{\textrm{lb}} $ be defined by \cref{the_contradiction}.
+
+Suppose that 
+\cref{bounded_below_assumption}
+and the assumptions for
+\cref{bounded_model_hessian_lemma}, \cref{liminf_chi_to_zero}, \cref{delta_to_zero}, and \cref{sufficient_reduction_theorem} hold.
+Let 
+$S_{\textrm{lb}} \subset \naturals \times \naturals$ be the sequence
+
+If there exists an $\epsilon_{\textrm{lb}} > 0$ such that $\mathcal U\left(\epsilon_{\textrm{lb}} \right)$ is infinite, then
+\begin{align*}
+\lim_{(k, l) \in S_{\textrm{lb}}, k \to \infty} \left\|\xk - \xl\right\| = 0.
+\end{align*}
+
+
+% If \cref{the_contradiction} were true, then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
+\end{lemma}
+\begin{proof}
+% Notice that \cref{liminf_chi_to_zero} ensures that the sequence $S_{lb}$ is well defined.
+By \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k \ge k_1$, 
+then $\dk \le \Delta_{\textrm{lb}} = \Delta_{\textrm{lb}}(\epsilon_{\textrm{lb}})$ as defined in \cref{define_delta_lb}.
+Let $\miniterates$ be defined by \cref{define_miniterates}, and consider
+$C_k = \left\{i \in \miniterates | k_1 \le k \le i < l \right\}$ for $(k, l) \in S_{\textrm{lb}}$.
+Note that $k \in \miniterates$, so $C_k \ne \emptyset $.
+For each $i \in C_k$, using the fact that $i \in \miniterates$, \cref{bounded_model_hessian_lemma}, and \cref{sufficient_reduction_theorem}, we can conclude
+\begin{align*}
+f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) 
+\ge \gammasm \left( \mfk\left(x^{(i)}\right) - \mfk\left(x^{(i)} + s^{(i)}\right) \right) 
+\ge \gammasm \kappa_f \chi_i \min\left\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\right\} 
+\end{align*}
+
+By the definition of $l$, we have that $\chi_i > \frac 1 2 \epsilon_{\textrm{lb}}$ for all $i \in C_k$.
+As $i \ge k$, we have $\Delta_i \le \frac{\epsilon_{\textrm{lb}}}{\maxhessian}$ and $\Delta_i \le 1$.
+Therefore,
+\begin{align*}
+\frac{\Delta_i}{2} \le \frac{\epsilon_{\textrm{lb}}}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
+\end{align*}
+
+It follows that
+\begin{align*}
+f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) > \frac{\gammasm \kappa_f \epsilon_{\textrm{lb}} \Delta_i}{4}
+\end{align*}
+
+and hence
+\begin{align*}
+\Delta_i < \frac{4}{\gammasm \kappa_f \epsilon_{\textrm{lb}}} \left[ f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right)\right].
+\end{align*}
+
+Meanwhile, because steps are taken whenever $\rk \ge \gammasm$, we have that
+\begin{align*}
+\left\|\xk - \xl\right\| \le \sum_{i = k}^{l-1}\left\|x^{(i)} - x^{(i+1)}\right\| = \sum_{i \in C_k}\left\|x^{(i)} - x^{(i+1)}\right\| \le \sum_{i \in C_k} \Delta_i
+\end{align*}
+so that
+
+\begin{align}
+\left\|\xk - \xl\right\| < \frac{4}{\gammasm \kappa_f \epsilon_{lb}} \left[ f\left(\xk\right) - f\left(\xl\right)\right].
+\end{align}
+
+We also know that $\left\{f\left(\xk\right)\right\}$ is bounded below by \cref{bounded_below_assumption}, 
+and since it is nonincreasing, $f\left(\xk\right)  - f\left(\xl\right) \to 0$.
+Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{k \in S_{lb}}$ converges to zero.
+\end{proof}
+
+
 \subsection{Bounded Projection}
 \label{bounding_the_projection_section}
 As discussed at the beginning of \cref{convergence_discussion}, this section is devoted to showing convergence of the difference
@@ -4643,21 +4757,24 @@ Finally, we combine everything to see
 \end{proof}
 
 
-
-\begin{comment}
-Compact sets...
-\end{comment}
-
-
-For any two convex sets $S_1$ and $S_2$, define
+We define the distance from a point $s$ to a convex set $S$ as
+\begin{align*}
+D\left(s, S\right) = \inf_{s' \in S} \left\|s - s'\right\|,
+\end{align*}
+and the distance between any two convex sets $S_1$ and $S_2$ as
+% \convexdistance\left(S_1, S_2\right) = \max_{s' \in S_1 \cup S_2} \min_{s \in S_1 \cap S_2} \|s' - s\|. \label{define_a_difference_between_sets}
 \begin{align}
-\convexdistance\left(S_1, S_2\right) = \max_{s' \in S_1 \cup S_2} \min_{s \in S_1 \cap S_2} \|s' - s\|. \label{define_a_difference_between_sets}
+\convexdistance\left(S_1, S_2\right) = 
+\max \left\{
+	\sup_{s  \in S_1} D\left(s , S_2\right),
+	\sup_{s' \in S_2} D\left(s', S_1\right)
+\right\}. \label{define_a_difference_between_sets}
 \end{align}
 
 \begin{lemma}
 \label{board_tied_to_sphere}
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
-Let $g \in \Rn$ and let $S, S' \subseteq \Rn$ be convex and non-empty.
+Let $g \in \Rn$ and let $S, S' \subseteq \Rn$ be convex with $S \cap S' \ne \emptyset$.
 Suppose that $0 < \epsilon \le 1$ is given with $D\left(S, S'\right) \le \epsilon$.
 Then 
 \begin{align*}
@@ -4665,11 +4782,18 @@ Then
 \end{align*}
 \end{lemma}
 \begin{proof}
-Because $\convexdistance(S, S') \le \epsilon$, we know that $S \cap S' \ne \emptyset$.
-Let $x = P_S(g) - g$ and $y = P_{S'}(g) - g$, $u = P_{S \cap S'}(g + x) - g$, $v = P_{S \cap S'}(g + y) - g$, $a = P_{S \cap S'}(g) - g$.
-Then, because $S \cap S' \subseteq S$ and $S \cap S' \subseteq S'$ we have
+% Because $\convexdistance(S, S') \le \epsilon$, we know that $S \cap S' \ne \emptyset$.
+If $g \in S \cap S'$, then $\left\|P_S(g) - P_{S'}(g)\right\|cd  = 0 \le 8 \sqrt{\epsilon} \le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}$.
+Otherwise, let 
+\begin{align*}
+\begin{array}{ccc}
+x = P_S(g) - g      & u = P_{S \cap S'}(g + x) - g & a = P_{S \cap S'}(g) - g \\
+y = P_{S'}(g) - g   & v = P_{S \cap S'}(g + y) - g. &  \\
+\end{array}
+\end{align*}
+Because $S \cap S' \subseteq S$ and $S \cap S' \subseteq S'$ we have
 $\|x\| = \|P_S(g) - g\| \le \|P_{S \cap S'} (g) - g\| = \|a\|$ and $\|y\| \le \|a\|$.
-Also, by optimality conditions of $a$, we know that the plane $a^Tx \ge a^Ta$ separates $S \cap S'$ from $g$.
+Also, because $S \cap S'$ is convex, the optimality conditions for $a$ imply the plane $a^Tx \ge a^Ta$ separates $S \cap S'$ from $g$.
 In particular, $a^Tu \ge a^Ta$ and $a^Tv \ge a^Ta$.
 Finally, because $\convexdistance(S, S') \le \epsilon$, we have $\|x - u\| = \|P_{S \cap S'}\left(P_S(g)\right)\| \le \epsilon$ and $\|y - v\| \le \epsilon$.
 Thus, \cref{properties_of_a_circle} informs us
@@ -4679,7 +4803,7 @@ $\|P_S(g) - P_{S'}(g)\| = \|x - y\| \le 8(1 + \|a\|) \sqrt{\epsilon}$.
 
 \begin{corollary}
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
-Let $g, g' \in \Rn$ and let $S, S' \subseteq \Rn$ be convex and non-empty.
+Let $g, g' \in \Rn$ and let $S, S' \subseteq \Rn$ be convex with $S \cap S' \ne \emptyset$.
 Suppose that $0 < \epsilon \le 1$ is given with $D\left(S, S'\right) \le \epsilon$ and $\|g - g'\| \le \epsilon$.
 Then $\|P_S(g) - P_{S'}(g')\| \le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}$.
 \end{corollary}
@@ -7429,92 +7553,6 @@ and conclude
 \subsubsection{Criticallity Goes to Zero, Part 2}
 \label{limit_of_criticallity_to_zero}
 
-\begin{criteria}
-\label{the_contradiction}
-Let $\chik$ be defined by \cref{define_criticality_measure}.
-There exists $\epsilon_{\textrm{lb}} > 0$, such that the set 
-$\mathcal U = \left\{k \in \naturals | \chik \ge \epsilon_{\textrm{lb}} \right\}$
-is infinite.
-\end{criteria}
-
-Letting $\epsilon_{lb}$ be defined by \cref{the_contradiction}, as well as the other constants used in \cref{define_reduceiterates},
-define
-\begin{align}
-\Delta_{lb} = \min\left\{
-\dsr,
-\frac{\epsilon_{lb}}{\maxmodelhessian}, 
-\frac{(1-\gammasm)}{\theirc}\epsilon_{lb}, 
-\left(\frac 1 {\kappa_{\chi}}  \epsilon_{lb} \right)^{\frac 1 {p_{\Delta}}}, 
-1
-\right\}. \label{define_delta_lb}
-\end{align}
-
-
-Using the same , \cref{delta_to_zero} implies the existence of $k_0 \in \naturals$ such that for all $k \ge k_0$,
-
-\begin{lemma}
-\label{contradiction_portion}
-Let $ \epsilon_{\textrm{lb}} $ be defined by \cref{the_contradiction}.
-
-Suppose that 
-\cref{bounded_below_assumption}
-and the assumptions for
-\cref{bounded_model_hessian_lemma}, \cref{liminf_chi_to_zero}, \cref{delta_to_zero}, and \cref{sufficient_reduction_theorem} hold.
-Let 
-$S_{lb} \subset \naturals \times \naturals$ be the sequence
-\begin{align}
-\label{define_slb}
-S_{lb} = \left\{\left(k,
-\min_{i \in \naturals, i > k, \chi_{i} \le \epsilon_{\textrm{lb}}} i
-\right)\right\}_{k=1}^{\infty}.
-\end{align}
-
-If \cref{the_contradiction} were true, then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
-\end{lemma}
-\begin{proof}
-Notice that \cref{liminf_chi_to_zero} ensures that the sequence $S_{lb}$ is well defined.
-By \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k \ge k_1$, then $\dk \le \Delta_{lb}$ as defined in \cref{define_delta_lb}.
-Let $\suffiterates$ be defined by \cref{define_suffiterates}, and consider
-$C_k = \left\{i \in \suffiterates | k_1 \le k \le i < l \right\}$ for $(k, l) \in S_{lb}$.
-Note that $k \in \suffiterates$, so $C_k \ne \emptyset $.
-For each $i \in C_k$, using the fact that $i \in \suffiterates$, \cref{bounded_model_hessian_lemma}, and \cref{sufficient_reduction_theorem}, we can conclude
-\begin{align*}
-f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) 
-\ge \gammabi \left( \mfk\left(x^{(i)}\right) - \mfk\left(x^{(i)} + s^{(i)}\right) \right) 
-\ge \gammabi \kappa_f \chi_i \min\left\{\frac{\chi_{i}}{\maxhessian}, \Delta_i, 1\right\} 
-\end{align*}
-
-By the definition of $l$, we have that $\chi_i > \frac{\epsilon_{lb}}{2}$ for all $i \in C_k$.
-As $i \ge k$, we have $\Delta_i \le \frac{\epsilon_{lb}}{\maxhessian}$ and $\Delta_i \le 1$.
-Therefore,
-\begin{align*}
-\frac{\Delta_i}{2} \le \frac{\epsilon_{lb}}{2 \maxhessian} \le \frac{\chi_i}{\maxhessian}.
-\end{align*}
-
-It follows that
-\begin{align*}
-f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right) > \frac{\gammabi \kappa_f \epsilon_{lb} \Delta_i}{4}
-\end{align*}
-
-and hence
-\begin{align*}
-\Delta_i < \frac{4}{\gammabi \kappa_f \epsilon_{lb}} \left[ f\left(x^{(i)}\right) - f\left(x^{(i+1)}\right)\right].
-\end{align*}
-
-Meanwhile,
-\begin{align*}
-\left\|\xk - \xl\right\| \le \sum_{i \in C_k}\left\|x^{(i)} - x^{(i+1)}\right\| \le \sum_{i \in C_k} \Delta_i
-\end{align*}
-so that
-
-\begin{align}
-\left\|\xk - \xl\right\| < \frac{4}{\gammabi \kappa_f \epsilon_{lb}} \left[ f\left(\xk\right) - f\left(\xl\right)\right].
-\end{align}
-
-We also know that $\left\{f\left(\xk\right)\right\}$ is bounded below by \cref{bounded_below_assumption}, 
-and since it is nonincreasing, $f\left(\xk\right)  - f\left(\xl\right) \to 0$.
-Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{k \in S_{lb}}$ converges to zero.
-\end{proof}
 
 
 \begin{lemma}
