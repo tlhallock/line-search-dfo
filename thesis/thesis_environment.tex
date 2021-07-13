@@ -1,0 +1,81 @@
+%
+% File thesis_environment.tex
+%
+% Description:
+% This file contains environments for theorems, lemmas, definitions,
+% proofs, corollaries, algorithms, examples, remarks, and assumptions.
+% The numbering is set up so that the same counter is used for ALL
+% these environments.  This seems to make it easier for readers to
+% find referenced material.  The counter is reset for each chapter.
+%
+% EXAMPLE
+%    Definition 3.1
+%    Lemma 3.2
+%    Example 3.3
+%    Theorem 3.4
+%    Theorem 3.5
+%    Lemma 3.6 ....
+%
+%    Lemma 4.1
+%    Corollary 4.2 ....
+%
+% The Definition environment is indented on both sides.  This
+% is not required, but seemed to be a nice way to separate definitions
+% from proven results.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+
+
+
+\newcounter{assumptioncounter}
+\newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
+\textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+
+
+\newenvironment{boxedcomment}
+  {\par\medskip
+   \color{red}%
+   \begin{framed}
+   \textbf{Comment: }\ignorespaces}
+ {\end{framed}
+  \medskip}
+  
+
+\newenvironment{assumptions}
+  {\par\medskip
+   \color{blue}%
+   \begin{framed}
+   \textbf{Assumptions: }\ignorespaces}
+ {\end{framed}
+  \medskip}
+  
+  
+  
+
+\crefname{assumptioncounter}{Assumption}{assumption}
+% \crefname{equation}{}{equations}
+% \newtheorem{theorem}{Theorem}[section]
+% \newtheorem{corollary}[theorem]{Corollary}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheoremstyle{case}{}{}{}{}{}{:}{ }{}
+% \theoremstyle{case}
+% \newtheorem{case}{Case}
+% \numberwithin{theorem}{subsection}
+
+
+
+\def\proof{\par{\it Proof}. \ignorespaces}
+
+\def\endproof{\vbox{\hrule height0.6pt\hbox{%
+   \vrule height1.3ex width0.6pt\hskip0.8ex
+   \vrule width0.6pt}\hrule height0.6pt
+  }}

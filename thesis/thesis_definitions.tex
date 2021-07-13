@@ -1,0 +1,242 @@
+
+
+
+%============================
+
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% \newcommand{\symboldefinition}[4]{#1}
+
+
+\newcommand{\ehuffo}{{\epsilon_{\textrm{huff, 1}}}}
+\newcommand{\ehufft}{{\epsilon_{\textrm{huff, 2}}}}
+\newcommand{\mhufft}{{M_{\textrm{huff, 2}}}}
+
+
+
+\newcommand{\activeconstraintsk}{{\mathbb A_{k}}}
+\newcommand{\activeconstraintsl}{{\mathbb A_{l}}}
+\newcommand{\activeconstraintskpo}{{\mathbb A_{k+1}}}
+
+\newcommand{\atr}{A^{\infty}}
+\newcommand{\btr}{b^{\infty}}
+
+\newcommand{\bpr}{{B_{\infty}\left(p, r\right)}}
+\newcommand{\bs}{{\beta^{(\star, k)}}}
+\newcommand{\bsk}{{\beta_0^{(\star, k)}}}
+\newcommand{\capcones}{{C^{(k)}_{\cap}}}
+\newcommand{\chik}{{\chi^{(k)}}}
+\newcommand{\chil}{{\chi^{(l)}}}
+\newcommand{\ck}{{c^{(k)}}}
+\newcommand{\dacc}{{\Delta_{\textrm{acc}}}}
+\newcommand{\dacco}{{\Delta_{\textrm{a}}}}
+\newcommand{\deltalargzik}{{\Delta_{\alpha,\beta}}}
+\newcommand{\dfeas}{{\Delta_{\textrm{feasible}}}}
+\newcommand{\dk}{\Delta_k}
+\newcommand{\dl}{\Delta_l}
+\newcommand{\dkpo}{\Delta_{k+1}}
+\newcommand{\dsr}{{\Delta_{\textrm{sr}}}}
+\newcommand{\fcki}{{C^{(k+1)}_{\textrm{in}}}}
+\newcommand{\feasiblek}{{\mathcal F_m^{(k)}}}
+\newcommand{\feasiblel}{{\mathcal F_m^{(l)}}}
+\newcommand{\feasible}{{\mathcal F}}
+\newcommand{\fmin}{f_{\text{min}}}
+\newcommand{\gammabi}{\gamma_{\textrm{suff}}}
+\newcommand{\gammasm}{\gamma_{\textrm{min}}}
+\newcommand{\gcik}{{\nabla c_i \left(\xk\right)}}
+\newcommand{\gk}{{\nabla m_f^{(k)}\left(\xk\right)}}
+\newcommand{\gl}{{\nabla m_f^{(l)}\left(\xl\right)}}
+\newcommand{\gmcik}{{\nabla m_{c_i}^{(k)}\left(\xk\right)}}
+\newcommand{\gmcil}{{\nabla m_{c_i}^{(l)}\left(\xl\right)}}
+\newcommand{\gradf}{\nabla f}
+\newcommand{\hgik}{{\frac{\nabla m^{(k)}_{c_i}(\xk)}{\|\nabla m^{(k)}_{c_i}\left(\xk\right)\|}}}
+\newcommand{\hk}{{\nabla^2m_f^{(k)}\left(\xk\right)}}
+\newcommand{\huff}{{\Gamma_0}}
+\newcommand{\huk}{{{\hat u}^{(k)}}}
+\newcommand{\lipgrad}{{L_{\nabla}}}
+\newcommand{\liphess}{{L_{\nabla^2}}}
+\newcommand{\maxgrad}{{M_{\nabla}}}
+\newcommand{\maxhessian}{{M_{\nabla^2}}}
+\newcommand{\maxmodelhessian}{{M_{\nabla^2 m}}}
+\newcommand{\maxnorm}{{M_{\|\cdot\|}}}
+\newcommand{\mcik}{{{m}^{(k)}_{c_i}}}
+\newcommand{\mcil}{{{m}^{(l)}_{c_i}}}
+\newcommand{\mck}{{{m}_{c}}^{(k)}}
+\newcommand{\mfk}{{{m}_f}^{(k)}}
+\newcommand{\mfkmo}{{{m}_f}^{(k-1)}}
+\newcommand{\minactivegraddelta}{{\Delta_{\mathcal A}}}
+\newcommand{\minactivegrad}{{ g_{\mathcal A} }}
+\newcommand{\minanglealpha}{{ \alpha^{\star} }}
+\newcommand{\minangledelta}{{\Delta_{\alpha^{\star}}}}
+\newcommand{\mingraddelta}{{\Delta_{\nabla c}}}
+\newcommand{\mingradepsilon}{{\epsilon_{\nabla c}}}
+\newcommand{\mingrad}{{ g_{\textrm{low}} }}
+\newcommand{\naturals}{\mathbb N}
+\newcommand{\oalpha}{\tau_{\Delta}}
+\newcommand{\omegadec}{\omega_{\text{dec}}}
+\newcommand{\omegainc}{\omega_{\text{inc}}}
+\newcommand{\outertrk}{{T_{\text{out}}^{(k)}}}
+\newcommand{\outertrkpo}{{T_{\text{out}}^{(k+1)}}}
+\newcommand{\polydn}{\mathcal{P}^d_n}
+\newcommand{\qk}{{Q^{(k)}}}
+\newcommand{\reals}{\mathbb R}
+\newcommand{\rk}{\rho_k}
+\newcommand{\Rm}{\mathbb R^m}
+\newcommand{\Rn}{\mathbb R^n}
+\newcommand{\rotk}{{R^{(k+1)}}}
+\newcommand{\sampletrk}{{T_{\text{interp}}^{(k)}}}
+\newcommand{\sampletrkpo}{{T_{\text{interp}}^{(k+1)}}}
+\newcommand{\scaledunshiftedellipsoid}{{{\mathcal {\hat E}_{\text{feasible}}}^k}}
+\newcommand{\sdk}{{\delta_k}}
+\newcommand{\searchtrk}{{T_{\text{search}}^{(k)}}}
+\newcommand{\sigmamax}{{\sigma_{\textrm{max}}}}
+\newcommand{\sk}{{{s}^{(k)}}}
+\newcommand{\thetamink}{{\pi^k_{\textrm{min}}}}
+\newcommand{\tolcrit}{\tau_{\xi}}
+\newcommand{\tolrad}{\tau_{\Delta}}
+\newcommand{\tr}{{ B_{\infty}\left(\xk, \dk\right) }}
+\newcommand{\trkpo}{{ B_{\infty}\left(\xkpo, \dkpo\right) }}
+\newcommand{\trsinfset}{{E_\textrm{infeasible}}}
+\newcommand{\trstol}{{\delta_\textrm{infeasible}}}
+\newcommand{\unshiftedellipsoid}{{\mathcal E^k_{\textrm{feasible}}}}
+\newcommand{\wik}{{w^{(i, k)}}}
+\newcommand{\ximin}{\xi_{\text{min}}}
+\newcommand{\xkpo}{{{x}^{(k+1)}}}
+\newcommand{\xk}{x^{(k)}}
+\newcommand{\xl}{{x^{(l)}}}
+\newcommand{\xinit}{{x^{(0)}}}
+\newcommand{\zik}{{z^{(i, k)}}}
+\newcommand{\zil}{{z^{(i, l)}}}
+\newcommand{\deltamingrad}{{\Delta_{\textrm{mm}}}}
+\newcommand{\mingradmodel}{{ g_{\textrm{mm}} }}
+\newcommand{\activefeasiblek}{{\mathcal F^{(k)}_A}}
+\newcommand{\activechik}{{\chi_A^{(k)}}}
+\newcommand{\qkmo}{{Q^{(k-1)}}}
+\newcommand{\qkpo}{{Q^{(k+1)}}}
+\newcommand{\ckmo}{{c^{(k-1)}}}
+\newcommand{\ckpo}{{c^{(k+1)}}}
+\newcommand{\sdkmo}{{\delta_{k-1}}}
+\newcommand{\sdkpo}{{\delta_{k+1}}}
+\newcommand{\projk}{{p^{(k)}}}
+\newcommand{\projl}{{p^{(l)}}}
+\newcommand{\projkl}{{p^{(k,l)}}}
+\newcommand{\projlk}{{p^{(l,k)}}}
+\newcommand{\projkk}{{p^{(k,k)}}}
+\newcommand{\projll}{{p^{(l,l)}}}
+\newcommand{\trueprojk}{{p_c^{(k)}}}
+\newcommand{\truefeasiblek}{{F_c^{(k)}}}
+\newcommand{\truefeasible}{{F_c}}
+\newcommand{\trueactiveprojk}{{\mathbb P_c^{(k)}}}
+\newcommand{\nearlyactiveprojk}{{\mathbb P_{a}}}
+\newcommand{\activeprojkk}{{\mathbb P^{(k, k)}}}
+\newcommand{\activeprojkl}{{\mathbb P^{(k, l)}}}
+\newcommand{\activeprojlk}{{\mathbb P^{(l, k)}}}
+\newcommand{\activeprojll}{{\mathbb P^{(l, l)}}}
+\newcommand{\unshiftedellipsoidpo}{{\mathcal E^{k+1}_{\textrm{feasible}}}}
+\newcommand{\scaledunshiftedellipsoidpo}{{{\mathcal {\hat E}_{\text{feasible}}}^{k+1}}}
+\newcommand{\unshiftedellipsoidkpo}{{\mathcal E^{k+1}_{\textrm{feasible}}}}
+\newcommand{\image}{{\textrm{im}}}
+\newcommand{\maxmodelgrad}{{M_{\nabla m}}}
+\newcommand{\minangleu}{{replace me}}
+\newcommand{\minanglediralt}{{w_f}}
+\newcommand{\minangledir}{{u_{f not used anymore}}}
+\newcommand{\minangledirk}{{u^{(k)}_f}}
+\newcommand{\minangledirl}{{u^{(l)}_f}}
+\newcommand{\epsactive}{{\mathbb A_c}}
+\newcommand{\epsactivemodels}{{\mathbb A_{m}}}
+\newcommand{\fik}{{C^{(i, k)}}}
+\newcommand{\suffiterates}{{\mathcal K_{\textrm{suff}}}}
+\newcommand{\miniterates}{{\mathcal K_{\textrm{min}}}}
+\newcommand{\reduceiterates}{{\mathcal K_{\textrm{sr}}}}
+\newcommand{\theircnot}{{\kappa_1}}
+\newcommand{\theirc}{{\kappa_2}}
+\newcommand{\zikthresh}{{ K_{\textrm{a}} }}
+\newcommand{\jackk}{{J^{(k)}}}
+\newcommand{\jackl}{{J^{(l)}}}
+\newcommand{\jackkl}{{J^{(k)}_{\activeprojkk \cup \activeprojkl}}}
+\newcommand{\jaclkl}{{J^{(l)}_{\activeprojkk \cup \activeprojkl}}}
+\newcommand{\jackt}{{J^{(k)}_{\activeprojkk \cup \trueactiveprojk}}}
+\newcommand{\huffeps}{{\epsilon_h}}
+\newcommand{\huffalpha}{{\alpha_h}}
+\newcommand{\huffdir}{{u_h}}
+\newcommand{\huffdirk}{{u^{(k)}_h}}
+\newcommand{\activeprojk}{{\textrm{active projection k}}}
+\newcommand{\activeprojl}{{active projection l}}
+
+\newcommand{\ulb}{{\mathcal U\left(\epsilon_{\textrm{lb}}\right)}}
+\newcommand{\elb}{{\epsilon_{\textrm{lb}}}}
+\newcommand{\slb}{{S_{\textrm{lb}}\left(\epsilon_{\textrm{lb}}\right)}}
+\newcommand{\dlb}{{\Delta_{\textrm{lb}}\left(\epsilon_{\textrm{lb}}\right)}}
+
+
+\newcommand{\convexdistance}{{D}}
+
+
+
+
+
+\newcommand{\activeindicesk}{{ \mathbb I_h^{(k)} }}
+\newcommand{\huffindicesk}{{ \mathbb H_h^{(k)} }}
+\newcommand{\inactiveindicesk}{{ \mathbb J_h^{(k)} }}
+\newcommand{\huffthreshold}{{\Delta_{\textrm{H}}}}
+
+
+\newcommand{\deltalb}{{\delta_{\textrm{min}}}}
+
+
+\newcommand{\minactivealpha}{{ \alpha_{\textrm{h}} }}
+\newcommand{\activedirk}{{ u_{h}^{(k)} }}
+\newcommand{\activegradmin}{{ g_{\textrm{h}} }}
+
+
+\newcommand{\modeljack}{{ \nabla m^{(k)}_{c}\left(\xk\right) }}
+\newcommand{\modeljacl}{{ \nabla m^{(l)}_{c}\left(\xl\right) }}
+\newcommand{\truejack}{{ \nabla c\left(\xk\right) }}
+
+
+\newcommand{\zmk}{{z_m^{(k, k)}}}
+\newcommand{\zlk}{{z_l^{(k, l)}}}
+\newcommand{\zck}{{z_c^{(k)}}}
+
+\newcommand{\Amk}{{\mathbb A_m^{(k, k)}}}
+\newcommand{\Alk}{{\mathbb A_l^{(k, l)}}}
+\newcommand{\Ack}{{\mathbb A_c^{(k)}}}
+
+
+
+
+
+
+
+
+
+
+
+% Need to remove
+\newcommand{\domain}{X}
+\newcommand{\dmax}{{\Delta_{\textrm{max}}}}
+\newcommand{\ellipsek}{{E^{(k)}}}
+\newcommand{\ak}{{\nabla m_c^{(k)}\left(\xk\right)}}
+\newcommand{\bk}{{m_c^{(k)}\left(\xk\right)}}
+
+
+\newcommand{\uk}{{\huk}}
+
+\newcommand{\activei}{{\mathcal A}}
+\newcommand{\alphaone}{{\alpha_1}}
+\newcommand{\alphatwo}{{\alpha_2}}
+\newcommand{\alphathree}{{\alpha_3}}
+\newcommand{\unshiftedcone}{{E_{\textrm{sh}}}}
+\newcommand{\shiftedcone}{{E_{\textrm{unsh}}}}
+\newcommand{\deltaf}{{\delta_{f}}}
+
+
+
+
+
+
+
+
