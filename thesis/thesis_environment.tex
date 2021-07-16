@@ -38,6 +38,8 @@
 \newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
 \textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
 
+\numberwithin{assumptioncounter}{chapter}
+\crefname{assumptioncounter}{Assumption}{assumption}
 
 
 \newenvironment{boxedcomment}
@@ -56,12 +58,9 @@
    \textbf{Assumptions: }\ignorespaces}
  {\end{framed}
   \medskip}
-  
-  
-  
 
-\crefname{assumptioncounter}{Assumption}{assumption}
-% \crefname{equation}{}{equations}
+
+
 % \newtheorem{theorem}{Theorem}[section]
 % \newtheorem{corollary}[theorem]{Corollary}
 % \newtheorem{definition}[theorem]{Definition}

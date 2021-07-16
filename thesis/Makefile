@@ -1,5 +1,10 @@
 
-build_pdf bp2 bp3:
+
+copy_tex:
+	cp *.tex ./output_directory/
+
+
+build_pdf bp2 bp3: copy_tex
 	pdflatex -synctex=1 -output-directory ./output_directory thesis.tex
 
 build_bib:

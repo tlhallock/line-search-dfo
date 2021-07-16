@@ -15,7 +15,7 @@ $B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, cent
 \end{align}
 $\delta_{i,j}$ is the Kronecker delta, $\delta_{i, j} = \begin{cases} 1 & \textrm{if} \; i = j \\ 0 & \textrm{if} \; i \ne j \end{cases}$.
 The complement of a set $S$ is denoted as $\bar S$.
-Let the condition number of a matrix $Q$ be denoted $\sigma(Q)$.
+Let the condition number of a matrix $Q$ be denoted $\condition(Q)$.
 Define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
 Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
 % For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.
@@ -210,18 +210,25 @@ $B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with
 % This can ensure that the Vandermonde matrix is well conditioned.
 This is useful because of \cref{quadratic_errors}, which is shown in \cite{introduction_book}.
 
+
+\begin{assumption}
+\label{introduction_3_1}
+We assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
+poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{i \in [p]} \|y^0 - y^i\|$.
+
+Further, assume that the function $f$ is twice continuously differentiable in an open domain $\domain$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
+is Lipschitz continuous in $\domain$ with constant $\liphess > 0$.
+\end{assumption}
+
+
 \begin{theorem}
 \label{quadratic_errors}
-Assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
-poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{i \in [p]} \|y^0 - y^i\|$.
-Further, assume that the function $f$ is twice continuously differentiable in an open domain $\Sigma$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
-is Lipschitz continuous in $\Omega$ with constant $L_h > 0$.
-
-Then, if $m$ is a quadratic model function for $f$ constructed as in \cref{reg}, there exist constants $\kappa_f$, $\kappa_g$, $\kappa_h$ dependent only on $p_1$, $L_h$, and $\Lambda$ such that:
+Let \cref{introduction_3_1} be satisfied and $m$ be a quadratic model function constructed as in \cref{reg}.
+Then there exist constants $\kappa_f$, $\kappa_g$, $\kappa_h$ that dependent only on $p$, $\liphess$, and $\Lambda$ such that:
 \begin{align}
-\|\nabla^2 f(y) - \nabla^2 m(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_hessian}\\
-\|\gradf(y) - \nabla m(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta_Y) \label{error_in_gradient} \\
-|f(y) - m(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta_Y). \label{error_in_function} 
+\left\|\nabla^2 f(y) - \nabla^2 m(y)\right\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta_Y), \label{error_in_hessian}\\
+\left\|\gradf(y) - \nabla m(y)\right\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta_Y), \label{error_in_gradient} \\
+\textrm{and} \quad \left|f(y) - m(y)\right| \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta_Y). \label{error_in_function} 
 \end{align}
 \end{theorem}
 
@@ -363,9 +370,9 @@ during some iterations in which $\rk > \gammabi$.
 \section{Trust Regions}
 Our algorithm maintains up to three trust regions.
 \begin{itemize}
-\item \textbf{The Outer Trust region} is denoted by $\outertrk$.
-\item \textbf{The Sample Region} is denoted by $\sampletrk$ and is used as to constrain sample points to ensure their feasibility.
-\item \textbf{The Search Region} is denoted by $\searchtrk$ and is used within the trust region subproblem.
+\item \textbf{The Outer Trust region} is an $L-\infty$ ball of radius $\dk$ and denoted by $\outertrk$.
+\item \textbf{The Sample Region} is denoted by $\sampletrk$ and constrains sample points to ensure their feasibility.
+\item \textbf{The Search Region} is denoted by $\searchtrk$ and constrains the search iterate within the trust region subproblem.
 \end{itemize}
 
 The outer trust region is an $L_{\infty}$ ball of radius $ \dk $ defined by
