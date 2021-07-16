@@ -1453,7 +1453,7 @@ We have two methods for dealing with this case.
 In this case, we have chosen to solve the trust region subproblem over again, after adding a linear constraint that removes this infeasible point.
 Each new linear constraint not only cuts off the last trial point, but also stays at least a fraction of the trust region radius away.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/pyomo_cut_solution.png}
     \caption{
@@ -2296,20 +2296,20 @@ Then the transformation $T(x) = \delta D L^T(x - \ckmo)$ maps $\unshiftedellipso
 As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \begin{align*}
 \begin{array}{ccc}
-\hat {m}_f(u) = m_f(T^{-1}(u)),&  \hat f (u) = f(T^{-1}(u)) &\\
-\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \hat c_i (u) = c(T^{-1}(u))& \forall i \in [m]
+\hat {m}_f(u) = m_f(T^{-1}(u)),&  \hat f (u) = f(T^{-1}(u)), &\\
+\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \quad \textrm{and} \quad \hat c_i (u) = c(T^{-1}(u))& \forall i \in [m]
 \end{array}
 \end{align*}
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
 there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
 \begin{align*}
-\begin{array}{ccc}
-\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 &
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 &
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta \\
-\left\| \hat {{c_i}}\left(u\right) -  \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_f \delta^3 &
-\left\|\nabla \hat {{c_i}}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_g \delta^2 &
-\left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
+\begin{array}{cc}
+\left| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right|\le \kappa_f \delta^3, &
+\left| \hat {{c_i}}\left(u\right) -  \hat{m}_{c_i}\left(u\right) \right|\le \kappa_f \delta^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2, &
+\left\|\nabla \hat {{c_i}}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_g \delta^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta, &
+\quad \textrm{and} \quad \left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
 \end{array}
 \end{align*}
 By \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
@@ -2318,7 +2318,7 @@ By \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that fo
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &
 \left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2 \\
 \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le 2\Lambda_3 \delta = {\kappa'}_h\delta^2, &
-\left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
+\quad \textrm{and} \quad \left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
 \end{array}
 \end{align*}
 where $\kappa_{g}' = 2 \Lambda_2$ and $\kappa_{h}' = 2\Lambda_3$.
@@ -2570,11 +2570,11 @@ Let
 y = \wik + ts \in \fik \cap \left[\tr \cup \trkpo\right] \label{t_is_bounded}
 \end{align}
 with $t > 0, \|s\| = 1, -s^T\hgik \ge \beta \dk^{p_{\beta}}$.
-Note that $y \in \left[\tr \cup \trkpo\right]$, $\dkpo \le \omegainc\dk$, and $\xkpo \in \tr$ mean that
+Note that $y \in \tr \cup \trkpo$, $\dkpo \le \omegainc\dk$, and $\xkpo \in \tr$ imply
 \begin{align}
 \label{eccif_bound_t}
 t = \frac{\left\|y - \wik\right\|}{\left\|s\right\|} 
-\le \left\|y - \xkpo\right\| + \left\|\xkpo - \xk\right\| + \left\|\xk - \wik\right\|
+\le \left\|y - \xkpo\right\| + \left\|\xkpo - \xk\right\| + \left\|\xk - \wik\right\| \\
 \le \sqrt{n}\left(2 + \omegainc \right)\dk.
 \end{align}
 We know from \cref{bounded_hessians_assumption} that for all $x \in \Rn$,
@@ -2604,7 +2604,7 @@ Also, note by $\dk \le \dfeas$, \cref{define_abpab}, and $\dk^{1 - p_{\alpha}} \
 and $0 < 1 - \alpha \dk^{p_{\alpha}} < 1$.
 Combine these along with \cref{z_is_active} to find 
 \begin{align*}
-\maxhessian \sqrt{n}\dk^{1-p_{\alpha}}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2  + \kappa_g \dk^{2 - p_{\alpha}} \left(1 - \alpha \dk^{p_{\alpha}}\right)
+\maxhessian \sqrt{n}\dk^{1-p_{\alpha}}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2  + \kappa_g \dk^{2 - p_{\alpha}} \left(1 - \alpha \dk^{p_{\alpha}}\right) \\
 \le \maxhessian \sqrt{n}\dk^{1 - p_{\alpha}} + \kappa_g \dk^{2 - p_{\alpha}} \le \alpha \|\gmcik\|
 \end{align*}
 Multiplying by $\dk^{p_{\alpha}}$ we see,
@@ -2613,12 +2613,16 @@ Multiplying by $\dk^{p_{\alpha}}$ we see,
 \end{align*}
 Multiplying by $-\frac{c_i(\xk)}{\|\gmcik\|} > 0$ and using $\zik \in \tr \Longrightarrow \frac{-c_i(\xk)}{\|\gmcik\|} \le \sqrt{n}\dk$, we see
 \begin{align*}
--\alpha \dk^{p_{\alpha}}\|\gmcik\|\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) + \maxhessian \left(1 - \alpha \dk^{p_{\alpha}}\right)^2 \left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)^2\\
+-\alpha \dk^{p_{\alpha}}\left\|\gmcik\right\|\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)  \\
++ \maxhessian \left(1 - \alpha \dk^{p_{\alpha}}\right)^2 \left(-\frac{c_i(\xk)}{\|\gmcik\|}\right)^2 \\
 +\kappa_g \dk^2 \left(1 - \alpha \dk^{p_{\alpha}}\right)\left(-\frac{c_i(\xk)}{\|\gmcik\|}\right) \le 0.
 \end{align*}
 Cancelling terms, we see
 \begin{align*}
-0 \ge \alpha \dk^{p_{\alpha}} c_i(\xk) + \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2 + \kappa_g \dk^2 \left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|}.
+0 
+\ge \alpha \dk^{p_{\alpha}} c_i(\xk) 
++ \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2 \\
++ \kappa_g \dk^2 \left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|}.
 \end{align*}
 Because the last term is positive, we can only decrease the expression by multiplying by $\nu^T \frac{\gmcik}{\|\gmcik\|} \le 1$:
 \begin{align*}
@@ -2627,14 +2631,17 @@ Because the last term is positive, we can only decrease the expression by multip
 \end{align*}
 Using \cref{simple_computation}, this is
 \begin{align*}
-0 \ge c_i(\xk)\left[1 - \left(1 - \alpha \dk^{p_{\alpha}}\right)\right] + \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2 + \kappa_g \dk^2\nu^T \left(\wik - \xk\right)
+0 \ge c_i(\xk)\left[1 - \left(1 - \alpha \dk^{p_{\alpha}}\right)\right] 
++ \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2 \\
++ \kappa_g \dk^2\nu^T \left(\wik - \xk\right)
 \end{align*}
 Multiplying $c_i(\xk)$ by $1 = \frac{\|\gmcik\|^2}{\|\gmcik\|^2}$ and distributing, we find
 \begin{align*}
 0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik  \\
 + \maxhessian \left\|\left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\gmcik\right\|^2
 + \kappa_g \dk^2\nu^T \left(\wik - \xk\right) \\
-0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right)+ \maxhessian \left\|\wik - \xk\right\|^2  + \kappa_g \dk^2\nu^T \left(\wik - \xk\right).
+\Longrightarrow 0 \ge c_i(\xk) + \left(\gmcik\right)^T\left(\wik - \xk\right) \\
++ \maxhessian \left\|\wik - \xk\right\|^2  + \kappa_g \dk^2\nu^T \left(\wik - \xk\right).
 \end{align*}
 by \cref{simple_computation}.
 Using \cref{model_error_for_gradient} and \cref{constraint_lower_bound} we see
@@ -2646,12 +2653,13 @@ Also, by \cref{define_fik} we have $-s^T \hgik \ge \beta \dk^{p_{\beta}}$ where 
 By our assumption $\dk \le \dfeas$, \cref{define_abpab}, \cref{z_is_active} we know
 \begin{align*}
 \dk \le \left[\frac{\beta}{4\kappa_g}\mingrad \right]^{\frac 1 {2 - p_{\beta}}}
-\Longrightarrow \dk^{2 - p_{\beta}} \le \frac{\beta}{\kappa_g}\left(\frac 1 2\mingrad  - \frac 1 4 \mingrad \right)
+\Longrightarrow \dk^{2 - p_{\beta}} \le \frac{\beta}{\kappa_g}\left(\frac 1 2\mingrad  - \frac 1 4 \mingrad \right) \\
 \Longrightarrow \frac{\kappa_g}{\beta} \dk^{2 - p_{\beta}} \le \|\gmcik\| - \frac 1 4 \mingrad.
 \end{align*}
 Multiplying by $\dk^2$, and using $-s^T \hgik \ge \beta \dk^{p_{\beta}}$, we see
 \begin{align*}
--s^T\gmcik =  -\|\gmcik\|s^T\hgik \ge \|\gmcik\|\beta\dk^{p_{\beta}} \\
+-s^T\gmcik =  -\|\gmcik\|s^T\hgik \\
+\ge \|\gmcik\|\beta\dk^{p_{\beta}} 
 \ge \frac 1 4 \mingrad  \beta \dk^{p_{\beta}} + \kappa_g\dk^2.
 \end{align*}
 Because $\|\nu\| = \|s\| = 1$,
@@ -2665,7 +2673,7 @@ Subtracting the last term and using \cref{model_error_for_gradient}
 \end{align}
 We also know by $\dk \le \dfeas$ and \cref{define_abpab} that
 \begin{align*}
-\dk \le \left[\frac {\mingrad  \beta} {4\maxhessian\sqrt{n}\left(2 + \omegainc + \frac {\lipgrad} \maxhessian \right)}\right]^{\frac1 {1 - p_{\beta}} }
+\dk \le \left[\frac {\mingrad  \beta} {4\maxhessian\sqrt{n}\left(2 + \omegainc + \frac {\lipgrad} \maxhessian \right)}\right]^{\frac1 {1 - p_{\beta}} } \\
 \Longrightarrow \sqrt{n}\left(2 + \omegainc + \frac {\lipgrad} \maxhessian \right) \dk^{1-p_{\beta}}\le \frac 1 {4\maxhessian} \mingrad  \beta
 \end{align*}
 Multiplying by $\dk^{p_{\beta}}$,
@@ -2686,7 +2694,8 @@ Multiplying by $\maxhessian$ and adding the right hand side, we see
 \end{align*}
 Multiplying by $t$ and using \cref{z_is_active},
 \begin{align*}
- t \left(\lipgrad\|\wik - \xk\| + \nabla c_i(\xk)^Ts + \maxhessian t\right) \le t \left(\sqrt{n}\dk \lipgrad + \nabla c_i(\xk)^Ts + \maxhessian t\right) \le 0.
+ t \left(\lipgrad\|\wik - \xk\| + \nabla c_i(\xk)^Ts + \maxhessian t\right) \\
+ \le t \left(\sqrt{n}\dk \lipgrad + \nabla c_i(\xk)^Ts + \maxhessian t\right) \le 0.
 \end{align*}
 Using \cref{lipschitz_gradients_assumption},
 \begin{align*}
@@ -3843,7 +3852,7 @@ $.
 We multiply these to find
 \begin{align*}
 \sqrt{\|x\|^2 - \frac{\left(a^Tx\right)^2}{a^Ta}}
-= \sqrt{\left(\|x\| - \frac{a}{\|a\|}^Tx\right)\left(\|x\| + \frac{a}{\|a\|}^Tx\right)}
+= \sqrt{\left(\|x\| - \frac{a}{\|a\|}^Tx\right)\left(\|x\| + \frac{a}{\|a\|}^Tx\right)} \\
 \le \sqrt{2\|a\|\epsilon + \epsilon^2} \le \epsilon + \sqrt{2\|a\|\epsilon}.
 \end{align*}
 
@@ -4054,9 +4063,9 @@ Then $\|P_S(g) - P_{S'}(g')\| \le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sq
 Notice
 \begin{align*}
 \|P_S(g) - P_{S'}(g')\| 
-\le \|P_S(g) - P_{S'}(g)\| + \|P_{S'}(g) - P_{S'}(g')\| 
+\le \|P_S(g) - P_{S'}(g)\| + \|P_{S'}(g) - P_{S'}(g')\| \\
 \le \|P_S(g) - P_{S'}(g)\| + \|g - g'\| \\
-\le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon} + \epsilon
+\le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon} + \epsilon \\
 \le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}.
 \end{align*}
 \end{proof}
@@ -4249,7 +4258,12 @@ A'(v - p) = A' \bigg[(1-t) z + tp - p\bigg] = (1-t) A' (z - p) \le b'.
 Because $t \in [0, 1]$, \cref{reun_eqn3} and convexity imply $C'(v - p) \le d$.
 Lastly, $t \ge \frac{s}{r + s} \Longrightarrow (1 - t) \left(r + s\right) \le r$, so that
 \begin{align*}
-\|v - p\| = \|(1-t)z + t p - p\| = (1 - t) \|z - p\| \le (1 - t) \left(\|x - p\| + s\right) \le (1 - t) \left(r + s\right) \le r
+\|v - p\| 
+= \|(1-t)z + t p - p\| 
+= (1 - t) \|z - p\| \\
+\le (1 - t) \left(\|x - p\| + s\right) 
+\le (1 - t) \left(r + s\right) 
+\le r
 \end{align*}
 and $v \in S'$.
 \begin{boxedcomment}
@@ -4286,9 +4300,9 @@ Combining these produces,
 Explanations:
 \begin{align*}
 \delta \le \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)}
-\le \frac{\epsilon\delta_{\alpha}}{(4 + 2r - \epsilon)(r + 1)} 
-\Longrightarrow \frac{\delta(r + 1)}{\delta_{\alpha}}  \le \frac{\epsilon}{4 + 2r - \epsilon} \Longrightarrow
-s\le \frac{\epsilon}{4 + 2r - \epsilon}
+\le \frac{\epsilon\delta_{\alpha}}{(4 + 2r - \epsilon)(r + 1)} \\
+\Longrightarrow \frac{\delta(r + 1)}{\delta_{\alpha}}  \le \frac{\epsilon}{4 + 2r - \epsilon} 
+\Longrightarrow s\le \frac{\epsilon}{4 + 2r - \epsilon}
 \end{align*}
 \begin{align*}
 s\le \frac{\epsilon}{(2r - \epsilon)} \Longrightarrow
@@ -4470,8 +4484,8 @@ Also, by \cref{accuracy_is_satisfied}, we have
 \end{align*}
 so that
 \begin{align*}
-\nabla c_i\left(\xk\right)^T \left(-\minangledirk\right) = 
-\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \nabla c_i\left(\xk\right) \right)^T\left(-\minangledirk\right) \\
+\nabla c_i\left(\xk\right)^T \left(-\minangledirk\right) \\
+= \gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \nabla c_i\left(\xk\right) \right)^T\left(-\minangledirk\right) \\
 \ge \minanglealpha \activegradmin - \left\|\gmcik - \nabla c_i\left(\xk\right) \right\|\left\|\minangledirk\right\|
 \ge \minanglealpha \activegradmin - \frac 1 2 \minanglealpha \activegradmin = \minactivealpha.
 \end{align*}
@@ -4483,8 +4497,8 @@ then \cref{model_gradients_are_cauchy} provides a $k_3 \in \naturals$ such that 
 \end{align*}
 Thus,
 \begin{align*}
-\left\|\gmcil \left(-\minangledirk\right) \right\| = 
-\left\|\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \gmcil \right)^T\left(-\minangledirk\right)\right\| \\
+\left\|\gmcil \left(-\minangledirk\right) \right\| \\
+= \left\|\gmcik^T\left(-\minangledirk\right) + \left(\gmcik - \gmcil \right)^T\left(-\minangledirk\right)\right\| \\
 \ge \minanglealpha \activegradmin - \left\|\gmcik - \gmcil \right\|\left\|\minangledirk\right\|
 \ge \minanglealpha \activegradmin - \frac {\minanglealpha \activegradmin} {2} = \minactivealpha.
 \end{align*}
@@ -4712,7 +4726,8 @@ c_i\left(\xk\right) + \gmcik^T\left(\zmk - \xk\right) = 0.
 Thus, $\zmk = P_{\feasiblek(\mathcal U)}\left(\xk - \gk\right)$ for any $\mathcal U \subseteq [m]$ with $\Amk \subseteq \mathcal U$.
 In particular,
 \begin{align*}
-\zmk =& P_{\feasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right) = P_{\feasiblek\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right)\\
+\zmk =& P_{\feasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right) \\
+=& P_{\feasiblek\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right)\\
 \zlk =& P_{\feasiblel\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right) \\
 \zck =& P_{\truefeasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right).
 \end{align*}
@@ -4816,13 +4831,13 @@ By using $g \gets \xk - \gk$, \cref{board_tied_to_sphere} implies
 \end{align*}
 Notice that in Case 1, we have 
 \begin{align*}
-\mathcal S  = \feasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right) \quad \textrm{and} \quad
-\mathcal S' = \truefeasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right), 
+\mathcal S  = \feasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right) \\ 
+\textrm{and} \quad \mathcal S' = \truefeasiblek\left(\Amk \cup \Ack \right) \cap B_2\left(\xk, \maxmodelgrad\right), 
 \end{align*}
 while in Case 2 we have 
 \begin{align*}
-\mathcal S  = \feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right) \quad \textrm{and} \quad
-\mathcal S' = \feasiblel\left(\Amk \cup \Alk \right) \cap B_2\left(\xk, \maxmodelgrad\right).
+\mathcal S  = \feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right) \\
+\textrm{and} \quad \mathcal S' = \feasiblel\left(\Amk \cup \Alk \right) \cap B_2\left(\xk, \maxmodelgrad\right).
 \end{align*}
 Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zlk\| \le \epsilon$.
 \end{proof}
@@ -4861,8 +4876,8 @@ Let $(k, l) \in \slb$ be given with $k \ge k_1$.
 This means that $\chik - \chi^{(l)} \ge \frac {\epsilon} 2 $.
 We know by \cref{lipschitz_gradients_assumption} and \cref{accuracy_is_satisfied} that there is a $\kappa_g > 0$ and $\lipgrad>0$ such that
 \begin{align}
-\left\|\gk - \gl\right\| \nonumber \\
-\le \left\|\gk - \gradf\left(\xk\right)\right\| 
+\left\|\gk - \gl\right\| \nonumber 
+\le \left\|\gk - \gradf\left(\xk\right)\right\| \\
 + \left\|\gradf\left(\xk\right) - \gradf\left(\xl\right)\right\| 
 + \left\|\gradf\left(\xl\right) - \gl \right\| \nonumber \\
 \le \kappa_g \left(\dk^2 + \dl^2\right) + \lipgrad \left\|\xk - \xl \right\| \label{chi2zero2_comp1}
@@ -4932,9 +4947,7 @@ If $\gammasm > 0$, then
 \begin{align*}
 \lim_{k\to\infty} \chi\left(\xk\right) = \lim_{k\to\infty} \left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align*}
-
 \end{theorem}
-
 
 
 \begin{proof}
@@ -4948,11 +4961,11 @@ By the triangle inequality, and the contraction property of projections, we have
 \begin{align}\left \|
  P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
 -P_{\feasiblek}\left(\xk - \gk \right)
-\right\| 
+\right\| \nonumber \\
 \le 
 \bigg \|
- P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) \nonumber \\
--P_{\truefeasiblek}\left(\xk - \gk \right)
+ P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) 
+-P_{\truefeasiblek}\left(\xk - \gk \right) \nonumber \\
 +P_{\truefeasiblek}\left(\xk - \gk \right)
 -P_{\feasiblek}\left(\xk - \gk \right)
 \bigg\| \nonumber \\
@@ -4964,11 +4977,11 @@ By the triangle inequality, and the contraction property of projections, we have
 With $\chik$ defined by \cref{define_criticality_measure}, the triangle inequality implies
 \begin{align*}
 \left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| \\
-= \left\|
+= \bigg\|
  P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
--P_{\feasiblek}\left(\xk - \gk \right)
+-P_{\feasiblek}\left(\xk - \gk \right) \\
 +P_{\feasiblek}\left(\xk - \gk \right)
-- \xk\right\| \\
+- \xk\bigg\| \\
 \le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\zck - \zmk\right\| + \chik
 \end{align*}
 by \cref{single_star}.

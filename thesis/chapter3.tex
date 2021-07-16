@@ -126,7 +126,7 @@ For unconstrained problems, this approach could always find a pivot value for an
 However, when requiring points to live within $ \feasible \cap \outertrk $, it can happen that even after replacing a point, we still have not satisfied this bound.
 In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible \cap \outertrk $ that will leave a sufficiently large pivot.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/bad_lambda.png}
     \caption{Limited sample point choice}
@@ -209,7 +209,7 @@ The second option is to elongate the trust region along the nearest constraint a
 Of course, both of these can be done at the same time.
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=200px]{images/small_circle.png}
     \includegraphics[width=200px]{images/shifted_center.png}
@@ -222,7 +222,7 @@ Of course, both of these can be done at the same time.
 In order to address this issue we considered using ellipsoidal trust regions.
 Whereas the circle does not allow improvement when the current iterate lies along a constraint, an ellipsoid elongates along this constraint.
 In figure \cref{ellipse_adv}, we have this type of iterate, but by using an ellipsoid we are still able to search towards the vertex of the feasible region.
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/advantage_of_ellipse_2.png}
     \caption{A nicer trust region}
@@ -455,7 +455,7 @@ This has the advantage that it captures much of the feasible region.
 However, one problem with this search is that it can force the trust region away from the desired direction.
 Notice that in \cref{ellipse_runs_away}, although the ellipsoid found has larger volume than before being shifted, this ellipsoid contains points farther from the corner containing the minimizer.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/everything_runs_1.png}
     \includegraphics[scale=0.4]{images/everything_runs_2.png}
@@ -477,7 +477,7 @@ One way of trying to ensure a feasible direction towards a vertex, while still a
 For example, our first attempt was to simply search a line directed orthogonally away from the closest constraint.
 This has obvious problems as shown in \cref{first_line_search}, as we should avoid letting the new center get closer to another constraint:
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/line_1.png}
     \includegraphics[scale=0.4]{images/line_2.png}
@@ -524,7 +524,7 @@ In figure \cref{line_can_run}, the red line shows the line segments equidistant 
 Notice that with two line segments, the algorithm can already choose new centers further from the vertex.
 
 % TODO: REPLACE PICTURES
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/run_away_1.png}
     \includegraphics[scale=0.4]{images/run_away_2.png}
@@ -883,18 +883,9 @@ Then $T_k(\unshiftedcone) = \shiftedcone$.
 \end{lemma}
 
 \begin{proof}
+Observe that $\rotk e_1 = \uk$, $\rotk \uk = e_1$, $\det(\rotk) = 1$, and 
+$\rotk \rotk ^T = \rotk ^T\rotk = I$
 
-
-\begin{comment}
-This is the only time that I use the matrix environment...
-\end{comment}
-
-Observe that
-\begin{align*}
-\begin{matrix}
-\rotk e_1 = \uk,  & \rotk \uk = e_1, &  \rotk \rotk ^T = \rotk ^T\rotk = I, &  \text{and} \det(\rotk) = 1.
-\end{matrix}
-\end{align*}
 Suppose that $x \in \unshiftedcone$.
 Then there exists $t \ge 0$ and $s \in \Rn$ such that $x = \xk + t \uk+ s$ where $s^T \uk = 0$ and $\|s\| \le \alpha_k t$.
 Then $T_k(x) = t\rotk\uk + \rotk s = te_1 + \rotk s$.
@@ -1404,7 +1395,7 @@ Note that algorithms with high performance profiles for small values of $alpha$ 
 The performance profile for the Hot-Schittkowski problem set is give in figure \cref{performance_profile}.
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/performance_profile_plot.png}
     \caption{Performance profile}
