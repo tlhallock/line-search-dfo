@@ -2,6 +2,7 @@
 
 copy_tex:
 	cp *.tex ./output_directory/
+	cp -r assumptions.d ./output_directory
 
 
 build_pdf bp2 bp3: copy_tex
