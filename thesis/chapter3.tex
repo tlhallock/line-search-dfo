@@ -674,7 +674,7 @@ The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exist
 
 This is the result of the following lemma:
 \begin{lemma}
-\label{replacing_h3}
+\label[lemma]{replacing_h3}
 Suppose that \cref{lipschitz_hessian}, \cref{delta_max}, and \cref{uniformly_bounded_hessians_of_f} hold.
 Let $\mfk$ is a quadratic model of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{quadratic_errors} for each $k \in \naturals$.
 Then \cref{uniformly_bounded_hessians_of_mf} is also satisfied.
@@ -779,7 +779,7 @@ f_{e}(\alpha, \delta, r; x) = (x - \delta e_1)^T\begin{pmatrix}
 
 
 \begin{lemma}
-\label{alphas_are_positive}
+\label[lemma]{alphas_are_positive}
 Let $\alphathree$ be defined by \cref{define_alpha_three}.
 Suppose that \cref{the_constraints_are_linear} and \cref{interior_point} hold.
 
@@ -813,7 +813,7 @@ if $\|u\| = 1$, then $\left|u^T {\lca}_i\right|^2 \le \|u\|\|{\lca}_i\| = 1$ by 
 \end{proof}
 
 \begin{lemma}
-\label{alphas_are_bounded}
+\label[lemma]{alphas_are_bounded}
 Let $\alpha_k$ be defined by \cref{define_alpha_k}.
 
 Suppose that \cref{the_constraints_are_linear} and \cref{interior_point} hold.
@@ -829,7 +829,7 @@ Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these valu
 \end{proof}
 
 \begin{lemma}
-\label{trivial_ellipsoid_exists}
+\label[lemma]{trivial_ellipsoid_exists}
 Let $\activei$ be defined by \cref{define_activei}.
 
 If $\activei = \emptyset$ during iteration $k$, then there exists a suitable ellipsoid for iteration $k$ according to \cref{define_suitable_ellipsoid}.
@@ -847,7 +847,7 @@ Also, $\condition(\qk) = 1$.
 
 
 \begin{lemma}
-\label{unshiftedconeisfeasible}
+\label[lemma]{unshiftedconeisfeasible}
 Let $\unshiftedcone$ and $\polyk$ be defined by \cref{defineunshiftedcone} and \cref{polyhedron_k}.
 Suppose that \cref{the_constraints_are_linear} holds.
 
@@ -869,7 +869,7 @@ Then,
 
 
 \begin{lemma}
-\label{shifted_ellipsoid_in_cone}
+\label[lemma]{shifted_ellipsoid_in_cone}
 Let $\shiftedcone, f_e, \alpha_k$ be defined as in \cref{defineshiftedcone}, \cref{define_ellipsoid_function}, \cref{define_alpha_k}.
 Then, for all $\delta > 0$, the ellipsoid
 \begin{align}
@@ -895,7 +895,7 @@ Thus, $x \in\shiftedcone$.
 
 
 \begin{lemma}
-\label{linear_mapping_works}
+\label[lemma]{linear_mapping_works}
 Let $\rotk$, $T_k$, $\unshiftedcone$, $\shiftedcone$ be defined as in
 \cref{define_r}, \cref{define_affine_mapping}, \cref{defineunshiftedcone}, \cref{defineshiftedcone}.
 Then $T_k(\unshiftedcone) = \shiftedcone$.
@@ -942,7 +942,7 @@ t \\
 
 
 \begin{lemma}
-\label{ellipsoid_fits}
+\label[lemma]{ellipsoid_fits}
 Let $\rotk$, $T_k$, $\unshiftedcone$, $\shiftedcone$, $\polyk$ be defined as in
 \cref{define_r}, \cref{define_affine_mapping}, \cref{defineunshiftedcone}, \cref{defineshiftedcone}, \cref{polyhedron_k}.
 Suppose that \cref{the_constraints_are_linear} holds.
@@ -980,7 +980,7 @@ Combine this with \cref{unshiftedconeisfeasible} to see that $\ellipsek \subsete
 
 
 \begin{lemma}
-\label{ellipsoid_includes_origin}
+\label[lemma]{ellipsoid_includes_origin}
 For some iteration $k$, let $\rotk$, $T_k$, $\unshiftedcone$, $\shiftedcone$, $\polyk$ be defined as in
 \cref{define_r}, \cref{define_affine_mapping}, \cref{defineunshiftedcone}, \cref{defineshiftedcone}, \cref{polyhedron_k}.
 Also, let $\deltaf > 0$ be defined as in \cref{ellipsoid_fits}.
@@ -1069,7 +1069,7 @@ f_e(\deltaf, \deltaf^2, \alpha_k, 0 ) =
 % Thus, we know that the ellipsoid $E_2$ is contained within the active constraints, and can be scaled by $2$ to include $x_0$.
 
 \begin{lemma}
-\label{nontrivial_ellipsoid_exists}
+\label[lemma]{nontrivial_ellipsoid_exists}
 Let $\alpha_k$ be defined by \cref{define_alpha_k}.
 Suppose that \cref{the_constraints_are_linear} holds.
 
@@ -1122,7 +1122,7 @@ $\cup_{x \in S} B(x; \dmax)$ of the set $S$.
 \end{assumption}
 
 \begin{lemma}
-\label{larson_change_radius} 
+\label[lemma]{larson_change_radius} 
 Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
 If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.

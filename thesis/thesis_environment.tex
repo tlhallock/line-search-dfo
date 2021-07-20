@@ -27,12 +27,18 @@
 
 
 
+%============================
+
 \newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% \numberwithin{thoerem}{chapter}
 
 
+
+\crefname{equation}{}{equations}
 
 \newcounter{assumptioncounter}
 \newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
@@ -50,15 +56,6 @@
  {\end{framed}
   \medskip}
   
-
-\newenvironment{assumptions}
-  {\par\medskip
-   \color{blue}%
-   \begin{framed}
-   \textbf{Assumptions: }\ignorespaces}
- {\end{framed}
-  \medskip}
-
 
 
 \def\proof{\par{\it Proof}. \ignorespaces}

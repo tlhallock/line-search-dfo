@@ -842,7 +842,7 @@ is trusted and adjacent according to definition \cref{ellipsoids_notation_defini
 This is shown within \cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_suitable_theorem_p2}.
 
 \begin{lemma}
-\label{ellipse_in_cone}
+\label[lemma]{ellipse_in_cone}
 Define $f_e$ by \cref{define_ellipse_function}.
 Let $0 < \delta \le \epsilon$ and $\theta > 0$.
 
@@ -903,7 +903,7 @@ where we can take the square root because $e_1^Tx \ge 0$.
 \end{proof}
 
 \begin{lemma}
-\label{ellipse_fits}
+\label[lemma]{ellipse_fits}
 Define $f_e$ by \cref{define_ellipse_function}.
 We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ for any $\delta, \theta > 0$.
 \end{lemma}
@@ -928,7 +928,7 @@ f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\begin{pmatrix}
 
 
 \begin{lemma}
-\label{ellipse_fits_part_2}
+\label[lemma]{ellipse_fits_part_2}
 Define $f_e$ by \cref{define_ellipse_function}.
 
 Suppose that for some $s \in \Rn$ with $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2, 1\right]$, $\delta \in [0, \frac 1 2]$ and $f_e(\delta, \delta, \theta; ts) \le 0$.
@@ -969,7 +969,7 @@ However,
 
 
 \begin{lemma}
-\label{boundbsk}
+\label[lemma]{boundbsk}
 Let $\beta$, $\bsk$, $\thetamink$, and $p_{\beta}$ be defined by \cref{define_abpab}, \cref{define_bsk}, \cref{define_thetamink}, and \cref{define_abpab}.
 
 If $\dk^{p_{\beta}} \le \frac {1} {4\beta}\left(\thetamink\right)^2$, then $\bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
@@ -1086,7 +1086,7 @@ and
 
 
 \begin{lemma}
-\label{boundbeta}
+\label[lemma]{boundbeta}
 Let $\beta$, $\thetamink$, and $\qkpo$ be defined by \cref{define_abpab}, \cref{define_thetamink}, and \cref{define_ellipsek} respectively.
 
 If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\condition \left(\qkpo\right) \le 12 \left(\thetamink\right)^{-2}$.
@@ -1136,7 +1136,7 @@ as $\det(\rotk) = 1$.
 
 
 \begin{lemma}
-\label{cone_subset_cone}
+\label[lemma]{cone_subset_cone}
 Given $u, v \in \Rn$, and $\gamma, \beta \in (0, 1]$ that satisfy $\|u\| = \|v\|= 1$, $u^Tv = \gamma > \beta > 0$, define
 \begin{align*}
 B = \{x\in\Rn | {v}^Tx \ge \beta\|x\|\}, \quad
@@ -1210,7 +1210,7 @@ Thus, any $y \in\Rn$ with $y \in S$ must also have $y \in B$.
 
 
 \begin{lemma}
-\label{large_zik_means_means_no_intersection}
+\label[lemma]{large_zik_means_means_no_intersection}
 Let
 $\zik$ and $\fik$
 be defined by
@@ -1280,7 +1280,7 @@ Putting this together, we see
 \end{proof}
 
 \begin{lemma}
-\label{inner_cone_inside_each_cone}
+\label[lemma]{inner_cone_inside_each_cone}
 Let $\fcki$ and $\capcones$ be defined by \cref{define_inner_cone} and \cref{define_capcones} respectively.
 If 
 % $\dk \le 1$ and 
@@ -1344,7 +1344,7 @@ Thus, $\fcki \subseteq \fik$.
 
 
 \begin{lemma}
-\label{ellsoid_is_suitable_theorem_p1}
+\label[lemma]{ellsoid_is_suitable_theorem_p1}
 Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
 If $\activeconstraintsk = \emptyset$ and $\dkpo \le \omegainc\dk$, 
 then there exists $\deltalargzik>0$ such that if $\dk \le \deltalargzik$ the
@@ -1368,7 +1368,7 @@ Thus, \cref{define_suitable_in_tr} is satisfied because
 
 
 \begin{lemma}
-\label{ellsoid_is_suitable_theorem_p2}
+\label[lemma]{ellsoid_is_suitable_theorem_p2}
 Let $\activeconstraintsk$ 
 % and $\omegainc$ 
 be defined by 
@@ -2060,7 +2060,7 @@ This is required to show the accuracy condition \cref{accuracy}, because this co
 % The accuracy condition dependThis condition number influences model's accuracy. 
 
 \begin{lemma}
-\label{theta_min_is_bounded}
+\label[lemma]{theta_min_is_bounded}
 Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption_alt}, and
 define $\thetamink$ by \cref{define_thetamink}.
 
@@ -2084,7 +2084,7 @@ Therefore, $\thetamink \ge \minanglealpha$.
 \end{proof}
 
 \begin{lemma}
-\label{bounded_condition_numbers}
+\label[lemma]{bounded_condition_numbers}
 Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints};
 $\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise;
 and $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
@@ -2107,7 +2107,7 @@ where $\minangledelta$ is defined by \cref{minangleassumption_alt}.
 
 
 \begin{lemma}
-\label{sampletrk_is_nonempty}
+\label[lemma]{sampletrk_is_nonempty}
 Let $\dacc$ and $\fcki$ be defined by \cref{define_delta_accuracy} and \cref{define_inner_cone}.
 
 \input{assumptions.d/sampletrk_is_nonempty}
@@ -2131,7 +2131,7 @@ $\fcki \ne \emptyset$.
 
 
 \begin{lemma}
-\label{change_radius} 
+\label[lemma]{change_radius} 
 % Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{lipschitz_hessians_assumption} hold.
 
 \input{assumptions.d/change_radius}
@@ -2289,7 +2289,7 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 
 
 \begin{lemma}
-\label{accuracy_is_satisfied_lemma}
+\label[lemma]{accuracy_is_satisfied_lemma}
 Suppose that $\qkmo$, $\ckmo$, and $\sdkmo$ are non-empty according to \cref{ellipsoids_notation_definitions}.
 
 \input{assumptions.d/accuracy_is_satisfied_lemma}
@@ -2372,7 +2372,7 @@ This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoi
 \end{proof}
 
 \begin{lemma}
-\label{bounded_model_hessian_lemma}
+\label[lemma]{bounded_model_hessian_lemma}
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 
 \input{assumptions.d/bounded_model_hessian_lemma}
@@ -2395,7 +2395,7 @@ The same applies to each $\nabla^2 m_{c_i}^{(k)}(\xk)$.
 \end{proof}
 
 \begin{lemma}
-\label{i_thought_i_proved_this_already}
+\label[lemma]{i_thought_i_proved_this_already}
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 
 \input{assumptions.d/i_thought_i_proved_this_already}
@@ -2431,7 +2431,7 @@ that is, $\sampletrk \subseteq \feasible$.
 % During iteration $k$, we construct an ellipsoid that is meant to be feasible for 
 
 \begin{lemma}
-\label{only_small_z_matters}
+\label[lemma]{only_small_z_matters}
 Let $\zik$ and $\mingrad$ be defined by \cref{define_z} and \cref{mingradassumption} respectively.
 
 \input{assumptions.d/only_small_z_matters}
@@ -2523,7 +2523,7 @@ Continuing with \cref{define_z}, \cref{define_mingraddelta}, and $\dk \le 1$ we 
 \end{proof}
 
 \begin{lemma}
-\label{each_constraints_cone_is_feasible}
+\label[lemma]{each_constraints_cone_is_feasible}
 Let $\fik$ be defined by \cref{define_fik}.
 % Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, \cref{minangleassumption_alt}, and \cref{mingradassumption} hold.
 
@@ -2727,7 +2727,7 @@ c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + \maxhessian t^2 \
 
 
 \begin{lemma}
-\label{cone_and_tr_are_feasible}
+\label[lemma]{cone_and_tr_are_feasible}
 Let $\dfeas$, $\activeconstraintsk$, $\fik$, $\feasible$
 be defined by
 \cref{each_constraints_cone_is_feasible},
@@ -2751,7 +2751,7 @@ This follows directly from the definitions and \cref{each_constraints_cone_is_fe
 
 
 \begin{lemma}
-\label{ellipsoid_is_feasible}
+\label[lemma]{ellipsoid_is_feasible}
 Let $\dfeas$ and $\feasible$
 be defined by
 \cref{each_constraints_cone_is_feasible} and
@@ -2774,7 +2774,7 @@ $\unshiftedellipsoid \subseteq \capcones \cap \trkpo \subseteq \feasible$.
 
 
 \begin{lemma}
-\label{searchtrk_is_feasible}
+\label[lemma]{searchtrk_is_feasible}
 Let $\dfeas$, $\capcones$, and $\feasible$
 be defined by
 \cref{each_constraints_cone_is_feasible},
@@ -3518,7 +3518,7 @@ let
 % hold.
 
 \begin{lemma}
-\label{mathcal_k_subset_bar_s}
+\label[lemma]{mathcal_k_subset_bar_s}
 
 Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates} respectively.
 
@@ -3584,7 +3584,7 @@ so that $k \in \miniterates$.
 % hold.
 
 \begin{lemma}
-\label{delta_to_zero}
+\label[lemma]{delta_to_zero}
 
 \input{assumptions.d/delta_to_zero}
 
@@ -3635,7 +3635,7 @@ so that $\lim_{k \in \mathcal U} \dk = 0$.
 % \end{assumptions}
 
 \begin{lemma}
-\label{liminf_chi_to_zero}
+\label[lemma]{liminf_chi_to_zero}
 Let $\chik$ be defined by \cref{define_criticality_measure}.
 
 \input{assumptions.d/liminf_chi_to_zero}
@@ -3695,7 +3695,7 @@ Using the same constants as in \cref{define_reduceiterates}, we define
 
 
 \begin{lemma}
-\label{contradiction_portion}
+\label[lemma]{contradiction_portion}
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
 \input{assumptions.d/contradiction_portion}
@@ -3808,7 +3808,7 @@ This is required within \cref{convergence_section}.
 \end{figure}
 The following lemma is illustrated in \cref{first_lemma}.
 \begin{lemma}
-\label{properties_of_a_circle}
+\label[lemma]{properties_of_a_circle}
 Suppose that $x, y, u, v, a \in \Rn$ and $0 < \epsilon \le 1$ are given satisfying
 \begin{align*}
 \|x\| \le \|a\|, \quad
@@ -4033,7 +4033,7 @@ Not supposed to worry about $S \cap S' = \emptyset$.
 \end{boxedcomment}
 
 \begin{lemma}
-\label{board_tied_to_sphere}
+\label[lemma]{board_tied_to_sphere}
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
 
 Let $g \in \Rn$ and let $S, S' \subseteq \Rn$ be convex with $S \cap S' \ne \emptyset$.
@@ -4088,7 +4088,7 @@ Notice
 \end{proof}
 
 \begin{lemma}
-\label{the_lemma_to_end_all_lemmas}
+\label[lemma]{the_lemma_to_end_all_lemmas}
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
 
 Let
@@ -4359,7 +4359,7 @@ s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
 
 
 \begin{lemma}
-\label{model_gradients_are_cauchy}
+\label[lemma]{model_gradients_are_cauchy}
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
 \input{assumptions.d/model_gradients_are_cauchy}
@@ -4405,7 +4405,7 @@ Let $\minangledelta$ be defined by \cref{minangleassumption_alt} and define
 
 The following observation follows directly from the definition:
 \begin{lemma}
-\label{doesntreallyneedtobesaid}
+\label[lemma]{doesntreallyneedtobesaid}
 Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
 
 If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
@@ -4420,7 +4420,7 @@ Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta
 \end{proof}
 
 \begin{lemma}
-\label{underbound}
+\label[lemma]{underbound}
 Let $\activeindicesk$ be defined by \cref{define_activeindicesk}, and $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption}.
 
 \input{assumptions.d/underbound}
@@ -4451,7 +4451,7 @@ On the other hand, if $-c_i\left(\xk\right) \ge \mingradepsilon$ and $i \in \act
 
 
 \begin{lemma}
-\label{yet_another_bound_on_a_u}
+\label[lemma]{yet_another_bound_on_a_u}
 
 Let $\ulb$, $\slb$, and $\activeindicesk$ be defined by \cref{define_the_finite_set}, \cref{define_slb}, and \cref{define_activeindicesk} respectively.
 
@@ -4573,7 +4573,7 @@ and for any fixed $k$, define
 \end{align}
 
 \begin{lemma}
-\label{norm_of_active_constraints_bounded_below}
+\label[lemma]{norm_of_active_constraints_bounded_below}
 Let $\Alk$ and $\Ack$ be defined by \cref{tbbt_a2} and \cref{tbbt_a3}.
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
@@ -4869,7 +4869,7 @@ Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zl
 
 
 \begin{lemma}
-\label{lim_chi_to_zero}
+\label[lemma]{lim_chi_to_zero}
 Let $\chik$ be defined by \cref{define_criticality_measure}.
 
 \input{assumptions.d/lim_chi_to_zero}
@@ -5087,7 +5087,7 @@ there is a unit vector $\minanglediralt(x)$ such that
 
 
 \begin{lemma}
-\label{mingradlemma}
+\label[lemma]{mingradlemma}
 Suppose that 
 \cref{minangleassumption_alt_func} holds.
 There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
