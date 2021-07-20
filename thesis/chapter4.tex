@@ -147,12 +147,14 @@ This cone is illustrated in \cref{explanation_2}.
     \includegraphics[width=150px]{images/explanation_2.png}
     \includegraphics[width=150px]{images/explanation_3.png}
     \caption{
+    	\emph{Short:} An example of a buffering cone.
+    	\emph{Long:}
+    	As the trust region goes to zero the buffering cone better approximates the linearization of the constraint and becomes locally feasible.
     	The current iterate is the green star;
     	the true constraint is black;
     	the vertex, $\wik$, is the red star;
     	the linearization of the constraint boundary is blue;
     	the cone buffering cone $\fik$ is in red.
-    	As the trust region goes to zero the buffering cone better approximates the linearization of the constraint and becomes locally feasible.
 	}
     \label{explanation_2}
 \end{figure}
@@ -172,11 +174,14 @@ Therefore, to obtain feasible sample points, we require that
     \centering
     \includegraphics[width=150px]{images/completed_2.png}
     \caption{
+    	\emph{Short:}
+    		An example ellipsoidal, buffered sample region.
+    	\emph{Long:}
     	After constructing 
     	the linearization of the constraints in black;
     	the buffering cones in blue;
     	the trusted region $\capcones$ in yellow;
-    	we seek to find an ellipsoid within $\capcones$, such as the one in red/pink.
+    	we seek to find an ellipsoid within $\capcones$ such as the one in red/pink.
 	}
     \label{completed_2}
 \end{figure}
@@ -308,7 +313,10 @@ these rays intersect the hyperplane on the ellipsoid's perspective projection.
     \centering
     \includegraphics[width=300px]{images/perspective_projection.png}
     \caption{
-    	A depiction of the perspective projection.
+    	\emph{Short:}
+    		A depiction of the perspective projection.
+    	\emph{Long:}
+    		The perspective projection is the intersection of the plane and directions from $V$ through the boundary of the ellipsoid.
 	}
     \label{perspective_projection_depiction}
 \end{figure}
@@ -783,9 +791,12 @@ This cone is depicted in \cref{feasible_direction}.
     \centering
     \includegraphics[width=300px]{images/feasible_direction.png}
     \caption{
-    	At times, the conservative ellipsoid may be much smaller than desired.
-    	Here each cone $\fik$ is in blue, and $\fcki$ is in green.
-    	$\fcki$ is contained within the intersection of the $\fik$ cones.
+    	\emph{Short:}
+    		An example of the conservative ellipsoid being overly conservative.
+    	\emph{Long:}
+    		At times, the conservative ellipsoid may be much smaller than desired.
+    		Here, each cone $\fik$ is in blue, and $\fcki$ is in green.
+    		$\fcki$ is contained within the intersection of the $\fik$ cones.
 	}
     \label{feasible_direction}
 \end{figure}
@@ -1457,10 +1468,13 @@ Each new linear constraint not only cuts off the last trial point, but also stay
     \centering
     \includegraphics[width=300px]{images/pyomo_cut_solution.png}
     \caption{
-		Adding linear cuts to remove infeasible points.
-		Sample points that have already been evaluated and found to be feasible are shown as green circles.
-		Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
-		The linear cuts (blue lines) are chosen to minimize the value of the objective (in black) while ensuring that all failed evaluations are infeasible.
+    	\emph{Short:}
+    		Infeasible points can be removed from the search with linear cuts.
+    	\emph{Long:}
+			Adding linear cuts to remove infeasible points.
+			Sample points that have already been evaluated and found to be feasible are shown as green circles.
+			Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
+			The linear cuts (blue lines) are chosen to minimize the value of the objective (in black) while ensuring that all failed evaluations are infeasible.
 	}
     \label{pvip}
 \end{figure}
@@ -3784,8 +3798,11 @@ This is required within \cref{convergence_section}.
 	\centering
 	\includegraphics[width=300px]{images/first_lemma.png}
 	\caption{
-		The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
-		Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
+    	\emph{Short:}
+    		A depiction of the quantities within \cref{properties_of_a_circle}.
+    	\emph{Long:}
+			The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
+			Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
 	}
 	\label{first_lemma}
 \end{figure}
@@ -5023,3 +5040,204 @@ Because $\epsilon$ was arbitrary, it follows that
 
 \section{Numerical Results}
 \section{Weakening an Assumption}
+\label{alternative_assumptions_section}
+
+We have made \cref{minangleassumption_alt}, which is an assumption about the constraint's models.
+We would have preferred to make an assumption about the true constraints: \cref{minangleassumption_alt_func}.
+However, the boundededness of the ellipsoids according to \cref{ellipsoids_notation_definitions} shown in \cref{bounded_condition_numbers}
+is required to show prove \cref{accuracy_is_satisfied}.
+Yet, \cref{accuracy_is_satisfied} is key to applying results about true constraints to results about their models.
+In this section, we discuss some progress towards replacing \cref{minangleassumption_alt} with \cref{minangleassumption_alt_func}.
+In the process, we are also able to remove \cref{mingradassumption}.
+
+
+
+
+
+
+\begin{definition}
+Let $\epsilon > 0$ be a given constant.
+A constraint $c_i(x) \le 0$ is said to be $\epsilon$-nearly active at $x \in \feasible$ if $|c_i(x)| \le \epsilon$.
+\end{definition}
+
+\begin{definition}
+Let $\epsilon > 0$ be given.
+Define the set of indices of $\epsilon$ active constraints at a point $x \in \feasible$ by
+\begin{align}
+\epsactive(x; \epsilon) = \bigg\{ i \in [m] \bigg | |c_i(x)| \le \epsilon \bigg\} \label{define_epsactive}
+\end{align}
+\end{definition}
+
+\begin{definition}
+Let $\epsilon > 0$ be given.
+Define the set of indices of $\epsilon$ active model constraints at a point $x \in \feasible$ by
+\begin{align}
+\epsactivemodels(x; \epsilon) = \bigg\{ i \in [m] \bigg | |m_{c_i}(x)| \le \epsilon  \bigg\} \label{define_epsactivemodels}
+\end{align}
+\end{definition}
+
+\begin{assumption}
+\label{minangleassumption_alt_func}
+There exists $\minanglealpha$ and $\epsilon > 0$ such that for every $x \in \feasible$, 
+there is a unit vector $\minanglediralt(x)$ such that
+\begin{align*}
+\nabla c_i(x)^T\minanglediralt(x) > \minanglealpha\quad \forall i \in \epsactive(x; \epsilon).
+\end{align*}
+\end{assumption}
+
+
+\begin{lemma}
+\label{mingradlemma}
+Suppose that 
+\cref{minangleassumption_alt_func} holds.
+There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
+\begin{align*}
+\| \nabla c_i(x) \| \ge \mingrad \quad \forall i \in \epsactive(x; \mingradepsilon).
+\end{align*}
+\end{lemma}
+\begin{proof}
+Let $x \in \Omega$ be arbitrary.
+By \cref{minangleassumption_alt_func} we know there are some constants $\minanglealpha>0$ and $\epsilon>0$ and unit vector $\minanglediralt(x)$
+such that for all $i \in \epsactive(x; \epsilon)$,
+$\nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha$.
+Letting $\mingradepsilon = \epsilon$ and $\mingrad = \minanglealpha$, we see that for all $i \in \epsactive(x; \mingraddelta)$,
+\begin{align*}
+\|\nabla c_i(x)\| = \|\nabla c_i(x)\| \|\minanglediralt(x)\| \ge \nabla c_i(x)^T\minanglediralt(x) \ge \minanglealpha = \mingrad.
+\end{align*}
+\end{proof}
+
+The following result is close to showing a bound the condition numbers of $\qk$.
+However, it relies on $\dk \to 0$.
+\begin{lemma}
+Suppose \cref{minangleassumption_alt_func} and \cref{bounded_gradients_lemma} are satisfied as well as the assumptions for \cref{accuracy_is_satisfied_lemma}.
+
+There exists $\dacc > 0$ and $\sigma_0 \ge 1$ such that if $\dk \le \dacc$, and
+\begin{align}
+\condition \left( Q^{(k-1)} \right) \le \sigma_0 \label{idk_alt_proof_statement1}
+\end{align}
+then 
+\begin{align}
+\condition \left( \qk \right) \le \sigma_0. \label{idk_alt_proof_statement2}
+\end{align}
+\end{lemma}
+
+
+\begin{proof}
+Let $\epsilon, \minanglealpha > 0$ be defined by \cref{minangleassumption_alt_func}, and $\maxgrad$ be defined by \cref{bounded_gradients_lemma}.
+Define
+\begin{align}
+&M = \frac 1 {\maxgrad + \frac 1 2 \minanglealpha} & \\
+&\textrm{and} \quad \sigma_0 = \max\left\{1, \frac{48}{M^2\left(\minanglealpha\right)^2}\right\}.&
+\end{align}
+By \cref{boundbeta}, there exists $\dacco \left(\frac {M \minanglealpha} 2\right) > 0$ such that if
+$\thetamink \ge \frac {M \minanglealpha} 2$ and $\dk \le \dacco \left(\frac {M \minanglealpha} 2\right)$,
+then $\sigma\left(\qk\right) \le \frac{12}{\left(\frac{M\minanglealpha}{2}\right)^2} = \sigma_0$.
+Define 
+\begin{align}
+\dacc = \min\left\{
+\dacco \left(\frac {M \minanglealpha} 2\right), 
+\sqrt{\frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}},
+\frac{M \epsilon}{\sqrt{n}}
+\right\} \label{define_delta_accuracy2}
+\end{align}
+and suppose that \cref{idk_alt_proof_statement1} and $\dk \le \dacc$ hold.
+By \cref{boundbeta}, \cref{idk_alt_proof_statement2} follows from $\thetamink \ge \frac {M \minanglealpha} 2$.
+
+% then
+% \begin{align}
+% \sqrt{\sigma\left(\qk \right)} \le \frac{48}{M^2\left(\minanglealpha\right)^2}
+% \end{align}
+% Suppose that $\epsactive(\xk; \epsilon) = \emptyset$.
+% for all $y \in \tr$, we have
+% \begin{align*}
+% \left\|\gradf\left(y\right) - \nabla \mfk\left(y\right) \right\| \le \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2.
+% \end{align*}
+% In particular, there exists $u \in \Rn$ with $\|u\| \le 1$ such that
+
+By \cref{accuracy_is_satisfied_lemma}, there exists $\kappa_{g} > 0$ and $u\in\Rn$ with $\|u\|\le 1$ such that
+\begin{align}
+\nabla c_i\left(\xk\right) = \gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u. \label{idk_alt_proof_eqn2}
+\end{align}
+Taking the square root of \cref{idk_alt_proof_statement1} and multiplying by $\dk^2 \le \frac {\minanglealpha}{2\kappa_g\sqrt{\sigma_0}}$, we see
+\begin{align}
+\sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \frac {\minanglealpha} {2\kappa_g}. \label{idk_alt_proof_ass1}
+\end{align}
+We see that by the triangle inequality, \cref{bounded_gradients_lemma}, \cref{idk_alt_proof_eqn2}, and \cref{idk_alt_proof_ass1} that
+\begin{align}
+\left\|\gmcik\right\| \le \left\| \nabla c_i\left(x\right)\right\| + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)} \dk^2 \le \maxgrad + \frac 1 2 \minanglealpha = \frac 1 M \nonumber \\
+\Longrightarrow \frac 1 {\left\|\gmcik\right\|} \ge M. \label{idk_alt_proof_eqn4}
+\end{align}
+
+Let $\activeconstraintsk$ and $\epsactive(x; \epsilon)$
+% and $\epsactivemodels(x; \epsilon)$
+be defined by
+\cref{define_activeconstraints} and \cref{define_epsactive}
+% , and \cref{define_epsactivemodels}
+respectively.
+If $\activeconstraintsk = \emptyset$, then $\sigma\left(\qk\right) = 1$.
+Otherwise, let $i \in \activeconstraintsk$ be arbitrary,
+so that $\zik \in \tr$. By \cref{define_z}
+\begin{align*}
+M \left|m_{c_i}\left(\xk\right)\right| \le \frac{\left|m_{c_i}\left(\xk\right)\right|}{\left\|\gmcik\right\|} \le \sqrt{n} \dk \Longrightarrow
+\left|c_i\left(\xk\right)\right| \le \frac{\sqrt{n}\dk}{M} \le \epsilon
+\end{align*}
+by \cref{define_delta_accuracy2}.
+This means that $i \in \epsactive(\xk; \epsilon)$, so that by \cref{minangleassumption_alt} there exists a unit vector $\minanglediralt(\xk)$ with
+\begin{align}
+\nabla c_i\left(\xk\right)^T\minanglediralt\left(\xk\right) > \minanglealpha \label{idk_alt_proof_eqn1}
+\end{align}
+Substituting \cref{idk_alt_proof_eqn2} into \cref{idk_alt_proof_eqn1} yields:
+\begin{align*}
+\left(\gmcik + \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u\right)^T \minanglediralt(x) > \minanglealpha
+\end{align*}
+Using \cref{idk_alt_proof_ass1}, $\|u\|\le 1$, and $\|\minanglediralt(x)\| = 1$, this becomes
+\begin{align}
+\gmcik^T\minanglediralt(x) > \minanglealpha - \kappa_g \sqrt{\sigma\left( Q^{(k-1)} \right)}\dk^2 u^T\minanglediralt(x) \ge \frac 1 2 \minanglealpha \label{idk_alt_proof_eqn3}
+\end{align}
+Multiplying \cref{idk_alt_proof_eqn3} and \cref{idk_alt_proof_eqn4} yields
+\begin{align}
+\frac{\gmcik}{\left\|\gmcik\right\|}^T  \minanglediralt(x) \ge \frac M 2 \minanglealpha. \label{idk_alt_proof_eqn5}
+\end{align}
+Let $\huk$ be defined by \cref{define_u}, 
+% \begin{align*}
+% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|}
+% \end{align*}
+and $\thetamink$ be defined by \cref{define_thetamink}.
+Then \cref{idk_alt_proof_eqn5} tells us 
+\begin{align*}
+\thetamink = \min_{i \in \activeconstraintsk} \left(-\hgik\right)^T \huk \ge \frac{\gmcik}{\left\|\gmcik\right\|}^T \minanglediralt(x) \ge \frac M 2 \minanglealpha.
+\end{align*}
+% Then by \cref{boundbeta}, there exists $\dacc(\epsilon) > 0$ such that if $\thetamink >$
+% \begin{align*}
+% \sigma\left(\qk\right) \le \frac{48}{M^2\left(\minanglealpha\right)^2}
+% \end{align*}
+% Now,
+% \begin{align*}
+% \sigma_2 = \frac{\max\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}{\min\left\{1, \frac{\beta^2}{1 - \beta^2}\right\}}
+% \end{align*}
+
+% We know that the next trial point $\xkpo$ must also lie within the trust region, so that we have both
+% \begin{align*}
+% \left\|\gradf\left(\xk\right) - \nabla \mfk\left(\xk\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \left\|\gradf\left(\xkpo\right) - \nabla \mfk\left(\xkpo\right) \right\| \le \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \end{align*}
+% 
+% \begin{align*}
+% \nabla \mfk\left(\xk\right)  = \gradf\left(\xk\right) + \kappa_g \sqrt{\sigma_1}\dk^2 \\
+% \end{align*}
+% 
+% 
+% 
+% Let $\bsk$ be defined by \cref{define_bsk}.
+% Let $\alpha$ and $\beta$ be defined by \cref{define_alpha_beta}.
+% Let $p_{\alpha}$ and $p_{\beta}$ be defined by \cref{define_p_alpha} and \cref{define_p_beta} respectively.
+% \begin{align}
+% \end{align}
+% 
+% \begin{align*}
+% \huk \in -\argmin_{\|u\| = 1} \max_{i \in \activeconstraintsk} u^T \frac{\gmcik}{\left\|\gmcik\right\|} \\
+% \bsk = \beta\dk^{p_{\beta}} + \sqrt{\left(1 - \left(\beta\dk^{p_{\beta}}\right)^2\right)\left(1 - \left(\thetamink\right) ^2\right)} \\
+% \end{align*}
+\end{proof}
+
+

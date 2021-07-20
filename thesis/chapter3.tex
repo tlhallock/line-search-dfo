@@ -129,7 +129,10 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/bad_lambda.png}
-    \caption{Limited sample point choice}
+    \caption{
+    	\emph{Short:} An example of constraints limiting sample point choices.
+    	\emph{Long:} If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set.
+    }
     \label{lspc}
 \end{figure}
 
@@ -213,7 +216,12 @@ Of course, both of these can be done at the same time.
     \centering
     \includegraphics[width=200px]{images/small_circle.png}
     \includegraphics[width=200px]{images/shifted_center.png}
-    \caption{When the current iterate is too close to a constraint, the circular trust region becomes too small. Shifting the trust region center helps remedy this. The star is the current iterate, the green is the outer trust region, and blue the inner.}
+    \caption{
+    	\emph{Short:} The advantage of not requiring the sample region center to be the trust region center.
+    	\emph{Long:} When the current iterate is too close to a constraint, the circular trust region becomes too small.
+    	Shifting the trust region center helps remedy this.
+    	The star is the current iterate, the green is the outer trust region, and blue the inner.
+    }
     \label{options_basis}
 \end{figure}
 
@@ -225,7 +233,10 @@ In figure \cref{ellipse_adv}, we have this type of iterate, but by using an elli
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/advantage_of_ellipse_2.png}
-    \caption{A nicer trust region}
+    \caption{
+    	\emph{Short:} An ellipsoidal trust region allows for more progress than a circular trust region.
+    	\emph{Long:} Although the center of the ellipsoid is close to the boundary of the constraints, it can elongate to allow progress.
+    }
     \label{ellipse_adv}
 \end{figure}
 
@@ -459,7 +470,11 @@ Notice that in \cref{ellipse_runs_away}, although the ellipsoid found has larger
     \centering
     \includegraphics[scale=0.4]{images/everything_runs_1.png}
     \includegraphics[scale=0.4]{images/everything_runs_2.png}
-    \caption{Searching $\feasible$}
+    \caption{
+    	\emph{Short:} An example of how the search for the sample region center can go wrong.
+    	\emph{Long:} On the left, a very small sample region is selected; however its proximity to the the minimizer over the outer trust region makes the model more accurate at the minimizer.
+    	On the right, a sample region with larger volume is chosen, but it is further from the trust region minimizer.
+	}
     \label{ellipse_runs_away}
 \end{figure}
 
@@ -475,21 +490,22 @@ If it lies in the interior, there is little need for using constrained approache
 One way of trying to ensure a feasible direction towards a vertex, while still allowing a larger volume ellipsoid, is by limiting the search for the new center to lie on line segments starting at the current iterate $\xk$.
 
 For example, our first attempt was to simply search a line directed orthogonally away from the closest constraint.
-This has obvious problems as shown in \cref{first_line_search}, as we should avoid letting the new center get closer to another constraint:
+This has obvious problems as shown in \cref{first_line_search}: we should avoid letting the new center get closer to another constraint.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/line_1.png}
     \includegraphics[scale=0.4]{images/line_2.png}
-    \caption{Line searches}
+    \caption{
+    	\emph{Short:} Why only considering the nearest constraint is not sufficient. 
+    	\emph{Long:} On the left is the starting ellipsoid.
+    	By choosing centers further away from only the nearest constraint, the ellipsoid becomes narrow as another constraint is limiting the length of the second axis.
+	}
     \label{first_line_search}
 \end{figure}
 
-
-For a given distance $d$, let the indices $i$ for which $\frac {|A_i x - b|}{\|A_i\|} \le d$
-
-
 To fix this, we break the search space within the \emph{ConstructrustRegion} subroutine into segments based on the nearest constraints.
+% For a given distance $d$, let the indices $i$ for which $\frac {|A_i x - b|}{\|A_i\|} \le d$.
 The algorithm works by choosing a set of up to $n_{\text{points}}$ points $s_1, s_2, \ldots, s_{n_{\text{points}}}$ that are each equidistant to a subset of the constraint's faces.
 The center search then considers points along the line segments between these points.
 % Namely, it starts at the current iterate and travels along a ray away from all the closest constraints until it reaches a point equidistant to yet another constraint.
@@ -528,7 +544,11 @@ Notice that with two line segments, the algorithm can already choose new centers
     \centering
     \includegraphics[scale=0.4]{images/run_away_1.png}
     \includegraphics[scale=0.4]{images/run_away_2.png}
-    \caption{Ellipse runs away from the optimizer}
+    \caption{
+%     	\emph{Short:} Why only considering the nearest constraint is not sufficient. 
+%     	\emph{Long:} On the left is the starting ellipsoid.
+%     	By choosing centers further away from only the nearest constraint, the ellipsoid becomes narrow as another constraint is limiting the length of the second axis.
+    Ellipse runs away from the optimizer}
     \label{line_can_run}
 \end{figure}
 
@@ -1398,7 +1418,11 @@ The performance profile for the Hot-Schittkowski problem set is give in figure \
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/performance_profile_plot.png}
-    \caption{Performance profile}
+    \caption{
+    	\emph{Short:} A performance profile comparing different variants of the algorithm for linear constraints.
+    	\emph{Long:} A performance profile comparing different variants of the algorithm for linear constraints.
+    	We see that the polyhedral algorithm is both efficient and robust.
+    }
     \label{performance_profile}
 \end{figure}
 
