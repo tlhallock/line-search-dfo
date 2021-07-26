@@ -243,7 +243,7 @@ In figure \cref{ellipse_adv}, we have this type of iterate, but by using an elli
 
 More specifically, at iteration $k$, we choose a scaling factor $\sdk$ and solve for an ellipsoid center $\ck \in \Rn$ and positive definite matrix $\qk$ to define an ellipsoid
 \begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg| \; \frac 1 2 \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \sdk \right\}.
+\ellipsek = \left\{x \in \Rn \bigg| \; \frac 1 2 \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}.
 \end{align*}
 The simplest approach is to simply let the center of the ellipsoid be the current iterate: $\ck = \xk$.
 
@@ -421,23 +421,23 @@ This can be done by either of the following two options:
 
 %IMAGES GO HERE
 
-\paragraph{Adding a constraint.}
+\paragraph*{Adding a constraint.}
 In order to include the original point as a constraint, we add a constraint to the definition of the ellipsoid of the following form:
 \begin{align*}
-\frac 1 2 \left(\xk - \ck\right)^T\qk\left(\xk - \ck\right) \le \sdk.
+\frac 1 2 \left(\xk - \ck\right)^T\qk\left(\xk - \ck\right) \le \frac 1 2 \sdk^2.
 \end{align*}
 Constraints of this nature make finding the ellipsoid much more expensive:
 the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
-\paragraph{Increase the size.}
+\paragraph*{Increase the size.}
 An alternative is to scale $\qk$ by a constant.
 We use the scaling factor $\sdk$ defined by
 \begin{align*}
-\sdk = \max \left\{1, \frac 1 {2} \left(\xk - \sdk\right)^T \qk \left(\xk - \sdk\right)^T \right\}
+\sdk = \max \left\{1, \sqrt{\left(\xk - \ck \right)^T \qk \left(\xk - \ck \right)} \right\}
 \end{align*}
 and let the ellipsoid be:
 \begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg| \left(x - \ck\right)^T \qk \left(x - \ck\right) \le 2\sdk\right\}
+\ellipsek = \left\{x \in \Rn \bigg| \frac 1 2 \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk^2\right\}
 \end{align*}
 However, this means that in general $\ellipsek \not \subset \feasible$ so that the trust region subproblem must contain constraints for both the ellipsoid and the feasible region: 
 $\searchtrk = \ellipsek \cap \feasiblek$.
@@ -759,8 +759,8 @@ Here, $\alphathree$ is a set of directions that hopefully head away from each of
 Throughout, we will use a couple different cones, which can be described here
 \begin{align}
 \mathcal C(\alpha, d, c) = \left\{x \in \Rn | \quad x = c + t d + s, s^Td= 0, t \ge 0, \|s\| \le \alpha t\right\} \\
-\unshiftedcone = \mathcal C(\alpha_k, \uk, \xk) = \{x \in \Rn | \quad x = \xk + t \uk+ s, s^Tu^{\star} = 0, t \ge 0, \|s\| \le \alpha_k t\} \label{defineunshiftedcone} \\
-\shiftedcone = \mathcal C(\alpha_k, e_1, 0) =  \{x = (t, s)^T \in \Rn, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} |\quad \|s\| \le \alpha_k t \} \label{defineshiftedcone}
+\unshiftedcone = \mathcal C(\alpha_k, \uk, \xk) = \left\{x \in \Rn \bigg | \quad x = \xk + t \uk+ s, s^Tu^{\star} = 0, t \ge 0, \|s\| \le \alpha_k t\right\} \label{defineunshiftedcone} \\
+\shiftedcone = \mathcal C(\alpha_k, e_1, 0) =  \left\{x = (t, s)^T \in \Rn, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} \bigg |\quad \|s\| \le \alpha_k t \right\} \label{defineshiftedcone}
 \end{align}
 
 We will use the following mapping to go between these cones:
@@ -873,7 +873,7 @@ Then,
 Let $\shiftedcone, f_e, \alpha_k$ be defined as in \cref{defineshiftedcone}, \cref{define_ellipsoid_function}, \cref{define_alpha_k}.
 Then, for all $\delta > 0$, the ellipsoid
 \begin{align}
-\left\{x \in \Rn | f_e(\alpha_k, \delta, \frac 1 2 \delta^2; x) \le 0 \right\} \subseteq \shiftedcone.
+\left\{x \in \Rn \bigg | f_e\left(\alpha_k, \delta, \frac 1 2 \delta^2; x\right) \le 0 \right\} \subseteq \shiftedcone.
 \end{align}
 \end{lemma}
 
@@ -996,7 +996,7 @@ satisfies $\xk \in \scaledellipsek$.
 We have that
 \begin{align*}
 f_e(\deltaf, \deltaf^2, \alpha_k, T_k\left(\xk\right) ) =  
-f_e(\deltaf, \deltaf^2, \alpha_k, 0 ) =  
+f_e(\deltaf, \deltaf^2, \alpha_k, 0 ) = \\
 (0 - \deltaf e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \alpha_k^{-2} \boldsymbol I \\
@@ -1111,6 +1111,7 @@ This is because $\det(\rotk) = 1$ means the condition number of $\qk$ is not aff
 I think we no longer use this result...
 \end{boxedcomment}
 
+\color{red}
 We use the following result shown \cite{BillupsLarson2013}, Corollary 4.7.
 We restate the theorem here, with the simplication that $f$ is deterministic function:
 
@@ -1134,16 +1135,182 @@ Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R
 \end{align*}
 \end{lemma}
 
+\color{black}
+
+
+\begin{lemma}
+\label[lemma]{change_radius} 
+% Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{lipschitz_hessians_assumption} hold.
+
+Assume that a function $f$ is twice continuously differentiable in an open domain $\domain$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
+is bounded by $\maxhessian$ and Lipschitz continuous in $\domain$ with constant $\liphess > 0$.
+
+% Let $f$ be a function with bounded, Lipschitz continuous hessian.
+
+% Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\domain$ with bound $M$ and Lipschitz constant $\liphess$.
+% Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+% Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
+
+Suppose further, that there there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
+\begin{align*}
+\left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3. % \Delta
+\end{align*}
+Then let $r > 1$ be arbitrary.
+There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^0, r\Delta\right)$,
+\begin{align*}
+\left|f(x) - m_f(x)\right| \le \Lambda_1' r^2 \\ % \Delta^3
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r\\ % \Delta^2
+\left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3' r .% \Delta
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+Let $x \in B\left(y^{0}, r\Delta\right)$, and define
+\begin{align*}
+\Lambda_3' = \Lambda_3 + \liphess \Delta \\
+\Lambda_2' = 2 \Delta M + \Lambda_2 +  \Delta \Lambda_3'\\
+\Lambda_1' = \Lambda_1 + \Lambda_2' \Delta\\
+\end{align*}
+
+By assumption, $\left\|\nabla^2 f(x) - \nabla^2 f(y)\right\| \le \liphess\left\|x-y\right\| \forall x,y \in \domain$.
+Because of this, and because $m_f$ is a quadratic model, we have
+\begin{align*}
+\left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right)\right\|
+= \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \\
+\le \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| + \left\| \nabla^2 f\left(y^0\right) - \nabla^2 m_f\left(y^0\right)\right\|
+\le \liphess \|x - y\| + \Lambda_3 \le  \Lambda_3' r .
+\end{align*}
+
+
+By the mean value theorem and by assumption $\left\|\nabla^2 f\right\| \le \maxhessian$, there exists $\xi^1 \in [y^0, x]$ with
+\begin{align*}
+\left\|\nabla f\left(x\right) - \nabla f\left(y^0\right) \right\|
+\le \left\|x - y^0\right\| \left\| \nabla^2 f\left(\xi^1\right) \right\|
+\le r \Delta \maxhessian \\
+\left\|\nabla m_f\left(x\right) - \nabla m_f\left(y^0\right) \right\|
+\le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+\le r \Delta \left(\maxhessian + \Lambda_3'\right)
+\end{align*}
+Thus, 
+\begin{align*}
+\left\|\nabla f\left(x\right) - \nabla m_f\left(x\right)\right\| \le 
+\left\| \nabla f\left(x\right) - \nabla f\left(y^0\right) \right\| +
+\left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| + \\ \left\|\nabla m_f\left(y^0\right) - \nabla m_f\left(x\right)\right\|
+\le r \Delta \maxhessian + \Lambda_2 + r \Delta \left(\maxhessian + \Lambda_3'\right) \\
+\le r \left(2 \Delta \maxhessian + \Lambda_2 +  \Delta \Lambda_3'\right)
+\le r \Lambda_2'.
+\end{align*}
+
+Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
+\begin{align*}
+\left|f(x) - m_f(x)\right|
+\le \left| f(y^0) - m_f(y^0) \right| + \left\| \nabla f(\xi^2) - \nabla f(\xi^2) \right\| \left\|x - y^0\right\| \\
+\le \Lambda_1 + \Lambda_2' \Delta r^2
+\le \Lambda_1' r^2.
+\end{align*}
+
+\end{proof}
+% 
+% 
+% 
+% \begin{align*}
+% \left| f(x) -  f\left(y^0\right) \right|
+% \le \left\|x - y^0\right\| \left\| \nabla f\left(\xi\right) \right\|
+% \le r \Delta \liphess \\
+% \left\|\nabla m_f(x) - \nabla m_f\left(y^0\right) \right\|
+% \le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+% \le r \Delta \left(\liphess + \Lambda_3'\right)
+% \end{align*}
+% Thus,
+% \begin{align*}
+% \left\|\nabla f(x) - \nabla m_f(x)\right\| \le 
+% \left\| \nabla f(x) - \nabla f(y^0) \right\| + \left\|\nabla f(y^0) - \nabla m_f(y^0)\right\| + \left\|\nabla m_f(y^0) - \nabla m_f(x)\right\| \\
+% \le r \Delta \liphess + \Lambda_2 + r \Delta \left(\liphess + \Lambda_3'\right)
+% \le r \left(2 \Delta \liphess + \Lambda_2 +  \Delta \Lambda_3'\right)
+% \le r \Lambda_2'.
+% \end{align*} 
+% 
+% 
+% Define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$, and notice $z \in B_{\infty}\left(y^0, \Delta\right)$.
+% 
+% 
+% 
+% Subtracting this from
+% \begin{align*}
+% m_f(x) = m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + (x - y^0)^T\nabla^2 m_f(y^0) (x - y^0),
+% \end{align*}
+% 
+% 
+% 
+% and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
+% Because $z \in B\left(y^0, \Delta\right)$, we know that
+% 
+% \begin{align*}
+% \left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
+% \left\|\gradf(z) - \nabla m(z)\right\| \le \Lambda_2 \\ % \Delta^2
+% \left\|\nabla^2 f(z) - \nabla^2 m(z)\right\| \le \Lambda_3 % \Delta
+% \end{align*}
+% and that there exists 
+% % $\alpha \in [0, 1]$, 
+% $\chi_1 \in [y^0, x]$ and
+% $\chi_2 \in [z, x]$
+% such that such that
+% \begin{align*}
+% f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
+% f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
+% m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
+% \end{align*}
+% we have
+% \begin{align*}
+% f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
+% + \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
+% + \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
+% \left|f(x) - m_f(x)\right| 
+% \le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
+% + \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right) \right\| \\
+% = \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y\right) \right\| 
+% + \left\| \nabla^2 f\left(y\right) - \nabla^2 m_f\left(y\right) \right\|
+% + \left\| \nabla^2 m_f\left(y\right) - \nabla^2 m_f\left(x\right) \right\| \\
+% \le \liphess \left\|x - y \right\| + \Lambda_2 + 
+% \end{align*}
+% 
+% 
+% 
+% \begin{align*}
+% \nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| + \left\| \nabla^2 m_f\left(y^0\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
+% \end{align*}
+% 
+% 
+% 
+% 
+% \begin{align*}
+% \phi_i\left(x\right) = \phi_i\left(y\right) + 
+% \end{align*}
+% 
+% 
+% 
+
+
 We can now satisfy the accuracy condition.
 
 
-\begin{boxedcomment}
-This has a forward lemma reference to a lemma in Chapter 4.
-\end{boxedcomment}
-
 \begin{theorem}
 \label{linear_accuracy_is_satisfied}
-Suppose that \cref{the_constraints_are_linear} and \cref{interior_point} hold.
+Suppose that \cref{the_constraints_are_linear}, \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_mf}, and \cref{interior_point} hold.
+
+
+
 
 The accuracy condition \cref{accuracy} is satisfied for each iterate $k$.
 Namely, there exists $\kappa_{g} > 0$ such that 
@@ -1173,7 +1340,9 @@ After using \cref{model_improving_algorithm} to choose sample points, we know by
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 \\
 \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta
 \end{align*}
-We can then use \cref{change_radius} to conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
+
+This along with \cref{the_constraints_are_linear}, \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_mf} satisfy the assumptions for \cref{change_radius}.
+We can conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
 \begin{align*}
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2
 \end{align*}
