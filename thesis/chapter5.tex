@@ -1,1 +1,77 @@
 Chapter 4
+
+
+
+% \begin{algorithm}[H]
+%     \caption{Always-feasible Constrained Derivative Free Algorithm}	
+%     \label{constrained_dfo}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%         	Initialize user supplied constants $\tolcrit, \tolrad$ by \cref{define_algorithm_tolerances};
+%         	$\gammasm$, $\gammabi$ by \cref{define_the_gammas};
+%         	$\omegadec$, $\omegainc$ by \cref{define_the_omegas};
+%         	$\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ by \cref{define_abpab};
+% 			$\kappa_{\chi}$ by \cref{define_kappa_chi};
+% 			$\ximin$ by \cref{define_ximin};
+% 			and $p_{\Delta}$ by \cref{define_p_delta}. \\
+%         	Initialize iteration counter: $k=0$, initial iterate $\xinit \in \feasible$, trust region radius $\Delta_0 > 0$, and feasible ellipsoid $T^{(0)}_{\textrm{interp}}$ as in \cref{initial_ellipsoid}.
+%             
+%         \item[\textbf{Step 1}] \textbf{(Construct the models)} \\
+% %         by \cref{define_ellipsek} if $\activeconstraintsk \ne \emptyset$ and \cref{define_trivial_ellipsek} if $\activeconstraintsk =\emptyset$.
+%         Call \cref{model_improving_algorithm} with respect to $\sampletrk$ to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}. \\
+%         Construct $\mfk$ and $\mcik$ as described in \cref{reg}.
+%         While constructing the sample set, if some point within $\sampletrk$ is not feasible, or $\sampletrk = \emptyset$ 
+%         run \cref{restore_feasible_ellipsoid} to construct a new $\sampletrk$ and $\dk$, and go to Step 1.
+%         Decrease the trust region radius.
+%         
+%         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+%         	Compute $\activeconstraintsk$ by \cref{define_activeconstraints} and $\zik$, $\wik$ by \cref{define_z} and \cref{define_w} for each $i \in \activeconstraintsk$.
+%             Compute $\chi_k$ as in \cref{define_criticality_measure}. \begin{itemize}
+%                 \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
+%                 \item[] Otherwise, if \cref{criticallity_check} is not satisfied, then \\
+%                 $\Delta_{k+1} \gets \omegadec\dk$, 
+%                 $x^{(k+1)} \gets \xk$,
+%                 $k \gets k+1$ and go to Step 1.
+%             \end{itemize}
+%             
+%         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+%         	Construct $\huk$, $\thetamink$, $\bsk$, $\fik$, and $\capcones$ according to
+%         	\cref{define_u}, \cref{define_thetamink}, \cref{define_bsk}, \cref{define_fik}, \cref{define_capcones}. \\
+%         	Use \cref{capcones_tr_subproblem} to compute the trial point $\sk$.
+%         	Evaluate the objective and constraints at $\sk$.
+%         	If $\sk \not \in \feasible$, reduce the trust region $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
+%             
+%         \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+%             Evaluate $f\left(\xk + \sk\right)$ and evaluate $\rk$ as in \cref{define_rhok} \begin{itemize}
+%                 \item[] If $\rk < \gammasm$ then $\xkpo=\xk$ (reject) and $\Delta_{k+1} = \omegadec\dk$
+%                 \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegadec\dk$
+%                 \item[] If $\rk > \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegainc\dk$
+%                 % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
+%             \end{itemize}
+%             
+%         \item[\textbf{Step 5}] \textbf{(Construct next sample region)} \\
+%         	Compute $\rotk$, according to \cref{define_rotation}.
+% %         	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
+%         	If $\activeconstraintskpo \ne \emptyset$, define $\sampletrkpo$ according to \cref{define_ellipsek}.
+%         	Otherwise, use \cref{define_trivial_ellipsek}. \\
+%             $k \gets k+1$ and go to Step 1.
+%     \end{itemize}
+% \end{algorithm}
+
+
+
+
+
+
+\begin{lemma}
+For any $v \in \feasible$, there exists there exists $\epsilon > 0$ such that the ellipsoid
+
+\begin{align*}
+\left\{x \in \Rn \bigg | \frac 1 2 \left\| v - \epsilon \right\| \le \frac 1 2 \right\}
+\end{align*}
+
+\end{lemma}
+
+\begin{proof}
+a
+\end{proof}
