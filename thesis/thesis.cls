@@ -80,7 +80,7 @@
 \@addtoreset{section}{chapter}
 \@addtoreset{subsection}{section}
 \@addtoreset{subsubsection}{subsection}
-\setcounter{secnumdepth}{4}
+\setcounter{secnumdepth}{3}
 \renewcommand{\thepart}{}
 \renewcommand{\thechapter}{\arabic{chapter}}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}

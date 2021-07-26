@@ -1,92 +1,15 @@
-\section{Notation}
-
-Any variables that depend on the iteration will be super-scripted by $k$.
-For example, the $k$-th iterate is given by $\xk$, and the model of the objective is given by $\mfk$.
-The $i$-th row of the matrix $A$ is denoted $A_i$, while the $i$-th column is denoted $A_{\bullet i}$.
-Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts.
-Matrices are denoted with capital letters.
-We use $e_i$ to denote the $i$-th unit vector and $e$ to denote the vector of all ones.
-%, while sets are denoted with capital italic letters.
-
-$B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$:
-\begin{align}
-\label{define_ball}
-	B_k\left(c; \Delta\right) = \left\{x \in \Rn \bigg | \left\|x - c\right\|_k \le \Delta \right\}
-\end{align}
-$\delta_{i,j}$ is the Kronecker delta, $\delta_{i, j} = \begin{cases} 1 & \textrm{if} \; i = j \\ 0 & \textrm{if} \; i \ne j \end{cases}$.
-The complement of a set $S$ is denoted as $\bar S$.
-Let the condition number of a matrix $Q$ be denoted $\condition(Q)$.
-Define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
-Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
-% For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.
-\begin{align*}
-a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end{cases}\\
-\|x\|_{\infty} = \max_{1\le i\le n}|x_i| \quad
-\|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2} \quad
-\|x\|_1 = \sum_{i = 1}^n |x_i|
-\end{align*}
-For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
-
-\section{Model-based Trust Region Methods}
-
-We modify the following derivative free trust region algorithm.
-%A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
-The objective value and derivatives are approximated in a trust region around the current iterate to construct their model functions.
-Next, this model function is minimized over the trust region and the minimum argument becomes the trial point.
-The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
-If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
-Otherwise, the trust region is reduced to increase model accuracy.
-The algorithm terminates when both a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach sufficiently small thresholds of $\tau_{\chi}$ and $\tau_{\Delta}$.
-
-
-For unconstrained optimization, the algorithmic framework is described in \cref{unconstrained_dfo}.
-
-\begin{algorithm}[H]
-    \caption{Unconstrained Derivative Free Algorithm}
-    \label{unconstrained_dfo}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            Initialize tolerance constants $\tau_{\chi} \ge 0$, $\tau_{\Delta} \ge 0$, starting point $\xinit$, initial radius $\Delta_0 > 0$, iteration counter $k=0$, and constants $\omegadec \in (0, 1)$, $ \gammasm \in (0, 1)$, $\gammabi \in (\gammasm, 1)$.
-            
-        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
-            Call the model improvement ``\cref{model_improving_algorithm}" to provide a set of sample points $Y^{(k)}$.
-            Evaluate the objective on these points and use interpolation \cref{interpolation_formula} to construct the model function $\mfk(x)$.
-        
-        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
-            Compute the criticality measure $\chik$ such as $\chik = \|\nabla\mfk(\xk)\|$. \begin{itemize}
-                \item[] If $ \chik < \tau_{\chi} $ and $\Delta_k<\tau_{\Delta}$ then return solution $\xk$.
-                \item[] If $ \chik < \tau_{\chi} $ but $\Delta_k\ge\tau_{\Delta}$ then  
-                set $\Delta_{k+1} \gets \omegadec\Delta_{k}$, 
-                $x^{(k+1)} \gets \xk$,
-                $k \gets k+1$ and go to Step 1.
-            \end{itemize}
-        
-        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\sk = \argmin_{s\in B_2(0; \Delta_k)} \mfk (\xk + s)$ where $B_2(0; \Delta_k)$ is the ball of radius $\Delta_k$ defined in \cref{define_ball}.
-            
-        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
-            Compute $\rk$ with \cref{define_rhok} \begin{itemize}
-                \item[] If $\rk < \gammasm$ then $\xkpo \gets \xk$ (reject) and $\Delta_{k+1} \gets \omegadec\Delta_{k}$
-                \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo\gets\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegadec\Delta_{k}$
-                \item[] If $\rk \ge \gammabi$ and $\|\sk\| = \Delta_{k}$ then $\xkpo=\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegainc\Delta_{k}$
-                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
-            \end{itemize}
-            $k \gets k+1$ and go to Step 1.
-    \end{itemize}
-\end{algorithm}
-
-This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
-\begin{enumerate}
-    \item Models are constructed without derivative information.
-    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
-\end{enumerate}
-
-This is required to ensure that the gradient of the model function closely approximates the gradient of $f$.
-Our goal is to generalize this framework to handle constraints, 
-where we must ensure no constraint violation occurs
-while also ensuring the accuracy of the models of the constraints.
-
 \section{Literature Review}
+
+\sbnote{We need a better narrative for the literature review.  The goal is to explain where your work fits into the literature.  In essence you need to tell a story, not just give a list of related publications.   Here is a possible outline:
+\begin{enumerate}
+\item Derivative-free algorithms fall into two main categories:  direct-search methods which use relatively simple strategies to explore the solution space using only the relative ranks of function values (rather than numerical values) to guide the search, and model-based methods,  which construct models of the black box functions to guide the algorithm.   Our work falls into the latter category. 
+\item There are a number of books and survey articles that provide good introductions to the field of derivative-free optimization:  \cite{introduction_book}, etc...
+\item The development of DFO algorithms for constrained optimization has been relatively recent.   Much of the early work in this area was focused on direct-search methods.    \cite{??}
+\item The literature on model-based DFO methods for constrained optimization is smaller.   [Now we want to talk about specific articles in more depth].  
+\item Of particular importance for our work is the work by [Cornejos, et.al.]...
+\end{enumerate}
+}
+ 
 \paragraph{Applications}
 
 Recently, there has been a growth in applications of derivative free optimization.
@@ -98,7 +21,7 @@ To address the rise in these applications, new algorithms are being developed su
 \cite{BAJAJ2018306} presents an algorithm which accepts an infeasible starting point.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
 
-\paragraph{Reviews}
+\paragraph*{Reviews}
 Within \cite{introduction_book} derivative-free methods are developed in detail.
 This is the first text book devoted to derivative free optimization.
 It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
@@ -108,217 +31,22 @@ This compares several software libraries, and reviews the development of derivat
 Another recent review can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
 
-\section{Sample Set Geometry}
-\subsection{Interpolation}
-\label{interpolation}
+\section{Model-Based Trust-Region Methods for DFO}
+The main idea of trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  Each subproblem has the form 
+\[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}(x^{(k)}_s) \\ 
+\st & x^{(k)}+s \in \mathcal{F}_k \\
+& \norm{s} \le \Delta_k
+\end{array} \]
+where $m_f^{(k)}$ is a model function approximating the objective $f$,   $\Delta_k > 0$ is the trust region radius,  and $\mathcal{F}_k$ is an approximation of the feasible region.    The solution $s^{(k)}$ of the trust-region subproblem determines a {\em trial point} $x^{(k)}+s^{(k)}$.    The objective function and constraints are then evaluated at the trial point to determine whether to accept the trial point.    If the trial point is rejected, the trust region radius is decreased and a new trial point is computed by solving a revised trust-region subproblem.     
+If the trial point is accepted, then the trust region radius may be increased or decreased for the next iteration depending on how well the sample point improved upon the previous iterate.     This will be discussed in \cref{rho}.      
+This will be discussed in \cref{rho}.     \sbnote{I seem to have deleted the section on $\rho$,  can you restore it from the chi2 branch?}
 
-Derivative free trust region methods construct model functions from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\{\phi_0, \phi_1, \ldots, \phi_p\}$.
-Each member of this family has the form $\mfk(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
-
-In our method, we use interpolation to choose the coefficients so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ for which the functions have been evaluated.
-Thus the model functions must satisfy:
-\begin{align}
-\label{interpolation_condition}
-\mfk(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
-\end{align}
-This is known as the \emph{interpolation condition}.
-
-To satisfy the interpolation condition \cref{interpolation_condition}, we chose the linear combination by selecting coefficients $\alpha_0, \ldots, \alpha_p$ to satisfy
-\begin{align}
-\label{interpolation_formula}
-    \mfk(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
-\end{align}
-
-% We can also write this equation in matrix form.
-If we define the Vandermode matrix as
-\begin{align}
-\label{vandermonde}
-V=
-\begin{pmatrix}
-    \phi_0(y^0)      & \phi_1(y^0)       & \ldots & \phi_{p}(y^0)      \\
-    \phi_0(y^1)      & \phi_1(y^1)       & \dots  & \phi_{p}(y^1)      \\
-                     &                   & \vdots &                    \\
-    \phi_0(y^{p})    & \phi_1(y^{p})     & \ldots & \phi_{p}(y^{p})
-\end{pmatrix},
-\end{align}
-
-the interpolation condition becomes:
-\begin{align}
-\label{matrix_form}
-V
-\begin{pmatrix}
-    \alpha_0     \\
-    \alpha_1     \\
-    \vdots       \\
-    \alpha_p
-\end{pmatrix}
-=
-\begin{pmatrix}
-    f(y^0)     \\
-    f(y^1)     \\
-    \vdots     \\
-    f(y^p)
-\end{pmatrix}
-\end{align}
-
-% Suppose that we use $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ to construct the approximation of $f$.
-We desire a method for choosing these sample points that provides error bounds on both 
-the function values and orders of derivatives in some region around the current iterate.
-% The model is constructed to agree with the original functions on at least the sample points: we evaluate the objective here, so that we know the true function values at these points.
-% For the objective, this becomes
-
-%It is convenient to write the model as a linear combination of basis polynomials $\{\phi_0, \phi_2, \ldots, \phi_p\}$.
-
-
-\subsection{Geometry}
-\label{geometry}
-The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
-\cref{matrix_form} has a unique solution if and only if $V$ is nonsingular, in this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$.
-However, even when $V$ is nonsingular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
-% The condition number of $V$ measures how far the current Vandermode matrix is from being illpoised.
-Algorithms must be careful to avoid choices of sample points $Y$ that cause the condition number of this matrix to be too large.
-
-In the case of polynomial model functions, a careful analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
-Let the space of polynomials with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
-The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
-\begin{align*}
-l_i(y^j) = \delta_{i,j}
-\end{align*}
-where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\quad 1 \;\text{if} \; i = j \}$ is the Kronecker-delta function.
-%For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
-Thus, we can conveniently write
-\begin{align}
-\label{reg}
-\mfk(x) = \sum^p_{j=0}f(y^i)l_i(x).
-\end{align}
-%This implies computing the change of basis to the Lagrange polynomials amounts to inverting this Vandermonde matrix.
-%This relationship allows us to use properties of the Vandermonde matrix and these Lagrange polynomials to find conditions on our sample points that ensure nice geometry.
-
-We say that a set $Y$ is \emph{$\Lambda$-poised} for a fixed constant $\Lambda$ with respect to a bases $\phi$ on the set 
-$B \subset\Rn$ if and only if for the Lagrange polynomials $l_i$ associated with $Y$ satisfy
-\begin{align}
-\Lambda \ge \max_{0\le i\le p}\max_{x\in B}|l_i(x)|.
-\end{align}
-
-% This can be shown to be equivalent to the following condition \cite{introduction_book}.
-% For any $x \in B_2(0, 1)$ there is a $\lambda \in \reals ^ {p+1}$ such that 
-% \begin{align}
-% \sum_{i=0}^p\lambda_i\phi_i(y^i) = \phi(x) \\
-% \|\lambda\|_{\infty} \le \Lambda.
-% \end{align}
-
-% This can ensure that the Vandermonde matrix is well conditioned.
-This is useful because of \cref{quadratic_errors}, which is shown in \cite{introduction_book}.
-
-
-\begin{assumption}
-\label{introduction_3_1}
-We assume that $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ with $p_1 = p+1= \frac{(n+1)(n+2)}{2}$ is a $\Lambda$
-poised set of sample points for quadratic interpolation contained in the ball $B(y^0; \Delta_Y)$ of radius $\Delta_Y = \max_{i \in [p]} \|y^0 - y^i\|$.
-
-Further, assume that the function $f$ is twice continuously differentiable in an open domain $\domain$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
-is Lipschitz continuous in $\domain$ with constant $\liphess > 0$.
-\end{assumption}
-
-
-\begin{theorem}
-\label{quadratic_errors}
-Let \cref{introduction_3_1} be satisfied and $m$ be a quadratic model function constructed as in \cref{reg}.
-Then there exist constants $\kappa_f$, $\kappa_g$, $\kappa_h$ that dependent only on $p$, $\liphess$, and $\Lambda$ such that:
-\begin{align}
-\left\|\nabla^2 f(y) - \nabla^2 m(y)\right\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta_Y), \label{error_in_hessian}\\
-\left\|\gradf(y) - \nabla m(y)\right\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta_Y), \label{error_in_gradient} \\
-\textrm{and} \quad \left|f(y) - m(y)\right| \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta_Y). \label{error_in_function} 
-\end{align}
-\end{theorem}
-
-
-Also, \cite{introduction_book} also shows that ensuring a bound on the condition number of the Vandermonde matrix ensures $\Lambda$-poisedness.
-In particular, these bounds ensure that the following accuracy condition is satisfied, which we can adapt a proof from \cite{Conejo:2013:GCT:2620806.2621814} to prove convergence to a first order critical point: 
-\begin{align}
-\label{accuracy}
-\|\nabla \mfk(\xk) - \gradf(\xk) \| \le \kappa_g \dk^2
-\end{align}
-for some fixed constant $\kappa_g$ independent of $k$.
-This will need accuracy for both the objective and the constraints, as described in \cref{accuracy_is_satisfied}
-We have extend these results for ellipsoidal trust regions in \cref{ellipsoidal_lambda}.
- 
-A more detailed discussion can be found in \cite{doi:10.1080/10556780802409296}, but a step to ensure good geometry is required for convergence analysis although it may come at the expense of adding more function evaluations.
-
-\subsection{Geometry Ensuring Algorithms}
-
-Sample points are chosen by a geometry ensuring algorithm from \cite{introduction_book}.
-At any given time, the algorithm has evaluated 1 or more sample points.
-Initially, only the starting point $x_0$ is evaluated, so that points must be added to the sample set.
-Evaluated points within the trust region should be reused when possible, but the algorithm may have to replace some points to ensure a well poised set on the new trust region.
-We call the algorithm that adds points, replacing where necessary, the \emph{model improvement algorithm}.
-One classic such algorithm is presented in \cite{introduction_book}.
-
-The idea behind this algorithm is to perform an LU factorization with partial pivoting on the Vandermonde matrix.
-As we have seen, this computes the basis for the Lagrange polynomials corresponding to $Y$.
-However, when this LU factorization encounters a small pivot, the point corresponding to that row is replaced, improving the condition number of the Vandermonde matrix.
-
-In practice, we first shift the sample set $Y$ by subtracting the current iterate and dividing by the trust region radius:
-\begin{align}
-\bar{Y} = [0, \frac{y^1 - y^0}{\Delta}, \ldots, \frac{y^p - y^0}{\Delta}]
-\end{align}
-
-At times, the algorithm will not have all $p+1$ points.
-This can be because it is only given one point during initialization, or because points not within the trust region are removed.
-Because the model improvement algorithm requires all $p+1$ points, we initialize $y^i = y^0$ for any $0 < i \le p$ corresponding to a missing point.
-We choose a threshold 
-\begin{align}
-0 < \ximin < 1 \label{define_ximin},
-\end{align} and follow \cref{model_improving_algorithm}:
-
-\begin{algorithm}[H]
-    \caption{Model Improvement Algorithm}
-    \label{model_improving_algorithm}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            Initialize $i=1$.
-            Given a non-empty set $Y$ of $p+1$ points. 
-            Construct the Vandermonde matrix $V_{i,j} = \phi_j(\frac 1 {\Delta}(y^i - y^0))$.
-			Initialize constant $\ximin > 0$.
-        \item[\textbf{Step 1}] \textbf{(Pivot)} \\
-            Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
-        
-        \item[\textbf{Step 2}] \textbf{(Check threshold)}
-        	\begin{itemize}
-                \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y \in \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
-                \item[] Replace row $i$ with $V_{i, j} \gets \phi_j(\hat y)$
-                \item[] $Y \gets Y \cup \{\hat y \} \setminus \{y^i\}$
-            \end{itemize}
-        
-        \item[\textbf{Step 3}] \textbf{(LU)} \begin{itemize}
-%                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
-                \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
-            \end{itemize}
-            If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
-    \end{itemize}
-\end{algorithm}
-
-
-% At the end of this algorithm, the points in $Y$ will be $\Lambda$-poised for some $\Lambda$ depending on the constant $\xi_{min}$.
-The following result is shown in \cite{introduction_book} through Theorem 6.5, Theorem 3.14, and 6.7 Exercise 3.
-\begin{theorem}
-\label{set_is_poised}
-After running \cref{model_improving_algorithm}, the resulting set $Y$ is Lambda poised for some $\Lambda > 0$ that depends on $\xi_{\text{min}}$.
-\end{theorem}
-
-This algorithm can also be used to create a poised set over an ellipsoidal shape.
-This is discussed further in \cref{ellipsoidal_lambda}.
-
-
-
-\section{Algorithm Components}
-
-Before describing the algorithm, we discuss several referenced components.
 
 \subsection{Criticality Measure}
+A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.   The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions.      For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is $\chi(x) = \norm{\nabla f(x)}$ since the first order optimality condition is $\nabla f(x)=0$.     The algorithm then terminates when $\chi(x) < \tau_{\chi}$, where $\tau_x >0$ is a stopping tolerance.      For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true criticality measure is replaced by the model criticality measure $\chi^{(k)}(x) = \norm{\nabla \mfk\left(x\right)}.$  Note however that $\chi^{(k)}$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.   For this reason, derivative-free algorithms require not only that $\chi^{(k)}(x)$ is small, but also that the model functions are accurate.  To accomplish this, we require that the trust-region radius must converge to zero.
 
-In order to define stopping criteria for the algorithm, we introduce a criticality measure $\chi$ which goes to zero as the iterates approach a first order critical point.
-When the criticality measure is small, we must also decrease the trust region radius.
+
+
 Once this has reached a small enough threshold $\tau_{\chi}$ and the trust region is small enough ($\Delta_k < \tau_{\Delta}$), we can terminate the algorithm.
 For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in \cite{ConnGoulToin00} of
 \begin{align}
@@ -340,34 +68,232 @@ In practice, we introduce constants
 \end{align}
 that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
 
-\subsection{Assessing Model Accuracy and Radius Management}
 
-Each iteration that evaluates a trial point must also test the accuracy of the model functions.
-To test the accuracy, we calculate a quantity
+
+
+
+
+
+
+
+
+
+
+
+
+%  
+%%A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
+%The objective value and derivatives are approximated in a trust region around the current iterate to construct their model functions.
+%Next, this model function is minimized over the trust region and the minimum argument becomes the trial point.
+%The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
+%If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
+%Otherwise, the trust region is reduced to increase model accuracy.
+%The algorithm terminates when both a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach sufficiently small thresholds of $\tau_{\chi}$ and $\tau_{\Delta}$.
+
+\sbnote{I don't think we need to state the trust-region algorithm for unconstrained dfo, so I have commented it out.}
+
+%For unconstrained optimization, the algorithmic framework is described in \cref{unconstrained_dfo}.
+%
+%\begin{algorithm}[H]
+%    \caption{Unconstrained Derivative Free Algorithm}
+%    \label{unconstrained_dfo}
+%    \begin{itemize}
+%        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%            Initialize tolerance constants $\tau_{\chi} \ge 0$, $\tau_{\Delta} \ge 0$, starting point $\xinit$, initial radius $\Delta_0 > 0$, iteration counter $k=0$, and constants $\omegadec \in (0, 1)$, $ \gammasm \in (0, 1)$, $\gammabi \in (\gammasm, 1)$.
+%            
+%        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
+%            Call the model improvement ``\cref{model_improving_algorithm}" to provide a set of sample points $Y^{(k)}$.
+%            Evaluate the objective on these points and use interpolation \cref{interpolation_formula} to construct the model function $\mfk(x)$.
+%        
+%        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+%            Compute the criticality measure $\chik$ such as $\chik = \|\nabla\mfk(\xk)\|$. \begin{itemize}
+%                \item[] If $ \chik < \tau_{\chi} $ and $\Delta_k<\tau_{\Delta}$ then return solution $\xk$.
+%                \item[] If $ \chik < \tau_{\chi} $ but $\Delta_k\ge\tau_{\Delta}$ then  
+%                set $\Delta_{k+1} \gets \omegadec\Delta_{k}$, 
+%                $x^{(k+1)} \gets \xk$,
+%                $k \gets k+1$ and go to Step 1.
+%            \end{itemize}
+%        
+%        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+%            Compute $\sk = \argmin_{s\in B_2(0; \Delta_k)} \mfk (\xk + s)$ where $B_2(0; \Delta_k)$ is the ball of radius $\Delta_k$ defined in \cref{define_ball}.
+%            
+%        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+%            Compute $\rk$ with \cref{define_rhok} \begin{itemize}
+%                \item[] If $\rk < \gammasm$ then $\xkpo \gets \xk$ (reject) and $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+%                \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo\gets\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+%                \item[] If $\rk \ge \gammabi$ and $\|\sk\| = \Delta_{k}$ then $\xkpo=\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegainc\Delta_{k}$
+%                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
+%            \end{itemize}
+%            $k \gets k+1$ and go to Step 1.
+%    \end{itemize}
+%\end{algorithm}
+%
+%This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
+%\begin{enumerate}
+%    \item Models are constructed without derivative information.
+%    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
+%\end{enumerate}
+%
+%This is required to ensure that the gradient of the model function closely approximates the gradient of $f$.
+%Our goal is to generalize this framework to handle constraints, 
+%where we must ensure no constraint violation occurs
+%while also ensuring the accuracy of the models of the constraints.
+
+
+
+
+
+
+
+
+\subsection{Interpolation}
+\label{interpolation} 
+Model-based methods for derivative free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
+
+We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ at which the function $f$ has been evaluated.
+Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
 \begin{align}
-\label{define_rhok}
-\rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)}
+\label{interpolation_condition}
+    \mf(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
 \end{align}
-which measures the actual improvement over the predicted improvement.
-A small $\rk$ implies the model functions are not sufficiently accurate.
-Values of $\rk$ close to $1$ imply that the model accurately predicted the new objective value.
-A large $\rk$ implies progress in minimizing the objective, although the model was not accurate.
-This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
 
-The user supplies fixed constants
+% We can also write this equation in matrix form.
+This equation can be written more compactly in the form
+\begin{equation}\label{matrix_form}
+V \alpha = \bar{f},
+\end{equation}
+where $\bar{f} = [f(y^0), f(y^1), \ldots, f(y^p)]^T$ and the Vandermonde matrix $V$ is defined by 
+
 \begin{align}
-0 < \gammasm < \gammabi \le 1	\label{define_the_gammas}
+\label{vandermonde}
+V=M(\Phi,Y) :=
+\begin{bmatrix}
+    \phi_0(y^0)      & \phi_1(y^0)       & \ldots & \phi_{p}(y^0)      \\
+    \phi_0(y^1)      & \phi_1(y^1)       & \dots  & \phi_{p}(y^1)      \\
+                     &                   & \vdots &                    \\
+    \phi_0(y^{p})    & \phi_1(y^{p})     & \ldots & \phi_{p}(y^{p})
+\end{bmatrix},
 \end{align}
-as thresholds on $\rk$ and
+
+
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
+However, even when $V$ is nonsingular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
+
+
+\subsection{Sample set geometry}
+\label{geometry}
+The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
+
+In the case of polynomial model functions, a careful analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
+Let the space of polynomials with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
+The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
 \begin{align}
-0 < \omegadec < 1 \le \omegainc		\label{define_the_omegas}
+l_i(y^j) = \delta_{i,j}
 \end{align}
-$\omegadec, \omegainc$ as decrement and increment factors to determine the trust region update policy.
-That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and when the trust region is increased by a factor of $\omegainc$
-during some iterations in which $\rk > \gammabi$.
+where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\; 1 \;\text{if} \; i = j \}$ is the Kronecker-delta function.
+%For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
+Thus, as shown in \cite{introduction_book}, we can conveniently write
+\begin{align}
+\label{reg}
+\mf(x) = \sum^p_{j=0}f(y^i)l_i(x).
+\end{align}
 
 
-\section{Trust Regions}
+We say that a set $Y$ is \emph{$\Lambda$-poised} for a fixed constant $\Lambda$ with respect to a basis $\Phi$ on the set 
+$B \subset\Rn$ if and only if the Lagrange polynomials $l_i$ associated with $Y$ satisfy
+\begin{align}
+\Lambda \ge \max_{0\le i\le p}\max_{x\in B}|l_i(x)|.
+\end{align}
+In the case of interpolation over the quadratic polynomials, 
+$ \mathcal{P}^2_n$, we say that $Y$ is \emph{$\Lambda$-poised for quadratic interpolation}.
+The concept of $\Lambda$-poisedness allows us to establish the following error bounds, as shown in 
+ \cite[Theorem ?? ]{introduction_book}:
+ 
+
+
+
+
+\begin{theorem}
+\label{quadratic_errors}  
+Let $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^0\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^0; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^0;\Delta)$:
+
+\begin{align}
+\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta) \label{error_in_gradient} \\
+|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta). \label{error_in_function} 
+\end{align}
+where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
+\end{theorem}
+
+There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.    Then we have the following result   \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
+
+\begin{theorem}(\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
+If $\hat{M}$ is  nonsingular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
+then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B(0;1)$.  
+Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
+then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
+constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
+\end{theorem}
+
+
+
+
+
+
+
+\subsection{Model Improvement Algorithms}
+
+Efficient implementations of model-based methods re-use sample points from previous iterations that fall within (or at least near) the current trust region.  New points are then added to the sample set using a model improvement algorithm as described in \cite{introduction_book}  and stated here in \cref{model_improving_algorithm}.
+
+The model improvement algorithm starts with a set of $p+1$ sample points and then uses LU factorization with partial pivoting of the associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \ldots, u_p\}$ that are closely related to the Lagrange polynomials.  
+
+Each iteration of the algorithm identifies a point in the sample set to include in the final sample set.   In particular, on the $i$th iteration, the points $y^0, \ldots, y^{i-1}$ have already been included.   If a point $y^j$, $j \ge i$ can be found such that $u_i(y^j)$ has sufficiently large magnitude, then that point is added to the final sample set (by swapping it with $y^{i}$).     However, if no such point can be found, it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.  Therefore, the point $y^i$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
+
+\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^0$ to create a set with $p+1$ points.
+
+
+
+\begin{algorithm}[H]
+    \caption{Model Improvement Algorithm--REPLACE THIS}
+    \label{model_improving_algorithm}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            Initialize $i=1$.
+            Given a non-empty set $Y$ of $p+1$ points. 
+            Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^i - y^0))$.
+			Initialize constant $\ximin > 0$.
+        \item[\textbf{Step 1}] \textbf{(Pivot)} \\
+            Swap row $i$ with row $i_{\max} = \arg \max_{j|j\ge i} V_{j,i} $
+        
+        \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
+                \item[] If $|V_{i,i}| < \ximin$ then select \label{next_point} $\hat y \in \argmax_{t | \|t\|\le 1} |\phi_i(t)|$
+                \item[] Replace row $i$ with $V_{i, j} \gets \phi_j(\hat y)$.
+                \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^i\}$
+            \end{itemize}
+        
+        \item[\textbf{Step 3}] \textbf{(LU)} \begin{itemize}
+%                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
+                \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
+            \end{itemize}
+            If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
+    \end{itemize}
+\end{algorithm}
+
+
+At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result, which is shown in \cite{introduction_book} through Theorems 6.5 and 3.14, and Section 6.7, Exercise 3: 
+\begin{theorem}
+\label{set_is_poised}
+The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised for quadratic interpolation, where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional the $\xi_{\text{min}}$.
+\end{theorem}
+
+In \cref{ellipsoidal_lambda} we will show how to modify this algorithm to construct a $\Lambda$-poised set over an ellipsoidal region.
+
+
+
+
+
+
+\section{Trust Regions--MOVE THIS TO CHAPTER 3}
 Our algorithm maintains up to three trust regions.
 \begin{itemize}
 \item \textbf{The Outer Trust region} is an $L-\infty$ ball of radius $\dk$ and denoted by $\outertrk$.
