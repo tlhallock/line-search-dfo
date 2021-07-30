@@ -2,19 +2,20 @@
 % \section{Derivative Free Optimization}
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
-Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
-In such applications, function evaluations are expensive, so it is sensible to invest significant computational resources to minimize the number of function evaluations.
+Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.  Applications of DFO appear in many fields, including photo-injector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
+In such applications, function evaluations are typically expensive, so it is sensible to invest significant computational resources to minimize the number of function evaluations.
 
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
 \begin{align}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-\mbox{subject to} \quad & c_i(x) \le 0 & 1 \le i \le m,
+\mbox{subject to} \quad & c_i(x) \le 0, & 1 \le i \le m,
 \end{array}
 \label{the_dfo_problem}
 \end{align}
 where 
 % $\domain$ is a subset of $\Rn$, and
 $f$ and $c_i, \forall 1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
+
 We will let the feasible set be represented as 
 \begin{align}
 \feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}. \label{define_feasible}
@@ -23,7 +24,7 @@ We will let the feasible set be represented as
 We are interested in developing {\em model-based} {\em trust-region} algorithms for solving these problems.
 Model-based methods work by constructing model functions to approximate the black box functions at each iteration.
 The model functions are determined by fitting previously evaluated function values on a set of sample points.
-In trust-region methods, the model-functions are used to define a trust-region subproblem whose solution determines the next iterate.
+In trust-region methods, the model functions are used to define a trust-region subproblem whose solution determines the next iterate.
 For example, the trust-region subproblem might have the form
 
 \begin{align*}
@@ -36,26 +37,81 @@ For example, the trust-region subproblem might have the form
 
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
-The key differences between this problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
-We are using the models of the constraints to approximate the feasible region during each iteration:
+
+Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 \begin{align}
 \feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \; \forall 1 \le i \le m \right\} \label{define_feasiblek}
 \end{align}
+
+The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
+
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
-
-We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
-As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
-We assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
-In this case, the constraints are called {\em partially quantifiable}.   
-As such, we impose the requirement that all sample points must be feasible.
+We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.      As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.    In this case,  the constraints are called {\em partially quantifiable}.    
+\sbnote{Can we find an example of a partially quantifiable constraint?}   
+For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.   We therefore impose 
+ the requirement that all sample points must be feasible, and we seek to avoid infeasible function evaluations.
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
 This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
 When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.
-It is well understood how to do this for unconstrained problems; but for constrained problems with all feasible sample points, some interesting challenges must be overcome.
-In particular, ensuring feasibility limits the geometry of sample points.
-We consider ellipsoidal and polyhedral sample region strategies to ensure sample points are feasible.
+It is well understood how to do this for unconstrained problems; but for constrained problems
+our
+requirement that the sample points must be feasible  poses some interesting challenges with respect to maintaining good geometry.   
 
-As a first step toward developing an algorithm to solve such problems, \emph{we first consider a simplified problem where all of the constraints are linear, then generalize to convex constraints}.
+As a first step toward developing algorithms to solve such problems,  \cref{chap:linear}  considers a simplified problem where all of the constraints are linear; namely:
+
+\begin{equation} \label{eq:DFO-linear}
+\begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
+& Gx \le g, & 
+\end{array}
+\end{equation}
+where $G$ is an $m \times n$ matrix and $g \in \Rm$.
+
+The central idea of the method described in \cref{chap:linear}  is to construct a feasible ellipsoid at each iteration that lies within the intersection of the feasible region and the current trust region.   We call this ellipsoid the {\em sample trust region}.    To choose well-poised sample points for this ellipsoidal region,  we adapt a model improvement algorithm presented in \cite{introduction_book} for spherical trust regions and establish error bounds on the accuracy of the model functions over this region.   
+
+\sbnote{Maybe move the following paragraph to \cref{chap:linear}.}
+
+We present several variants of how to construct the feasible ellipsoid.   We first show how to find the maximum volume ellipsoid contained within a polytope given a fixed center.   We then explore several strategies for shifting the center of the ellipsoid.    
+Our convergence analysis is based on an algorithmic framework presented \cite{conejo.karas.ea:global}, which describes a class of trust-region algorithms for convex constrained minimization without derivatives. 
+
+\sbnote{Summarize main results for linear DFO method}
+
+\cref{chap:convex} considers the case of nonlinear black-box constraints.    In contrast to the case of linear constraints, we can no longer be assured that feasible points for the model subproblems are feasible for the original problem.   We therefore propose a methodology that constructs second-order cones for each nearly-active constraint and then constructs an ellipsoidal sample trust region within the intersection of these cones.   We show that under reasonable assumptions, this sample trust region is guaranteed to be feasible when the trust region is sufficiently small.     Using this result,  we prove that the criticality measure for the iterates generated by the algorithm converges to zero.   Thus,  any accumulation point of the iterates satisfies the first-order optimality conditions.    Finally, numerical results are presented comparing the performance of our algorithm to several other algorithms for constrained derivative-fee optimization.
+
+\section{Notation}  Throughout the thesis, we use the following notational conventions.
+Any variables that depend on the iteration will be super-scripted by $k$.
+For example, the $k$-th iterate is given by $\xk$, and the model of the objective is given by $\mfk$.
+The $i$-th row of the matrix $A$ is denoted $A_i$, while the $i$-th column is denoted $A_{\bullet i}$.
+Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts.
+Matrices are denoted with capital letters.
+We use $e_i$ to denote the $i$-th unit vector and $e$ to denote the vector of all ones.
+%, while sets are denoted with capital italic letters.
+
+$B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$:
+\begin{align}
+\label{define_ball}
+	B_k\left(c; \Delta\right) = \left\{x \in \Rn \bigg | \left\|x - c\right\|_k \le \Delta \right\}
+\end{align}
+$\delta_{i,j}$ is the Kronecker delta, $\delta_{i, j} = \begin{cases} 1 & \textrm{if} \; i = j \\ 0 & \textrm{if} \; i \ne j \end{cases}$.
+The complement of a set $S$ is denoted as $\bar S$.
+Let the condition number of a matrix $Q$ be denoted $\condition(Q)$.
+Define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
+Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
+% For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.
+\begin{align*}
+a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end{cases}\\
+\|x\|_{\infty} = \max_{1\le i\le n}|x_i| \quad
+\|x\|_{2} = \sqrt{\sum_{i=1}^n x_i^2} \quad
+\|x\|_1 = \sum_{i = 1}^n |x_i|
+\end{align*}
+For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
+
+
+
+
+
+
+
