@@ -1,11 +1,10 @@
 
 \label{infeasible_point_strategies}
 
-
-The algorithm for convex constraints is complicated by the fact that we only have models for the constraint functions.
+The algorithm for general nonlinear constraints is complicated by the fact that we only have models for the constraint functions.
 Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
 \begin{itemize}
-\item A point chosen by the geometry ensuring algorithm may be infeasible.
+\item A sample point chosen by the geometry ensuring algorithm may be infeasible.
 \item The trial point solving the trust region subproblem may be infeasible.
 \end{itemize}
 
@@ -95,7 +94,7 @@ Therefore, we construct an ellipsoidal inner trust region to avoid the constrain
 % We construct a set of requirements $\sampletrk$ must satisfy.
 During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
 \begin{align}
-\sampletrk = \left \{x \in \Rn | (x - \ck)^T \qk(x - \ck) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
+\sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
 \end{align}
 To ensure this ellipsoid is feasible, we construct cones that buffer the ellipsoid from the constraint boundaries.
 These cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
@@ -198,11 +197,11 @@ we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $
 
 Let $\bar{b} = b - A\mu$ and $d = x - \mu$ so that the polyhedron becomes
 \begin{align*}
-P = \{ \mu + d \in \Rn \; | \;  Ad \le \bar{b} \}
+P = \left\{ \mu + d \in \Rn \; \bigg | \;  Ad \le \bar{b} \right\}
 \end{align*}
 Then, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
 \begin{align*}
-E = \{ d \in \Rn \; | \; \frac 1 2 d^T Q d \le 1 \}.
+E =\left \{ d \in \Rn \; \bigg | \; \frac 1 2 d^T Q d \le 1 \right\}.
 \end{align*}
 Our goal is to determine $Q$ to maximize the volume of $E$ such that $\mu + E \subset P$.
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
@@ -279,13 +278,14 @@ Although this sounds appealing, we were only able to formulate this problem as a
 However, it is possible to formulate the problem of checking whether an ellipsoid is contained within any particular cone.
 This admits a search over possible ellipsoids, with an algorithmic check that is efficient.
 We discuss this here.
-Throughout, we will assume that the constraints found in \cref{ellipsoids_trust_region_constraints} are included, to ensure the ellipsoid is within the trust region.
+Throughout, we will assume that the constraints found in \cref{ellipsoids_trust_region_constraints} are included, 
+to ensure the ellipsoid is within the outer trust region $\outertrk$.
 % \begin{align*}
 % \max_{\qk, \ck, \sk} \det\left(\qk^{-1}\right) \\
 % \end{align*}
 
 Notice that because the cone for each constraint opens toward the current iterate,
-and each cone uses the same threshold $\beta \dk^{p_\beta}$ for feasible directions for the vertex,
+and each cone uses the same threshold $\beta \dk^{p_\beta}$ for feasible directions from the vertex,
 the cones can be uniquely defined by their vertices.
 This means that for an iteration $k$, after a change of variables
 \begin{align}
@@ -327,11 +327,11 @@ H_i \cap A_i
 = \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, -\frac{\left(x - v^{(i)}\right)^T}{\|x - v^{(i)}\|}\frac{v^{(i)}}{\|v^{(i)}\|}\ge \beta \right\} \\
 = \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|v^{(i)}\|\ge \beta\|x - v^{(i)}\| \right\} \\
 = \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x - v^{(i)}\|^2 \le \frac 1 {\beta^2}\|v^{(i)}\|^2 \right\} \\
-= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\} \\
+= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\}.
 \end{align*}
 
-Then, we can compute the perspective projection of the ellipsoid, similar to \cite{eberly_2013}.
-Consider the point $x = v^{(i)} + td$ for some direction $d$ and distance $t$.
+Then, we can compute the perspective projection of the ellipsoid, in a fashion similar to \cite{eberly_2013}.
+Consider the point $x = v^{(i)} + td$ for some unit direction $d$ and distance $t$ from $v^{(i)}$.
 If $x$ is on the boundary of the ellipsoid, then:
 \begin{align*}
 0 = (v^{(i)} + t d - \ck )^T \qk  (v^{(i)} + t d - \ck ) - 1\\
@@ -352,7 +352,7 @@ d^T \qk  v^{(i)} +  \left(v^{(i)}\right)^T \qk  d - \ck ^T \qk  d - d^T \qk  \ck
 \end{align*}
 
 There are either $0$, $1$, or $2$ values of $t$ for which this equation will have solutions.
-The directions from $v^{(i)}$ when it intersects the ellipsoid exactly $1$ time are those whose projection will be on the boundary of the perspective projection of the ellipsoid.
+The directions from $v^{(i)}$ with exactly $1$ intersection with the ellipsoid are those whose projection will be on the boundary of the perspective projection of the ellipsoid.
 The discriminant for these is $0$.
 If we let
 \begin{align*}
@@ -453,22 +453,23 @@ this becomes:
 \end{align}
 
 % This is the well known optimization problem of projecting a point onto the surface of an ellipsoid.
-To our knowledge, no explicit solution exists, which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
+To our knowledge, no explicit solution exists, 
+which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
 However, there is an efficient, binary-search algorithm to solve this.
 % \cite{projecttoellipsoid}.
 
 
 Namely, given 
 $p \in \Rn$ and a matrix $Q$,
-we can consider how to project the point $p$ onto the set $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
-\begin{align*}
+we can consider how to compute point furthest from $p$ that is also in the set $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
+\begin{align}
 \begin{array}{ccc}
-x^{\star} = &\argmin_{x \in \Rn} & \|x - p\|^2 \\
+x^{\star} = &\argmax_{x \in \Rn} & \|x - p\|^2 \\
 & \textrm{s.t.} & x^TQx = 1.
-\end{array}
-\end{align*}
-If $p^TQp \le 1$, then clearly $x^{\star} = p$.
-Otherwise, the first order optimality conditions imply the existence of a $\lambda \in \reals$ such that
+\end{array} \label{antiprojection_problem}
+\end{align}
+% If $p^TQp \le 1$, then clearly $x^{\star} = p$.
+The first order optimality conditions imply the existence of a $\lambda \in \reals$ such that
 % x^{\star} - p = \lambda Qx^{\star} \Longleftrightarrow \left(Q - \frac 1 {\lambda} I\right)x^{\star} = -\frac 1 {\lambda}p \\
 \begin{align*}
 x^{\star} - p = \lambda Qx^{\star} %\Longleftrightarrow \left(\lambda Q - I\right)x^{\star} = -p
@@ -483,9 +484,30 @@ Notice
 \begin{itemize}
 \item $f(0) = p^TQp - 1 > 0$
 \item $\lim_{\lambda \to \frac 1 {\lambda_i}} f(\lambda) = \infty$ for any eigenvalue $\lambda_i$
-\item the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \infty}f(\lambda) = -1$
+\item the presence of $\lambda$ within inverse expressions suggests $\lim_{\lambda \to \pm \infty}f(\lambda) = -1$
 \end{itemize}
-The authors show that a binary search on $\lambda$ can find the zeros of $f$.
+A binary search on $\lambda$ can find the zeros of $f$.
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/antiprojection.png}
+    \caption{
+    	\emph{Short:}
+    		An example plot of the one-dimensional function whose zeros provide the largest ellipsoid within the buffering cones.
+    	\emph{Long:}
+    		By computing the zeros of this function, we find values of $\lambda$ for each critical point of \cref{antiprojection_problem}.
+    		The function $f$ is in blue, and the eigenvalues of $Q$ are red vertical lines.
+    		A binary seach can be used to find one zero (plotted as green vertical lines) to the left of the smallest eigenvalue and one to the right of the largest.
+    		Between any two eigenvalues, we first find the minimum.
+    		If the minimum is negative, we can then use a binary search to compute two more zeros.
+	}
+    \label{feasible_direction}
+\end{figure}
+
+
+
+
 
 % \subsubsection{Numerical Solution}
 % 
@@ -541,7 +563,7 @@ The authors show that a binary search on $\lambda$ can find the zeros of $f$.
 \subsection{Spherical Solution}
 
 One simplification that allows an explicit formulation is to restrict the ellipsoid to be a sphere.
-Although this will not produce as large an ellipsoid, it may be used as a hot start while searching over all ellipsoids.
+Although this may produce an ellipsoid with less volume, it may be used as a hot start while searching over all ellipsoids.
 
 To compute the maximum volume sphere, we can maximize the minimum distance from the center of the sphere to any cone.
 We once again perform a change of variables, this time subtracting of $\xk$ and rotating $v^{(i)}$ onto $e_1$.
@@ -550,13 +572,14 @@ We find
 \begin{align*}
  \\
 x^Te_1 = \beta \|x\| 
- \Longleftrightarrow t^2 = \beta^2 \|te_1  + x - t e_1\|^2 \\
- \Longleftrightarrow t^2 = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
- \Longleftrightarrow t^2 = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
- \Longleftrightarrow t^2 = \beta^2 \left(t^2  + \|y\|^2 \right) \\
- \Longleftrightarrow (1 - \beta^2)t^2 = \beta^2 \|y\|^2 \\
- \Longleftrightarrow \sqrt{\frac{1 - \beta^2}{ \beta^2}} t = \|y\|
+ \Longleftrightarrow t^2 = \beta^2 \|te_1  + x - t e_1\|^2 
+  = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
+= \beta^2 \left(t^2  + \|y\|^2 \right) 
+ \Longleftrightarrow (1 - \beta^2)t^2 = \beta^2 \|y\|^2 
+ \Longleftrightarrow \sqrt{\frac{1 - \beta^2}{ \beta^2}} t = \|y\|.
 \end{align*}
+
+%  \Longleftrightarrow t^2 = \beta^2 \left(\|te_1\|^2  + \|x - t e_1\|^2\right) \\
 
 This means, that if we let $\beta' = \sqrt{\frac{1 - \beta^2}{\beta^2}}$, we have
 \begin{align*}
@@ -566,14 +589,14 @@ This means, that if we let $\beta' = \sqrt{\frac{1 - \beta^2}{\beta^2}}$, we hav
 The projection gives the following optimization problem:
 \begin{align*}
 \min_{x \in \mathbb R^{n-1}, s \in \mathbb R} & \quad \frac 1 2 \|x - y\|^2 + \frac 1 2 (s - t)^2 \\
-	\textrm{s.t.}		& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2
+	\textrm{s.t.}		& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2,
 \end{align*}
-which gives us the Lagrangian:
+with Lagrangian:
 \begin{align*}
 l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \lambda \frac 1 2 \left(\|x\|^2 - {\beta'}^2 s^2\right).
 \end{align*}
 
-After taking the gradient of the Lagrangian, we find that for some $\lambda \in \reals$:
+After taking the gradient of the Lagrangian, the first order optimality conditions imply that for some $\lambda \in \reals$:
 \begin{align*}
 x - y - \lambda x = 0, & \quad s - t + \lambda {\beta'}^2 s = 0 \\
 x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 }.
@@ -683,7 +706,7 @@ we have the following optimization problem:
 % 
 
 Notice that this optimization problem is not convex.
-Although more efficient formulations may exist, this leads us to believe that it may sometimes be difficult to even compute the maximum volume sphere within our buffering cones.
+Although more efficient formulations may exist, this leads us to believe that it may sometimes be difficult to even compute the maximum volume sphere within the buffering cones.
 
 \subsection{Conservative Ellipsoid}
 Throughout \cref{possible_ellipsoids} we have considered several inner trust regions.
@@ -708,7 +731,7 @@ That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le 
 \begin{align}
 \condition \left(\qk\right) \le \sigmamax. \label{define_suitable_condition_numbers}
 \end{align}
-\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within $ \capcones \cap \trkpo $.
+\item The tuple $(\qkpo, \ckpo, \sdkpo)$ is \emph{trusted} for $\xkpo, \dkpo$ if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ lies within $ \capcones \cap \trkpo $.
 That is,
 \begin{align}
 \unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
@@ -722,7 +745,7 @@ where
 \unshiftedellipsoid \subseteq \feasible.
 \end{align}
 where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}
-\item The tuple $(\qk, \ck, \sdk)$ is \emph{adjacent} if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
+\item The tuple $(\qk, \ck, \sdk)$ is \emph{adjacent} to $\xk$ if an ellipsoid defined by $\qk, \ck, \sdk$ is near to the current iterate:
 \begin{align}
 \xk \in \scaledunshiftedellipsoid \label{define_suitable_close_to_iterate}
 \end{align}
@@ -738,7 +761,7 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 \end{itemize}
 \end{definition}
 
-\subsection{Definition}
+\subsection{Ellipsoid Definition}
 
 % However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
 Here we show how to construct the ellipsoid, and that it is 
@@ -1137,10 +1160,10 @@ as $\det(\rotk) = 1$.
 
 \begin{lemma}
 \label[lemma]{cone_subset_cone}
-Given $u, v \in \Rn$, and $\gamma, \beta \in (0, 1]$ that satisfy $\|u\| = \|v\|= 1$, $u^Tv = \gamma > \beta > 0$, define
+Given $u, v \in \Rn$, and $\gamma \in (0, 1]$, $\beta \in [0, \gamma)$ that satisfy $\|u\| = \|v\|= 1$, $u^Tv = \gamma$, define
 \begin{align*}
 B = \{x\in\Rn | {v}^Tx \ge \beta\|x\|\}, \quad
-S = \left\{x\in\Rn \bigg| v^Tx \ge \left(\beta\gamma + \sqrt{(1 - \beta^2)\left(1 - \gamma^2\right)}\right)\|x\| \right\}. 
+S = \left\{x\in\Rn \bigg| u^Tx \ge \left(\beta\gamma + \sqrt{(1 - \beta^2)\left(1 - \gamma^2\right)}\right)\|x\| \right\}. 
 \end{align*}
 Then, $S \subseteq B$.
 \end{lemma}
@@ -1461,7 +1484,7 @@ We have two methods for dealing with this case.
 
 \subsection{Linear cuts}
 \label{linear_cuts_section}
-In this case, we have chosen to solve the trust region subproblem over again, after adding a linear constraint that removes this infeasible point.
+One strategy is to solve the trust region subproblem again, after adding a linear constraint that removes this infeasible point.
 Each new linear constraint not only cuts off the last trial point, but also stays at least a fraction of the trust region radius away.
 
 \begin{figure}[ht]
@@ -1553,7 +1576,7 @@ Thus, we set $ \searchtrk = \capcones \cap \tr$ by defining the trust region sub
  & x \in \tr		& \\
 \end{array}
 \end{align}
-In \cref{sufficient_reduction_theorem} we show how to compute a point within $ \searchtrk $ that satisfies the efficiency condition \cref{efficiency}.
+In \cref{sufficient_reduction_theorem} we show the existence a point within $ \searchtrk $ that satisfies the efficiency condition \cref{efficiency}.
 
 
 % \begin{boxedcomment}
@@ -1589,121 +1612,156 @@ In \cref{sufficient_reduction_theorem} we show how to compute a point within $ \
 
 
 \section{Recover Feasible Ellipsoid}
+\label{recovering_feasiblity_section}
 
 Although $\sampletrk$ will be feasible for small enough $\dk$, there may be some iterations in which it contains infeasible points.
-When this happens, and a point we attempt to use as a sample point is infeasible, we decrease the trust region radius.
+When this happens, and a point we attempt to use as a sample point is infeasible, we call a \emph{RestoreFeasibility} subroutine that may decrease the trust region radius.
 However, this means the previous sample points are no longer poised for the next iteration.
-We then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
 
-% \begin{algorithm}[H]
-%     \caption{Restore a feasible ellipsoid}
-%     \label{restore_feasible_ellipsoid}
-%     \begin{itemize}
-%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-%             Feasible ellipsoid, current iterate
-%             
-%         \item[\textbf{Step 1}] \textbf{(Construct Ellipsoid within the convex hull)} \\
-%         	A sphere works.
-%     \end{itemize}
-% \end{algorithm}
-% 
-% \begin{boxedcomment}
-% Fill this in.
-% \end{boxedcomment}
-% This is why we require an initial feasible ellipsoid.
+For convex constraints, when a sample point is found to be infeasible, it is possible to recover a feasible ellipsoid by choosing points within the convex hull of previously evaluated points.
+This is discussed in \cref{convex_restoration}.
+For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
+This means that the current iterate lies within the interior of the feasible region,
+and there is gauranteed to be a feasible ellipsoid centered at the current iterate with a small enough trust region.
+However, if the current iterate lies on the boundary of the feasible region, namely some constraint value is $0$ at $\xk$, finding the sample region can be much more difficult.
+According to \cref{nonconvex_ellipsoid_existence}, \cref{minangleassumption_alt} ensures a feasible ellipsoid near the current iterate,
+but we do not know which direction $\minangledirk$ to use.
 
-% \begin{align}
-% \label{construct_ellipsoid_in_hull}
-% \begin{array}{ccc}
-% \max_{} & t & \\
-% \textrm{s.t.} & & \\
-% \end{array}
-% \end{align}
+Of course, we could approximate this with linear models of the constraints, by constructing a direction similar to $\huk$ defined in \cref{define_u}.
+However, it may be necessary to shrink the trust region, and as the trust region shrinks all evaluated points become relatively further from the current iterate.
+This means that we lose model information.
+It is possible that as the trust region becomes small, we only have a single feasible evaluation.
+The lack of information precludes several intelligent algorithms,
+but it is still possible to exhaustively search over possible sample region attempting to construct a sample set.
 
+\begin{itemize}
+\item Set $R =\dk$, $M = 2*n$
+\item For each of $M$ relatively equally spaced directions from $\xk$ \\
+For each of \\
+\item Consider ellipsoids of radius $R$
+\item Decrease trust region radius
+\end{itemize}
 
-To do this, we first construct the convex hull of the points 
-Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in the previous iteration.
 
 \begin{algorithm}[H]
-    \caption{Restore a feasible ellipsoid}
-    \label{restore_feasible_ellipsoid}
+    \caption{Recover Feasible Ellipsoid for Non convex constraints}	
+    \label{general_recover}
     \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            $P_{\textrm{hull}} = \emptyset$
-            
-        \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
-	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyplerplane $ax\le b$ running through the points $S \cup \xk$.
-	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $P_{\textrm{hull}}$.
-	
-	\item[\textbf{Step 1}] \textbf{(Construct ellipsoid)} \\
-	   Construct an ellipsoid within $P_{\textrm{hull}} \cap \tr$ \\
+        \item[\textbf{Step -}] \textbf{(Initialization)} \\
+        		Set $i\gets0$, $R^{(0)} \gets \dk$, $M^{(0)} \gets 2n$.
+        		
+        \item[\textbf{Step 1}] \textbf{(Search for sample points)} \\
+        	For each of $M^{(i)}$ relatively equally spaced directions,
+        	construct an ellipsoid at distance $R^{(i)}$ from $\xk$, that satisfies \cref{ellipsoid_requirements}
+        	
+        \item[\textbf{Step 2}] \textbf{(Construct sample points)} \\
+        	Attempt to evaluate points within the ellipsoid.
+        	If all points required to construct a $\Lambda$-poised sample set are feasible, return this ellipsoid.
+        \item[\textbf{Step 3}] \textbf{(Repeat)} \\
+        	Set, $R^{(i+1)} = \frac 1 2 R^{(i)}$, $M^{(i+1)} \gets 2 M^{(i)}$, and $i \gets i + 1$.
     \end{itemize}
 \end{algorithm}
 
-
-Let $P_{\textrm{hull}}$ be described with constraints:
-\begin{align*}
-P_{\textrm{hull}} = \left\{x \in \Rn \bigg | A^{\textrm{hull}} x \le b^{\textrm{hull}}, \left\|A_i^{\textrm{hull}}\right\| = 1 \forall i \right\}
-\end{align*}
-and let $\mathcal A^{\textrm{hull}}$ be the set of active constraints:
-\begin{align*}
-\mathcal A^{\textrm{hull}} = \left\{i \in [m] \bigg | A_i^{\textrm{hull}} \xk = b_i^{\textrm{hull}} \right\}
-\end{align*}
-
-If $\xk$ is not on the boundary of $P_{\textrm{hull}}$, then $\mathcal A^{\textrm{hull}} = \emptyset$ and we are free to construct the ellipsoid
-\begin{align*}
-\Delta = \min_{i} b_i^{\textrm{hull}} - A_i^{\textrm{hull}} \xk \\
-\left\{x \in \Rn \bigg | \left\|x - \xk\right\|^2 \le \Delta^2\right\}.
-\end{align*}
+With the suitable choices of directions, this algorithm would eventually find a feasible ellipsoid.
+However, rather than discussing this further, we believe it is cleaner to assume the existence of such an algorithm.
+Thus, we make \cref{restorability_assumption}.
+In many situations, there may be more practical means of finding a feasible sample set.
 
 
 
+
+
+\subsection{Goes somewhere}
+
 \begin{align*}
-A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
+\zik \in B_{\infty}(\xk, \minangledelta) \\
+\Longleftrightarrow \left\|\xk - \frac{c_i\left(\xk\right)}{\left\|\nabla c_i\left(x\right)\right\|^2} \nabla c_i\left(x\right)  - \xk\right\|_{\infty} \le \minangledelta \\
+\Longleftrightarrow \left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|_{\infty} \\
+\Longleftrightarrow \left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\| \\
 \end{align*}
 
-Otherwise, we can let
+\begin{assumption}
+\label{true_constraints_minangle_assumption}
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for any $x \in \Omega$,
+there is a unit vector $\minangledirk \in \Rn$ such that 
+for any $i$ with
 \begin{align*}
-u^{\textrm{hull}} = \argmax_{\|u\| = 1} \min_{i \in \mathcal A^{\textrm{hull}}} -u^TA_i^{\textrm{hull}} \\
-\alpha^{\textrm{hull}} = \max_{\|u\| = 1} \min_{i \in \mathcal A^{\textrm{hull}}} -u^TA_i^{\textrm{hull}} \\
+\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|,
 \end{align*}
-so that the cone
+we also have
 \begin{align*}
-\left\{x \in \Rn | \; x = \xk + s, s^Tu^{\textrm{hull}} \ge \alpha^{\textrm{hull}}\left\|s\right\| \right\}
+-\nabla c_i(x)^T\minangledirk \ge \minanglealpha \left\| \nabla c_i(x) \right\|.
 \end{align*}
-is contained within $P_{\textrm{hull}}$ near $\xk$.
+Without loss of generality, $\minanglealpha \le \frac 1 2$.
+\end{assumption}
 
-We are then free to construct the ellipsoid
+\begin{theorem}
+\label{nonconvex_ellipsoid_existence}
+Let $\feasible$ be defined by \cref{define_feasible}.
+
+Suppose that \cref{true_constraints_minangle_assumption} holds.
+
+There exists $\epsilon_{\textrm{max}} > 0$ such that for each $\epsilon < \epsilon_{\textrm{max}}$, the ellipsoid
 \begin{align*}
-f_e(\epsilon, \delta, \theta; x) = (x - \epsilon e_1)^T\begin{pmatrix}
-1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\theta^2}{1 - \theta^2} \boldsymbol I \\
-\end{pmatrix}(x - \epsilon e_1) - \frac 1 2 \delta^2
+\left\{\right\} \subseteq \feasible
 \end{align*}
-and rotation matrix
-\begin{align*}
-\rotk = 2\frac{(e_1 + \huk)(e_1 + \huk)^T}{(e_1 + \huk)^T(e_1 + \huk)} - \boldsymbol I
-\end{align*}
-by defining
+is, trusted, adjacent, and non-empty according to \cref{ellipsoids_notation_definitions}
+\end{theorem}
+
+\begin{proof}
+Let $y \in \Rn$ with $c_i(y) = 0$.
+
+
+First, suppose that $i$ is such that $\left|c_i(x)\right| > \minangledelta \left\|\nabla c_i(x)\right\|.$
+By \cref{bounded_gradients_lemma}, there exists $\maxgrad > 0$ such that
 \begin{align}
-\gamma &= 1 + \frac 1 {\sqrt{2}} \\
-\bs &= \max\left\{\frac 1 2 , \bsk\right\}  \\
-\sampletrkpo &= \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo,\bs; \rotk(x - \xkpo)\right) \le 0\right\}.
+\label{fufeeq1}
+0 = c_i(y) \le c_i(x) + \|y - x\| \maxgrad \Longrightarrow \|y - x\| \ge \frac{-c_i(x)}{\maxgrad}.
 \end{align}
-We have defined the components $\qkpo$, $\ckpo$, $\sdkpo$ as
+By \cref{mingradassumption}, there are constants $\mingradepsilon$ and $\mingrad$ such that if $-c_i(x) = \left|c_i(x)\right| \le \mingradepsilon$, then 
+$\| \nabla c_i(x) \| \ge \mingrad$.
+If $-c_i(x) > \mingradepsilon$, \cref{fufeeq1} becomes $\|y - x\| > \frac{\mingradepsilon}{\maxgrad}$, otherwise it is
 \begin{align*}
-\begin{array}{ccc}
-\qkpo &=& \left(\rotk\right)^T \begin{pmatrix}
-1 & \boldsymbol0^T \\
-\boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
-\end{pmatrix} \rotk, \\
-\ckpo &=& \xkpo + \frac 1 {2\gamma} \dkpo \huk, \\
-\sdkpo &=& \frac 1 {2\gamma} \dkpo. 
-\end{array}
+\|y - x\| \ge \frac{\minangledelta \left\|\nabla c_i(x)\right\|}{\maxgrad} \ge \frac{\minangledelta \mingrad}{\maxgrad}.
+\end{align*}
+Because one of these cases must be true, we see
+\begin{align*}
+\|y - x\| \ge \frac 1 {\maxgrad}\min\left\{\mingradepsilon, \minangledelta \mingrad\right\}.
+\end{align*}
+
+Now, suppose that $i$ is such that 
+$\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|$.
+Then by \cref{true_constraints_minangle_assumption}, there exists $\minangledirk$ with
+\begin{align*}
+-\nabla c_i(x)^T\minangledirk \ge \minanglealpha \left\| \nabla c_i(x) \right\|.
 \end{align*}
 
 
 
+
+By \cref{bounded_hessians_assumption}, we see that there exists $\maxhessian > 0$ with
+\begin{align*}
+c(y) \le c(x) + \nabla c(x)^T (y - x) + \maxhessian \|y - x\|^2.
+\end{align*}
+
+Suppose that $-c_i(x)\le \mingradepsilon$, so that \cref{mingradassumption} provides $\left\|\nabla c_i(x)\right\| \ge \mingrad$.
+Now, let $0 < t \le \frac {\minanglealpha \left\|\nabla c_i(x)\right\|}{\maxhessian\left(2 + \minanglealpha\right)}$ be arbitrary,
+and suppose that $s \in \Rn$ satisfies $s^T\minangledirk = 0$, $\|s\|\le \frac 1 2 \minanglealpha t$.
+We can multiply
+\begin{align*}
+t \le \frac {\minanglealpha \left\|\nabla c_i(x)\right\|}{\maxhessian\left(2 + \minanglealpha\right)}
+\Longrightarrow 0 \ge -\minanglealpha \left\|\nabla c_i(x)\right\| +  \maxhessian\left(2 + \minanglealpha\right) t
+\end{align*}
+by $\frac t 2$ to find
+\begin{align*}
+0 \ge -\frac 1 2 \minanglealpha \left\|\nabla c_i(x)\right\| t +  \maxhessian\left(1 + \frac 1 2 \minanglealpha\right) t^2 \\
+\ge 0 -  t\minanglealpha \left\| \nabla c_i(x) \right\| + \left\| \nabla c(x)\right\| \left\|s\right\| + \maxhessian\left(t^2 + \|s\|^2\right) \\
+\ge c(x) + \nabla c(x)^T (t \minangledirk + s) + \maxhessian \|t \minangledirk + s\|^2 \\
+\ge c(x + t \minangledirk + s).
+\end{align*}
+
+
+\end{proof}
 
 \section{Convergent Algorithm}
 \label{the_algroithm_section}
@@ -1758,11 +1816,10 @@ The algorithm is as follows:
             
         \item[\textbf{Step 1}] \textbf{(Construct the models)} \\
 %         by \cref{define_ellipsek} if $\activeconstraintsk \ne \emptyset$ and \cref{define_trivial_ellipsek} if $\activeconstraintsk =\emptyset$.
-        Call \cref{model_improving_algorithm} with respect to $\sampletrk$ to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}. \\
-        Construct $\mfk$ and $\mcik$ as described in \cref{reg}.
+        Call \cref{model_improving_algorithm} with respect to $\sampletrk$ to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}.
+        Construct $\mfk$ and $\mcik$ as described in \cref{reg}. \\
         While constructing the sample set, if some point within $\sampletrk$ is not feasible, or $\sampletrk = \emptyset$ 
-        run \cref{restore_feasible_ellipsoid} to construct a new $\sampletrk$ and $\dk$, and go to Step 1.
-        Decrease the trust region radius.
+        run the \emph{RestoreFeasibility} subroutine to construct a new $\sampletrkpo$ and $\dkpo<\omegadec \dk$, $k \gets k + 1$ and go to Step 1.
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
         	Compute $\activeconstraintsk$ by \cref{define_activeconstraints} and $\zik$, $\wik$ by \cref{define_z} and \cref{define_w} for each $i \in \activeconstraintsk$.
@@ -1773,6 +1830,15 @@ The algorithm is as follows:
                 $x^{(k+1)} \gets \xk$,
                 $k \gets k+1$ and go to Step 1.
             \end{itemize}
+		
+		\end{itemize}
+		\end{algorithm}
+		
+		\vspace{10cm}
+		\newpage
+		
+		\begin{algorithm}[H]
+		\begin{itemize}
             
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
         	Construct $\huk$, $\thetamink$, $\bsk$, $\fik$, and $\capcones$ according to
@@ -1798,15 +1864,47 @@ The algorithm is as follows:
     \end{itemize}
 \end{algorithm}
 
+
+
+
+
+
+
 \begin{boxedcomment}
 Don't always increase...
 \end{boxedcomment}
 
+
+\color{red}
+
+We take a moment to make some observations about the algorithm.
+
+
+Somewhere should I say that there is only a finite number of times that the restore subroutine is called?
+
+
+Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
+Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
+These along with \cref{sr_chi_big_enough} ensure that the algorithm reaches Step 3.
+This is because the only way to quit iteration $k$ without reaching Step 3 is
+\begin{itemize}
+\item have $\sampletrk = \emptyset$
+\item have $\sampletrk \not \subseteq \feasible$
+\item have $\searchtrk \not \subseteq \feasible$
+\item have \cref{criticallity_check} not satisfied.
+\end{itemize}
+\color{black}
+
 \section{Convergence Analysis}
 \label{convex_convergence_analysis}
 
-Let $\chi\left(x\right) = \left\|x - \textrm{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$
-be the criticallity measure for \cref{the_dfo_problem}, and $\left\{\xk\right\}$ be the sequence of iterates generated by \cref{constrained_dfo}.
+Let $\left\{\xk\right\}$ be the sequence of iterates generated by \cref{constrained_dfo}.
+For convex constraints, we can let $\chi\left(x\right) = \left\|x - \textrm{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$ be the criticallity measure for \cref{the_dfo_problem}, 
+For general constraints, this projection is not well defined.
+However, to show convergence to a first order critical point, we can project onto the linearization of the constraints.
+Namely, for any $x \in \feasible$, if we define $F_c(x) = \left\{y \in \Rn \big | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \; \forall i \in [m] \right\}$, 
+then we can let the criticallity measure be
+$\chi\left(x\right) = \left\|x - \textrm{Proj}_{F_c(x)}\left(x- \nabla f\left(x\right)\right)\right\|$.
 In this section we prove that under appropriate conditions, the criticality measure $\chi\left(\xk\right)$ converges to $0$ as $k\to\infty$.
 
 For much of our analysis, we work with the model criticality measure
@@ -1880,18 +1978,13 @@ that are generated by the conservative ellipsoid method described in
 include references to their definitions when used.
 
 
-\subsection{Assumptions}
-Let $\domain$ be some open region containing $\feasible$.
-We make the following standing assumptions for all the results in this section.
+% \subsection{Restoration Assumption}
 
-\begin{assumption}
-\label{constraints_are_convex}
-The functions $c_i$ for all $i \in [m]$ are convex in $ \domain $. That is, 
-% c_i(x) \le 0 \wedge c_i(y) \le 0 \Longrightarrow
-\begin{align*}
-c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \domain, \zeta \in [0, 1].
-\end{align*}
-\end{assumption}
+
+\subsection{Assumptions}
+Let $\domain$ be some open region containing $\feasible$ defined in \cref{define_feasible}.
+We make the following assumptions for the results in this section.
+
 
 % \paragraph{Bounded functions}
 % The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are bounded functions.
@@ -2034,7 +2127,18 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 \end{assumption}
 
 
+\paragraph*{Restoration}
 
+
+The following assumption is motivated in \cref{recovering_feasiblity_section}.
+In \cref{convex_restoration}, we show how to satisfy the assumption for convex constraints.
+
+\begin{assumption}
+\label{restorability_assumption}
+There exists a subroutine \emph{RestoreFeasibility} that accepts a feasible point $x \in \feasible$ and a maximum radius $\dmax$ to produce
+a new trust region radius $\Delta < \dmax$ and ellipsoid $T_{\textrm{interp}}$ that is trusted for 
+$x, \Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellipsoids_notation_definitions}.
+\end{assumption}
 
 
 
@@ -2715,8 +2819,6 @@ $\capcones \cap \tr \subseteq \feasible$.
 % This justifies the use of a $\dmax > 0$, such that $\dk \le \dmax\;\forall k \in \naturals$.
 
 
-
-
 \subsection{Sufficient Reduction}
 \label{sufficient_reduction_section}
 
@@ -2929,24 +3031,6 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(u_{GC}\right) \ge \kappa_f\chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 % \end{align*}
 % \end{lemma}
-
-
-
-
-\color{red}
-Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
-Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
-These along with \cref{sr_chi_big_enough} ensure that the algorithm reaches Step 3.
-This is because the only way to quit iteration $k$ without reaching Step 3 is
-\begin{itemize}
-\item have $\sampletrk = \emptyset$
-\item have $\sampletrk \not \subseteq \feasible$
-\item have $\searchtrk \not \subseteq \feasible$
-\item have \cref{criticallity_check} not satisfied.
-\end{itemize}
-\color{black}
-
-
 
 \begin{theorem}
 \label{sufficient_reduction_theorem}
@@ -3400,7 +3484,7 @@ let
 With
 $\kappa_g$, $\kappa_f$, $\lipgrad$, $\maxmodelhessian$
 defined by
-\cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{bounded_model_hessian_lemma}, \cref{bounded_hessians_assumption}.
+\cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_model_hessian_lemma}
 respectively, let
 \begin{align}
 \theircnot &= \lipgrad + \kappa_{g} + \frac 1 2 \maxmodelhessian \label{define_theircnot} \\
@@ -3517,6 +3601,10 @@ and let $\omegadec$ and $\omegainc$ be defined by \cref{define_the_omegas}.
 Suppose that $\suffiterates$ is finite.
 Then there exists $k_0 \in \naturals$ such that for all $k \ge  k_0$, $\dkpo \le \omegadec \dk$.
 Thus, $\left\{\dk\right\} \to 0$ because $\omegadec < 1$.
+This is because the only places in the algorithm where we do not compute $\rk$ is if $\sampletrk \not \subseteq \feasible$ of the trial point $\sk \not \in \feasible$.
+In both of these scenarios, the new trust region radius is decreased by $\omegadec$.
+Firstly, note that the trust region always decreases when calling the \emph{RestoreFeasibility} subroutine.
+
 From now on, we may assume that $\suffiterates$ is infinite.  
 For any $k \in \suffiterates$, we have $\chik \ge \kappa_{\chi}\dk^{p_{\Delta}}$.
 Using \cref{bounded_model_hessian_lemma} and \cref{sufficient_reduction_theorem} we have
@@ -4942,16 +5030,194 @@ Because $\epsilon$ was arbitrary, it follows that
 
 
 \section{Convex Constraints}
+When the constraints are convex, the analysis becomes simpler.
+Namely, we can use \cref{restore_feasible_ellipsoid_convex} to construct an algorithm satisfying \cref{restorability_assumption}.
+To this end, we replace \cref{restorability_assumption} with \cref{constraints_are_convex}.
+Within \cref{the_convergence_theorem} we extend \cref{the_convergence_lemma} to the common criticality measure used for convex constraints.
+Namely, for convex constraints, the projection of $\xk - \nabla f\left(\xk\right)$ onto the feasible set is well defined.
 
 
-\begin{lemma}
-\label{recoverable}
-Suppose that \cref{constraints_are_convex} holds.
+\begin{assumption}
+\label{constraints_are_convex}
+The functions $c_i$ for all $i \in [m]$ are convex in $ \domain $. That is, 
+% c_i(x) \le 0 \wedge c_i(y) \le 0 \Longrightarrow
+\begin{align*}
+c_i(\zeta x + (1 - \zeta) y) \le 0 \quad \forall x, y \in \domain, \zeta \in [0, 1].
+\end{align*}
+\end{assumption}
 
-The ellipsoid output from \cref{restore_feasible_ellipsoid} is conditioned, trusted, adjacent, and non-empty according to \cref{ellipsoids_notation_definitions}.
-\end{lemma}
-\begin{proof}
-\end{proof}
+
+\subsection{Convex Restoration}
+\label{convex_restoration}
+When the constraints are convex, the method for constructing a new sample set near our current iterate becomes easier.
+We know that during the initialization, we began with a set of sample points from a feasible, non-empty ellipsoid.
+This means that the constructing convex hull of previously evaluated points has a non-empty interior.
+
+% We can then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
+Note that although constructing the convex hull of an an arbitrary set of points is computationally expensive,
+in practice it is possible to do with a sufficiently small set of sample points.
+% In dimension $n$, the number of sample points $p_1$ required to construct a quadratic model is $O(n^2)$.
+For example, in dimension $n$, if a subset of previously evaluated points of size $n+1$ is found, then not all hyperplanes of the convex hull need to be enumerated.
+Only those that run through the point $\xk$.
+As it takes $n$ points to construct a hyperplane, and one of them is $\xk$, we must only consider the subsets of size $n-1$ of the of the $n+1$ sample points.
+Thus, to construct a hyperplane used in the construction of $\pi^{\textrm{hull}}$,
+we consider the hyper-planes running through $\xk$ to any other subset of size $n - 1$ of these points,
+which makes for $n+1$ choose $n-1$ points, or:
+% In dimension $n$, the number of sample points $p_1$ required to construct a linear model of the constraints $n$.
+% Choose a subset of $n+1$ points in the last lambda poised set that have a non-empty interior.
+\begin{align*}
+\frac{p_1!}{p_1!(p_1 - n)!} \\
+\frac{(n+1)!}{(n+1)!(n-1)!} = \frac{(n+1)!}{(n-1)!\left(n+1 - (n-1)\right)!} = \frac{n(n+1) }{2}
+\end{align*}
+
+% \begin{algorithm}[H]
+%     \caption{Restore a feasible ellipsoid}
+%     \label{restore_feasible_ellipsoid}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%             Feasible ellipsoid, current iterate
+%             
+%         \item[\textbf{Step 1}] \textbf{(Construct Ellipsoid within the convex hull)} \\
+%         	A sphere works.
+%     \end{itemize}
+% \end{algorithm}
+% 
+% \begin{boxedcomment}
+% Fill this in.
+% \end{boxedcomment}
+% This is why we require an initial feasible ellipsoid.
+
+% \begin{align}
+% \label{construct_ellipsoid_in_hull}
+% \begin{array}{ccc}
+% \max_{} & t & \\
+% \textrm{s.t.} & & \\
+% \end{array}
+% \end{align}
+
+
+To do this, we first construct the convex hull of the points 
+Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in the previous iteration.
+
+\begin{algorithm}[H]
+    \caption{Restore a feasible ellipsoid with convex constraints}
+    \label{restore_feasible_ellipsoid_convex}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+            $P_{\textrm{hull}} = \emptyset$
+            
+        \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
+	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyplerplane $ax\le b$ running through the points $S \cup \xk$.
+	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $P_{\textrm{hull}}$.
+	
+	\item[\textbf{Step 1}] \textbf{(Construct ellipsoid)} \\
+	   Construct an ellipsoid within $P_{\textrm{hull}} \cap \tr$ \\
+    \end{itemize}
+\end{algorithm}
+
+The final step of constructing the ellipsoid within the vertex of the polyhedron is done several times throughout this thesis.
+For completeness, we describe the process here.
+
+Let $P_{\textrm{hull}}$ be described with constraints:
+\begin{align*}
+P_{\textrm{hull}} = \left\{x \in \Rn \bigg | A^{\textrm{hull}} x \le b^{\textrm{hull}}, \left\|A_i^{\textrm{hull}}\right\| = 1 \forall i \right\}
+\end{align*}
+and let $\mathcal A^{\textrm{hull}}$ be the set of active constraints:
+\begin{align*}
+\mathcal A^{\textrm{hull}} = \left\{i \in [m] \bigg | A_i^{\textrm{hull}} \xk = b_i^{\textrm{hull}} \right\}
+\end{align*}
+
+If $\xk$ is not on the boundary of $P_{\textrm{hull}}$, then $\mathcal A^{\textrm{hull}} = \emptyset$ and we are free to construct the ellipsoid
+\begin{align*}
+\Delta = \min_{i} b_i^{\textrm{hull}} - A_i^{\textrm{hull}} \xk, \\
+\left\{x \in \Rn \bigg | \left\|x - \xk\right\|^2 \le \Delta^2\right\}.
+\end{align*}
+% 
+% \begin{boxedcomment}
+% Know that $\pi > 0$ because the polyhedron has an interior...
+% \end{boxedcomment}
+
+Otherwise, we can let
+\begin{align*}
+u^{\textrm{hull}} = \argmax_{\|u\| = 1} \min_{i \in \mathcal A^{\textrm{hull}}} -u^TA_i^{\textrm{hull}} \\
+0 < \pi^{\textrm{hull}} = \max_{\|u\| = 1} \min_{i \in \mathcal A^{\textrm{hull}}} -u^TA_i^{\textrm{hull}} \\
+\beta^{\textrm{hull}} = \sqrt{1 - \left(\pi^{\textrm{hull}}\right)^2} \\
+R^{\textrm{hull}} = 2\frac{(e_1 + u^{\textrm{hull}})(e_1 + u^{\textrm{hull}})^T}{(e_1 + u^{\textrm{hull}})^T(e_1 + u^{\textrm{hull}})} - \boldsymbol I
+\end{align*}
+so that the cone
+\begin{align*}
+C^{\textrm{hull}} = \left\{x \in \Rn | \; x = \xk + s, s^Tu^{\textrm{hull}} \ge \beta^{\textrm{hull}} \left\|s\right\| \right\}
+\end{align*}
+is contained within $P_{\textrm{hull}}$ near $\xk$.
+To see this, consider constraint $j$ and apply \cref{cone_subset_cone} with
+$u \gets u^{\textrm{hull}}$, 
+$v \gets -A_j^{\textrm{hull}}$, 
+$\beta \gets 0$, 
+and $\gamma \gets \left(u^{\textrm{hull}} \right)^T \left( -A_j^{\textrm{hull}}\right) := \pi_i \ge \pi^{\textrm{hull}}$
+to find
+\begin{align*}
+C^{\textrm{hull}} = \left\{x \in \Rn \bigg | x^T u^\textrm{hull} \ge \|x\| \sqrt{1 - \left(\pi^{\textrm{hull}}\right)^2} \right\} \\
+\subseteq \left\{x \in \Rn \bigg | x^T u^\textrm{hull} \ge \|x\| \sqrt{1 - \pi_i^2} \right\} 
+\subseteq \left\{s \in \Rn \bigg| A_j^{\textrm{hull}} s \le 0 \Longleftrightarrow s^T\left(-A_j^{\textrm{hull}}\right) \ge 0 \right\}
+\end{align*}
+% Note that 
+% \begin{align*}
+% R^{\textrm{hull}}e_1 = u^{\textrm{hull}} \\
+% \end{align*}
+With $f_e$ defined by \cref{define_ellipse_function}, we have by \cref{ellipse_in_cone} that
+for any $t > 0$, the ellipsoid
+\begin{align*}
+\left\{x \in \Rn \bigg | f_e\left(t, t,  \beta^{\textrm{hull}}; x \right) \le 0\right\} \subseteq \left\{ts \in \Rn \bigg | e_1^T s \ge \beta^{\textrm{hull}}, \|s\| = 1, t > 0\right\} \\
+\Longrightarrow \left\{x \in \Rn \bigg | f_e\left(t, t,  \beta^{\textrm{hull}};  R^{\textrm{hull}}\left(x - \xk\right) \right) \le 0\right\}
+\subseteq \left\{x \in \Rn \bigg | x = \xk + s^Tu^{\textrm{hull}} \ge \beta^{\textrm{hull}}\|s\| \right\}.
+\end{align*}
+
+\begin{itemize}
+\item We have that \cref{define_ellipse_function} ensures adjacency.
+\item Because the sample set had a non-empty interior, $ \pi^{\textrm{hull}} > 0$, so the ellipsoid is also non-empty
+\item Because $t > 0$ is arbitrary, we can ensure that it is trusted.
+\end{itemize}
+
+\begin{boxedcomment}
+Choose a value of $t$.
+\end{boxedcomment}
+
+% = \left\{s \in \Rn \bigg | e_1^T s \ge \beta^{\textrm{hull}}\|s\| \right\} \\
+
+% 
+% by defining
+% \begin{align}
+% \gamma &= 1 + \frac 1 {\sqrt{2}} \\
+% \bs &= \max\left\{\frac 1 2 , \bsk\right\}  \\
+% \sampletrkpo &= \left\{x \in \Rn | f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {2\gamma} \dkpo,\bs; \rotk(x - \xkpo)\right) \le 0\right\}.
+% \end{align}
+% We have defined the components $\qkpo$, $\ckpo$, $\sdkpo$ as
+% \begin{align*}
+% \begin{array}{ccc}
+% \qkpo &=& \left(\rotk\right)^T \begin{pmatrix}
+% 1 & \boldsymbol0^T \\
+% \boldsymbol 0 & \frac{\bs^2}{1 - \bs^2} \boldsymbol I \\
+% \end{pmatrix} \rotk, \\
+% \ckpo &=& \xkpo + \frac 1 {2\gamma} \dkpo \huk, \\
+% \sdkpo &=& \frac 1 {2\gamma} \dkpo. 
+% \end{array}
+% \end{align*}
+% 
+
+\begin{align*}
+A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
+\end{align*}
+
+\subsection{Convex Convergence}
+% 
+% \begin{lemma}
+% \label{recoverable}
+% Suppose that \cref{constraints_are_convex} holds.
+% 
+% The ellipsoid output from \cref{restore_feasible_ellipsoid_convex} is conditioned, trusted, adjacent, and non-empty according to \cref{ellipsoids_notation_definitions}.
+% \end{lemma}
+% \begin{proof}
+% \end{proof}
 
 
 
