@@ -1673,91 +1673,164 @@ In many situations, there may be more practical means of finding a feasible samp
 
 \subsection{Goes somewhere}
 
-\begin{align*}
-\zik \in B_{\infty}(\xk, \minangledelta) \\
-\Longleftrightarrow \left\|\xk - \frac{c_i\left(\xk\right)}{\left\|\nabla c_i\left(x\right)\right\|^2} \nabla c_i\left(x\right)  - \xk\right\|_{\infty} \le \minangledelta \\
-\Longleftrightarrow \left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|_{\infty} \\
-\Longleftrightarrow \left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\| \\
-\end{align*}
+
+
+
+To show that a feasible ellipsoid exists, we use a modification of \cref{minangleassumption_alt}.
+We would have preferred to use this version, as discussed in \cref{alternative_assumptions_section},
+but instead used an assumption about the models of the constraints.
+However, for showing a feasible ellipsoid without reference to the current iterate, it is more appropriate to use the following version:
 
 \begin{assumption}
 \label{true_constraints_minangle_assumption}
-There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for any $x \in \Omega$,
-there is a unit vector $\minangledirk \in \Rn$ such that 
-for any $i$ with
+There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for any $x_0 \in \Omega$,
+there is a unit vector $\minangledirx \in \Rn$ such that 
+for any $i \in [m]$ with
 \begin{align*}
-\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|,
+\left|c_i(x_0)\right| \le \minangledelta \left\|\nabla c_i(x_0)\right\|,
 \end{align*}
 we also have
 \begin{align*}
--\nabla c_i(x)^T\minangledirk \ge \minanglealpha \left\| \nabla c_i(x) \right\|.
+-\nabla c_i(x_0)^T \minangledirx \ge \minanglealpha \left\| \nabla c_i(x_0) \right\|.
 \end{align*}
 Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
 
+Note the similarity to \cref{minangleassumption_alt}:
+$\zik \in B_{\infty}(\xk, \minangledelta)$ is loosely
+\begin{align*}
+\left\|\xk - \frac{c_i\left(\xk\right)}{\left\|\nabla c_i\left(x\right)\right\|^2} \nabla c_i\left(x\right)  - \xk\right\|_{\infty} \le \minangledelta
+\end{align*}
+which is
+$\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|_{\infty}$.
+
+With this assumption, we are able to show a family of feasible ellipsoids about any feasible point.
+
 \begin{theorem}
 \label{nonconvex_ellipsoid_existence}
-Let $\feasible$ be defined by \cref{define_feasible}.
+Let $\feasible$ and $f_e$ be defined by \cref{define_feasible} and \cref{define_ellipse_function} respectively.
 
-Suppose that \cref{true_constraints_minangle_assumption} holds.
+Suppose that 
+\cref{true_constraints_minangle_assumption},
+\cref{bounded_gradients_lemma},
+\cref{bounded_hessians_assumption},
+and \cref{mingradassumption} hold.
 
-There exists $\epsilon_{\textrm{max}} > 0$ such that for each $\epsilon < \epsilon_{\textrm{max}}$, the ellipsoid
+For any $x_0 \in \feasible$,
+there exists $\epsilon_{\textrm{max}} > 0$, $\beta^{\star}>0$, and rotation matrix $R$ such that for each $\epsilon < \epsilon_{\textrm{max}}$, the ellipsoid
 \begin{align*}
-\left\{\right\} \subseteq \feasible
+E(\epsilon) = \left\{v \in \Rn \bigg| f_e\left(\epsilon, \epsilon, \beta^{\star}; R(v - x_0)\right) \le 0\right\}
 \end{align*}
-is, trusted, adjacent, and non-empty according to \cref{ellipsoids_notation_definitions}
+is adjacent, feasible, and non-empty according to \cref{ellipsoids_notation_definitions}
 \end{theorem}
 
 \begin{proof}
-Let $y \in \Rn$ with $c_i(y) = 0$.
 
+Let $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption};
+$\maxgrad$ by \cref{bounded_gradients_lemma};
+$\minangledelta$, $\minanglealpha$ and $\minangledirx$ by \cref{true_constraints_minangle_assumption};
+and $\maxhessian$ by \cref{bounded_hessians_assumption}.
 
-First, suppose that $i$ is such that $\left|c_i(x)\right| > \minangledelta \left\|\nabla c_i(x)\right\|.$
+Let $x_0 \in \feasible$ be arbitrary, and define
+\begin{align*}
+\beta^{\star} = \left(1 + \frac {\minanglealpha^2} 4\right)^{-\frac 1 2} \\
+C = \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \beta^{\star} \|v\| \right\} \\
+R = 2\frac{(e_1 + \minangledirx)(e_1 + \minangledirx)^T}{(e_1 + \minangledirx)^T(e_1 + \minangledirx)} - \boldsymbol I \\
+B = B_2\left(x_0, \min\left\{
+\frac {\mingradepsilon} {\maxgrad}, \frac{\minangledelta \mingrad}{\maxgrad},
+ \frac {2\minanglealpha  \min\{\mingrad, \frac{\mingradepsilon}{\minangledelta}\}}{\maxhessian\left(4 + \minanglealpha\right)}
+\right\}\right)
+\end{align*}
+% \epsilon_{\textrm{max}} =  \\
+
+By \cref{ellipse_in_cone}, for any $\epsilon > 0$, we have
+\begin{align*}
+\left\{v \in \Rn \bigg| f_e\left(\epsilon, \epsilon, \beta^{\star}; v\right) \le 0\right\}
+\subseteq \left\{tv\in\Rn\bigg| e_1^T v \ge \beta^{\star},\|v\|=1, t>0\right\} \\
+\
+=
+\left\{v\in\Rn\bigg| v^Te_1 \ge \beta^{\star}\|v\|\right\} \\
+\
+\Longrightarrow \left\{v \in \Rn \bigg| f_e\left(\epsilon, \epsilon, \beta^{\star}; Rv\right) \le 0\right\}
+\subseteq \left\{v\in\Rn\bigg| v^T\minangledirx \ge \beta^{\star}\|v\|\right\} \\
+\
+\Longrightarrow \left\{v \in \Rn \bigg| f_e\left(\epsilon, \epsilon, \beta^{\star}; R(v - x_0)\right) \le 0\right\}
+\subseteq \left\{x_0+ v\in\Rn\bigg| v^T\minangledirx \ge \beta^{\star}\|v\|\right\} \\
+\Longrightarrow E(\epsilon) \subseteq C.
+\end{align*}
+
+Thus, if we can show that $C \cap B \subseteq \feasible$, we will have shown feasibility for sufficiently small $\epsilon_{\textrm{max}}$.
+Note that \cref{ellipse_fits} also ensures adjacency, and $\beta^{\star} > 0$ ensures it is non-empty.
+
+Let $i \in [m]$ be arbitrary.
+We wish to show $c_i\left(x\right) \le 0 \; \forall x \in C \cap B$.
+
+\paragraph*{Case 1}
+Suppose that $i$ is such that $\left|c_i(x_0)\right| > \minangledelta \left\|\nabla c_i(x_0)\right\|$, and let $y \in \Rn$ with $c_i(y) = 0$ be arbitrary.
 By \cref{bounded_gradients_lemma}, there exists $\maxgrad > 0$ such that
 \begin{align}
 \label{fufeeq1}
-0 = c_i(y) \le c_i(x) + \|y - x\| \maxgrad \Longrightarrow \|y - x\| \ge \frac{-c_i(x)}{\maxgrad}.
+0 = c_i(y) \le c_i(x_0) + \|y - x\| \maxgrad \Longrightarrow \|y - x_0\| \ge \frac{-c_i(x_0)}{\maxgrad}.
 \end{align}
-By \cref{mingradassumption}, there are constants $\mingradepsilon$ and $\mingrad$ such that if $-c_i(x) = \left|c_i(x)\right| \le \mingradepsilon$, then 
-$\| \nabla c_i(x) \| \ge \mingrad$.
-If $-c_i(x) > \mingradepsilon$, \cref{fufeeq1} becomes $\|y - x\| > \frac{\mingradepsilon}{\maxgrad}$, otherwise it is
+By \cref{mingradassumption}, there are constants $\mingradepsilon$ and $\mingrad$ such that if $-c_i(x_0) = \left|c_i(x_0)\right| \le \mingradepsilon$, then 
+$\| \nabla c_i(x_0) \| \ge \mingrad$.
+If $-c_i(x_0) > \mingradepsilon$, \cref{fufeeq1} becomes $\|y - x_0\| > \frac{\mingradepsilon}{\maxgrad}$, otherwise it is
 \begin{align*}
-\|y - x\| \ge \frac{\minangledelta \left\|\nabla c_i(x)\right\|}{\maxgrad} \ge \frac{\minangledelta \mingrad}{\maxgrad}.
+\|y - x_0\| \ge \frac{\minangledelta \left\|\nabla c_i(x_0)\right\|}{\maxgrad} \ge \frac{\minangledelta \mingrad}{\maxgrad}.
 \end{align*}
 Because one of these cases must be true, we see
 \begin{align*}
-\|y - x\| \ge \frac 1 {\maxgrad}\min\left\{\mingradepsilon, \minangledelta \mingrad\right\}.
+\|y - x_0\| \ge \frac 1 {\maxgrad}\min\left\{\mingradepsilon, \minangledelta \mingrad\right\} \Longrightarrow y \not \in B.
 \end{align*}
 
+\paragraph*{Case 2}
 Now, suppose that $i$ is such that 
-$\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|$.
-Then by \cref{true_constraints_minangle_assumption}, there exists $\minangledirk$ with
+$\left|c_i(x_0)\right| \le \minangledelta \left\|\nabla c_i(x_0)\right\|$.
+Then by \cref{true_constraints_minangle_assumption}, there exists $\minangledirx$ with
+$-\nabla c_i(x_0)^T\minangledirx \ge \minanglealpha \left\| \nabla c_i(x_0) \right\|.$
+
+Now, if $\mingradepsilon < -c_i(x_0)$, then
+$\mingradepsilon < -c_i(x_0) \le \minangledelta \left\|\nabla c_i(x_0)\right\|$
+so that 
+$\left\|\nabla c_i(x_0)\right\| \ge \frac{\mingradepsilon}{\minangledelta}$.
+Otherwise, if $-c_i(x_0) \le \mingradepsilon$, \cref{mingradassumption} implies $\left\|\nabla c_i(x_0)\right\| \ge \mingrad$.
+In either case, \begin{align}
+\label{fufeeq2}
+\left\|\nabla c_i(x_0)\right\| \ge \min\left\{\mingrad, \frac{\mingradepsilon}{\minangledelta}\right\}.
+\end{align}
+
+By \cref{bounded_hessians_assumption}, there exists $\maxhessian > 0$ such that for any $y \in C \cap B$, we have
 \begin{align*}
--\nabla c_i(x)^T\minangledirk \ge \minanglealpha \left\| \nabla c_i(x) \right\|.
+c(y) \le c(x_0) + \nabla c(x_0)^T (y - x_0) + \maxhessian \|y - x_0\|^2.
 \end{align*}
 
-
-
-
-By \cref{bounded_hessians_assumption}, we see that there exists $\maxhessian > 0$ with
+Notice with a change of variables $v \gets y-x_0$ and $t\minangledirx + s \gets v$, and we have
 \begin{align*}
-c(y) \le c(x) + \nabla c(x)^T (y - x) + \maxhessian \|y - x\|^2.
+C = \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \beta^{\star} \|v\| \right\}. \\
+= \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \left(1 + \frac {\minanglealpha^2} 4\right)^{-\frac 1 2} \|v\| \right\} \\
+= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 \le \left[1 + \frac {\minanglealpha^2} 4\right]\left(v^T\minangledirx\right)^2 \right\} \\
+= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 - 2 \left(v^T\minangledirx\right)^2 + \left(v^T\minangledirx\right)^2 \le \frac 1 4\left(v^T\minangledirx\right)^2 \minanglealpha^2 \right\} \\
+= \left\{x_0 + v \in \Rn \bigg |  t =  v^T\minangledirx, \|v\|^2 - 2 t v^T\minangledirx + t^2\left\|\minangledirx\right\|^2 \le \frac 1 4t^2 \minanglealpha^2 \right\} \\
+= \left\{x_0 + v \in \Rn \bigg | \left(v - t\minangledirx\right)^T \minangledirx = 0, \left\|v - t\minangledirx\right\| \le \frac 1 2 \minanglealpha t \right\} \\
+= \left\{x_0 + t \minangledirx + s \in \Rn \bigg | s^T \minangledirx = 0, \|s\| \le \frac 1 2 \minanglealpha t \right\}.
 \end{align*}
-
-Suppose that $-c_i(x)\le \mingradepsilon$, so that \cref{mingradassumption} provides $\left\|\nabla c_i(x)\right\| \ge \mingrad$.
-Now, let $0 < t \le \frac {\minanglealpha \left\|\nabla c_i(x)\right\|}{\maxhessian\left(2 + \minanglealpha\right)}$ be arbitrary,
-and suppose that $s \in \Rn$ satisfies $s^T\minangledirk = 0$, $\|s\|\le \frac 1 2 \minanglealpha t$.
+Now, $s^T \minangledirk = 0$ and $x_0 + v \in B$ imply that
+\begin{align*}
+t = \sqrt{\|v\|^2  - \|s\|^2} \le \|v\| \le  \frac {2\minanglealpha  \min\{\mingrad, \frac{\mingradepsilon}{\minangledelta}\}}{\maxhessian\left(4 + \minanglealpha\right)}.
+\end{align*}
+% We can then let $0 < t \le \frac {2\minanglealpha  \min\{\mingrad, \frac{\mingradepsilon}{\minangledelta}\}}{\maxhessian\left(4 + \minanglealpha\right)}$ be arbitrary,
+% and suppose that $s \in \Rn$ satisfies $s^T\minangledirx = 0$, $\|s\|\le \frac 1 2 \minanglealpha t$.
 We can multiply
 \begin{align*}
-t \le \frac {\minanglealpha \left\|\nabla c_i(x)\right\|}{\maxhessian\left(2 + \minanglealpha\right)}
-\Longrightarrow 0 \ge -\minanglealpha \left\|\nabla c_i(x)\right\| +  \maxhessian\left(2 + \minanglealpha\right) t
+t \le \frac {2\minanglealpha  \min\{\mingrad, \frac{\mingradepsilon}{\minangledelta}\}}{\maxhessian\left(4 + \minanglealpha\right)}
+\Longrightarrow 0 \ge -2\minanglealpha \left\|\nabla c_i(x)\right\| +  \maxhessian\left(4 + \minanglealpha\right) t
 \end{align*}
-by $\frac t 2$ to find
+by $\frac t 4$ to find
 \begin{align*}
-0 \ge -\frac 1 2 \minanglealpha \left\|\nabla c_i(x)\right\| t +  \maxhessian\left(1 + \frac 1 2 \minanglealpha\right) t^2 \\
+0 \ge \left(-1 + \frac 1 2\right) \minanglealpha \left\|\nabla c_i(x)\right\| t +  \maxhessian\left(1 + \frac 1 4 \minanglealpha\right) t^2 \\
 \ge 0 -  t\minanglealpha \left\| \nabla c_i(x) \right\| + \left\| \nabla c(x)\right\| \left\|s\right\| + \maxhessian\left(t^2 + \|s\|^2\right) \\
-\ge c(x) + \nabla c(x)^T (t \minangledirk + s) + \maxhessian \|t \minangledirk + s\|^2 \\
-\ge c(x + t \minangledirk + s).
+\ge c(x) + \nabla c(x)^T (t \minangledirx + s) + \maxhessian \|t \minangledirx + s\|^2 \\
+\ge c(x + t \minangledirx + s) = c(y).
 \end{align*}
 
 
