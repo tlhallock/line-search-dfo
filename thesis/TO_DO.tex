@@ -15,11 +15,21 @@
 \newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
 \newcommand{\sbnote}[1]{\textsf{{\color{cyan}{ SCB note:}   #1} }\marginpar{{\textbf{Comment}}}}
 \begin{document}
-
+\paragraph{Questions}
+\begin{enumerate}
+\item For the polyhedral trust region approach, do you use an $L_2$-ball or an $L_{\infty}$-ball for the outer trust region?
+\end{enumerate}
 
 \begin{enumerate}
 \item Redo .bib keys to something meaningful.   I use the following convention:   <author1 last name>.<author2 last name>.<ea (if more than 2 authors)>:<first meaningful word of title>.  For example:
 the paper by   Conejo, Karas, Pedroso, Ribeiro, and Sachine titled``Global Convergence of Trust-region Algorithms for Convex Constrained Minimization Without Derivatives'', would have .bibtex key
 Conejo.Karas.ea:global  (instead of Conejo:2013:GCT:2620806.2621814, which is what you currently have).
+
+\item The model improvement algorithm given in the background section as well as the modified algorithms given in chapter 3 need to be restated using the pivot polynomials $u_i$ instead of the basis polynomials $\phi_i$.
+
+\item Sort out the role of $\Delta$ in the model-improvement algorithm.  I believe the error bounds assume that $\Delta = \max \|y^i-y^0\|$.
+
+\item Change $\mu^k$ to $\mu^{(k)}$ throughout?
+\item Change $P^k$ to $P^{(k)}$?
 \end{enumerate}
 \end{document}

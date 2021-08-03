@@ -225,7 +225,8 @@ where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 
 There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.    Then we have the following result   \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
-\begin{theorem}(\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
+\begin{theorem}\label{Lambda_poised_error_bounds}
+(\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
 If $\hat{M}$ is  nonsingular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
 then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B(0;1)$.  
 Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
@@ -250,9 +251,12 @@ Each iteration of the algorithm identifies a point in the sample set to include 
 \paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^0$ to create a set with $p+1$ points.
 
 
+\sbnote{We need to replace the following algorithm with the version that uses the pivot polynomials $u_i$ instead of $\phi_i$.}
+
+\sbnote{We also need to check on the relationship of $\Delta$ to the sample set.   I believe the error bounds given in the theorem assume that $\Delta = \max \|y^i-y^0\|$.}
 
 \begin{algorithm}[H]
-    \caption{Model Improvement Algorithm--REPLACE THIS}
+    \caption{Model Improvement Algorithm \label{alg:model_improvement} }
     \label{model_improving_algorithm}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
@@ -281,7 +285,7 @@ Each iteration of the algorithm identifies a point in the sample set to include 
 At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result, which is shown in \cite{introduction_book} through Theorems 6.5 and 3.14, and Section 6.7, Exercise 3: 
 \begin{theorem}
 \label{set_is_poised}
-The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised for quadratic interpolation, where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional the $\xi_{\text{min}}$.
+The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised for quadratic interpolation, where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
 \end{theorem}
 
 In \cref{ellipsoidal_lambda} we will show how to modify this algorithm to construct a $\Lambda$-poised set over an ellipsoidal region.
