@@ -11,28 +11,36 @@ To define our methods, we distinguish between two types of trust regions:  a {\e
 
 Both of these trust regions will be required to lie within the feasible region $\feasible := \{x|Gx \le g\}$, and also to lie within an  {\em outer trust region}, $\outertrk = B_1(x^{(k)},\Delta_k)$,  which is an $L_{\infty}$-ball of radius $\Delta_k$ centered at the current iterate $x^{(k)}$.     
 
-We consider two main strategies for defining these trust regions.   In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.    The advantage of this approach is that it is relatively straightforward to modify the model-improvement algorithm \cref{model_improvement} to construct a well-poised sample set over an ellipsoidal region.   
+We consider two main strategies for defining these trust regions.
+In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.    The advantage of this approach is that it is relatively straightforward to modify the model-improvement algorithm \cref{model_improvement} to construct a well-poised sample set over an ellipsoidal region.   
 Within the ellipsoidal trust region approach, we consider two different choices of $\searchtrk$: i) $\searchtrk=\sampletrk$ and ii) $\searchtrk=\outertrk \cap \feasible$.     \sbnote{ It looks to me like you don't actually do anything with $\searchtrk=\sampletrk$.   That is, your convergence proof as well as all of your computational results  use $\searchtrk=\outertrk \cap \feasible$, correct?}
 
 In the second method,  described in \cref{sec:polyhedral}, we define \[\sampletrk = \searchtrk = \outertrk \cap \feasible.\]
-Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the trust regions are polytopes.  We therefore call this the {\em polyhedral trust region approach}.     While this method is perhaps more intuitive than the first approach, it is not immediately clear how to construct a well-poised sample set over the polyhedral region.  We present one method for doing this.
+Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the trust regions are polytopes.  We therefore call this the {\em polyhedral trust region approach}.
+While this method is perhaps more intuitive than the first approach, it is not immediately clear how to construct a well-poised sample set over the polyhedral region.
+We present one method for doing this.
 
 In all cases, the trust regions are related by the inclusions
 \[\sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasible
 \]
 Both methods fall into a general algorithmic framework, which we describe next.
 
-We consider two main strategies for defining the sample trust region.   In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.     For this approach, we present a method for selecting a well-poised set of sample points by a straightforward application of the model-improvement algorithm \cref{model_improvement} to a transformed problem in which the ellipsoidal region is mapped onto a ball.
+We consider two main strategies for defining the sample trust region.
+In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.     For this approach, we present a method for selecting a well-poised set of sample points by a straightforward application of the model-improvement algorithm \cref{model_improvement} to a transformed problem in which the ellipsoidal region is mapped onto a ball.
 
 The second method, which is described in \cref{sec:polyhedral} defines the sample trust region by $\sampletrk = \outertrk \cap \feasible$.  
-Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the trust regions are polytopes.  We therefore call this the {\em polyhedral trust region approach}.    To select sample points from this polyhedral region, we present a modification of model-improvement algorithm \cref{model_improvement}.
+Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the trust regions are polytopes.
+We therefore call this the {\em polyhedral trust region approach}.
+To select sample points from this polyhedral region, we present a modification of model-improvement algorithm \cref{model_improvement}.
 
 
-We also consider two strategies for defining the search region.     The
+We also consider two strategies for defining the search region.
+The
 
 \section{Algorithm Template}\label{sec:template}
 All of the methods in this chapter follow
-an algorithmic template described in \cite{doi:10.1080/10556788.2015.1026968},  \sbnote{check this reference--I suspect it might be \cite{conejo.karas.ea:global} instead--if it is, then maybe also add ``which describes a class of trust-region algorithms for convex constrained minimization without derivatives. '' 
+an algorithmic template described in \cite{doi:10.1080/10556788.2015.1026968}, 
+\sbnote{check this reference--I suspect it might be \cite{conejo.karas.ea:global} instead--if it is, then maybe also add ``which describes a class of trust-region algorithms for convex constrained minimization without derivatives. '' 
 }.   Different variations of the algorithm have different choices of $ \sampletrk $ implemented in a \emph{ConstructTrustRegion} subroutine.
 The different versions are described in the remainder of this chapter.
 
@@ -131,21 +139,32 @@ The different versions are described in the remainder of this chapter.
 \section{Ellipsoidal Method}\label{sec:ellipsoidal}
 
 The main idea of the ellipsoidal method is to define the sample trust region to be a feasible ellipsoid defined by
-\[\sampletrk = \ellipsek = \{x \in \Rn | (x - \mu^{k})^T \qk (x - \mu^{k}) \le 1\} \]
-where $\qk$ is a positive definite matrix and $\mu^{k}$ is the center of the ellipsoid.   
-$\qk$ and $\mu^k$ are chosen so that the ellipsoid conforms roughly to the shape of the feasible region near the current iterate,  while ensuring that it lies entirely within the intersection of the feasible region and the outer trust region.
+\begin{align*}
+\sampletrk = \ellipsek = \left\{x \in \Rn | (x - \ck)^T \qk (x - \ck) \le 1 \right\}
+\end{align*}
+where $\qk$ is a positive definite matrix and $\ck$ is the center of the ellipsoid.   
+$\qk$ and $\ck$ are chosen so that the ellipsoid conforms roughly to the shape of the feasible region near the current iterate,  while ensuring that it lies entirely within the intersection of the feasible region and the outer trust region.
 
 After the ellipsoid is constructed,  sample points are then selected by applying the model improvement algorithm \cref{model-improvement} to a transformed problem in which the ellipsoid $\ellipsek$ is mapped onto a unit ball.
-The following section analyzes the accuracy of the model functions constructed from the resulting sample points.    In particular, we establish error bounds based on the condition number of $Q$.    In subsequent sections we will describe several methods for choosing $\qk$ and $\mu^k$.    \cref{convergence_discussion} will analyze the convergence of one version of the algorithm.
+The following section analyzes the accuracy of the model functions constructed from the resulting sample points.
+In particular, we establish error bounds based on the condition number of $Q$.
+In subsequent sections we will describe several methods for choosing $\qk$ and $\mu^k$.
+\cref{convergence_discussion} will analyze the convergence of one version of the algorithm.
 
 
 
 \subsection{Poisedness over Ellipsoidal Trust Regions}
 \label{ellipsoidal_lambda}
-We can give $\qk$ its eigen-decomposition $\qk = L D^2 L^T$, where $L^TL = I$ and $D$ is a diagonal matrix with nonnegative entries.   In fact, since we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.  Let $\delta = \max_{x\in \ellipsek}\|x-c\|$ and define $T:\Rn \rightarrow \Rn$ by $T(x) = \delta DL^T(x - c)$.    Note that $T$ is invertible and maps $ \ellipsek$ onto the $\delta$-ball $B_2(0,\delta) = \{u = \in \Rn \; | \; \|u\| \le \delta\}$.
+We can give $\qk$ its eigen-decomposition $\qk = L D^2 L^T$, where $L^TL = I$ and $D$ is a diagonal matrix with nonnegative entries.
+In fact, since we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
+Let $\delta = \max_{x\in \ellipsek}\|x-c\|$ and define $T:\Rn \rightarrow \Rn$ by $T(x) = \delta DL^T(x - c)$.
+Note that $T$ is invertible and maps $ \ellipsek$ onto the $\delta$-ball $B_2(0,\delta) = \{u = \in \Rn \; | \; \|u\| \le \delta\}$.
 
 
-\sbnote{There is an inconsistency here.  The model improvement algorithm assumes a unit ball, whereas here we are using a $\delta$-ball.}
+\sbnote{
+There is an inconsistency here.
+The model improvement algorithm assumes a unit ball, whereas here we are using a $\delta$-ball.
+}
 
 %Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$-ball to the ellipsoidal region $ \ellipsek $.
 
