@@ -1,5 +1,6 @@
 This chapter considers the case of linear constraints.   Specifically,  we present several variants of a trust region method for solving the problem 
 
+\sbnote{Change the following to $Ax \le b$}
 \begin{equation} \label{eq:DFO-linear}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & Gx \le g, & 
@@ -12,13 +13,11 @@ To define our methods, we distinguish between two types of trust regions:  a {\e
 Both of these trust regions will be required to lie within the feasible region $\feasible := \{x|Gx \le g\}$, and also to lie within an  {\em outer trust region}, $\outertrk = B_1(x^{(k)},\Delta_k)$,  which is an $L_{\infty}$-ball of radius $\Delta_k$ centered at the current iterate $x^{(k)}$.     
 
 We consider two main strategies for defining these trust regions.
-In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.    The advantage of this approach is that it is relatively straightforward to modify the model-improvement algorithm \cref{model_improvement} to construct a well-poised sample set over an ellipsoidal region.   
-Within the ellipsoidal trust region approach, we consider two different choices of $\searchtrk$: i) $\searchtrk=\sampletrk$ and ii) $\searchtrk=\outertrk \cap \feasible$.     \sbnote{ It looks to me like you don't actually do anything with $\searchtrk=\sampletrk$.   That is, your convergence proof as well as all of your computational results  use $\searchtrk=\outertrk \cap \feasible$, correct?}
+In the first method,  which is described in \cref{sec:ellipsoidal},  we define $\sampletrk$ to be an ellipsoidal region that lies within the intersection of the feasible region and the outer trust region.    This is referred to as the {\em ellipsoidal trust region approach}.    The advantage of this approach is that it is relatively straightforward to modify the model-improvement algorithm \cref{model_improvement} to construct a well-poised sample set over an ellipsoidal region.    In this method, we define the search trust region by  $\searchtrk=\outertrk \cap \feasible$.   Note that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the search trust region is a bounded polyhedron,  which makes the trust region subproblem a quadratic program.  \sbnote{Maybe make a comment somewhere about why we are not using the ellipsoid as the search trust region.}
 
 In the second method,  described in \cref{sec:polyhedral}, we define \[\sampletrk = \searchtrk = \outertrk \cap \feasible.\]
-Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, the trust regions are polytopes.  We therefore call this the {\em polyhedral trust region approach}.
-While this method is perhaps more intuitive than the first approach, it is not immediately clear how to construct a well-poised sample set over the polyhedral region.
-We present one method for doing this.
+Since this trust region is a bounded polyhedron,  we call this the {\em polyhedral trust region approach}.
+While this method is perhaps more intuitive than the first approach, it is not immediately clear how to construct a well-poised sample set over the polyhedral region.  We present one method for doing this.   \sbnote{Come back to the wording of this.}
 
 In all cases, the trust regions are related by the inclusions
 \[\sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasible
@@ -48,6 +47,12 @@ The different versions are described in the remainder of this chapter.
 
 \sbnote{Check this algorithm carefully}
 
+  \sbnote{$sk$ should be $\argmin$, not $\min$ in Step 3 of the algorithm}
+  
+  \sbnote{$\chik$ versus $\chi_k$?}
+  
+  \sbnote{Should last bullet of Step 4 have $\Delta_{k+1} = \min( \omegainc\dk, \Delta_{\text{max}})$?}
+
 \begin{algorithm}[H]
     \caption{Simplified Always-feasible Constrained Derivative Free Algorithm}
     \label{linearly_constrained_dfo_simple}
@@ -69,15 +74,17 @@ The different versions are described in the remainder of this chapter.
                 $k \gets k+1$ and {\bf go to Step 1}.
         
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\sk = \min_{s \in \searchtrk} \mfk(\xk + \sk)$.
+            Compute $\sk = \min_{s \in \searchtrk} \mfk(\xk + \sk)$. 
             % \item[] This can also be $\sk = \min_{s \in \outertrk \cap \feasible} \mfk(\xk + \sk)$ depending on the choice made in \cref{which_trust_region}.
             
         \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
             Evaluate $f(\xk + \sk)$ and evaluate $\rk$ as in \cref{define_rhok} 
             \begin{itemize}
                 \item If $\rk < \gammasm$,  {\em reject trial point}:  set $\xkpo=\xk$ and $\Delta_{k+1} = \omegadec\dk$
-                \item If $\gammasm \le \rk  < \gammabi$,  {\em accept trial point and shrink trust region}:  set $\xkpo=\xk+\sk$,  $\Delta_{k+1} = \omegadec\dk$
-                \item If $\rk > \gammabi$,  {\em accept trial point and expand trust region}:  set $\xkpo=\xk+\sk$, $\Delta_{k+1} = \omegainc\dk$
+               \item If $\gammasm \le \rk  < \gammabi$,  {\em accept trial point and shrink trust region}:  
+               set $\xkpo=\xk+\sk$,  $\Delta_{k+1} = \omegadec\dk$
+                \item If $\rk > \gammabi$,  {\em accept trial point and expand trust region}:  
+                set $\xkpo=\xk+\sk$, $\Delta_{k+1} = \omegainc\dk$   
                 % and either increase the radius or decrease if $\nabla \mfk\left(\xk\right)$ is small
             \end{itemize}
             Set $k \gets k+1$ and go to Step 1.
@@ -224,16 +231,14 @@ Similarily, for the gradient we find:
 \begin{align*}
 \| \nabla m_f(x) - \nabla f(x)\| &= \delta\left\|DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)\right\| \\
 & \le \delta \|DL^T\|\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
-& \le \sqrt{\kappa(\qk)}\kappa_{eg} \delta^2 \\
-& = & \kappa_{eg}' \delta^2. 
+& \le \sqrt{\kappa(\qk)}\kappa_{eg} \delta^2 = \kappa_{eg}' \delta^2. 
 \end{align*}
 
 Finally,  for the Hessian, we have
 \begin{align*}
 \| \nabla^2 m_f(x) - \nabla^2 f(x)\| & = \delta^2\left\|DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)LD^T\right\| \\
 & \le \delta^2 \|D\|^2\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
-& \le \kappa(\qk)\kappa_{eh} \delta \\
-& = \kappa_{eh}' \delta.
+& \le \kappa(\qk)\kappa_{eh} \delta = \kappa_{eh}' \delta.
 \end{align*}
 
 \end{proof}
@@ -249,15 +254,22 @@ The implications of this theorem are discussed futher in the convergence discuss
 
 \subsection{Finding the maximum volume feasible ellipsoid for a fixed center}
 \label{ellipse_optimization}
-The error bounds given in \cref{shifted_ellipsoid} suggest that we can obtain more accurate model functions by minimizing the condition number of the matrix $Q^{(k)}$.   However, we also want the ellipsoid to be as large as possible.  Toward those goals,  we seek to find the maximum volume ellipsoid that is both feasible and also lies within the outer trust region.    That is, we constrain the ellipsoid to lie within the polytope
-$\displaystyle P^k := \{x | Gx\le b,   \xki -\Delta_k \le x_i \le \xki + \Delta_k\}.$
+The error bounds given in \cref{shifted_ellipsoid} suggest that we can obtain more accurate model functions by minimizing the condition number of the matrix $Q^{(k)}$.   However, we also want the ellipsoid to be as large as possible.  Toward those goals,  we seek to find the maximum volume ellipsoid that is both feasible and that also lies within the outer trust region.    That is, we constrain the ellipsoid to lie within the polytope
+$\displaystyle P^k := \{x | Gx\le b,   \xki -\Delta_k \le x_i \le \xki + \Delta_k\}.$  \sbnote{Change to $Ax \le b$}
 Note that we have replaced the usual trust region $B_2(x^{(k)}, \Delta_k)$ with an $L_{\infty}$ ball, called the {\em outer trust region}, which is defined by
 \begin{equation}
 \label{trust_region}
 \outertrk = B_{\infty}(\xk,\dk) = \{x\in \Rn | \; {\xk}_i - \dk \le x_i \le {\xk}_i + \dk \quad \forall 1\le i \le n\}.
 \end{equation}
 
+\sbnote{Switch the roles of $A$ and $G$ in the following and impose the condition that the rows of $G$ have norm 1.}
 To simplify notation, define $\displaystyle A = \left[\begin{array}{c} G \\ I \\ -I \end{array}\right]$ and $\displaystyle b^{(k)} = \left[\begin{array}{c} g \\ \xki+\Delta_k \\ -\xki+\Delta_k \end{array} \right]$.  We can then write
+
+\sbnote{Choose one of the following definitions of $\polyk$.}
+\begin{align}
+\polyk = \{x \in \Rn | \; \lca x \le \lcb, \|x - \xk\|_{\infty} \le \dk \} \label{polyhedron_k} 
+= \{x \in \Rn | \lctra x \le \lctrb, \|{\lctra}_i\| = 1 \}.
+\end{align}
 \[P^{k} = \left\{ x | Ax \le b^{(k)} \right\}.\]
 Our goal is to choose $Q^{(k)}$ and $\mu^k$ so that $\ellipsek \subset P^{k}$
 
@@ -265,7 +277,7 @@ Our goal is to choose $Q^{(k)}$ and $\mu^k$ so that $\ellipsek \subset P^{k}$
 
 In this section,  we first consider the problem of finding the maximum volume feasible ellipsoid contained in $P^k$ given a fixed center.   Later, we will explore strategies for moving the center of the ellipsoid in order to improve performance of our trust region algorithm.
 
-We adopt a method similar to that described in \cite{Khachiyan1993}, which presents an algorithm for finding the maximum volume inscribed ellipsoid for a polytope.    For the remainder of this section, we drop the superscript $(k)$ and write
+We adopt a method similar to that described in \cite{Khachiyan1993}, which presents an algorithm for finding the maximum volume inscribed ellipsoid for a polytope.    For the remainder of this section, we drop the superscript $(k)$ and write  \sbnote{Change $A,b$ to $G,g$ in the following}
 \[ P = P^{(k)} =  \{ x \in \Rn\; | \;  Ax \le b \}.\]
 We wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
 
@@ -490,62 +502,21 @@ However, this means that in general $\ellipsek \not \subset \feasible$ so that t
 $\searchtrk = \ellipsek \cap \feasiblek$.
 
 
-\subsection{The Search Region}
-\sbnote{I don't think we ever use option 1 for the search region.    So maybe we can limit our discussion to option 2?}
-\label{search_region_choices}
-When using the ellipsoidal trust region approach, we have two choices for this search trust region.
-We can take
-\begin{align}
-\searchtrk = \sampletrk \label{search_a_little}
-\end{align}
-or
-\begin{align}
-\searchtrk = \outertrk \cap \feasible \label{search_a_lot}.
-\end{align}
 
-
-
-
-
-
-\section{Convergence Discussion}
-
-\subsection{Algorithm Assumptions}
-
-Here, we show convergence for one version of \cref{linearly_constrained_dfo}.
-Namely, we choose to satisfy \cref{bluepill} and let $\sampletrk$ have an ellipsoidal shape as described in \cref{sample_region_choices}. 
-Also, we will select \cref{search_a_lot} as discussed in \cref{search_region_choices}: namely, $\searchtrk = \outertrk \cap \feasible$.
-To do this, we require the following assumptions.
-
-Here, we will let $\domain$ be some open set containing the feasible region: $\feasible \subset \domain$.
-
-\begin{assumption}
-\label{the_constraints_are_linear}
-The feasible region is described by linear constraints.
-That is, we assume that there is an $m \times n$ matrix $\lca$ and vector $\lcb \in \Rm$ such that:
-\begin{align*}
-\feasible = \left\{x \in \Rn \bigg | \lca x \le \lcb \right\}
-\end{align*}
-\end{assumption}
-
-\begin{assumption}
-\label{lipschitz_gradient}
-The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $\lipgrad > 0$ in $\domain$.
-That is,
-\begin{align}
-\|\nabla f(x) - \nabla f(y)\| \le \lipgrad \|x - y\| \quad \forall x, y \in \domain.
-\end{align}
-\end{assumption}
+\subsection{Convergence Analysis}
+\label{linear_convergence_discussion}
+Here,  we analyze the convergence behavior for one version of \cref{linearly_constrained_dfo}; namely the ellipsoidal method with a particular choice of the sample trust region $\sampletrk$  discussed below, and with $\searchtrk = \outertrk \cap \feasible$.    For our analysis, we make the following assumptions about the problem and the model functions:
 
 \begin{assumption}
 \label{for_fully_quadratic}
 \label{lipschitz_hessian}
-The function $f$ has Lipschitz continuous hessian with constant $\liphess > 0$ in $\domain$.
-That is,
+The function $f$ is twice continuously differentiable with Lipschitz continuous Hessian in $\domain$.   That is, there exists constant $\liphess > 0$ such that 
 \begin{align}
 \left\|\nabla^2 f(x) - \nabla^2 f(y)\right\| \le \liphess \left\|x - y\right\| \quad \forall x, y \in \domain.
 \end{align}
 \end{assumption}
+
+
 
 \begin{assumption}
 \label{lower_bound}
@@ -556,23 +527,6 @@ f(x) \ge \fmin \quad \forall x \in \domain.
 \end{align}
 \end{assumption}
 
-
-\begin{assumption}
-\label{uniformly_bounded_hessians_of_mf}
-The Hessian's of $\mfk$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that 
-\begin{align}
-\left\|\nabla^2 \mfk\left(\xk\right)\right\| \le \beta - 1\quad \forall k \ge 0.
-\end{align}
-\end{assumption}
-
-% \begin{assumption}
-% \label{accuracy_assumption}
-% There exists a constant $\delta_g$ such that 
-% \begin{align}
-% \|\nabla m_k\left(\xk\right) - \nabla f\left(\xk\right)\| \le \delta_g \dk \;\forall k \ge 0.
-% \end{align}
-% \end{assumption}
-
 \begin{assumption}
 \label{interior_point}
 There exists a point $\bar x$ within the interior of the feasible region.
@@ -582,39 +536,100 @@ Namely, using $\lca$ and $\lcb$ from \cref{the_constraints_are_linear}:
 \end{align}
 \end{assumption}
 
-\label{linear_convergence_discussion}
+
+\begin{assumption}
+\label{uniformly_bounded_hessians_of_mf}
+The Hessian's of $\mfk$ are uniformly bounded.  That is, there exists a constant $\beta \ge 1$ such that   \sbnote{Can we get rid of this assumption?}
+\begin{align}
+\left\|\nabla^2 \mfk\left(\xk\right)\right\| \le \beta - 1\quad \forall k \ge 0.
+\end{align}
+\end{assumption}
 
 
-\subsection{Required Assumptions}
 
-If the tolerances $\tau_{\chi} = 0$ and $\tau_{\Delta} = 0$ are set to zero, \cref{linearly_constrained_dfo} is a particular implementation of the algorithm presented in \cite{doi:10.1080/10556788.2015.1026968}.
-This means we only need to satisfy the requirements detailed in their convergence analysis.
-For your convenience, we duplicate these assumptions.
+
+
+
+%
+%With this modest assumption, we can make the assumptions more straightforward by replacing \cref{uniformly_bounded_hessians_of_mf} with \cref{uniformly_bounded_hessians_of_f}:
+
+
+
+
+
+% \begin{assumption}
+% \label{accuracy_assumption}
+% There exists a constant $\delta_g$ such that 
+% \begin{align}
+% \|\nabla m_k\left(\xk\right) - \nabla f\left(\xk\right)\| \le \delta_g \dk \;\forall k \ge 0.
+% \end{align}
+% \end{assumption}
+
+
+
+
+\sbnote{I think we can delete the following two assumptions}
+\begin{assumption}  \sbnote{This does not need to be stated as an assumption, since this is the definition of our problem (in the linear case)}.
+\label{the_constraints_are_linear}
+The feasible region is described by linear constraints.
+That is, we assume that there is an $m \times n$ matrix $\lca$ and vector $\lcb \in \Rm$ such that:
+\begin{align*}
+\feasible = \left\{x \in \Rn \bigg | \lca x \le \lcb \right\}
+\end{align*}
+\end{assumption}
+
+\begin{assumption}  \sbnote{We don't need this assumption, since this is a consequence of bounded Hessians of $f$}.
+\label{lipschitz_gradient}
+The function $f$ is differentiable and its gradient $\nabla f$ is Lipschitz continuous with constant $\lipgrad > 0$ in $\domain$.
+That is,
+\begin{align}
+\|\nabla f(x) - \nabla f(y)\| \le \lipgrad \|x - y\| \quad \forall x, y \in \domain.
+\end{align}
+\end{assumption}
+
+
+Our analysis follows closely that of  \cite{doi:10.1080/10556788.2015.1026968}, which presents a class of trust region algorithms for derivative-free optimization with convex constraints.      \sbnote{Check this reference.   I think you might mean the other paper by Conejo et. al}.   Indeed, if 
+the tolerances $\tau_{\chi}$ and $\tau_{\Delta}$ are set to zero,  then \cref{linearly_constrained_dfo} is a particular implementation of the algorithm studied in \cite{doi:10.1080/10556788.2015.1026968}.  It is therefore sufficient to show that the model functions generated by our method satisfy the hypotheses required in \cite{doi:10.1080/10556788.2015.1026968}.  
+
+Specifically, the following hypotheses must be satisfied:
 \begin{itemize}
-\item[$H_0$] The efficiency condition \cref{efficiency} is satisfied.
+\item[$H_0$] There exists a constant $\kappa_f$ such that the following efficiency condition is satisfied for all $k$:
+\begin{align}
+\label{efficiency}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\},
+\end{align}
+where $\chi_k$ is the criticality measure defined by \cref{?}.  \sbnote{I don't think you have given a precise definition of $\chi_k$ anywhere for the linear problem}.
 \item[$H_1$] The function $f$ is differentiable and its gradient $\nabla f$ is Lipchitz continuous with constant $L > 0$ in $\domain$.
 \item[$H_2$] The function $f$ is bounded below over $\domain$.
-\item[$H_3$] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk\| \le \beta - 1$ for all $k \ge 0$.
+\item[$H_3$] The matrices $H_k$ are uniformly bounded. That is, there exists a constant $\beta \ge 1$ such that $\|\nabla^2 \mfk(x)\| \le \beta - 1$ for all $k \ge 0$ \sbnote{and $x \in \Omega$?}
+ \sbnote{Is it assumed that $\mfk$ is a quadratic function with Hessian $H_k$?}
 \item[$H_4$] There exists a constant $\delta_g$ such that $\left\|\nabla m_k\left(\xk\right) - \nabla f\left(\xk\right)\right\| \le \delta_g \dk$ for all $k \ge 0$.
 \end{itemize}
 
-$H_0$ can be satisfied within our algorithm by selecting the Generalized Cauchy Point \cite{Conn:2000:TM:357813} to solve the trust region subproblem.
-Notice that $H_1$, $H_2$, and $H_3$  are kept as hypothesis within our algorithm.
-This leaves $H_4$, which is the topic of \cref{satisfying_accuracy}.
-However, first we show a way of using a more straightforward version of $H_3$ in \cref{simpler_h3}.
+Observe that $H_1$ and $H_2$ are equivalent to Assumptions \ref{lipschitz_hessian} and \ref{lower_bound}, respectively.   For $H_0$,  \cite{Conn:2000:TM:357813} showed that the Generalized Cauchy Point satisfies \cref{efficiency}.  Thus, the solution of the trust region subproblem must also satisfy \cref{efficiency}.
 
-\subsection{Satisfying these assumptions}
+\sbnote{Let's be careful here.   Is $\chi_k$ the criticality measure for the model function, or the criticality measure for the original problem?}  \sbnote{Also, note that in the statement of our algorithm, $s^{(k)}$ is the minimizer of the model function over $\searchtrk$ rather than the Cauchy point. }  
+
+The following lemma shows that $H_3$ is satisfied under our assumptions:
+
+%
+%Here, we let $\domain$ be some open set containing the feasible region: $\feasible \subset \domain$.  \sbnote{Do we really need $\domain$?}
+
+
+
+
+
+%
+\subsection{Satisfying the assumptions}
 
 \subsubsection{Simplified Third Hypothesis}
 \label{simpler_h3}
 First, we show that \cref{uniformly_bounded_hessians_of_f} can be used instead of \cref{uniformly_bounded_hessians_of_mf} under some restrictions.
 Namely, for this to be true, we also first assume:
-\begin{assumption}
-\label{delta_max}
-There exists a $\dmax > 0$ such that $\dk \le \dmax$ for all $k \ge 0$.
-\end{assumption}
-
-With this modest assumption, we can make the assumptions more straightforward by replacing \cref{uniformly_bounded_hessians_of_mf} with \cref{uniformly_bounded_hessians_of_f}:
+%
+%
+%
+%This is the result of the following lemma:
 
 \begin{assumption}
 \label{uniformly_bounded_hessians_of_f}
@@ -624,12 +639,16 @@ The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exist
 \end{align*}
 \end{assumption}
 
+\begin{assumption}
+\label{delta_max}
+There exists a $\dmax > 0$ such that $\dk \le \dmax$ for all $k \ge 0$.
+\end{assumption}
 
-This is the result of the following lemma:
+\sbnote{The following lemma makes the assumption that the quadratic model function satisfies an error bound on the Hessian.  But this is only true if the model function defined by \cref{quadratic_errors} is built with a $\Lambda$-poised sample set.  So this needs to be stated explicitly in the lemma.} 
 \begin{lemma}
 \label[lemma]{replacing_h3}
 Suppose that \cref{lipschitz_hessian}, \cref{delta_max}, and \cref{uniformly_bounded_hessians_of_f} hold.
-Let $\mfk$ is a quadratic model of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{quadratic_errors} for each $k \in \naturals$.
+Let $\mfk$ be a quadratic model of $f$ over $B_{\infty}(\xk, \dk)$  as in \cref{quadratic_errors} for each $k \in \naturals$.
 Then \cref{uniformly_bounded_hessians_of_mf} is also satisfied.
 \end{lemma}
 
@@ -657,22 +676,25 @@ Defining $\beta_2 = \kappa_{h} \Delta_{\text{max}} + \beta_1 \ge 1$, we see that
 
 \subsubsection{Satisfying the Accuracy Assumption}
 \label{satisfying_accuracy}
-The only remaining assumption is the accuracy condition $H_4$.
+To show that the accuracy condition $H_4$ is satisfied, we need to impose some conditions on the ellipsoidal sample regions $\sampletrk$.     In particular, we require the ellipsoid to satisfy the following {\em suitability} condition:
 
-Because the ellipsoid we construct must be feasible with respect to both the trust region and the constraints,
-we simplify notation by creating a matrix $\lctra$ and vector $\lctrb$ from $\lca$ and $\lcb$ defined in \cref{the_constraints_are_linear} as follows:
-\begin{align}
-\polyk = \{x \in \Rn | \; \lca x \le \lcb, \|x - \xk\|_{\infty} \le \dk \} \label{polyhedron_k} 
-= \{x \in \Rn | \lctra x \le \lctrb, \|{\lctra}_i\| = 1 \}.
-\end{align}
-This is the normalized polyhedron formed by adding the trust region constraints for iteration $k$ to the problem constraints.
 
-As discussed in \cref{ellipsoidal_lambda}, we know that if the condition number of $\qk$ is bounded, 
-we can map a poised set over the unit ball to $\sampletrk$.
-However, we must also ensure that we are always able to find a feasible ellipsoid.
-Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
-we can find a feasible ellipsoid that only needs to be scaled by a constant to do so.
-This ellipsoid must satisfy the following conditions:
+
+
+%Because the ellipsoid we construct must be feasible with respect to both the trust region and the constraints,
+%we simplify notation by creating a matrix $\lctra$ and vector $\lctrb$ from $\lca$ and $\lcb$ defined in \cref{the_constraints_are_linear} as follows:
+%\begin{align}
+%\polyk = \{x \in \Rn | \; \lca x \le \lcb, \|x - \xk\|_{\infty} \le \dk \} \label{polyhedron_k} 
+%= \{x \in \Rn | \lctra x \le \lctrb, \|{\lctra}_i\| = 1 \}.
+%\end{align}
+%This is the normalized polyhedron formed by adding the trust region constraints for iteration $k$ to the problem constraints.
+%
+%As discussed in \cref{ellipsoidal_lambda}, we know that if the condition number of $\qk$ is bounded, 
+%we can map a poised set over the unit ball to $\sampletrk$.
+%However, we must also ensure that we are always able to find a feasible ellipsoid.
+%Although it is not always possible to find a feasible ellipsoid that contains the current iterate,
+%we can find a feasible ellipsoid that only needs to be scaled by a constant to do so.
+%This ellipsoid must satisfy the following conditions:
 
 \begin{definition}
 \label{define_suitable_ellipsoid}
@@ -683,17 +705,27 @@ is said to be a \textbf{suitable ellipsoid} for iteration $k$ if all of the foll
 satisfies $\ellipsek \subseteq \polyk$ as defined in \cref{polyhedron_k}
 \item[2.] The ellipsoid $\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T\qk\left(x - \ck\right) \le  \sdk^2 \right\}$ satisfies $\xk \in \scaledellipsek$.
 \item[3.] $\condition \left(\qk\right)$ is bounded independently of $k$.
+
+\sbnote{There is some inconsistency here.  If $\scaledellipsek$ is defined by radius $\delta_k$.  In contrast $\ellipsek$ is defined by radius $\delta_k/\sqrt{2}$.}
 \end{itemize}
 \end{definition}
 
-The active constraints at any point will be denoted by
+\subsection{Finding a suitable ellipsoid}
+This section shows how to construct an ellipsoid that satisfies \cref{define_suitable_ellipsoid}.  
+
+\sbnote{Before proving anything, please give an algorithm for constructing the suitable ellipsoid.  My comments below may help.}
+
+
+The active constraints at a point $x$ will be denoted by
 \begin{align}
 \activei(x) = \{1 \le i \le m | c_i(x) = 0 \Leftrightarrow {\lca}_ix = {\lcb}_i \} \label{define_activei}
 \end{align}
 
-It will be convenient to use a feasible direction with respect to the active constraints at a given point.
-To this end, let $\lca$ be defined by \cref{the_constraints_are_linear} and $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
-Define:
+We begin by defining a direction $\uk$ that is maximally feasible with respect to the active constraints.  To make this precise,   let $\lca$ be defined by \cref{the_constraints_are_linear} and $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
+Define:  \sbnote{The notation here is maddening.   $\alphaone$ is a direction,  whereas $\alphatwo$ and $\alphathree$ are scalars.    Maybe change $\alphaone$ to $u(\mathcal S)$ to make it more obvious that it is a direction. } 
+
+
+
 \begin{align}
 \alphaone (\mathcal S) = \begin{cases}
 \argmax_{\|u\| = 1} \min_{i \in \mathcal S} -u^T{\lca}_i & \text{if} \; \mathcal S \ne \emptyset \\
@@ -707,29 +739,63 @@ Define:
 \alpha_k =  \alphathree\left(\xk\right) \label{define_alpha_k} \\
 \uk \in  \alphaone\left(\activei\left(\xk\right)\right) \label{define_u_k}
 \end{align}
-Here, $\alphathree$ is a set of directions that hopefully head away from each of the active constraints at a point.
+Here, $\alphathree$ is a set of directions that hopefully head away from each of the active constraints at a point.  \sbnote{No it isn't, it is a scalar!}
 
-Throughout, we will use a couple different cones, which can be described here
+\sbnote{It looks to me that you don't need to be so general with the index set $\mathcal S$ above.    I think you only ever use $\mathcal S = \activei(\xk)$.   So maybe you could simplify notation by writing}
+\[ \uk = \begin{cases}\argmax_{\|u\| = 1} \min_{i \in {\mathcal A}^{(k)}} -u^T{\lca}_i & \text{if} \; {\mathcal A}^{(k)} \ne \emptyset \\
+0 & \text{if} \; {\mathcal A}^{(k)} = \emptyset
+\end{cases}\]
+and 
+\[\displaystyle \alpha_k =
+\begin{cases} =\min_{i \in {\mathcal A}^{(k)}} -(\uk)^T A_i & \text{if}\;  {\mathcal A}^{(k)} \ne \emptyset \\
+1 & \text{if}  \; {\mathcal A}^{(k)} = \emptyset
+\end{cases}\]
+=================
+To define a suitable ellipsoid, it will be convenient to define the rotation matrix
+\begin{align}
+\rotk = 2\frac{(e_1 + \uk)(e_1 +\uk)^T}{(e_1 +\uk)^T(e_1 +\uk)} - \boldsymbol I \label{define_r} \\
+T_k(x) = \rotk\left(x - \xk\right) \label{define_affine_mapping}
+\end{align}
+
+
+\sbnote{Here is where you can describe the method for constructing the ellipsoid.  The following is a possible outline:}
+\begin{itemize}
+\item Let $L$ be the shortest distance from $\xk$ to any point on a non-active constraint.  
+\item Define $\alpha'=\sqrt{(1+\alpha_k^2)(1+\frac{1}{\sqrt{2}})}$ and $\delta_f = \frac{1}{\alpha'}L$.  
+\item Define the center of the ellipsoid as $c^{(k)} = \xk+\delta_f \uk$.
+\item Define $Q^{(k)}$ by
+\[ Q^{(k)} = \rotk^T \begin{pmatrix}
+1 & \boldsymbol0^T \\
+\boldsymbol 0 & \alpha'^{-2} \boldsymbol I \\
+\end{pmatrix} \rotk \]
+\end{itemize}
+
+==========
+
+We now show that the cone defined above is suitable as defined in \cref{suitable}.  In this discussion, we will use a couple different cones, which can be described here
 \begin{align}
 \mathcal C(\alpha, d, c) = \left\{x \in \Rn | \quad x = c + t d + s, s^Td= 0, t \ge 0, \|s\| \le \alpha t\right\} \\
 \unshiftedcone = \mathcal C(\alpha_k, \uk, \xk) = \left\{x \in \Rn \bigg | \quad x = \xk + t \uk+ s, s^Tu^{\star} = 0, t \ge 0, \|s\| \le \alpha_k t\right\} \label{defineunshiftedcone} \\
 \shiftedcone = \mathcal C(\alpha_k, e_1, 0) =  \left\{x = (t, s)^T \in \Rn, t \in \mathbb R_{\ge 0}, s \in \mathbb R^{n-1} \bigg |\quad \|s\| \le \alpha_k t \right\} \label{defineshiftedcone}
 \end{align}
 
-We will use the following mapping to go between these cones:
-\begin{align}
-\rotk = 2\frac{(e_1 + \uk)(e_1 +\uk)^T}{(e_1 +\uk)^T(e_1 +\uk)} - \boldsymbol I \label{define_r} \\
-T_k(x) = \rotk\left(x - \xk\right) \label{define_affine_mapping}
-\end{align}
+\sbnote{The notation $\unshiftedcone$ and $\shiftedcone$ is confusing since you use $E$ to denote ellipsoids.   Why not use $\mathcal{C}_{sh}$ and $\mathcal{C}_{unsh}$ instead (and maybe add superscripts $(k)$.}
 
-Finally, the following is a useful function for defining ellipsoids:
+\sbnote{Maybe add a picture of the cones $\unshiftedcone$ and $\shiftedcone$.}
+Observe that, by construction, $\unshiftedcone$ is feasible with respect to the active constraints.  That is,  for all $x \in \unshiftedcone$,  and $i \in \active(\xk)$, $A_i x \le b_i$.
+
+The following is a useful function for defining ellipsoids:
 \begin{align}
-f_{e}(\alpha, \delta, r; x) = (x - \delta e_1)^T\begin{pmatrix}
+f_{e}(\alpha, \delta, r; x) = (x - \delta e_1)^T
+\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \alpha^{-2} \boldsymbol I \\
-\end{pmatrix}(x - \delta e_1) - r \label{define_ellipsoid_function}
+\end{pmatrix}
+(x - \delta e_1) - r \label{define_ellipsoid_function}
 \end{align}
 
+
+\sbnote{I still need to check the details on following Lemmas and theorems, but I want to do that after you have made the revisions discussed above and carried through any changes into the proofs below.}
 
 \begin{lemma}
 \label[lemma]{alphas_are_positive}
@@ -1059,36 +1125,36 @@ This is because $\det(\rotk) = 1$ means the condition number of $\qk$ is not aff
 \end{proof}
 
 
-
-\begin{boxedcomment}
-I think we no longer use this result...
-\end{boxedcomment}
-
-\color{red}
-We use the following result shown \cite{BillupsLarson2013}, Corollary 4.7.
-We restate the theorem here, with the simplication that $f$ is deterministic function:
-
-\begin{assumption}
-\label{fully_quadratic_assumption}
-Suppose that a set $S$ and a radius $\dmax$ are given.
-Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
-$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
-\end{assumption}
-
-\begin{lemma}
-\label[lemma]{larson_change_radius} 
-Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
-Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
-If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
-Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
-\begin{align*}
-\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
-\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
-\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
-\end{align*}
-\end{lemma}
-
-\color{black}
+%
+%\begin{boxedcomment}
+%I think we no longer use this result...
+%\end{boxedcomment}
+%
+%\color{red}
+%We use the following result shown \cite{BillupsLarson2013}, Corollary 4.7.
+%We restate the theorem here, with the simplication that $f$ is deterministic function:
+%
+%\begin{assumption}
+%\label{fully_quadratic_assumption}
+%Suppose that a set $S$ and a radius $\dmax$ are given.
+%Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
+%$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
+%\end{assumption}
+%
+%\begin{lemma}
+%\label[lemma]{larson_change_radius} 
+%Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+%Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
+%If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
+%Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
+%\begin{align*}
+%\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
+%\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
+%\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
+%\end{align*}
+%\end{lemma}
+%
+%\color{black}
 
 
 \begin{lemma}
@@ -1117,6 +1183,8 @@ There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x 
 \left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r\\ % \Delta^2
 \left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3' r .% \Delta
 \end{align*}
+
+\sbnote{Check the exponenets of the $r$s above.}
 \end{lemma}
 
 \begin{proof}
@@ -1318,6 +1386,7 @@ Within Lemma 3.1, $\dk \le 1 $ explicitly.
 
 
 
+\sbnote{There needs to be some discussion about how the method defined above to construct the suitable ellipsoid relates to the other methods you described}.
 
 
 
@@ -1328,57 +1397,9 @@ Within Lemma 3.1, $\dk \le 1 $ explicitly.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\sbnote{==============   Everything below here in this chapter  has not been incorporated}
 
 
 \section{Polyhedral Trust Region Approach}\label{sec:polyhedral}
-
-\paragraph{This goes somewhere in this section}
-To complete the polyhedral trust region approach \cref{redpill},
-, we need some redefinition of poisedness for polyhedral shapes.
-However, since the trust region is larger, it is easier to ensure sufficient reduction.
-This strategy has the drawback that it will yield sample points close to the boundary of the feasible region.
-This may cause more infeasible evaluation attempts when we use models to approximate black-box constraints this may.
-
-The classical methods for ensuring good geometry require an optimization call to the model functions over a sphere.
-This is no longer possible in the polyhedral trust region approach.
-However, the bounds produced over the entire trust region may also be stronger than required as the models will only be used on the feasible region.
-This may mean the geometric requirements can be reduced.
-
-Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere.
-This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.
-
-
-==================
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 One simple approach to ensuring that all sample points are feasible is to restrict them to lie within the intersection of the feasible region and the outer trust region.     In particular,  we define the sample and search trust regions by
 \[ \sampletrk = \searchtrk = \feasible \cap \outertrk.\]
@@ -1397,7 +1418,7 @@ We modify this step by choosing $\hat{y} \in \argmax_{t\in \sampletrk} \left|u_i
 
 The challenge lies in finding sufficiently poised sample points.
 Note that \cref{model_improving_algorithm} uses a parameter $  \ximin $ as a lower bound of the pivot values of the Vandermonde matrix.
-For unconstrained problems, this approach could always find a pivot value for any $ \ximin \in (0,1)$ because it ßoptimized over a sphere.
+For unconstrained problems, this approach could always find a pivot value for any $ \ximin \in (0,1)$ because it optimized over a sphere.
 However, when requiring points to live within $ \feasible \cap \outertrk $, it can happen that even after replacing a point, we still have not satisfied this bound.
 In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible \cap \outertrk $ that will leave a sufficiently large pivot.
 
@@ -1412,7 +1433,7 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
 
 %As the number of dimensions grows the ratio of volume of the trust region intersect the feasible region to the feasible region can become smaller.
 
-One way to handle this is to introduce a $\xi_{\text{cur}}$ which is allowed to decrease.
+One way to handle this is to  introduce a $\xi_{\text{cur}}$ which is allowed to decrease.
 (Possibly, until a threshold is reached for maintaining a fixed $\Lambda$.)
 If the new point does not improve the geometry of the set significantly, then there is no other point that would do better.
 To test this, we introduce a constant $\delta_{\text{improv}}>0$ and require a new point to increase the current pivot by a factor greater than $\delta_{\text{improv}}$.
@@ -1463,81 +1484,6 @@ As is usual, we may also wish to remove points larger than a certain radius from
 
 
 
-
-
-
-
-
-
-
-
-We call this ellipsoid the {\em sample trust region}.  To choose well-poised sample points for this ellipsoidal region, we adapt the model improvement algorithm \cref{model-improvement} for spherical trust regions and establish error bounds on the accuracy of the model functions over this region.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- the {\em ellipsoidal trust region approach} and the {\em polyhedral trust region Approach}.
-
-In the ellipsoidal approach
-
-
-
-
-
-\section{Trust Region Choices}
-\subsection{The Sample Region}
-\label{sample_region_choices}
-We consider general strategies for constructing $ \sampletrk $ and $ \searchtrk $.
-\begin{itemize}
-\item[1.] Take 
-\begin{align}
-\label{redpill} \sampletrk = \searchtrk = \outertrk \cap \feasible.
-\end{align} This results in a polyhedral trust region, so we refer to this approach as the \emph{Polyhedral Trust Region Approach}.
-% \item[2.] Let $\label{hybrid} \sampletrk \subseteq \searchtrk = \outertrk \cap \feasible $ where $\sampletrk$ has an ellipsoidal shape. This is referred to as the \emph{Hyrbid Trust Region Approach}
-\item[2.] Force 
-\begin{align}\label{bluepill} \sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasible
-\end{align} where $\sampletrk$ has an ellipsoidal shape.  This is referred to as the \emph{Ellipsoidal Trust Region Approach}
-\end{itemize}
-
-The advantage of the ellipsoidal trust region approach \cref{bluepill} is that we can reuse classical methods for ensuring good geometry.
-We can construct $\sampletrk$ to be ellipsoidal and use efficient algorithms within \cite{introduction_book} to satisfy \cref{accuracy}.
-However, we must be careful while choosing $ \searchtrk$ to allow sufficient reduction when we solve the trust region subproblem using the inner trust region.
-The search trust region is used while selecting the next iterate:
-\begin{align*}
-\sk = \argmin_{s \in \searchtrk} \mfk(\xk + s).
-\end{align*}
-
-\subsection{The Search Region}
-
-To complete the polyhedral trust region approach \cref{redpill},
-, we need some redefinition of poisedness for polyhedral shapes.
-However, since the trust region is larger, it is easier to ensure sufficient reduction.
-This strategy has the drawback that it will yield sample points close to the boundary of the feasible region.
-This may cause more infeasible evaluation attempts when we use models to approximate black-box constraints this may.
-
-The classical methods for ensuring good geometry require an optimization call to the model functions over a sphere.
-This is no longer possible in the polyhedral trust region approach.
-However, the bounds produced over the entire trust region may also be stronger than required as the models will only be used on the feasible region.
-This may mean the geometric requirements can be reduced.
-
-Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere.
-This saves the computation of $ \sampletrk $ when it is not needed, as there are no nearby constraints.
-
-
-
-
-==============
 
 
 \newpage
