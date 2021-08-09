@@ -1,4 +1,9 @@
 
+
+\begin{boxedcomment}
+Somewhere, I should talk about the same sample set being used for different orders of models.
+\end{boxedcomment}
+
 \label{infeasible_point_strategies}
 
 The algorithm for general nonlinear constraints is complicated by the fact that we only have models for the constraint functions.
@@ -145,9 +150,7 @@ This cone is illustrated in \cref{explanation_2}.
     \centering
     \includegraphics[width=150px]{images/explanation_2.png}
     \includegraphics[width=150px]{images/explanation_3.png}
-    \caption{
-    	\emph{Short:} An example of a buffering cone.
-    	\emph{Long:}
+    \caption[An example of a buffering cone.]{
     	As the trust region goes to zero the buffering cone better approximates the linearization of the constraint and becomes locally feasible.
     	The current iterate is the green star;
     	the true constraint is black;
@@ -172,10 +175,8 @@ Therefore, to obtain feasible sample points, we require that
 \begin{figure}[ht]
     \centering
     \includegraphics[width=150px]{images/completed_2.png}
-    \caption{
-    	\emph{Short:}
-    		An example ellipsoidal, buffered sample region.
-    	\emph{Long:}
+    \caption
+    	[An example ellipsoidal, buffered sample region.]{
     	After constructing 
     	the linearization of the constraints in black;
     	the buffering cones in blue;
@@ -312,10 +313,7 @@ these rays intersect the hyperplane on the ellipsoid's perspective projection.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/perspective_projection.png}
-    \caption{
-    	\emph{Short:}
-    		A depiction of the perspective projection.
-    	\emph{Long:}
+    \caption[A depiction of the perspective projection]{
     		The perspective projection is the intersection of the plane and directions from $V$ through the boundary of the ellipsoid.
 	}
     \label{perspective_projection_depiction}
@@ -492,10 +490,9 @@ A binary search on $\lambda$ can find the zeros of $f$.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/antiprojection.png}
-    \caption{
-    	\emph{Short:}
+    \caption[
     		An example plot of the one-dimensional function whose zeros provide the largest ellipsoid within the buffering cones.
-    	\emph{Long:}
+		]{
     		By computing the zeros of this function, we find values of $\lambda$ for each critical point of \cref{antiprojection_problem}.
     		The function $f$ is in blue, and the eigenvalues of $Q$ are red vertical lines.
     		A binary seach can be used to find one zero (plotted as green vertical lines) to the left of the smallest eigenvalue and one to the right of the largest.
@@ -813,10 +810,9 @@ This cone is depicted in \cref{feasible_direction}.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/feasible_direction.png}
-    \caption{
-    	\emph{Short:}
-    		An example of the conservative ellipsoid being overly conservative.
-    	\emph{Long:}
+    \caption
+    	[An example of the conservative ellipsoid being overly conservative]
+    	{
     		At times, the conservative ellipsoid may be much smaller than desired.
     		Here, each cone $\fik$ is in blue, and $\fcki$ is in green.
     		$\fcki$ is contained within the intersection of the $\fik$ cones.
@@ -1490,10 +1486,9 @@ Each new linear constraint not only cuts off the last trial point, but also stay
 \begin{figure}[ht]
     \centering
     \includegraphics[width=300px]{images/pyomo_cut_solution.png}
-    \caption{
-    	\emph{Short:}
-    		Infeasible points can be removed from the search with linear cuts.
-    	\emph{Long:}
+    \caption
+    		[Infeasible points can be removed from the search with linear cuts.]
+    	{
 			Adding linear cuts to remove infeasible points.
 			Sample points that have already been evaluated and found to be feasible are shown as green circles.
 			Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
@@ -3874,10 +3869,8 @@ This is required within \cref{convergence_section}.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=300px]{images/first_lemma.png}
-	\caption{
-    	\emph{Short:}
-    		A depiction of the quantities within \cref{properties_of_a_circle}.
-    	\emph{Long:}
+	\caption[
+    		A depiction of the quantities within \cref{properties_of_a_circle}.]{
 			The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
 			Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
 	}
