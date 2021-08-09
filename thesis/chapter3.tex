@@ -15,7 +15,7 @@ The first method,  which is described in \cref{sec:ellipsoidal},
 defines $\sampletrk$ to be an ellipsoidal region
 \begin{align}
 \label{define_the_sample_region}
-\sampletrk = \left\{x \in \Rn \bigg | (x - \ck)^T \qk (x - \ck) \le \frac 1 2 \sdk \right\}
+\sampletrk = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk \right\}
 \end{align}
 that lies within the intersection of the feasible region and the outer trust region:
 $\sampletrk \subseteq \feasible \cap \outertrk$.
@@ -1039,8 +1039,8 @@ satisfies $\xk \in \scaledellipsek$.
 \begin{proof}
 We have that
 \begin{align*}
-f_e(\deltaf, \deltaf^2, {\alphak}, T_k\left(\xk\right) ) =  
-f_e(\deltaf, \deltaf^2, {\alphak}, 0 ) = \\
+f_e\left(\deltaf, \deltaf^2, {\alphak}, T_k\left(\xk\right) \right) =  
+f_e\left(\deltaf, \deltaf^2, {\alphak}, 0\right) = \\
 (0 - \deltaf e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & {\alphak}^{-2} \boldsymbol I \\
