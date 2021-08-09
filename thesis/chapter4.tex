@@ -1,39 +1,86 @@
-
+\sbnote{Questions:
+\begin{enumerate}
+\item Are you using $B_\infty$ or $B_2$ for the outer trust region?
+\item $\sampletrk \subset \mathcal{F}_{m}^{(k-1)}$ not $\feasiblek$,  whereas $\searchtrk \subset \feasiblek$, correct?
+\item Please clarify what you are using for the search trust region in this chapter.  In some places, it seems like $\searchtrk = \feasiblek \cap \outertrk$, but it other places it seems like $\searchtrk = \capcones.$
+\end{enumerate}
+}
 \label{infeasible_point_strategies}
+This chapter considers the problem
+\begin{align}
+\begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
+\mbox{subject to} \quad & c_i(x) \le 0, & 1 \le i \le m,
+\end{array}
+\label{nonlinear_dfo_problem}
+\end{align}
+where $f$ and $c_i$, $i=1,\ldots,m$ are real-valued, black-box functions on $\Rn$.   We assume $f$ is twice continuously differentiable and each $c_i$ is continuously differentiable.   Denote the feasible region for this problem by
+\begin{align}\label{define_feasible}
+\feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}. 
+\end{align}
 
-The algorithm for general nonlinear constraints is complicated by the fact that we only have models for the constraint functions.
-Errors in these models mean that we may attempt to evaluate a point that is not feasible in two ways:
-\begin{itemize}
-\item A sample point chosen by the geometry ensuring algorithm may be infeasible.
-\item The trial point solving the trust region subproblem may be infeasible.
-\end{itemize}
+To define a trust-region method for solving this problem,  we approximate $f$ at iteration $k$ by a quadratic interpolation model $\mfk$ and each constraint function $c_i,  i=1,\ldots,m$ by a linear interpolation model $\mcik$.     Using these model functions, we can define the {\em model feasible region} by
+\begin{align}
+\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0, \; \forall 1 \le i \le m \right\}. \label{define_feasiblek}
+\end{align}
+The model functions $\mfk$ and $\mcik$ are constructed by interpolating over a sample set lying within a {\em sample trust region} $\sampletrk$.     Ideally,  we would like $\sampletrk$  to lie within $\feasible \cap B_\infty(\xk,\Delta_k)$, where $\Delta_k>0$ is the trust region radius at iteration $k$.     However, since we do not know $\feasible$,  or even $\feasiblek$, when choosing the sample points for iteration $k$,  we can ensure only that $\sampletrk \subset \mathcal{F}^{(k-1)}_m \cap B_{\infty}(\xk,\Delta_k)$. 
+
+
+In our method, the trust region subproblems have the form
+\begin{align*} \label{trust_problem_nlp}
+\begin{array}{ccl} \min_{s}
+ & \mfk \left(\xk+s\right) \\
+ & \xk+s \in \searchtrk,
+ \end{array}
+%\mbox{subject to} \quad & \mcik\left(\xk + s\right) \le 0 & 1 \le i \le m, \\
+%& \|s\|_\infty \le \Delta_k
+%\end{array}
+\end{align*}
+where $\searchtrk$ is a {\em search trust region} constructed so that 
+\[ \searchtrk \subset \feasiblek \cap B_\infty(\xk,\Delta_k).\] 
+
+Developing an always-feasible algorithm for \cref{nonlinear_dfo_problem}  is complicated by the fact that we do not know $\feasible$ explicitly,  so we have to work with models $\feasiblek$ of the feasible region. instead.   Because of errors in these models,  we cannot guarantee that we never attempt to evaluate the black-box functions at infeasible points.  Instead, our goal is to make such infeasible evaluations rare.    Toward that end,  we propose strategies for constructing $\sampletrk$ and $\searchtrk$ with the property that,  for sufficiently small $\Delta_k$,  both of these trust regions will be guaranteed to lie within  the feasible region.   Thus,  under reasonable assumptions, the algorithm will attempt infeasible function evaluations only finitely many times.
+
+%Errors in these models mean that we may attempt to evaluate the black-box functions at  a point that is not feasible in two ways:
+%\begin{itemize}
+%\item A sample point chosen by the \replace{geometry ensuring }{model improvement } algorithm may be infeasible.
+%\item The trial point solving the trust region subproblem may be infeasible.
+%\end{itemize}
 
 
 
-\begin{boxedcomment}
-Consildate this discussion with the background.
-\end{boxedcomment}
+%We use the same algorithmic framework as was presented in \cref{chap:linear}.    As we did there, we define three trust regions:   the outer trust region $\outertrk = B_2(\xk,\Delta_k)$, the sample trust region $\sampletrk$ from which the sample points are selected, and the search trust region $\searchtrk$, which defines the feasible region for the trust region subproblem.    
+%
+%Ideally,  we would like $\sampletrk$ and $\searchtrk$ to lie within $\outertrk \cap \feasible$.    However, since we do not know $\feasible$, we can ensure only that $\sampletrk$ and $\searchtrk$ lie within $\outertrk \cap \feasiblek$.   
+
+%
+%\begin{boxedcomment}
+%Consildate this discussion with the background.
+%\end{boxedcomment}
 
 % What remains in throughout \cref{infeasible_point_strategies} is a discussion of various strategies
 % for handling infeasible sample points.
-To deal with these two forms of infeasible points, we have developed several strategies that make use of three separate trust regions.
-These trust regions are a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen, 
-and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
 
-Note that the outer trust region may include infeasible points.
-To ensure feasibility of all sample points, we construct an inner trust region  $ \sampletrk $  satisfying 
-$\sampletrk \subset \outertrk \cap \feasiblek$.
-Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on $\sampletrk$
-to ensure that it is entirely contained within the feasible region $\feasible$.
-These restrictions will be described in \cref{ellipsoid_requirements}, 
-and we show that these restrictions ensure $\sampletrk \subset \feasible$ in \cref{ellipsoid_is_feasible} and \cref{searchtrk_is_feasible}.
+Our strategies for constructing $\sampletrk$ and $\searchtrk$ make use of second order buffering cones defined for each nearly active constraint.    These cones are constructed in such a way that for sufficiently small $\Delta_k$ the intersection of these cones with $B_{\infty}(\xk,\Delta_k)$ is guaranteed to be contained in the feasible region.  Thus, by requiring $\sampletrk$ and $\searchtrk$ to lie within this intersection, we ensure that all sample points and trial points are feasible for small $\Delta_k$.
+
+
+
+%These trust regions are a box-shaped outer trust region $\outertrk$,  an ellipsoidal inner trust-region $\sampletrk$ from which the sample points are chosen, 
+%and a search trust-region, $\searchtrk$, which constrains the search for the next iterate.
+%
+%Note that the outer trust region may include infeasible points.
+%To ensure feasibility of all sample points, we construct an inner trust region  $ \sampletrk $  satisfying 
+%$\sampletrk \subset \outertrk \cap \feasiblek$.
+%Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on $\sampletrk$
+%to ensure that it is entirely contained within the feasible region $\feasible$.
+%These restrictions will be described in \cref{ellipsoid_requirements}, 
+%and we show that these restrictions ensure $\sampletrk \subset \feasible$ in \cref{ellipsoid_is_feasible} and \cref{searchtrk_is_feasible}.
 
 %\cref{ellipsoid_is_feasible}
 
 % However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
-The third trust region $\searchtrk$ is the search trust region, which could either be $\sampletrk$ itself, 
-or a larger region satisfying $ \sampletrk \subset \searchtrk \subset \outertrk \cap \feasible$.
-The search trust region is used in defining the trust region subproblem.
+%The third trust region $\searchtrk$ is the search trust region, which could either be $\sampletrk$ itself, 
+%or a larger region satisfying $ \sampletrk \subset \searchtrk \subset \outertrk \cap \feasible$.
+%The search trust region is used in defining the trust region subproblem.
 
 % \replace{
 % Within our algorithm, if $ \outertrk \subseteq \feasible$ we can set $ \sampletrk $ to be a sphere of radius $\dk$.
@@ -42,7 +89,7 @@ The search trust region is used in defining the trust region subproblem.
 % In the last paper, we showed convergence of our algorithm for linear constraints.
 % We follow the same pattern as in that paper, but we must deal with some problems introduced by general convex constraints.
 % To avoid evaluating infeasible points with general convex constraints, we construct models of the constraints in addition to the objective.
-
+The remainder of this chapter is organized as follows:   In the following section, we define what we mean by a nearly active constraint and define buffering cones associated with each nearly active constraints.  Then, in \cref{possible_ellipsoids}, we propose several strategies for constructing an ellipsoidal sample trust region that lies with the intersection of the buffering cones and the outer trust region.   \sbnote{Come back to this}
 
 What remains in \cref{infeasible_point_strategies} is devoted to search strategies for ensuring feasible sample points:
 \cref{possible_ellipsoids} and \cref{handling_linear_constraints_within_ellipsoid_programs} could be considered background, while the others discuss algorithms.
@@ -76,26 +123,32 @@ Finally, in \cref{the_algroithm_section}, we state the convergent algorithm, whi
 
 \section{Constructing the Sample Region}
 \label{possible_ellipsoids}
+This section describes how to construct an ellipsoidal sample trust region $\sampletrk$ such that for small enough $\Delta_k$,  $\sampletrk$ is feasible.    During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
+\begin{align}
+\sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
+\end{align}
 
-We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
-\begin{boxedcomment}
-Steve wants me to delete most of this...
-\end{boxedcomment}
-This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
-Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
-while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
+\sbnote{double check that $\frac{1}{2} \sdk^2$ is correct.}
+The key to our construction is the use of buffering cones.
 
-There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
-Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
+%
+%  
+%We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
+%\begin{boxedcomment}
+%Steve wants me to delete most of this...
+%\end{boxedcomment}
+%This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
+%Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
+%while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
+%
+%There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
+%Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
 \subsection{Buffering Cones}
 \label{ellipsoid_requirements}
-% We construct a set of requirements $\sampletrk$ must satisfy.
-During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
-\begin{align}
-\sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
-\end{align}
+
+
 To ensure this ellipsoid is feasible, we construct cones that buffer the ellipsoid from the constraint boundaries.
 These cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
 We define these cones within this section.

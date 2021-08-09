@@ -18,7 +18,7 @@ $f$ and $c_i, \forall 1 \le i \le m$ are real-valued functions on $\Rn$ with at 
 
 We will let the feasible set be represented as 
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}. \label{define_feasible}
+\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}.
 \end{align}
 
 We are interested in developing {\em model-based} {\em trust-region} algorithms for solving these problems.
@@ -40,7 +40,7 @@ and $\mcik$ are the model functions approximating the constraint functions $c_i,
 
 Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 \begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \; \forall 1 \le i \le m \right\} \label{define_feasiblek}
+\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \; \forall 1 \le i \le m \right\} 
 \end{align}
 
 The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
@@ -63,7 +63,7 @@ requirement that the sample points must be feasible  poses some interesting chal
 
 As a first step toward developing algorithms to solve such problems,  \cref{chap:linear}  considers a simplified problem where all of the constraints are linear; namely:
 
-\begin{equation} \label{eq:DFO-linear}
+\begin{equation} 
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & Gx \le g, & 
 \end{array}
