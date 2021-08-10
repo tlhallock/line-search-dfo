@@ -120,7 +120,7 @@ We can then define
 Note that we will still have $\|\lctra_i\| = 1$ for each $i \in [m]$.
 
 \begin{definition}
-\label{define_suitable_ellipsoid}
+\label[definition]{define_suitable_ellipsoid}
 The ellipsoids $\ellipsek$ determined by a positive definite, symmetric matrices $\qk$, centers $\ck \in \Rn$, and radii $\sdk > 0$
 are said to be a \textbf{suitable} if all of the following are satisfied:
 \begin{itemize}
@@ -691,7 +691,7 @@ Within Lemma 3.1, $\dk \le 1 $ explicitly.
 
 The main idea of the ellipsoidal method is to define the sample trust region to be a feasible ellipsoid as in \cref{define_the_sample_region}:
 \begin{align*}
-\sampletrk = \ellipsek = \left\{x \in \Rn | (x - \ck)^T \qk (x - \ck) \le \frac 1 2 \sdk^2 \right\}
+\sampletrk = \ellipsek = \left\{x \in \Rn \bigg | (x - \ck)^T \qk (x - \ck) \le \frac 1 2 \sdk^2 \right\}
 \end{align*}
 where $\qk$ is a positive definite matrix, $\ck$ is the center of the ellipsoid, and $\sdk$ is a constant determining the ellipsoid's radius.   
 $\qk$ and $\ck$ are chosen so that the ellipsoid conforms roughly to the shape of the feasible region near the current iterate, 
@@ -719,11 +719,7 @@ For any iterate $k$, if there are no active constraints, $\activei\left(\xk\righ
 \qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \dk.
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
-
-\begin{boxedcomment}
-I use an arbitrary set within \cref{alphas_are_bounded}.
-\end{boxedcomment}
-
+z
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
 To make this precise, let and $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
 We define the set of ``most'' feasible direction from $x$, and quantify how feasible they with the definitions:
@@ -746,8 +742,8 @@ For each iterate, this produces the quantities
 \end{align}
 We then compute
 \begin{align}
-\alphakp=\sqrt{\left(1+\left(\alphak\right)^2\right)\left(1+\frac{1}{\sqrt{2}}\right)} \label{define_alphakp} \\
-\deltaf = \frac 1 {\alphakp} \min_{i \in [m] \setminus \activei\left(\xk\right)} {\lcb}_i - \left({\lca}_i\right)^T\xk. \label{define_deltaf}
+\alphakp=\left(1+\frac{1}{\sqrt{2}}\right)\sqrt{1+\left(\alphak\right)^2} \label{define_alphakp} \\
+\deltaf = \frac 1 {\alphakp} \min_{i \in [m] \setminus \activei\left(\xk\right)} \left[{\lcb}_i - \left({\lca}_i\right)^T\xk\right]. \label{define_deltaf}
 \end{align}
 Notice that the minimization in the above expression computes the minimum distance to a non-active constraint.
 It will be convenient to define the rotation matrix and affine mapping
@@ -755,8 +751,7 @@ It will be convenient to define the rotation matrix and affine mapping
 \rotk = 2\frac{(e_1 + \uk)(e_1 +\uk)^T}{(e_1 +\uk)^T(e_1 +\uk)} - \boldsymbol I \label{define_r} \\
 T_k(x) = \rotk\left(x - \xk\right). \label{define_affine_mapping}
 \end{align}
-Recall that $e_1 = (1, 0, \ldots, 0)^T$.
-Observe that $\rotk e_1 = \uk$, $\rotk \uk = e_1$, $\det(\rotk) = 1$, and 
+Recall that $e_1 = (1, 0, \ldots, 0)^T$, and observe that $\rotk e_1 = \uk$, $\rotk \uk = e_1$, $\det(\rotk) = 1$, and 
 $\rotk \rotk ^T = \rotk ^T\rotk = I$.
 
 We can then define the ellipsoid as
@@ -764,14 +759,14 @@ We can then define the ellipsoid as
 \label{define_linear_nontrival_ellipsoid}
 \qk = \rotk^T \begin{pmatrix}
 1 & \boldsymbol0^T \\
-\boldsymbol 0 & {\alphakp}^{-2} \boldsymbol I \\
+\boldsymbol 0 & \left({\alphak}\right)^{-2} \boldsymbol I \\
 \end{pmatrix} \rotk,
 \quad
 \ck = \xk+\deltaf \uk,
 \quad
 \textrm{and}
 \quad
-\sdk=.
+\sdk=\deltaf.
 \end{align}
 
 
@@ -804,7 +799,7 @@ This simplifies $\scaledellipsek$ to
 \end{align*}
 Because $\ellipsek$ is then a sphere with within the outer trust region, $\ellipsek \subseteq \polyk$.
 Because the sphere $\scaledellipsek$ is centered at $\xk$, $\xk \in \scaledellipsek$.
-Also, $\condition(\qk) = 1$.
+Also, $\condition\left(\qk\right) = 1$.
 \end{proof}
 
 
@@ -955,7 +950,7 @@ Hence,
 $T_k(x) = \begin{pmatrix}
 t \\
 \sigma
-\end{pmatrix}$ where $\sigma \in \mathbb R ^ {n-1}$ satisfies $\|\sigma\| = \|s\| \le \alpha t$.
+\end{pmatrix}$ where $\sigma \in \mathbb R ^ {n-1}$ satisfies $\|\sigma\| = \|s\| \le \alphak t$.
 Thus, $T_k(x) \in \shiftedcone$.
 Conversely, if $\begin{pmatrix}
 t \\
@@ -973,7 +968,7 @@ t \\
 0 \\
 \sigma
 \end{pmatrix}\right) = t \uk + s$ where 
-$\|s\| = \|\sigma\| \le \alpha t$.
+$\|s\| = \|\sigma\| \le \alphak t$.
 Hence $T_k^{-1}\left(\begin{pmatrix}
 t \\
 \sigma
@@ -983,40 +978,42 @@ t \\
 
 \begin{lemma}
 \label[lemma]{ellipsoid_fits}
-Let $\activei$, $\deltaf$ $\rotk$, $T_k$, and $\polyk$ be defined by
-\cref{define_activei}, \cref{define_deltaf}, \cref{define_r}, \cref{defineshiftedcone}, and \cref{polyhedron_k}
+Let $\activei$, $f_e$, $\deltaf$ $\alphak$, $\rotk$, $T_k$, and $\polyk$ be defined by
+\cref{define_activei}, \cref{define_ellipsoid_function}, \cref{define_deltaf}, \cref{define_alpha_k}, \cref{define_r}, \cref{defineshiftedcone}, and \cref{polyhedron_k}
 respectively.
 
 For each iteration $k$, if $\activei\left(\xk\right) \ne \emptyset$, the ellipsoid
 \begin{align}
-\ellipsek = \left\{x \in \Rn \bigg | f_e\left(\deltaf, \frac 1 2 \deltaf^2, \alphak, T_k(x)\right) \le 0\right\} \label{definefeasibleellipsoid}
+\ellipsek = \left\{x \in \Rn \bigg | f_e\left(\alphak, \deltaf, \frac 1 2 \deltaf^2; T_k(x)\right) \le 0\right\} \label{definefeasibleellipsoid}
 \end{align}
 satisfies $\ellipsek \subseteq \polyk$.
 \end{lemma}
 
 \begin{proof}
-Let $\alphakp$ $\rotk$, $\unshiftedcone$, and $\shiftedcone$ be defined by
-\cref{define_alphakp}, \cref{define_r}, \cref{defineunshiftedcone}, \cref{defineshiftedcone}, and \cref{polyhedron_k}
+Let $\alphakp$, $\rotk$, $\unshiftedcone$, and $\shiftedcone$ be defined by
+\cref{define_alphakp}, \cref{define_r}, \cref{defineunshiftedcone}, and \cref{defineshiftedcone}
 respectively.
 
 
 % Let $L$ be the shortest distance from $\xk$ to any point on a non-active constraint. 
 % Define $\alphakp = \sqrt{\left(1 + \left(\alphak\right)^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right)}$, and let $\deltaf = \frac 1 {\alpha'} L$.
 We see that if $x \in \ellipsek$,
-then by \cref{shifted_ellipsoid_in_cone} we have that $T_k(x) = \begin{pmatrix}t\\ \sigma\end{pmatrix} \in \shiftedcone$ for some $\sigma \in \mathbb R^{n-1}$, and
+then by \cref{shifted_ellipsoid_in_cone} we have that $T_k(x) = \begin{pmatrix}t\\ \sigma\end{pmatrix} \in \shiftedcone$ for some $\sigma \in \mathbb R^{n-1}$
+with $\left\|\sigma\right\| \le \alphak$, and
 \begin{align*}
 (x - \deltaf e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \left(\alphak\right)^{-2} \boldsymbol I \\
 \end{pmatrix}(x - \deltaf e_1) \le \frac 1 2 \deltaf^2 \\
-\Longrightarrow (t - \deltaf)^2 + \frac {1} {\left(\alphak\right)^2} \|\sigma\|^2 \le \frac 1 2 \deltaf^2
-\Longrightarrow (t - \deltaf)^2 \le \frac 1 2 \deltaf^2
+\Longrightarrow (t - \deltaf)^2 \le (t - \deltaf)^2 + \frac {1} {\left(\alphak\right)^2} \|\sigma\|^2 \le \frac 1 2 \deltaf^2 \\
 \Longrightarrow t \le \left(1 + \frac 1 {\sqrt{2}}\right) \deltaf
 \end{align*}
 so that 
 \begin{align*}
-\|x\|^2 = t^2 + \|\sigma\|^2 \le \left(1 + \left(\alphak\right)^2 \right) t^2 \le \left(1 + \left(\alphak\right)^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right) \deltaf^2 = {\alpha'}^2 \deltaf^2 \\
-\Longrightarrow \|x\| \le \alphakp \deltaf \le L
+\|x\|^2 = t^2 + \|\sigma\|^2 \le \left(1 + \left(\alphak\right)^2 \right) t^2 
+\le \left(1 + \left(\alphak\right)^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right)^2 \deltaf^2 
+= \left(\alphakp\right)^2 \deltaf^2 \\
+\Longrightarrow \|x\| \le \alphakp \deltaf \le \min_{i \in [m] \setminus \activei\left(\xk\right)} \left[{\lcb}_i - \left({\lca}_i\right)^T\xk\right]
 \end{align*}
 Thus, all points within $\ellipsek$ are closer than the nearest point of a non-active constraint.
 Combine this with \cref{unshiftedconeisfeasible} to see that $\ellipsek \subseteq \polyk$.
@@ -1026,12 +1023,13 @@ Combine this with \cref{unshiftedconeisfeasible} to see that $\ellipsek \subsete
 
 \begin{lemma}
 \label[lemma]{ellipsoid_includes_origin}
-For some iteration $k$, let $\deltaf$, $\rotk$, $T_k$, $\unshiftedcone$, $\shiftedcone$, $\polyk$ be defined as in
+Let $\deltaf$, $\rotk$, $T_k$, $\unshiftedcone$, $\shiftedcone$, $\polyk$ be defined as in
 \cref{define_deltaf}, \cref{define_r}, \cref{define_affine_mapping}, \cref{defineunshiftedcone}, \cref{defineshiftedcone}, \cref{polyhedron_k}.
-z
-The ellipsoid
+
+For any iteration $k$,
+the ellipsoid
 \begin{align}
-\scaledellipsek  = \left\{x \in \Rn | f_e\left(\deltaf, \deltaf^2, {\alphak}, T_k(x)\right) \le 0\right\} \label{definescaledfeasibleellipsoid}
+\scaledellipsek  = \left\{x \in \Rn | f_e\left({\alphak}, \sdk, \sdk^2; T_k(x)\right) \le 0\right\} \label{definescaledfeasibleellipsoid}
 \end{align}
 satisfies $\xk \in \scaledellipsek$.
 \end{lemma}
@@ -1039,11 +1037,11 @@ satisfies $\xk \in \scaledellipsek$.
 \begin{proof}
 We have that
 \begin{align*}
-f_e\left(\deltaf, \deltaf^2, {\alphak}, T_k\left(\xk\right) \right) =  
-f_e\left(\deltaf, \deltaf^2, {\alphak}, 0\right) = \\
+f_e\left(\alphak, \deltaf, \deltaf^2; T_k\left(\xk\right) \right) =  
+f_e\left({\alphak}, \deltaf, \deltaf^2; 0\right) = \\
 (0 - \deltaf e_1)^T\begin{pmatrix}
 1 & \boldsymbol0^T \\
-\boldsymbol 0 & {\alphak}^{-2} \boldsymbol I \\
+\boldsymbol 0 & \left(\alphak\right)^{-2} \boldsymbol I \\
 \end{pmatrix}(0 - \deltaf e_1) = \deltaf^2 \le \deltaf^2.
 \end{align*}
 \end{proof}
@@ -1135,19 +1133,20 @@ be defined as in
 \cref{define_r},
 \cref{definefeasibleellipsoid}, and
 \cref{definescaledfeasibleellipsoid}
-respectively.
-
-Observe that \cref{define_linear_nontrival_ellipsoid} defines  $\ellipsek$ and $\scaledellipsek$ within \cref{define_ellipsoid_function} to be
+respectively. 
+Observe \cref{define_suitable_ellipsoid} with \cref{define_linear_nontrival_ellipsoid} defines  $\ellipsek$ and $\scaledellipsek$ to be
 \begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg | f_e\left(\deltaf, \frac 1 2 \deltaf^2, \alphak, T_k(x)\right) \le 0\right\}, \quad \textrm{and}  \\
-\scaledellipsek = \left\{x \in \Rn | f_e\left(\deltaf, \deltaf^2, {\alphak}, T_k(x)\right) \le 0\right\}.
+\begin{array}{cccc}
+\ellipsek &=& \left\{x \in \Rn \bigg | f_e\left(\alphak, \sdk, \frac 1 2 \sdk^2; T_k(x)\right) \le 0\right\}, &\quad \textrm{and}  \\
+\scaledellipsek &=& \left\{x \in \Rn \bigg | f_e\left({\alphak}, \sdk, \sdk^2; T_k(x)\right) \le 0\right\}.&
+\end{array}
 \end{align*}
 
 By \cref{ellipsoid_fits}, we know that $\ellipsek \subseteq \polyk$.
 By \cref{ellipsoid_includes_origin}, we know that $\xk \in \scaledellipsek$ .
 By \cref{alphas_are_bounded}, there exists $\epsilon_{\alpha} > 0$, such that the condition number 
 $\condition\left(\qk\right) = \frac{\max\{1, {\alphak}^{-2}\}}{\min\{1, {\alphak}^{-2}\}} = {\alphak}^{-2} > 0$.
-This is because $\det(\rotk) = 1$ means the condition number of $\qk$ is not affected $\rotk$.
+This is because $\det\left(\rotk\right) = 1$ means the condition number of $\qk$ is not affected $\rotk$.
 \end{proof}
 
 
