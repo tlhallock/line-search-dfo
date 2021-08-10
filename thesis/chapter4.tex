@@ -5,9 +5,21 @@ Somewhere, I should talk about the same sample set being used for different orde
 
 \sbnote{Questions:
 \begin{enumerate}
-\item Are you using $B_\infty$ or $B_2$ for the outer trust region?
-\item $\sampletrk \subset \mathcal{F}_{m}^{(k-1)}$ not $\feasiblek$,  whereas $\searchtrk \subset \feasiblek$, correct?
-\item Please clarify what you are using for the search trust region in this chapter.  In some places, it seems like $\searchtrk = \feasiblek \cap \outertrk$, but it other places it seems like $\searchtrk = \capcones.$
+\item If you are using $\searchtrk = \capcones$, does this alter whether your algorithm is a special case of Conejo's algorithm?
+\item Conejo's paper assumes that $\mfk(\xk) = f(\xk)$.  This means that $\xk$ {\em must} be a sample point.   Do you always use $\xk$ as a sample point?
+\item Is it a problem that $\mcikmo \ne c_i(\xk)$?
+\item  If $c_i(\xk) \ne 0$ and $\|gmckikmo\| = 0$, then $i \not \in \activeconstraintsk$, correct?  If that is the case, how can you be sure that the $i$th constraint will be satisfied for all $x$ in $\capcones \cap \outertrk$?
+\item See question at the beginning of \cref{handling_linear_constraints_within_ellipsoid_programs}
+%\item Are you using $B_\infty$ or $B_2$ for the outer trust region?
+%\item $\sampletrk \subset \mathcal{F}_{m}^{(k-1)}$ not $\feasiblek$,  whereas $\searchtrk \subset \feasiblek$, correct?
+%\item Please clarify what you are using for the search trust region in this chapter.  In some places, it seems like $\searchtrk = \feasiblek \cap \outertrk$, but it other places it seems like $\searchtrk = \capcones.$
+\end{enumerate}
+}
+
+\sbnote{Notes for Trever:
+\begin{enumerate}
+\item I made changes to clarify that at iteration $k$,  the sample set $Y^k$ is chosen from $\sampletrk$ which is constructed to lie within 
+$\capcones \cap \outertrk$, where $\capcones$ is defined using the model constraint $\mcikmo$ defined during the previous iteration.
 \end{enumerate}
 }
 \label{infeasible_point_strategies}
@@ -23,11 +35,26 @@ where $f$ and $c_i$, $i=1,\ldots,m$ are real-valued, black-box functions on $\Rn
 \feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}. 
 \end{align}
 
-To define a trust-region method for solving this problem,  we approximate $f$ at iteration $k$ by a quadratic interpolation model $\mfk$ and each constraint function $c_i,  i=1,\ldots,m$ by a linear interpolation model $\mcik$.     Using these model functions, we can define the {\em model feasible region} by
+To define a trust-region method for solving this problem,  we approximate $f$ at iteration $k$ by a quadratic interpolation model $\mfk$ and each constraint function $c_i,  i=1,\ldots,m$ by a linear interpolation model $\mcik$.     Specifically,  these functions have the form
+\sbnote{You might prefer other notation in the following:}
+\begin{align} \mfk(x) & = f(\xk)+(g_f^{(k)})^T(x-\xk) + \frac{1}{2}(x-\xk)^T H_f (x-\xk) \\
+\mcik(x) & = c_i(\xk) + (g_{c_i}^{(k)})^T(x-\xk), \quad i=1,\ldots, m \label{mcik_definition}
+\end{align}
+
+
+
+
+Using these model functions, we can define the {\em model feasible region} by
 \begin{align}
 \feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0, \; \forall 1 \le i \le m \right\}. \label{define_feasiblek}
 \end{align}
-The model functions $\mfk$ and $\mcik$ are constructed by interpolating over a sample set lying within a {\em sample trust region} $\sampletrk$.     Ideally,  we would like $\sampletrk$  to lie within $\feasible \cap B_\infty(\xk,\Delta_k)$, where $\Delta_k>0$ is the trust region radius at iteration $k$.     However, since we do not know $\feasible$,  or even $\feasiblek$, when choosing the sample points for iteration $k$,  we can ensure only that $\sampletrk \subset \mathcal{F}^{(k-1)}_m \cap B_{\infty}(\xk,\Delta_k)$. 
+The model functions $\mfk$ and $\mcik$ are constructed by interpolating over a sample set $Y^{(k)}$ that includes $\xk$.   All of the sample points,  with the possible exception of $\xk$, are required to lie within a  {\em sample trust region} $\sampletrk$.   
+Ideally,  we would like $\sampletrk$  to lie within $\feasible \cap B_\infty(\xk,\Delta_k)$, where $\Delta_k>0$ is the trust region radius at iteration $k$.     However, since we do not know $\feasible$,  or even $\feasiblek$, when choosing the sample points for iteration $k$,  we can ensure only that $\sampletrk \subset \mathcal{F}^{(k-1)}_m \cap B_{\infty}(\xk,\Delta_k)$. 
+
+As discussed in \cref{chap:background}, we need 
+ $p+1 = \frac{(n+1)(n+2)}{2}$ sample points in order to uniquely determine the quadratic model of the objective function, $\mfk$.      For the constraints, we first use the same sample points to fit quadratic models $q_{c_i}^{(k)}$ of the constraint functions and then define the linear models $\mcik$ according to \cref{define_feasiblek}  by defining$g_{c_i}^{(k)} = \nabla q_{c_i}^{(k)}(\xk)$.   \sbnote{Check this, and maybe improve notation.}
+
+
 
 
 In our method, the trust region subproblems have the form
@@ -43,7 +70,7 @@ In our method, the trust region subproblems have the form
 where $\searchtrk$ is a {\em search trust region} constructed so that 
 \[ \searchtrk \subset \feasiblek \cap B_\infty(\xk,\Delta_k).\] 
 
-Developing an always-feasible algorithm for \cref{nonlinear_dfo_problem}  is complicated by the fact that we do not know $\feasible$ explicitly,  so we have to work with models $\feasiblek$ of the feasible region. instead.   Because of errors in these models,  we cannot guarantee that we never attempt to evaluate the black-box functions at infeasible points.  Instead, our goal is to make such infeasible evaluations rare.    Toward that end,  we propose strategies for constructing $\sampletrk$ and $\searchtrk$ with the property that,  for sufficiently small $\Delta_k$,  both of these trust regions will be guaranteed to lie within  the feasible region.   Thus,  under reasonable assumptions, the algorithm will attempt infeasible function evaluations only finitely many times.
+Developing an always-feasible algorithm for \cref{nonlinear_dfo_problem}  is complicated by the fact that we do not know $\feasible$ explicitly,  so we have to work with models $\feasiblek$ of the feasible region instead.   Because of errors in these models,  we cannot guarantee that we never attempt to evaluate the black-box functions at infeasible points.  Instead, our goal is to make such infeasible evaluations rare.    Toward that end,  we propose strategies for constructing $\sampletrk$ and $\searchtrk$ with the property that,  for sufficiently small $\Delta_k$,  both of these trust regions will be guaranteed to lie within  the feasible region.   Thus,  under reasonable assumptions, the algorithm will attempt infeasible function evaluations only finitely many times.
 
 %Errors in these models mean that we may attempt to evaluate the black-box functions at  a point that is not feasible in two ways:
 %\begin{itemize}
@@ -126,62 +153,44 @@ Finally, in \cref{the_algroithm_section}, we state the convergent algorithm, whi
 % However, this requires using some artificial value of the constraints at infeasible points.
 
 
-\section{Constructing the Sample Region}
-\label{possible_ellipsoids}
-This section describes how to construct an ellipsoidal sample trust region $\sampletrk$ such that for small enough $\Delta_k$,  $\sampletrk$ is feasible.    During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
-\begin{align}
-\sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
-\end{align}
 
-\sbnote{double check that $\frac{1}{2} \sdk^2$ is correct.}
-The key to our construction is the use of buffering cones.
+\section{Buffering Cones}
+\label{buffering_cones}
 
-%
-%  
-%We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
-%\begin{boxedcomment}
-%Steve wants me to delete most of this...
-%\end{boxedcomment}
-%This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
-%Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
-%while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
-%
-%There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
-%Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
+%\label{ellipsoid_requirements}
 
-
-\subsection{Buffering Cones}
-\label{ellipsoid_requirements}
-
-
-To ensure this ellipsoid is feasible, we construct cones that buffer the ellipsoid from the constraint boundaries.
-These cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
-We define these cones within this section.
-
-The first step is to identify the set of constraints that are nearly active relative to the size of the current trust region.
-Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
-% Specifically, for each $i$ with either $\left\|\gmcik\right\| \ne 0$ or $c_i\left(\xk\right) = 0$, define
+As discussed above, both the sample trust region and the search trust will be defined based on a set of buffering cones associated with the nearly active constraints.    The nearly active constraints are identified by using the constraint models from the previous iteration.    To make this precise, 
+let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model from the previous iteration.
 Specifically, define
-
 % vector of infinities
 \begin{align}
 \label{define_z}
 \zik =
 \begin{cases}
-\xk &  c_i\left(\xk\right) = 0 \\
-\xk - \frac{c_i\left(\xk\right)}{\left\|\gmcik\right\|^2} \gmcik & c_i\left(\xk\right) \ne 0 \quad \textrm{and} \quad \left\|\gmcik\right\| \ne 0 \\
-\mathbf{\infty} & c_i\left(\xk\right) \ne 0 \quad \textrm{and} \quad \left\|\gmcik\right\| = 0 \\
+\xk &  \text{if } c_i\left(\xk\right) = 0 \\
+\xk - \frac{c_i\left(\xk\right)}{\left\|\gmcikmo\right\|^2} \gmcikmo&  \text{if } c_i\left(\xk\right) \ne 0, \; \left\|\gmcikmo\right\| \ne 0 \\
+\mathbf{\infty} & \text{if } c_i\left(\xk\right) \ne 0,  \;  \left\|\gmcikmo\right\| = 0 \\
 \end{cases}
 \end{align}
+
+\sbnote{Note that I changed $\gmcik$ to $\gmcikmo$ in the above definition.}
+
+\sbnote{Need to make it clear what $\infty$ means in the above definition}
 \begin{boxedcomment}
-Note that $m^{(k)}_{c_i}\left(\xk\right) = c_i\left(\xk\right)$.
+Note that $m^{(k-1)}_{c_i}\left(\xk\right) = c_i\left(\xk\right)$.
 \end{boxedcomment}
-% Note that this definition is consistent when both $c_i\left(\xk\right) = 0$ and $\left\|\gmcik\right\| \ne 0$.
-If $\zik$ lies sufficiently near the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
-Specifically, the set of nearly active constraints is defined by
+
+%
+%To ensure this ellipsoid is feasible, we construct cones that buffer the ellipsoid from the constraint boundaries.
+%These cones have a vertex between the current iterate and the nearest point along the linearization of the constraints, and open towards the current iterate.
+%We define these cones within this section.
+
+If $\zik$ lies sufficiently near the boundary of the outer trust region, we say that the $i$-th constraint is \emph{nearly active}.
+Specifically, the set of {\em nearly active constraints} is defined by
 \begin{align}
-\activeconstraintsk = \left\{i \in [m] \bigg| \zik \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}, \label{define_activeconstraints}
+\activeconstraintsk := \left\{i \in [m] \bigg| \zik \in B_{\infty}\left(\xk, (1+\zikthresh)\dk\right)\right\}, \label{define_activeconstraints}
 \end{align}
+\sbnote{You need to define $[m]$ before you use it.}
 where $\zikthresh$ is a user defined parameter that must satisfy the following identity involving $\omegainc$ (which is defined by \cref{define_the_omegas}):
 \begin{align}
 (2 + \omegainc)\sqrt{n} < \zikthresh. \label{define_zikthresh}
@@ -213,17 +222,28 @@ This cone is illustrated in \cref{explanation_2}.
 	}
     \label{explanation_2}
 \end{figure}
+
+\sbnote{Add a comment that as $\Delta_k$ gets smaller and smaller, the cones get wider and wider.}
 The intersection of these cones is the set
 \begin{align}
 \capcones = \{x\in\Rn | \; x \in \fik \quad \forall i \in \activeconstraintsk \} \label{define_capcones}
 \end{align}
 which is depicted in \cref{completed_2}.
-In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrkpo \subseteq \feasible$.
+
+\sbnote{Question:  If $c_i(\xk) \ne 0$ and $\|\gmcikmo\| = 0$, then $i \not \in \activeconstraintsk$, correct?  If that is the case, how can you be sure that the $i$th constraint will be satisfied for all $x$ in $\capcones \cap \outertrk$?}
+
+Observe that, by construction,  if $x \in \capcones$, then it is feasible with respect to all of the nearly active model constraints.  Additionally,  from the definition of $\activeconstraintsk$, any point that is infeasible with respect to a constraint not in $\activeconstraintsk$ must be too far away from $\xk$ to lie within  $B_\infty(\xk,\Delta_k)$.  Thus, 
+$\capcones \cap B_\infty(\xk,\Delta_k) \subset \feasiblekmo$.  
+
+In \cref{cone_and_tr_are_feasible}, we show that for sufficiently small $\dk$, $\capcones \cap \outertrk \subseteq \feasible$.
 Therefore, to obtain feasible sample points, we require that 
 \begin{align*}
-\sampletrkpo \subset \capcones \cap \outertrkpo.
+\sampletrk \subset \capcones \cap \outertrk.
 \end{align*}
 
+\sbnote{I changed $\sampletrkpo$ to $\sampletrk$ and $\outertrkpo$ to $\outertrk$ above.}
+
+\sbnote{Maybe we need to be consistent about writing $\outertrk$ versus $B_{\infty}(\xk,\Delta_k)$.}
 
 \begin{figure}[ht]
     \centering
@@ -240,12 +260,63 @@ Therefore, to obtain feasible sample points, we require that
 \end{figure}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Constructing the Sample Region}
+\label{possible_ellipsoids}
+This section describes several methods for construct an ellipsoidal sample trust region $\sampletrk \subset \feasiblekmo \cap \outertrk$.   
+We will show that one of these strategies (in particular, the strategy described in \cref{conservative_ellipsoid}) has the property that 
+for small enough $\Delta_k$,  $\sampletrk$ is feasible.    
+
+During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
+\begin{align}
+\sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
+\end{align}
+\sbnote{double check that $\frac{1}{2} \sdk^2$ is correct.  The sentence preceding the definition says that it has radius $\delta_k$, which is not the case in the definition.}
+Our goal is to choose $\qk$ and $\ck$ so that $\sampletrk$ is  feasible and also satisfies certain properties that we will need in order to prove convergence of our algorithm.
+
+\sbnote{Maybe move the definitions of the desired properties (i.e., \cref{ellipsoids_notation_definitions}) to here.}
+
+
+
+
+either contains $\xk$ or is at least not too far away from $\xk$.  
+
+
+
+%
+%  
+%We ensure that sample points are feasible by constructing an inner trust region $\sampletrk$ that we show is feasible for small enough $\dk$.
+%\begin{boxedcomment}
+%Steve wants me to delete most of this...
+%\end{boxedcomment}
+%This means that if $\sampletrk$ includes infeasible points-and we attempt to evaluate at an infeasible point- we can reduced the trust region radius.
+%Of course, the method of constructing this ellipsoid impacts the algorithm's efficiency because constructing a $\sampletrk$ too small means a poor sample set,
+%while using a $\sampletrk$ too large implies reducing the trust region quickly so that only small steps can be made towards a critical point.
+%
+%There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
+%Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
+
+
+
+
+
 \subsection{Linear Constraints}
 \label{handling_linear_constraints_within_ellipsoid_programs}
-
+\sbnote{I am confused by the following discussion.   You seem to be implying that you are constructing the ellipsoid to lie within a polyhedral region (in the case, the $L_\infty$ ball.  But this doesn't account for requirement that the ellipsoid also lies within the cap cone)}
 Throughout discussing strategies for constructing an ellipsoid within the buffering cones, we must also require that the ellipsoid is contained within the trust region.
 Because our trust region is $\tr$, we can satisfy the trust region constraints by including linear constraints of the form $\xk_i - \dk \le x_i \le \xk_i + \dk$.
-As done in the linear paper, using the work of \cite{Khachiyan1993}, we handle the general constraints $Ax \le b$ for some $m\times n$ matrix $A$ and $b \in \Rm$.
+As done in \cref{chap:linear},  using the work of \cite{Khachiyan1993}, we handle the general constraints $Ax \le b$ for some $m\times n$ matrix $A$ and $b \in \Rm$.
 That is, given a polyhedron $P = \{ x \in \Rn\; | \;  Ax \le b \}$ defined by an $m \times n$ matrix $A$, and $b \in \Rm$,
 we wish to find the maximum-volume ellipsoid $E \subset P$ centered at a point $\mu \in P$.
 
@@ -326,11 +397,10 @@ e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk
 
 \subsection{Ideal Solution}
 \label{ideal_ellipsoid_in_polyhedron}
-
-One strategy would be to create the largest possible ellipsoid that is contained within each of the cones $\fik$ defined in \cref{define_fik}.
+Ideally, we would like to find the largest possible ellipsoid that is contained within each of the cones $\fik$ defined in \cref{define_fik}.
 Although this sounds appealing, we were only able to formulate this problem as a multilevel optimization problem.
 However, it is possible to formulate the problem of checking whether an ellipsoid is contained within any particular cone.
-This admits a search over possible ellipsoids, with an algorithmic check that is efficient.
+This admits a search over possible ellipsoids, with an algorithmic check that is efficient.  
 We discuss this here.
 Throughout, we will assume that the constraints found in \cref{ellipsoids_trust_region_constraints} are included, 
 to ensure the ellipsoid is within the outer trust region $\outertrk$.
@@ -351,16 +421,19 @@ each cone in \cref{define_fik} is equivalent to
 \begin{align*}
 A_i = \fik - \xk = \left\{x\in\Rn\bigg|\;-\frac{(x - v^{(i)})^T}{\|x - v^{(i)}\|} \frac{v^{(i)}}{\|v^{(i)}\|} \ge \beta \right\}.
 \end{align*}
-Now, the ellipsoid $\sampletrk$ is contained in each a cone $A_i$ if and only if the \emph{perspective projection} from $v^{(i)}$ of the ellipsoid onto the hyper-plane 
+
+\sbnote{I really don't like the notation $A_i$ here, since it is hard to think of $A_i$ as anything other than the $i$th row of the matrix $A$.}
+
+The ellipsoid $\sampletrk$ is contained in each a cone $A_i$ if and only if the \emph{perspective projection} from $v^{(i)}$ of the ellipsoid onto the hyper-plane 
 \begin{align*}
 H_i = \left\{x \in \Rn \bigg|\left(v^{(i)}\right)^Tx = 0\right\}
 \end{align*}
-is contained in the projection of the cone.
+is contained in the projection of the cone.   \sbnote{Do you have a reference to justify this statement? }
 The perspective projection onto $v^{(i)}$ is the shape drawn onto a hyperplane as if a viewer were positioned at $v^{(i)}$.
 That is, imagine a viewer is positioned at $v^{(j)}$, and viewing the ellipsoid as in \cref{perspective_projection_depiction}.
 They create a line from $v^{(j)}$ to the hyperplane by looking past the outer edge of the ellipsoid onto the hyper plane.
 If they were to trace all possible rays through the boundary of the ellipsoid onto the hyperplane, 
-these rays intersect the hyperplane on the ellipsoid's perspective projection.
+these rays intersect the hyperplane on the ellipsoid's perspective projection.  \sbnote{This is a nice intuitive description of the perspective projection, but do you have a formal definition?}
 
 
 \begin{figure}[ht]
@@ -381,7 +454,7 @@ H_i \cap A_i
 = \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\}.
 \end{align*}
 
-Then, we can compute the perspective projection of the ellipsoid, in a fashion similar to \cite{eberly_2013}.
+Then, we can compute the perspective projection of the ellipsoid,  in fashion similar to \cite{eberly_2013}.
 Consider the point $x = v^{(i)} + td$ for some unit direction $d$ and distance $t$ from $v^{(i)}$.
 If $x$ is on the boundary of the ellipsoid, then:
 \begin{align*}
@@ -450,41 +523,40 @@ Thus, the ellipsoid is contained in cone $A_i$ if and only if
 
 For each $i \in [m]$, define
 \begin{align*}
-\hat v^{(i)} = \frac{v^{(i)}}{\|v^{(i)}\|} \\
-R^i = 2\frac{(\hat v^{(i)} + e_1)(\hat v^{(i)} + e_1)^T}{(\hat v^{(i)} + e_1)^T(\hat v^{(i)} + e_1)} - I
+\hat v^{(i)} & = \frac{v^{(i)}}{\|v^{(i)}\|} \\
+R^i & = 2\frac{(\hat v^{(i)} + e_1)(\hat v^{(i)} + e_1)^T}{(\hat v^{(i)} + e_1)^T(\hat v^{(i)} + e_1)} - I
 \end{align*}
 so that
 \begin{align*}
-& {R^i}v^{(i)} = \|v^{(i)}\|e_1 & {R^i}^T{R^i} = I & \quad \det({R^i}) \in \{-1, 1\}
+& {R^i}v^{(i)} &= \|v^{(i)}\|e_1 & {R^i}^T{R^i} = I & \quad \det({R^i}) \in \{-1, 1\}
 \end{align*}
 and let $W_i$, $y$, $w_{1,1}$, $w_1$ be defined so that
-\begin{align*}
-& M_i = {R^i}^T M_i' {R^i} = {R^i}^T\left( \begin{array}{cc}
+\[
+M_i = {R^i}^T M_i' {R^i} = {R^i}^T\left( \begin{array}{cc}
 {w_{1,1}^i} & {w_1^i} \\
 {w_1^i}^T	& {W_i}  \\
-\end{array} \right){R^i} &
+\end{array} \right){R^i},  \; \text{ and }
 {R^i}x = \left(\begin{array}{c}
 0 \\
 y
 \end{array}\right)
-\end{align*}
+\]
 for all $x$ with $x^Tv = 0$.
 Then
 \begin{align*}
-0 = \left(x - {v^{(i)}}\right)^TM_i\left(x - {v^{(i)}}\right) \\
-= x^TM_ix - 2x^TM_i{v^{(i)}} + {v^{(i)}}^TM_i{v^{(i)}} \\
-= x^T{R^i}^TM_i'{R^i}x - 2x^T{R^i}^TM_i'{R^i}{v^{(i)}} + {v^{(i)}}^T{R^i}^TM_i'{R^i}{v^{(i)}} \\
-= y^T{W_i}y - 2\|v^{(i)}\|y^Tw_1^i + {w_{1,1}^i}\|v^{(i)}\|^2 \\
-\Longleftrightarrow y^T{W_i}y - 2\|v^{(i)}\|y^T{W_i}{W_i}^{-1}{w_1^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
-= - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
-\Longleftrightarrow \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) \\
-= - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{{w_1^i}}}^T{W_i}^{-1}{{w_1^i}} \\
+0 &= \left(x - {v^{(i)}}\right)^TM_i\left(x - {v^{(i)}}\right) \\
+&= x^TM_ix - 2x^TM_i{v^{(i)}} + {v^{(i)}}^TM_i{v^{(i)}} \\
+&= x^T{R^i}^TM_i'{R^i}x - 2x^T{R^i}^TM_i'{R^i}{v^{(i)}} + {v^{(i)}}^T{R^i}^TM_i'{R^i}{v^{(i)}} \\
+&= y^T{W_i}y - 2\|v^{(i)}\|y^Tw_1^i + {w_{1,1}^i}\|v^{(i)}\|^2 \\
+\Longleftrightarrow \quad & y^T{W_i}y - 2\|v^{(i)}\|y^T{W_i}{W_i}^{-1}{w_1^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
+&= - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{W_i}{W_i}^{-1}{w_1^i} \\
+\Longleftrightarrow \quad & \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) \\
+&= - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{{w_1^i}}}^T{W_i}^{-1}{{w_1^i}}. 
 \end{align*}
-
 Thus, to find the maximum norm $x$ with $\left(v^{(i)}\right)^Tx = 0$, we wish to compute:
 \begin{align*}
-\max_{y} & \quad \|y\|^2  \\
- & \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{w_1^i}
+\max_{y}  \quad \|y\|^2 &  \\
+ \st \quad & \left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right)^T{W_i}\left(y - \|v^{(i)}\|{W_i}^{-1}{w_1^i}\right) = - \|v^{(i)}\|^2{w_{1,1}^i} + \|v^{(i)}\|^2{{w_1^i}}^T{W_i}^{-1}{w_1^i}.
 \end{align*}
 
 After a change of variables
@@ -505,14 +577,14 @@ this becomes:
 
 % This is the well known optimization problem of projecting a point onto the surface of an ellipsoid.
 To our knowledge, no explicit solution exists, 
-which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.
+which leaves us to believe that there is no explicit formulation of finding the maximum volume ellipsoid contained within the intersection of these cones.  
 However, there is an efficient, binary-search algorithm to solve this.
 % \cite{projecttoellipsoid}.
 
 
 Namely, given 
 $p \in \Rn$ and a matrix $Q$,
-we can consider how to compute point furthest from $p$ that is also in the set $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
+we can consider how to compute  the point farthest from $p$ that is also in the set $\left\{x \in \Rn \bigg | x^TQx = 1 \right\}$:
 \begin{align}
 \begin{array}{ccc}
 x^{\star} = &\argmax_{x \in \Rn} & \|x - p\|^2 \\
@@ -616,8 +688,8 @@ One simplification that allows an explicit formulation is to restrict the ellips
 Although this may produce an ellipsoid with less volume, it may be used as a hot start while searching over all ellipsoids.
 
 To compute the maximum volume sphere, we can maximize the minimum distance from the center of the sphere to any cone.
-We once again perform a change of variables, this time subtracting of $\xk$ and rotating $v^{(i)}$ onto $e_1$.
-This reduces the problem computing the projection of an arbitrary point $(t, y) \in \Rn$ and the second order cone: $\left\{ x \in \mathbb R^n | \quad x^Te_1 = \beta \|x\| \right\}$ for some $\beta \in \reals$.
+We once again perform a change of variables, this time subtracting off $\xk$ and rotating $v^{(i)}$ onto the unit vector $e_1$.
+This reduces the problem of computing the projection of an arbitrary point $(t, y) \in \Rn$ and the second order cone: $\left\{ x \in \mathbb R^n | \quad x^Te_1 = \beta \|x\| \right\}$ for some $\beta \in \reals$.  \sbnote{The preceding sentence seems to be missing something.   What does it reduce the problem to?}
 We find
 \begin{align*}
  \\
@@ -639,14 +711,18 @@ This means, that if we let $\beta' = \sqrt{\frac{1 - \beta^2}{\beta^2}}$, we hav
 The projection gives the following optimization problem:
 \begin{align*}
 \min_{x \in \mathbb R^{n-1}, s \in \mathbb R} & \quad \frac 1 2 \|x - y\|^2 + \frac 1 2 (s - t)^2 \\
-	\textrm{s.t.}		& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2,
-\end{align*}
-with Lagrangian:
-\begin{align*}
-l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \lambda \frac 1 2 \left(\|x\|^2 - {\beta'}^2 s^2\right).
+	\textrm{s.t.}		& \quad \frac 1 2 \|x\|^2 = \frac 1 2 {\beta'}^2 s^2.
 \end{align*}
 
-After taking the gradient of the Lagrangian, the first order optimality conditions imply that for some $\lambda \in \reals$:
+\sbnote{You don't need to define the Lagrangian.  Just state the first order optimality condition.}
+%with Lagrangian:
+%\begin{align*}
+%l(x, s, \lambda) = \frac 1 2 \|x - y \|^2 + \frac 1 2 \left(s - t\right)^2 - \lambda \frac 1 2 \left(\|x\|^2 - {\beta'}^2 s^2\right).
+%\end{align*}
+%
+%After taking the gradient of the Lagrangian, 
+
+The first order optimality conditions for this problem imply that for some $\lambda \in \reals$:
 \begin{align*}
 x - y - \lambda x = 0, & \quad s - t + \lambda {\beta'}^2 s = 0 \\
 x = \frac {y}{1 - \lambda}, & \quad s = \frac {t}{1 + \lambda {\beta'}^2 }.
@@ -714,7 +790,7 @@ z = \argmin_{\left\|x\right\| \le \beta' s} \left\|x - y\right\|^2 + \left\|s - 
 \end{align*}
 \end{lemma}
 
-After a shift and rotation from the vertex point $\wik$ and going direction $-\wik$:
+After a shift and rotation from the vertex point $\wik$ and going in the direction $-\wik$:
 
 \begin{align*}
 \hat w^{(i,k)} = \frac {\wik} {\|\wik\|} & \quad \forall i \in [m] \\
@@ -760,7 +836,7 @@ Although more efficient formulations may exist, this leads us to believe that it
 
 \subsection{Conservative Ellipsoid}
 Throughout \cref{possible_ellipsoids} we have considered several inner trust regions.
-However, we are not able to show that these formulations satisfy the requirements necessary for convergence.
+However, we are not able to show that these formulations satisfy the requirements necessary for convergence.  \sbnote{You haven't said what these requirements are yet, set this statement is a bit vague.  Maybe it would be better to move \cref{ellipsoids_notation_definitions} to earlier in the chapter.}
 % not been able to show that these satisfied the requirements stated in \cref{ellipsoids_notation_definitions}.
 We were able to find an ellipsoid contained within each \cref{define_fik} that may, in general, be smaller than the largest possible ellipsoid.
 Because we analyse this in more depth, we dedicate \cref{constructing_and_analysizing_conservative_ellipsoid} to this.
@@ -771,12 +847,14 @@ Because we analyse this in more depth, we dedicate \cref{constructing_and_analys
 We state the ellipsoid requirements required for convergence in \cref{ellipsoids_notation_definitions}, and then show the conservative ellipsoid satisfies them.
 Note the criteria in \cref{ellipsoids_notation_definitions} only summarize one of many possible sets of criteria sufficient for convergence.
 
+\sbnote{double check the iterate superscripts in the following definitions  (i.e. $k$ or $k-1$ or $k+1$).}
+
 \begin{definition}
 \label[definition]{ellipsoids_notation_definitions}
 For each $k \in \naturals$, suppose we are given $n\times n$, symmetric, positive-definite matrices $\qk$, vectors $\ck \in \Rn$, scalars $\sdk > 0$.
 We have the following definitions.
 \begin{itemize}
-\item The sequence $(\qk, \ck, \sdk)$ is \emph{conditioned} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
+\item The sequence of tuples $((\qk, \ck, \sdk))$ is \emph{conditioned} if the condition numbers of $\qk$ are bounded for small enough $\dk$.
 That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le \dacc$, then
 \begin{align}
 \condition \left(\qk\right) \le \sigmamax. \label{define_suitable_condition_numbers}
@@ -814,11 +892,13 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 \subsection{Ellipsoid Definition}
 
 % However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
-Here we show how to construct the ellipsoid, and that it is 
+In this section,  we show how to construct an ellipsoid that satisfies the conditions needed to prove convergence of our algorithm.  Specifically, we show that this ellipsoid is
 trusted and adjacent
 according to \cref{ellipsoids_notation_definitions}.
 Later, in \cref{ellipsoid_is_feasible_section}, we show that it is feasible for small enough $\dk$.
 Note that during iteration $k$, we construct the ellipsoid for the next iteration $k+1$.
+
+\sbnote{Let's talk about this.   Here was my understanding:    the model functions $\mcik$ are constructed from a sample set chosen from $\sampletrk$.  This sample trust region is constructed so that $\sampletrk \subset \feasiblekmo \cap B_{\infty}(x^{(k)},\Delta_k)$.  Notice that the center of the outer trust region is $x^{(k)}$, not $x^{(k-1)}$.}
 
 % Until the $k$-th models are computed, this will initially be an approximation from the previous iteration:
 % \begin{align}
@@ -1250,7 +1330,7 @@ Likewise, we can use \cref{csc_vx_ux} and \cref{csc_vy} to provide
 \begin{align*}
 \beta > {v}^T\hat y = {v}^T\left(x^{\star} + \hat y - x^{\star}\right) = \beta + {v}^T\left(\hat y - x^{\star}\right).
 \end{align*}
-After subtracting $\beta$ from both sides, we see
+After subtracting $\beta$ from both sides, we see that
 \begin{align}
 {v}^T\left(\hat y - x^{\star}\right) < 0 \Longrightarrow -{v}^T\left(\hat y - x^{\star}\right) > 0. \label{csc_vymx}
 \end{align}
@@ -1271,7 +1351,7 @@ Now, we can compute
 = \left[\gamma \sqrt{\frac{1 - \beta^2}{1 - \gamma^2}} - \beta\right] \left[-v^T\left(\hat y - x^{\star}\right)\right]
 + \left[\sqrt{\frac{1 - \beta^2}{1 - \gamma^2}}\right] \left[u^T\left(\hat y - x^{\star}\right) \right] > 0.
 \end{align*}
-because \cref{csc_uymx}, \cref{csc_vymx}, and \cref{csc_gamma_beta_positive} show that the first product is postive and the second product is non-negative.
+because \cref{csc_uymx}, \cref{csc_vymx}, and \cref{csc_gamma_beta_positive} show that the first product is positive and the second product is non-negative.
 However, this is a contradiction as
 \begin{align*}
 1 = \|\hat y\|^2 = \|x^{\star} + \hat y - x^{\star}\|^2 = \|x^{\star}\|^2 + 2{\left(\hat y - x^{\star}\right)}^Tx^{\star} + \|\hat y - x^{\star}\|^2 > \|x^{\star}\|^2 = 1
@@ -1527,12 +1607,14 @@ $f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\lef
 
 \section{Infeasible Trial Points}
 \label{convex_model_reduction}
-
+\sbnote{Rework this introduction to reflect the new organization}
 The second instance that the algorithm may attempt to evaluate an infeasible point is after solving the trust region subproblem.
 We have two methods for dealing with this case.
 
 \subsection{Linear cuts}
 \label{linear_cuts_section}
+
+\sbnote{Consider removing this section, or moving it to a ``other ideas'' or ``future works'' section.}
 One strategy is to solve the trust region subproblem again, after adding a linear constraint that removes this infeasible point.
 Each new linear constraint not only cuts off the last trial point, but also stays at least a fraction of the trust region radius away.
 
