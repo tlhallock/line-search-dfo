@@ -1576,6 +1576,8 @@ This is discussed in \cref{convex_restoration}.  \sbnote{\cref{convex_restoratio
 
 \subsection{Nonconvex feasible region}    \sbnote{I suggest removing this section and focusing only on the case when the feasible region is convex.}
 
+\subsubsection{Problem difficulty}
+
 For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
 This means that the current iterate lies within the interior of the feasible region,
 and there is gauranteed to be a feasible ellipsoid centered at the current iterate with a small enough trust region.
@@ -1623,7 +1625,7 @@ However, rather than discussing this further, we believe it is cleaner to assume
 Thus, we make \cref{restorability_assumption}.
 In many situations, there may be more practical means of finding a feasible sample set.
 
-\subsection{Ellipsoid Existence}
+\subsubsection{Ellipsoid Existence}
 
 To show that a feasible ellipsoid exists, we use a modification of \cref{minangleassumption_alt}.
 We would have preferred to use this version, as discussed in \cref{alternative_assumptions_section},

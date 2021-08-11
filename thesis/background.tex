@@ -94,7 +94,8 @@ and use
 \begin{align*}
 \chi_c^{(k)} = \left\|\xk - \text{Proj}_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
-For convex constraints, this condition is necessary and sufficient for optimality under regularity assumptions.
+% This condition is necessary under regularity assumptions, and with convex 
+% For a convex problemconvex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Without derivative information, we model this by
 \begin{align}
 \label{define_criticality_measure}
@@ -107,7 +108,7 @@ In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ 
 With general constraints, we cannot use $\text{Proj}_{\feasible}$ because the projection is not well defined.
 However, the linearization \cref{define_truefeasiblek} is still well defined.
 Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
-However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
+% However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
 
 
 
