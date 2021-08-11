@@ -46,7 +46,7 @@ To define a trust-region method for solving this problem,  we approximate $f$ at
 
 Using these model functions, we can define the {\em model feasible region} by
 \begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0, \; \forall 1 \le i \le m \right\}. \label{define_feasiblek}
+\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0, \; \forall 1 \le i \le m \right\}.
 \end{align}
 The model functions $\mfk$ and $\mcik$ are constructed by interpolating over a sample set $Y^{(k)}$ that includes $\xk$.   All of the sample points,  with the possible exception of $\xk$, are required to lie within a  {\em sample trust region} $\sampletrk$.   
 Ideally,  we would like $\sampletrk$  to lie within $\feasible \cap B_\infty(\xk,\Delta_k)$, where $\Delta_k>0$ is the trust region radius at iteration $k$.     However, since we do not know $\feasible$,  or even $\feasiblek$, when choosing the sample points for iteration $k$,  we can ensure only that $\sampletrk \subset \mathcal{F}^{(k-1)}_m \cap B_{\infty}(\xk,\Delta_k)$. 
@@ -104,7 +104,7 @@ Our strategies for constructing $\sampletrk$ and $\searchtrk$ make use of second
 %$\sampletrk \subset \outertrk \cap \feasiblek$.
 %Since $\feasiblek$ is only an approximation of $\feasible$,  we place additional restrictions on $\sampletrk$
 %to ensure that it is entirely contained within the feasible region $\feasible$.
-%These restrictions will be described in \cref{ellipsoid_requirements}, 
+%These restrictions will be described in \cref{ellipsoids_notation_definitions}, 
 %and we show that these restrictions ensure $\sampletrk \subset \feasible$ in \cref{ellipsoid_is_feasible} and \cref{searchtrk_is_feasible}.
 
 %\cref{ellipsoid_is_feasible}
@@ -157,7 +157,7 @@ Finally, in \cref{the_algroithm_section}, we state the convergent algorithm, whi
 \section{Buffering Cones}
 \label{buffering_cones}
 
-%\label{ellipsoid_requirements}
+%\label{ellipsoids_notation_definitions}
 
 As discussed above, both the sample trust region and the search trust will be defined based on a set of buffering cones associated with the nearly active constraints.    The nearly active constraints are identified by using the constraint models from the previous iteration.    To make this precise, 
 let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model from the previous iteration.
@@ -275,7 +275,7 @@ Therefore, to obtain feasible sample points, we require that
 \section{Constructing the Sample Region}
 \label{possible_ellipsoids}
 This section describes several methods for construct an ellipsoidal sample trust region $\sampletrk \subset \feasiblekmo \cap \outertrk$.   
-We will show that one of these strategies (in particular, the strategy described in \cref{conservative_ellipsoid}) has the property that 
+We will show that one of these strategies (in particular, the strategy described in \cref{conservative_ellipsoid_construction}) has the property that 
 for small enough $\Delta_k$,  $\sampletrk$ is feasible.    
 
 During iteration $k$, let $\sampletrk$ be defined by a $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, and radius $\delta_{k} > 0$:
@@ -624,7 +624,7 @@ A binary search on $\lambda$ can find the zeros of $f$.
     		Between any two eigenvalues, we first find the minimum.
     		If the minimum is negative, we can then use a binary search to compute two more zeros.
 	}
-    \label{feasible_direction}
+    \label{antiprojection_image}
 \end{figure}
 
 
@@ -890,6 +890,7 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 \end{definition}
 
 \subsection{Ellipsoid Definition}
+\label{conservative_ellipsoid_construction}
 
 % However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
 In this section,  we show how to construct an ellipsoid that satisfies the conditions needed to prove convergence of our algorithm.  Specifically, we show that this ellipsoid is
@@ -1782,7 +1783,7 @@ For each of \\
         		
         \item[\textbf{Step 1}] \textbf{(Search for sample points)} \\
         	For each of $M^{(i)}$ relatively equally spaced directions,
-        	construct an ellipsoid at distance $R^{(i)}$ from $\xk$, that satisfies \cref{ellipsoid_requirements}
+        	construct an ellipsoid at distance $R^{(i)}$ from $\xk$, that satisfies \cref{ellipsoids_notation_definitions}
         	
         \item[\textbf{Step 2}] \textbf{(Construct sample points)} \\
         	Attempt to evaluate points within the ellipsoid.
@@ -2013,7 +2014,6 @@ The algorithm is as follows:
         	$\omegadec$, $\omegainc$ by \cref{define_the_omegas};
         	$\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ by \cref{define_abpab};
 			$\kappa_{\chi}$ by \cref{define_kappa_chi};
-			$\ximin$ by \cref{define_ximin};
 			and $p_{\Delta}$ by \cref{define_p_delta}. \\
         	Initialize iteration counter: $k=0$, initial iterate $\xinit \in \feasible$, trust region radius $\Delta_0 > 0$, and feasible ellipsoid $T^{(0)}_{\textrm{interp}}$ as in \cref{initial_ellipsoid}.
             
@@ -2026,7 +2026,7 @@ The algorithm is as follows:
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
         	Compute $\activeconstraintsk$ by \cref{define_activeconstraints} and $\zik$, $\wik$ by \cref{define_z} and \cref{define_w} for each $i \in \activeconstraintsk$.
-            Compute $\chi_k$ as in \cref{define_criticality_measure}. \begin{itemize}
+            Compute $\chik$ as in \cref{define_criticality_measure}. \begin{itemize}
                 \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
                 \item[] Otherwise, if \cref{criticallity_check} is not satisfied, then \\
                 $\Delta_{k+1} \gets \omegadec\dk$, 
@@ -2177,7 +2177,7 @@ are generated by
 \cref{constrained_dfo}.
 Other quantities such as $\activeconstraintsk$, $\huk$, $\thetamink$, $\qk$, $\ck$, and $\sdk$ 
 that are generated by the conservative ellipsoid method described in
-\cref{ellipsoid_requirements} and \cref{constructing_and_analysizing_conservative_ellipsoid}
+\cref{ellipsoids_notation_definitions} and \cref{constructing_and_analysizing_conservative_ellipsoid}
 include references to their definitions when used.
 
 
@@ -3027,8 +3027,7 @@ $\capcones \cap \tr \subseteq \feasible$.
 
 To ensure sufficient reduction of the objective's model function during each iteration, the authors of \cite{Conejo:2013:GCT:2620806.2621814} impose the following efficiency condition:
 \begin{align}
-\label{efficiency}
-\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi\left(\xk\right) \min\left\{ \frac{\chi\left(\xk\right)}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
 \end{align}
 where $\kappa_f$ is a constant independent of $k$.
 This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
@@ -3062,7 +3061,7 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % It can be shown that the \emph{generalized Cauchy point} satisfies this condition \cite{Conn:2000:TM:357813}.
 % A efficiency condition \cref{efficiency} is satisfied:
 % \begin{align}
-% \mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chi_k \min\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \Delta_k, 1 \}
+% \mfk(\xk) - \mfk(\xk + \sk) \ge \kappa_f \chik \min\{ \frac{\chik}{1+\|\nabla^2 \mfk(\xk)\|}, \Delta_k, 1 \}
 % \end{align}
 
 % With explicit constraints, we know that this is satisfied by the Generalized Cauchy Point.
@@ -3207,7 +3206,7 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % \end{align}
 % then there exists a $v \in \capcones \cap \tr$ such that
 % \begin{align*}
-% m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \ge \left(\frac{\kappa_f}{2} \right)\chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
+% m_f^{(k)}(\xk) - m_f^{(k)}(v) \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right) \ge \left(\frac{\kappa_f}{2} \right)\chik \min\left\{ \frac{\chik}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}.
 % \end{align*}
 % \end{lemma}
 % 
@@ -3225,13 +3224,13 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % \begin{lemma}
 % \label{sufficient_reduction_of_projected_gradient}
 % Let 
-% $u_{GC}$ and $\chi_k$
+% $u_{GC}$ and $\chik$
 % be defined by
 % \cref{define_projected_gradient} and \cref{define_criticality_measure}
 % respetively.
 % There exists $\kappa_{f}$ such that
 % \begin{align*}
-% m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(u_{GC}\right) \ge \kappa_f\chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
+% m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(u_{GC}\right) \ge \kappa_f\chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 % \end{align*}
 % \end{lemma}
 
@@ -3262,7 +3261,7 @@ and
 then there exists $v \in \capcones \cap \tr$ such that
 \begin{align*}
 m_f^{(k)}(\xk) - m_f^{(k)}(v)
-\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
+\ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
 \end{align*}
 % \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
 
@@ -3281,9 +3280,9 @@ u_{\textrm{GC}} \approx & \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
 satisfying
 \begin{align}
 \label{what_ugc_satisfies}
-m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
+m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
 \end{align}
-This can be done by using the Generalized Cauchy Point as described in section 12.2.1 of \cite{Conn:2000:TM:357813}.
+This can be done by using the Generalized Cauchy Point as described in \cite[Section 12.2.1]{Conn:2000:TM:357813}.
 We wish to find a point within the buffered region that provides a percentage of the decrease $u_{\textrm{GC}}$ provides.
 To accomplish this, we move from $u_{\textrm{GC}}$ a distance $t$ along the direction $\minangledirk$ defined in \cref{minangleassumption_alt} by letting 
 \begin{align*}
@@ -3330,8 +3329,8 @@ We can then define $\kappa_f = \frac 1 4 \kappa_f'$, to see
 \begin{align*}
 m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(v(t)\right)
 \ge \frac 1 2 \left[m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right] \\
-\ge \frac 1 2 \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\} \\
-\ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
+\ge \frac 1 2 \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\} \\
+\ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
 \end{align*}
 If we assume $t \le 1$, then \cref{ensure_this} will be satisfied whenever
 \begin{align*}
@@ -3557,7 +3556,7 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % % By \cref{sufficient_reduction_of_projected_gradient}, $u_{\textrm{GC}}$ satisfies
 % % % Because $u_{\textrm{GC}}$ is the Cauchy point for the trust region subproblem with $\frac 1 2$ the current radius, it satisfies
 % % \begin{align*}
-% % \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge \kappa_f \chi_k \min\left\{ \frac{\chi_k}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
+% % \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
 % % \end{align*}
 % 
 % 
@@ -3619,7 +3618,7 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % % \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \\
 % % \end{align*}
 % 
-% % \ge \frac 1 4 \kappa_f' \chi_k \min\left\{ \frac{\chi_k}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
+% % \ge \frac 1 4 \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
 % 
 % Next, we will show that $v \in \capcones$.
 % First, we need some identities for constraint $c_i$.
@@ -4756,10 +4755,6 @@ Thus, we must only set $k_0 = \max \left\{k_1, k_2, k_3\right\}$ and $\activedir
 % \end{align*}
 % \end{proof}
 
-Define
-\begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
-\end{align}
 
 % \begin{boxedcomment}
 % Use a superscript of $(k, l)$

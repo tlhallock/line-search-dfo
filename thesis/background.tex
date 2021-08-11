@@ -67,38 +67,82 @@ This reference provides a convergence proof for a class algorithms when the cons
 
 
 \section{Criticality Measure}
-A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.   The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions.      For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is $\chi(x) = \norm{\nabla f(x)}$ since the first order optimality condition is $\nabla f(x)=0$.     The algorithm then terminates when $\chi(x) < \tau_{\chi}$, where $\tau_x >0$ is a stopping tolerance.      For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true criticality measure is replaced by the model criticality measure $\chi^{(k)}(x) = \norm{\nabla \mfk\left(x\right)}.$  Note however that $\chi^{(k)}$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.   For this reason, derivative-free algorithms require not only that $\chi^{(k)}(x)$ is small, but also that the model functions are accurate.  To accomplish this, we require that the trust-region radius must converge to zero.
+A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
+The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions. 
+For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is $\chi(x) = \norm{\nabla f(x)}$ 
+since the first order optimality condition is $\nabla f(x)=0$.
+The algorithm then terminates when $\chi(x) < \tolcrit$, where $\tolcrit >0$ is a stopping tolerance.
+
+For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true criticality measure is replaced by the model criticality measure 
+$\chik(x) = \norm{\nabla \mfk\left(x\right)}.$
+Note however that $\chik$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.
+For this reason, derivative-free algorithms require not only that $\chik(x)$ is small, but also that the model functions are accurate.
+To accomplish this, we require that the trust-region radius must converge to zero.
+Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$), we can terminate the algorithm.
 
 
 
-Once this has reached a small enough threshold $\tau_{\chi}$ and the trust region is small enough ($\Delta_k < \tau_{\Delta}$), we can terminate the algorithm.
-For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in \cite{ConnGoulToin00} of
+In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticallity measure is
+\begin{align*}
+\chi^{(k)}(x) = \left\|\xk - \text{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
+\end{align*}
+For a first order criticallity measure at $\xk$, we can define
+\begin{align}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
+\end{align}
+and use
+\begin{align*}
+\chi_c^{(k)} = \left\|\xk - \text{Proj}_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
+\end{align*}
+For convex constraints, this condition is necessary and sufficient for optimality under regularity assumptions.
+Without derivative information, we model this by
 \begin{align}
 \label{define_criticality_measure}
 \chik = \left\|\xk - \text{Proj}_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
 \end{align}
 Recall that $\feasiblek$ was defined by \cref{define_feasiblek}.
-The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
-\begin{align*}
-x^{\star} = \text{Proj}_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
-\end{align*}
-For convex constraints, this condition is necessary and sufficient under regularity assumptions.
-Thus, our criticality measure measures how far the current iterate is from satisfying the first order optimality conditions for $\xk$ to be a optimum of $\mfk$.
+For convex constraints, this quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for of $\mfk$.
 In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches an optimum of $f$.
 
-In practice, we introduce constants 
+With general constraints, we cannot use $\text{Proj}_{\feasible}$ because the projection is not well defined.
+However, the linearization \cref{define_truefeasiblek} {\em is} still well defined.
+Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
+However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily extremum.
+
+
+
+% For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in  of
+% The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
+% \begin{align*}
+% x^{\star} = \text{Proj}_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
+% \end{align*}
+% % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
+
+
+We still employ thresholds 
 \begin{align}
-            \tolcrit, \tolrad \ge 0 \label{define_algorithm_tolerances}
+\tolcrit, \tolrad \ge 0 \label{define_algorithm_tolerances}
 \end{align}
-that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
+for stopping conditions.
 
 
 
 
 
 
-
-
+\color{red}
+\begin{boxedcomment}
+Citation?
+\end{boxedcomment}
+For general constraints the first order necessary conditions are the Karush-Kun-Tucker conditions.
+These state, under regularity assumptions, that for any critical point $x^{\star}$ there exists of a dual variable $\lambda \in \Rm$ such that
+\begin{align*}
+\nabla f(x) + \nabla c(x)^T \lambda  = 0, \;
+c(x) \le 0, \;
+\lambda \ge 0, \;
+c(x)^T\lambda = 0. \;
+\end{align*}
+\color{black}
 
 
 
@@ -255,33 +299,33 @@ $B \subset\Rn$ if and only if the Lagrange polynomials $l_i$ associated with $Y$
 \begin{align}
 \Lambda \ge \max_{0\le i\le p}\max_{x\in B}|l_i(x)|.
 \end{align}
-\color{red}
-Frequently, the basis $\Phi$ is taken to be the monomial basis of order $d \in \naturals$:
-\begin{align*}
-\phi_0(x) = 1, 
-\phi_1(x) = x_1,
-\phi_2(x) = x_2, 
-\ldots, 
-\phi_{n}(x) = x_n, \\
-\phi_{1+n}(x) = x_1^2,
-\phi_{2+n}(x) = x_1x_2, 
-\phi_{3+n}(x) = x_1x_3, 
-\ldots, 
-\phi_{\frac{(n+1)(n+1)}{2}}(x) = x_n^2, \\
-\phi_{\frac{(n+1)(n+2)}{2} + 1}(x) = x_1^3, 
-\ldots, 
-\phi_{p}(x) = x_n^d
-\end{align*}
-For example, with $n=2$, and $d=2$ we have $p+1=6$ and
-\begin{align*}
-\phi_0(x) = 1,
-\phi_1(x) = x_1,
-\phi_2(x) = x_2,
-\phi_3(x) = x_1^2,
-\phi_4(x) = x_1x_2,
-\phi_5(x) = x_2^2.
-\end{align*}
-\color{black}
+% \color{red}
+% Frequently, the basis $\Phi$ is taken to be the monomial basis of order $d \in \naturals$:
+% \begin{align*}
+% \phi_0(x) = 1, 
+% \phi_1(x) = x_1,
+% \phi_2(x) = x_2, 
+% \ldots, 
+% \phi_{n}(x) = x_n, \\
+% \phi_{1+n}(x) = x_1^2,
+% \phi_{2+n}(x) = x_1x_2, 
+% \phi_{3+n}(x) = x_1x_3, 
+% \ldots, 
+% \phi_{\frac{(n+1)(n+1)}{2}}(x) = x_n^2, \\
+% \phi_{\frac{(n+1)(n+2)}{2} + 1}(x) = x_1^3, 
+% \ldots, 
+% \phi_{p}(x) = x_n^d
+% \end{align*}
+% For example, with $n=2$, and $d=2$ we have $p+1=6$ and
+% \begin{align*}
+% \phi_0(x) = 1,
+% \phi_1(x) = x_1,
+% \phi_2(x) = x_2,
+% \phi_3(x) = x_1^2,
+% \phi_4(x) = x_1x_2,
+% \phi_5(x) = x_2^2.
+% \end{align*}
+% \color{black}
 In the case of interpolation over the quadratic polynomials, 
 $ \mathcal{P}^2_n$, we say that $Y$ is \emph{$\Lambda$-poised for quadratic interpolation}.
 
@@ -302,7 +346,7 @@ where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 
 There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.
 Then we have the following result   
-\sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
+% \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
 \begin{theorem}\label{Lambda_poised_error_bounds}
 (\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
@@ -313,9 +357,9 @@ then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is 
 constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
 \end{theorem}
 
-\begin{boxedcomment}
-Is this result important to discuss?
-\end{boxedcomment}
+% \begin{boxedcomment}
+% Is this result important to discuss?
+% \end{boxedcomment}
 
 
 
@@ -368,11 +412,30 @@ Therefore, the point $y^i$ is replaced by a new point which is obtained by maxim
 \end{algorithm}
 
 
-At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result, which is shown in \cite{introduction_book} through Theorems 6.5 and 3.14, and Section 6.7, Exercise 3: 
+At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, 
+where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result.
 \begin{theorem}
 \label{set_is_poised}
-The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised over $B_2\left(\ck, \delta\right)$ for quadratic interpolation, where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
+The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised over $B_2\left(\ck, \delta\right)$ for quadratic interpolation, 
+where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
 \end{theorem}
+
+\begin{proof}
+This result is shown through a sequence of results in \cite{introduction_book}.
+Namely,  \cite[Theorem 6.5]{introduction_book} shows the pivots in the LU-factorization are bounded below by $\ximin$:
+$
+\left|u_i\left(y^{(i)}\right)\right| \ge \ximin\quad \forall 0 \le i \le p.
+$
+\cite[Section 6.7, Exercise 3]{introduction_book}
+ bounds the condition number of the vandermonde matrix in terms of these pivots:
+\begin{align*}
+\left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}.
+\end{align*}
+where $\epsilon_{growth}$ is a large, but finite estimate of the growth factor in LU factorizations.
+Our \cref{Lambda_poised_error_bounds} is then a restatement of \cite[Theorem 3.14]{introduction_book} which 
+relates the $\Lambda$-poisedness of $Y$ to $\left\|M\left(\bar \phi, Y\right)^{-1}\right\|$ over the unit ball.
+However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
+\end{proof}
 
 In \cref{satisfying_accuracy} we will show how to modify this algorithm to construct a $\Lambda$-poised set over an ellipsoidal region.
 

@@ -26,33 +26,36 @@ Model-based methods work by constructing model functions to approximate the blac
 The model functions are determined by fitting previously evaluated function values on a set of sample points.
 In trust-region methods, the model functions are used to define a trust-region subproblem whose solution determines the next iterate.
 For example, the trust-region subproblem might have the form
-
 \begin{align*}
 \begin{array}{ccl} \min_{\|s\| \le \dk}
  & \mfk \left(\xk+s\right) \\
-\mbox{subject to} \quad & \mcik\left(\xk + s\right) \le 0 & 1 \le i \le m, \\
+\mbox{subject to} \quad & \mcik\left(\xk + s\right) \le 0 & \quad 1 \le i \le m, \\
 & \|s\| \le \dk \\
 \end{array}
 \end{align*}
-
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
+The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
 
 Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 \begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \; \forall 1 \le i \le m \right\} 
+\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}  \label{define_feasiblek}
 \end{align}
 
-The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
+
 
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
 To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
 
-We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.      As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
-For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.    In this case,  the constraints are called {\em partially quantifiable}.    
+We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
+As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
+In this case,  the constraints are called {\em partially quantifiable}.    
 \sbnote{Can we find an example of a partially quantifiable constraint?}   
 For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.   We therefore impose 
- the requirement that all sample points must be feasible, and we seek to avoid infeasible function evaluations.
+the requirement that all sample points must be feasible, and we seek to avoid infeasible function evaluations.
+Notice that this feasibility requirement means that if the algorithm may be stopped at any time, it will still produce a feasible solution.
+
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
 This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
@@ -69,25 +72,25 @@ As a first step toward developing algorithms to solve such problems,  \cref{chap
 where $\lca$ is an $m \times n$ matrix and $\lcb \in \Rm$.
 We then handle general black-box constraints within \cref{chap:general}, with special attention to convex constraints.
 
-\sbnote{Maybe move the following paragraph to \cref{chap:linear}.}
-
-\begin{boxedcomment}
-
-The central idea of the method described in \cref{chap:linear}
-is to construct a feasible ellipsoid at each iteration that lies within the intersection of the feasible region and the current trust region.
-We call this ellipsoid the {\em sample trust region}.
-To choose well-poised sample points for this ellipsoidal region,  we adapt a model improvement algorithm presented in \cite{introduction_book} 
-for spherical trust regions and establish error bounds on the accuracy of the model functions over this region.   
-
-We present several variants of how to construct the feasible ellipsoid.
-We first show how to find the maximum volume ellipsoid contained within a polytope given a fixed center.
-We then explore several strategies for shifting the center of the ellipsoid.    
-Our convergence analysis is based on an algorithmic framework presented \cite{Conejo:2013:GCT:2620806.2621814},
-which describes a class of trust-region algorithms for convex constrained minimization without derivatives. 
-\end{boxedcomment}
+% \sbnote{Maybe move the following paragraph to \cref{chap:linear}.}
+% 
+% \begin{boxedcomment}
+% 
+% The central idea of the method described in \cref{chap:linear}
+% is to construct a feasible ellipsoid at each iteration that lies within the intersection of the feasible region and the current trust region.
+% We call this ellipsoid the {\em sample trust region}.
+% To choose well-poised sample points for this ellipsoidal region,  we adapt a model improvement algorithm presented in \cite{introduction_book} 
+% for spherical trust regions and establish error bounds on the accuracy of the model functions over this region.   
+% 
+% We present several variants of how to construct the feasible ellipsoid.
+% We first show how to find the maximum volume ellipsoid contained within a polytope given a fixed center.
+% We then explore several strategies for shifting the center of the ellipsoid.    
+% Our convergence analysis is based on an algorithmic framework presented \cite{Conejo:2013:GCT:2620806.2621814},
+% which describes a class of trust-region algorithms for convex constrained minimization without derivatives. 
+% \end{boxedcomment}
 
 \cref{chap:linear} considers the case a black-box objective with linear,  partially-quantifiable constraints.
-Because the constraints are known, we simply present an algorithm that constructs sample points from the feasible region intersected with the current trust region.
+Because the constraints are known, we present an algorithm that constructs sample points from the feasible region intersected with the current trust region.
 This region is called the {\em sample region}.
 The algorithm we present is an implementation of the algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
 As such, we can prove its convergence by showing that it satisfies the required assumptions presented in this reference.
@@ -107,7 +110,7 @@ For example, the $k$-th iterate is given by $\xk$, and the model of the objectiv
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 
-\paragraph*{matrices}
+\paragraph*{Matrices}
 Matrices are denoted with capital letters.
 The $i$-th row of the matrix $A$ is denoted $A_i$.
 For any index set $S \subseteq \{i \in \naturals | 1 \le i \le m\}$, the $|S| \times n$ matrix formed by only using
@@ -119,7 +122,7 @@ We use $e_i$ to denote the $i$-th unit vector and $e$ to denote the vector of al
 $B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$:
 \begin{align}
 \label{define_ball}
-	B_k\left(c; \Delta\right) = \left\{x \in \Rn \bigg | \left\|x - c\right\|_k \le \Delta \right\}.
+B_k\left(c; \Delta\right) = \left\{x \in \Rn \bigg | \left\|x - c\right\|_k \le \Delta \right\}.
 \end{align}
 Note that some of the common norms are:
 \begin{align*}
@@ -128,7 +131,7 @@ Note that some of the common norms are:
 \|x\|_1 = \sum_{i = 1}^n |x_i|.
 \end{align*}
 
-\paragraph*{sets}
+\paragraph*{Sets}
 The complement of a set $S$ is denoted as $\bar S$.
 Define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
 Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
@@ -136,7 +139,7 @@ Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
 $\delta_{i,j}$ is the Kronecker delta, $\delta_{i, j} = \begin{cases} 1 & \textrm{if} \; i = j \\ 0 & \textrm{if} \; i \ne j \end{cases}$.
 We define the positive part of a real number to be
 \begin{align*}
-a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end{cases}\\
+a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise}. \end{cases}\\
 \end{align*}
 For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
