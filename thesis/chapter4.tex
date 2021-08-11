@@ -5249,22 +5249,9 @@ When the constraints are convex, the method for constructing a new sample set ne
 We know that during the initialization, we began with a set of sample points from a feasible, non-empty ellipsoid.
 This means that the constructing convex hull of previously evaluated points has a non-empty interior.
 
-% We can then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
-Note that although constructing the convex hull of an an arbitrary set of points is computationally expensive,
-in practice it is possible to do with a sufficiently small set of sample points.
-% In dimension $n$, the number of sample points $p_1$ required to construct a quadratic model is $O(n^2)$.
-For example, in dimension $n$, if a subset of previously evaluated points of size $n+1$ is found, then not all hyperplanes of the convex hull need to be enumerated.
-Only those that run through the point $\xk$.
-As it takes $n$ points to construct a hyperplane, and one of them is $\xk$, we must only consider the subsets of size $n-1$ of the of the $n+1$ sample points.
-Thus, to construct a hyperplane used in the construction of $\pi^{\textrm{hull}}$,
-we consider the hyper-planes running through $\xk$ to any other subset of size $n - 1$ of these points,
-which makes for $n+1$ choose $n-1$ points, or:
-% In dimension $n$, the number of sample points $p_1$ required to construct a linear model of the constraints $n$.
-% Choose a subset of $n+1$ points in the last lambda poised set that have a non-empty interior.
-\begin{align*}
-\frac{p_1!}{p_1!(p_1 - n)!} \\
-\frac{(n+1)!}{(n+1)!(n-1)!} = \frac{(n+1)!}{(n-1)!\left(n+1 - (n-1)\right)!} = \frac{n(n+1) }{2}
-\end{align*}
+
+
+% \frac{p_1!}{p_1!(p_1 - n)!} \\
 
 % \begin{algorithm}[H]
 %     \caption{Restore a feasible ellipsoid}
@@ -5311,10 +5298,27 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
     \end{itemize}
 \end{algorithm}
 
+
+% We can then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
+Note that although constructing the convex hull of an an arbitrary set of points is computationally expensive,
+in practice it is possible to do with a sufficiently small set of sample points.
+% In dimension $n$, the number of sample points $p_1$ required to construct a quadratic model is $O(n^2)$.
+For example, in dimension $n$, if a subset of previously evaluated points of size $n+1$ is found, then not all hyperplanes of the convex hull need to be enumerated.
+Only those that run through the point $\xk$ can be active.
+As it takes $n$ points to construct a hyperplane, and one of them is $\xk$, we must only consider the subsets of size $n-1$ of the remaining $n+1$ sample points.
+Thus, to construct a hyperplane used in the construction of $\pi^{\textrm{hull}}$,
+we consider the hyper-planes running through $\xk$ to any other subset of size $n - 1$ of these points,
+which makes for $n+1$ choose $n-1$ points, or:
+% In dimension $n$, the number of sample points $p_1$ required to construct a linear model of the constraints $n$.
+% Choose a subset of $n+1$ points in the last lambda poised set that have a non-empty interior.
+$
+\frac{(n+1)!}{(n-1)!(n+1 - (n-1))!} = \frac{n(n+1) }{4}
+$
+computations.
+
 The final step of constructing the ellipsoid within the vertex of the polyhedron is done several times throughout this thesis.
 For completeness, we describe the process here.
-
-Let $P_{\textrm{hull}}$ be described with constraints:
+Let $P_{\textrm{hull}}$ be the constraints for the convex hull of previous evaluations:
 \begin{align*}
 P_{\textrm{hull}} = \left\{x \in \Rn \bigg | A^{\textrm{hull}} x \le b^{\textrm{hull}}, \left\|A_i^{\textrm{hull}}\right\| = 1 \forall i \right\}
 \end{align*}
@@ -5325,7 +5329,7 @@ and let $\mathcal A^{\textrm{hull}}$ be the set of active constraints:
 
 If $\xk$ is not on the boundary of $P_{\textrm{hull}}$, then $\mathcal A^{\textrm{hull}} = \emptyset$ and we are free to construct the ellipsoid
 \begin{align*}
-\Delta = \min_{i} b_i^{\textrm{hull}} - A_i^{\textrm{hull}} \xk, \\
+\Delta = \min_{i} b_i^{\textrm{hull}} - A_i^{\textrm{hull}} \xk,
 \left\{x \in \Rn \bigg | \left\|x - \xk\right\|^2 \le \Delta^2\right\}.
 \end{align*}
 % 
@@ -5369,8 +5373,8 @@ for any $t > 0$, the ellipsoid
 \end{align*}
 
 \begin{itemize}
-\item We have that \cref{define_ellipse_function} ensures adjacency.
-\item Because the sample set had a non-empty interior, $ \pi^{\textrm{hull}} > 0$, so the ellipsoid is also non-empty
+\item We have that \cref{ellipse_fits} ensures adjacency.
+\item Because the sample set had a non-empty interior, $ \pi^{\textrm{hull}} > 0$, so the ellipsoid is also non-empty.
 \item Because $t > 0$ is arbitrary, we can ensure that it is trusted.
 \end{itemize}
 
@@ -5399,10 +5403,10 @@ Choose a value of $t$.
 % \end{array}
 % \end{align*}
 % 
-
-\begin{align*}
-A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
-\end{align*}
+% 
+% \begin{align*}
+% A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
+% \end{align*}
 
 \subsection{Convex Convergence}
 % 
@@ -5474,6 +5478,33 @@ The result then follows from \cref{the_convergence_lemma};
 \end{align*}
 
 
+\begin{align*}
+\left\{v + tu + s \bigg |  t > 0, s^Tu = 0, \|s\| \le \alpha t^2 \right\}
+\end{align*}
+
+
+\begin{align*}
+x = v + tu + s \\
+x = v + \left[(x - v)^Tu\right] u + \left(x- v - \left[(x - v)^Tu\right] u\right) \\
+\left(x- v - \left[(x - v)^Tu\right] u\right)^T u = \left(x - v\right)^Tu - (x - v)^Tu = 0 \\
+\left\|  x- v - \left[(x - v)^Tu\right] u\right\| \le \left[(x - v)^Tu\right]^2 \\
+\left\|  x- v - \left[x^Tu - v^Tu\right] u\right\|^2 \le \left(x^Tu - v^Tu\right)^4 \\
+\end{align*}
+
+
+\begin{align*}
+\left\| \left(I - uu^T\right)(x-v) \right\| \le \left(u^T(x-v)\right)^2 = (x-v)^Tuu^T(x-v)\\
+(x - v)^T M (x - v) \le (u^Tx - u^Tv)^4 \\
+\sqrt{(x-v)^T\left(I - uu^T\right)^T\left(I - uu^T\right)(x-v)} \le (x-v)^Tuu^T(x-v)\\
+\sqrt{(x-v)^T\left(I - uu^T\right)^T(x-v)} \le (x-v)^Tuu^T(x-v)\\
+(x-v)^T\left(I - uu^T\right)(x-v) \le \left[(x-v)^Tuu^T(x-v)\right]^2\\
+(x-v)^T(x-v) - (x-v)^Tuu^T(x-v) - \left[(x-v)^Tuu^T(x-v)\right]^2 \le 0\\
+\end{align*}
+
+
+\begin{align*}
+u^T \left(I - uu^T\right)x = u^Tx - u^Tx = 0
+\end{align*}
 
 
 \section{Weakening an Assumption}

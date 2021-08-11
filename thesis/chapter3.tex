@@ -44,7 +44,7 @@ we present \cref{modified_model_improving_algorithm} as a modification of model-
 
 In all cases, the trust regions are related by the inclusions
 \begin{align*}
-\sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasible
+\sampletrk \subseteq \searchtrk \subseteq \outertrk \cap \feasible.
 \end{align*}
 Both methods fall into a general algorithmic framework, which we describe next.
 
@@ -54,8 +54,6 @@ All of the methods in this chapter follow
 an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
 
 % HOW ABOUT JUST MAKE $\eta > 0$?
-
-\sbnote{Check this algorithm carefully}
 
 \begin{algorithm}[H]
     \caption{Simplified Always-feasible Constrained Derivative Free Algorithm}
@@ -83,7 +81,9 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
             Compute the criticality measure $\chik$ as in \cref{define_criticality_measure}. \\
             If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$,  {\bf stop}: return $\xk$ as the solution.   \\
-            Otherwise, if $\dk > \alpha \chik$,   {\em shrink the trust region}:  set 
+            Otherwise, if $\dk > \alpha \chik$,   
+%             {\em shrink the trust region}:  
+            set 
                 $\dkpo \gets \omegadec\dk$, 
                 $\xkpo \gets \xk$,
                 $k \gets k+1$ and {\bf go to Step 1}.
@@ -111,7 +111,7 @@ and the choice of $\sampletrk$ satisfies some additional restrictions.
 We discuss those restrictions here.
 
 To simplify notation, define $\lctra = \begin{pmatrix} \lca \\ I \\ -I \end{pmatrix}$ and 
-$\lctrb = \begin{pmatrix}{c} \lcb \\ \xki+\dk \\ -\xki+\dk \end{pmatrix}$.
+$\lctrb = \begin{pmatrix} \lcb \\ \xki+\dk \\ -\xki+\dk \end{pmatrix}$.
 We can then define
 \begin{align}
 \polyk = \feasible \cap \outertrk =  \{x \in \Rn | \; \lca x \le \lcb, \|x - \xk\|_{\infty} \le \dk \} \label{polyhedron_k}  \\
@@ -677,8 +677,8 @@ In particular, $\xk \in \scaledunshiftedellipsoid$.
 \end{proof}
 
 
-Notice that although \cref{linear_accuracy_is_satisfied} requires $\delta \le 1$, the authors of  show that $\dk \to 0$ within Lemma 3.1 and Lemma 3.2.
-Within Lemma 3.1, $\dk \le 1 $ explicitly. 
+% Notice that although \cref{linear_accuracy_is_satisfied} requires $\delta \le 1$, the authors of  show that $\dk \to 0$ within Lemma 3.1 and Lemma 3.2.
+% Within Lemma 3.1, $\dk \le 1 $ explicitly. 
 
 
 \section{Ellipsoidal Trust Region Approach}\label{sec:ellipsoidal}
@@ -700,7 +700,6 @@ while ensuring that it lies entirely within the intersection of the feasible reg
 \label{the_safe_ellipsoid}
 
 This section shows how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
-
 We define the active constraints at a point $x \in \feasible$ by
 \begin{align}
 \activei(x) = \left\{i \in [m] | c_i(x) = 0 \Leftrightarrow {\lca}_ix = {\lcb}_i \right\}. \label{define_activei}
@@ -713,7 +712,6 @@ For any iterate $k$, if there are no active constraints, $\activei\left(\xk\righ
 \qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \dk.
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
-z
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
 To make this precise, let and $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
 We define the set of ``most'' feasible direction from $x$, and quantify how feasible they with the definitions:
@@ -760,8 +758,9 @@ We can then define the ellipsoid as
 \quad
 \textrm{and}
 \quad
-\sdk=\deltaf.
+\sdk=\deltaf
 \end{align}
+whenever $\activei\left(\xk\right) \ne \emptyset$.
 
 
 
@@ -782,11 +781,11 @@ We show that this construction provides a suitable ellipsoid according to \cref{
 \label[lemma]{trivial_ellipsoid_exists}
 Let $\activei$ be defined by \cref{define_activei}.
 
-If $\activei = \emptyset$ during iteration $k$, then \cref{define_linear_trivial_ellipse} defines a suitable ellipsoid for iteration $k$ according to \cref{define_suitable_ellipsoid}.
+If $\activei\left(\xk\right) = \emptyset$ during iteration $k$, then \cref{define_linear_trivial_ellipse} defines a suitable ellipsoid for iteration $k$ according to \cref{define_suitable_ellipsoid}.
 \end{lemma}
 % $\epsilon > 0$, $c \in \Rn$  and a positive definite, symmetric matrix $Q$, 
 \begin{proof}
-If $\activei = \emptyset$, then we are free to use \cref{define_linear_trivial_ellipse}.
+If $\activei\left(\xk\right) = \emptyset$, then we are free to use \cref{define_linear_trivial_ellipse}.
 This simplifies $\scaledellipsek$ to
 \begin{align*}
 \left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longleftrightarrow \left\|x - \xk\right\|^2 \le \dk^2
@@ -1196,7 +1195,7 @@ you described}.
 \subsection{Ellipsoid Searches}
 
 Within \cref{the_safe_ellipsoid}, we showed how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
-In practice, this ellipsoid could be far less than desirable.
+In practice, this ellipsoid could be less than desirable.
 Within this section, we discuss the requirements of other variants of the \emph{ConstructTrustRegion} subroutine that we explored for practicality.
 The key requirement is these ellipsoids must still satisfy \cref{define_suitable_ellipsoid} to share the same convergence results.
 
@@ -1205,9 +1204,12 @@ The key requirement is these ellipsoids must still satisfy \cref{define_suitable
 To retain the convergence results, these algorithms maintain $\ellipsek \subseteq \polyk$,
 $\xk \in \scaledellipsek $, and a bound on $\condition\left(\qk\right)$.
 
-\begin{boxedcomment}
-To ensure the condition number is bounded, we can give a cholesky factorization.
-\end{boxedcomment}
+To ensure the condition number is bounded, the algorithm can compute the condition number of the safe ellipsoid, and only consider ellipsoids better conditioned.
+Alternatively, it could introduce its own bound.
+We found that parameterizing ellipsoids given their Cholesky factorization $\qk = LL^T$ to be effective for this.
+Namely, we parameterized the search space in terms of a lower triangular matrix $L$, and required the diagonal entries to be positive.
+To ensure a bounded condition number, we constrain  $\max_{i\in[n]} \le \epsilon_{\alpha} \min_{i \in [n]}$.
+Then requiring a 
 
 One potential difficulty created by moving the ellipsoid center $\ck$ is that the current iterate $\xk$ may not lie within near the resulting ellipsoid.   
 The pitfall is that the model function may lose accuracy near the current iterate.
@@ -1226,7 +1228,7 @@ In order to include the original point as a constraint, we add a constraint of t
 Constraints of this nature make finding the ellipsoid much more expensive:
 the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
-\paragraph*{Increase the size.}
+\paragraph*{Increase the radius.}
 An alternative is to scale $\qk$ by a constant.
 We use the scaling factor $\sdk$ defined by
 \begin{align*}
@@ -1244,6 +1246,7 @@ For details on how to choose sample points with additional constraints, see \cre
 \begin{boxedcomment}
 Somewhere, probably not here, I should talk about the current iterate not being in $\sampletrk$.
 \end{boxedcomment}
+
 
  \sbnote{This raises a number of questions.
  First is whether the current iterate will be a sample point.
@@ -1281,9 +1284,10 @@ which presents an algorithm for finding the maximum volume inscribed ellipsoid f
 % \end{align*}
 % We wish to find the maximum-volume ellipsoid $E \subseteq P$ centered at a point $c \in P$.
 
-Let $\bar{\lctrb} = \lctrb - \lctra \ck$ and $d = x - \ck$ so that the polytope becomes
+% \bar{\lctrb}
+Let $\bar g = \lctrb - \lctra \ck$ and $d = x - \ck$ so that the polytope becomes
 \begin{align*}
-\polyk = \left\{ \ck + d \in \Rn \; | \;  \lctra d \le \bar{\lctrb} \right\}
+\polyk = \left\{ \ck + d \in \Rn \; | \;  \lctra d \le \bar{g} \right\}
 \end{align*}
 Using this transformation, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
 \begin{align*}
@@ -1295,7 +1299,7 @@ This is accomplished by solving the following problem for $Q$ for a given center
 \begin{array}{cc}
  \sup_{Q \succeq 0} & \det(Q^{-1})  \\
  \textrm{s.t.} & A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
-\end{array}
+\end{array}.
  \label{ellipse_1}
 \end{align}
 
@@ -1640,6 +1644,8 @@ as there will no longer be a direction that leads away from all constraints.
 			\begin{align*}
 			E = \left\{j \in [m] \bigg| d_j = \min_{l \in [m]} d_l\right\}, \; \textrm{and} \; R = [m] \setminus E.
 			\end{align*}
+			If $|E| \ge n$, then \textbf{Stop}.
+			
             
         \item[\textbf{Step 2}] \textbf{(Compute search segment)} \\
         	Compute the search direction $p = {A_E}^T\left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_{i-1}\right)$
@@ -1647,7 +1653,7 @@ as there will no longer be a direction that leads away from all constraints.
         	Set $s_i \gets s_{i-1} + tp$.
         	
         \item[\textbf{Step 4}] \textbf{(Repeat)} \\
-        if $i = n_{\text{points}}$ stop, otherwise set $i \gets i+1$ and go to Step 1.
+        if $i = n_{\text{points}}$ \textbf{stop}, otherwise set $i \gets i+1$ and go to Step 1.
     \end{itemize}
 \end{algorithm}
 
@@ -1776,113 +1782,114 @@ We selected the problems that have linear constraints: 21, 24, 25, 35, 36, 44, 4
 % 37 was left out because it proved to be difficult.
 
 We summarize the results here.
-\begin{tiny}
+\begin{boxedcomment}
+This should be in an appendix.
+\end{boxedcomment}
+\begin{scriptsize}
 
 \begin{center}
-\begin{longtable}{ c c c c c c c c c c }
-Algorithm & Prob. & n & Message & N. It. & N. Eval. & Ret. Min. & Min. & Solution & Minimizer \\
+\begin{longtable}{ c c c c c c c c }
+Algorithm & Prob. & n & Message & N. It. & N. Eval. & Ret. Min. & Min. \\
 \hline
-  circumscribed ellipse   &   21  &  2  & converged  &   24  &   71  &  -99.960   &  -99.960   & [2.00,0.00] & [2.00,0.00] \\
-         ellipse          &   21  &  2  & converged  &   36  &   96  &  -99.960   &  -99.960   & [2.00,0.00] & [2.00,0.00] \\
-    ellipse everywhere    &   21  &  2  & converged  &   24  &   82  &  -99.960   &  -99.960   & [2.00,0.00] & [2.00,0.00] \\
-    ellipse segment 1     &   21  &  2  & converged  &   24  &   84  &  -99.960   &  -99.960   & [2.00,0.00] & [2.00,0.00] \\
-    ellipse segment 2     &   21  &  2  & converged  &   24  &   85  &  -99.960   &  -99.960   & [2.00,0.00] & [2.00,0.00] \\
-        polyhedral        &   21  &  2  & converged  &   26  &   75  &  -99.960   &  -99.960   & [2.00,-0.00] & [2.00,0.00] \\
-  circumscribed ellipse   &  224  &  2  &   failed   &   16  &   56  &  -304.000  &  -304.000  & [4.00,4.00] & [4.00,4.00] \\
-         ellipse          &  224  &  2  & converged  &   32  &   97  &  -304.000  &  -304.000  & [4.00,4.00] & [4.00,4.00] \\
-    ellipse everywhere    &  224  &  2  & converged  &   24  &   94  &  -303.774  &  -304.000  & [3.73,4.27] & [4.00,4.00] \\
-    ellipse segment 1     &  224  &  2  & converged  &   24  &   91  &  -303.774  &  -304.000  & [3.73,4.27] & [4.00,4.00] \\
-    ellipse segment 2     &  224  &  2  & converged  &   23  &   89  &  -303.774  &  -304.000  & [3.73,4.27] & [4.00,4.00] \\
-        polyhedral        &  224  &  2  & converged  &   17  &   64  &  -304.000  &  -304.000  & [4.00,4.00] & [4.00,4.00] \\
-  circumscribed ellipse   &  231  &  2  & converged  &   14  &   44  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-         ellipse          &  231  &  2  & converged  &   99  &  193  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-    ellipse everywhere    &  231  &  2  & converged  &  181  &  336  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-    ellipse segment 1     &  231  &  2  & converged  &   78  &  162  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-    ellipse segment 2     &  231  &  2  & converged  &  173  &  321  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-        polyhedral        &  231  &  2  & converged  &   95  &  193  &   0.000    &   0.000    & [1.00,1.00] & [1.00,1.00] \\
-  circumscribed ellipse   &  232  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-         ellipse          &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse everywhere    &  232  &  2  & converged  &   41  &  102  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse segment 1     &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse segment 2     &  232  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-        polyhedral        &  232  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-  circumscribed ellipse   &   24  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-         ellipse          &   24  &  2  & converged  &   34  &   90  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse everywhere    &   24  &  2  & converged  &   41  &  104  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse segment 1     &   24  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-    ellipse segment 2     &   24  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-        polyhedral        &   24  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   & [3.00,1.73] & [3.00,1.73] \\
-  circumscribed ellipse   &  250  &  3  &   failed   &   24  &  103  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-         ellipse          &  250  &  3  & converged  &   53  &  207  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-    ellipse everywhere    &  250  &  3  &   failed   &   48  &  103  & -3298.196  & -3300.000  & [19.99,10.99,15.02] & [20.00,11.00,15.00] \\
-    ellipse segment 1     &  250  &  3  &   failed   &   53  &  112  & -3299.243  & -3300.000  & [19.99,11.00,15.01] & [20.00,11.00,15.00] \\
-    ellipse segment 2     &  250  &  3  &   failed   &   54  &  112  & -3299.082  & -3300.000  & [19.99,11.00,15.01] & [20.00,11.00,15.00] \\
-    ellipse segment 3     &  250  &  3  &   failed   &   56  &  116  & -3299.504  & -3300.000  & [19.99,11.00,15.00] & [20.00,11.00,15.00] \\
-        polyhedral        &  250  &  3  & converged  &   26  &  113  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-  circumscribed ellipse   &  251  &  3  &   failed   &   20  &   86  & -3456.000  & -3456.000  & [24.00,12.00,12.00] & [24.00,12.00,12.00] \\
-         ellipse          &  251  &  3  &   failed   &   10  &   53  & -3454.018  & -3456.000  & [23.55,12.06,12.16] & [24.00,12.00,12.00] \\
-    ellipse everywhere    &  251  &  3  &   failed   &   6   &   17  & -3209.710  & -3456.000  & [22.82,13.03,10.79] & [24.00,12.00,12.00] \\
-    ellipse segment 1     &  251  &  3  &   failed   &   4   &   13  & -1698.807  & -3456.000  & [21.71,9.21,8.50] & [24.00,12.00,12.00] \\
-    ellipse segment 2     &  251  &  3  &   failed   &   6   &   17  & -3210.341  & -3456.000  & [21.49,11.46,13.04] & [24.00,12.00,12.00] \\
-    ellipse segment 3     &  251  &  3  &   failed   &   14  &   64  & -3449.803  & -3456.000  & [22.84,12.29,12.29] & [24.00,12.00,12.00] \\
-        polyhedral        &  251  &  3  & converged  &   22  &  124  & -3456.000  & -3456.000  & [24.00,12.00,12.00] & [24.00,12.00,12.00] \\
-  circumscribed ellipse   &   25  &  3  & converged  &  760  &  1472 &   0.000    &   0.000    & [52.92,24.90,1.52] & [50.00,25.00,1.50] \\
-    ellipse everywhere    &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    & [100.00,12.50,3.00] & [50.00,25.00,1.50] \\
-    ellipse segment 1     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    & [100.00,12.50,3.00] & [50.00,25.00,1.50] \\
-    ellipse segment 2     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    & [100.00,12.50,3.00] & [50.00,25.00,1.50] \\
-    ellipse segment 3     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    & [100.00,12.50,3.00] & [50.00,25.00,1.50] \\
-        polyhedral        &   25  &  3  & converged  &  1793 &  3396 &   0.000    &   0.000    & [50.94,24.97,1.51] & [50.00,25.00,1.50] \\
-  circumscribed ellipse   &   35  &  3  &   failed   &  781  &  1028 &   0.111    &   0.111    & [1.33,0.78,0.44] & [1.33,0.78,0.44] \\
-         ellipse          &   35  &  3  & converged  &   28  &  122  &   0.111    &   0.111    & [1.33,0.78,0.44] & [1.33,0.78,0.44] \\
-    ellipse everywhere    &   35  &  3  &   failed   &   24  &   82  &   0.113    &   0.111    & [1.36,0.79,0.42] & [1.33,0.78,0.44] \\
-    ellipse segment 1     &   35  &  3  &   failed   &   16  &   76  &   0.112    &   0.111    & [1.31,0.79,0.45] & [1.33,0.78,0.44] \\
-    ellipse segment 2     &   35  &  3  &   failed   &   16  &   75  &   0.112    &   0.111    & [1.31,0.79,0.45] & [1.33,0.78,0.44] \\
-    ellipse segment 3     &   35  &  3  &   failed   &   16  &   77  &   0.112    &   0.111    & [1.31,0.79,0.45] & [1.33,0.78,0.44] \\
-        polyhedral        &   35  &  3  & converged  &   14  &  112  &   0.111    &   0.111    & [1.33,0.78,0.44] & [1.33,0.78,0.44] \\
-  circumscribed ellipse   &   36  &  3  &   failed   &   19  &   81  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-         ellipse          &   36  &  3  & converged  &   53  &  202  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-    ellipse everywhere    &   36  &  3  &   failed   &   63  &  135  & -3299.808  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-    ellipse segment 1     &   36  &  3  &   failed   &   64  &  140  & -3299.951  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-    ellipse segment 2     &   36  &  3  &   failed   &   64  &  133  & -3299.918  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-    ellipse segment 3     &   36  &  3  &   failed   &   65  &  137  & -3299.870  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-        polyhedral        &   36  &  3  & converged  &   22  &  108  & -3300.000  & -3300.000  & [20.00,11.00,15.00] & [20.00,11.00,15.00] \\
-  circumscribed ellipse   &   37  &  3  &   failed   &   27  &   98  & -3456.000  & -3456.000  & [24.00,12.00,12.00] & [24.00,12.00,12.00] \\
-         ellipse          &   37  &  3  &   failed   &   15  &   65  & -3455.761  & -3456.000  & [23.94,12.01,12.02] & [24.00,12.00,12.00] \\
-    ellipse everywhere    &   37  &  3  &   failed   &   36  &   88  & -3406.653  & -3456.000  & [27.34,10.93,11.40] & [24.00,12.00,12.00] \\
-    ellipse segment 1     &   37  &  3  &   failed   &   30  &   82  & -3421.619  & -3456.000  & [21.29,12.62,12.73] & [24.00,12.00,12.00] \\
-    ellipse segment 2     &   37  &  3  &   failed   &   36  &   85  & -3415.110  & -3456.000  & [21.05,12.70,12.78] & [24.00,12.00,12.00] \\
-    ellipse segment 3     &   37  &  3  &   failed   &   28  &   75  & -3421.157  & -3456.000  & [21.31,12.55,12.79] & [24.00,12.00,12.00] \\
-        polyhedral        &   37  &  3  & converged  &   28  &  139  & -3456.000  & -3456.000  & [24.00,12.00,12.00] & [24.00,12.00,12.00] \\
-  circumscribed ellipse   &   44  &  4  &   failed   &   17  &  124  &  -13.000   &  -15.000   & [3.00,-0.00,4.00,0.00] & [0.00,3.00,0.00,4.00] \\
-         ellipse          &   44  &  4  & converged  &   50  &  298  &  -15.000   &  -15.000   & [0.00,3.00,-0.00,4.00] & [0.00,3.00,0.00,4.00] \\
-    ellipse everywhere    &   44  &  4  & converged  &  110  &  416  &  -15.000   &  -15.000   & [0.00,3.00,0.00,4.00] & [0.00,3.00,0.00,4.00] \\
-    ellipse segment 1     &   44  &  4  & converged  &   50  &  262  &  -15.000   &  -15.000   & [-0.00,3.00,0.00,4.00] & [0.00,3.00,0.00,4.00] \\
-    ellipse segment 2     &   44  &  4  & converged  &   71  &  304  &  -15.000   &  -15.000   & [-0.00,3.00,0.00,4.00] & [0.00,3.00,0.00,4.00] \\
-    ellipse segment 3     &   44  &  4  &   failed   &   7   &   32  &  -10.672   &  -15.000   & [-0.00,2.55,0.36,3.41] & [0.00,3.00,0.00,4.00] \\
-    ellipse segment 4     &   44  &  4  &   failed   &   1   &   1   &   -1.338   &  -15.000   & [1.44,0.98,1.80,1.80] & [0.00,3.00,0.00,4.00] \\
-        polyhedral        &   44  &  4  & converged  &   15  &  134  &  -13.000   &  -15.000   & [3.00,-0.00,4.00,-0.00] & [0.00,3.00,0.00,4.00] \\
-  circumscribed ellipse   &   45  &  5  &   failed   &   21  &  190  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-         ellipse          &   45  &  5  & converged  &   51  &  405  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse everywhere    &   45  &  5  & converged  &  414  &  1121 &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse segment 1     &   45  &  5  & converged  &   63  &  374  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse segment 2     &   45  &  5  & converged  &   82  &  404  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse segment 3     &   45  &  5  & converged  &  104  &  453  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse segment 4     &   45  &  5  & converged  &  130  &  497  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-    ellipse segment 5     &   45  &  5  & converged  &  158  &  478  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-        polyhedral        &   45  &  5  & converged  &   22  &  269  &   1.000    &   1.000    & [1.00,2.00,3.00,4.00,5.00] & [1.00,2.00,3.00,4.00,5.00] \\
-  circumscribed ellipse   &   76  &  4  &   failed   &   15  &  111  &   -4.682   &   -4.682   & [0.27,2.09,-0.00,0.55] & [0.27,2.09,-0.00,0.55] \\
-         ellipse          &   76  &  4  &   failed   &   17  &  137  &   -4.682   &   -4.682   & [0.27,2.09,0.00,0.54] & [0.27,2.09,-0.00,0.55] \\
-    ellipse everywhere    &   76  &  4  &   failed   &   25  &  106  &   -4.604   &   -4.682   & [0.45,1.89,-0.00,0.77] & [0.27,2.09,-0.00,0.55] \\
-    ellipse segment 1     &   76  &  4  &   failed   &   17  &  111  &   -4.682   &   -4.682   & [0.27,2.09,-0.00,0.54] & [0.27,2.09,-0.00,0.55] \\
-    ellipse segment 2     &   76  &  4  &   failed   &   24  &  105  &   -4.680   &   -4.682   & [0.31,2.08,0.00,0.52] & [0.27,2.09,-0.00,0.55] \\
-    ellipse segment 3     &   76  &  4  &   failed   &   25  &  106  &   -4.677   &   -4.682   & [0.34,2.07,0.00,0.51] & [0.27,2.09,-0.00,0.55] \\
-    ellipse segment 4     &   76  &  4  &   failed   &   23  &  107  &   -4.674   &   -4.682   & [0.34,2.03,-0.00,0.60] & [0.27,2.09,-0.00,0.55] \\
-        polyhedral        &   76  &  4  & converged  &   15  &  169  &   -4.682   &   -4.682   & [0.27,2.09,-0.00,0.55] & [0.27,2.09,-0.00,0.55]
+  circumscribed ellipse   &   21  &  2  & converged  &   24  &   71  &  -99.960   &  -99.960   \\
+         ellipse          &   21  &  2  & converged  &   36  &   96  &  -99.960   &  -99.960   \\
+    ellipse everywhere    &   21  &  2  & converged  &   24  &   82  &  -99.960   &  -99.960   \\
+    ellipse segment 1     &   21  &  2  & converged  &   24  &   84  &  -99.960   &  -99.960   \\
+    ellipse segment 2     &   21  &  2  & converged  &   24  &   85  &  -99.960   &  -99.960   \\
+        polyhedral        &   21  &  2  & converged  &   26  &   75  &  -99.960   &  -99.960   \\
+  circumscribed ellipse   &  224  &  2  &   failed   &   16  &   56  &  -304.000  &  -304.000  \\
+         ellipse          &  224  &  2  & converged  &   32  &   97  &  -304.000  &  -304.000  \\
+    ellipse everywhere    &  224  &  2  & converged  &   24  &   94  &  -303.774  &  -304.000  \\
+    ellipse segment 1     &  224  &  2  & converged  &   24  &   91  &  -303.774  &  -304.000  \\
+    ellipse segment 2     &  224  &  2  & converged  &   23  &   89  &  -303.774  &  -304.000  \\
+        polyhedral        &  224  &  2  & converged  &   17  &   64  &  -304.000  &  -304.000  \\
+  circumscribed ellipse   &  231  &  2  & converged  &   14  &   44  &   0.000    &   0.000    \\
+         ellipse          &  231  &  2  & converged  &   99  &  193  &   0.000    &   0.000    \\
+    ellipse everywhere    &  231  &  2  & converged  &  181  &  336  &   0.000    &   0.000    \\
+    ellipse segment 1     &  231  &  2  & converged  &   78  &  162  &   0.000    &   0.000    \\
+    ellipse segment 2     &  231  &  2  & converged  &  173  &  321  &   0.000    &   0.000    \\
+        polyhedral        &  231  &  2  & converged  &   95  &  193  &   0.000    &   0.000    \\
+  circumscribed ellipse   &  232  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   \\
+         ellipse          &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
+    ellipse everywhere    &  232  &  2  & converged  &   41  &  102  &   -1.000   &   -1.000   \\
+    ellipse segment 1     &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
+    ellipse segment 2     &  232  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   \\
+        polyhedral        &  232  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   \\
+  circumscribed ellipse   &   24  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   \\
+         ellipse          &   24  &  2  & converged  &   34  &   90  &   -1.000   &   -1.000   \\
+    ellipse everywhere    &   24  &  2  & converged  &   41  &  104  &   -1.000   &   -1.000   \\
+    ellipse segment 1     &   24  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
+    ellipse segment 2     &   24  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   \\
+        polyhedral        &   24  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   \\
+  circumscribed ellipse   &  250  &  3  &   failed   &   24  &  103  & -3300.000  & -3300.000  \\
+         ellipse          &  250  &  3  & converged  &   53  &  207  & -3300.000  & -3300.000  \\
+    ellipse everywhere    &  250  &  3  &   failed   &   48  &  103  & -3298.196  & -3300.000  \\
+    ellipse segment 1     &  250  &  3  &   failed   &   53  &  112  & -3299.243  & -3300.000  \\
+    ellipse segment 2     &  250  &  3  &   failed   &   54  &  112  & -3299.082  & -3300.000  \\
+    ellipse segment 3     &  250  &  3  &   failed   &   56  &  116  & -3299.504  & -3300.000  \\
+        polyhedral        &  250  &  3  & converged  &   26  &  113  & -3300.000  & -3300.000  \\
+  circumscribed ellipse   &  251  &  3  &   failed   &   20  &   86  & -3456.000  & -3456.000  \\
+         ellipse          &  251  &  3  &   failed   &   10  &   53  & -3454.018  & -3456.000  \\
+    ellipse everywhere    &  251  &  3  &   failed   &   6   &   17  & -3209.710  & -3456.000  \\
+    ellipse segment 1     &  251  &  3  &   failed   &   4   &   13  & -1698.807  & -3456.000  \\
+    ellipse segment 2     &  251  &  3  &   failed   &   6   &   17  & -3210.341  & -3456.000  \\
+    ellipse segment 3     &  251  &  3  &   failed   &   14  &   64  & -3449.803  & -3456.000  \\
+        polyhedral        &  251  &  3  & converged  &   22  &  124  & -3456.000  & -3456.000  \\
+  circumscribed ellipse   &   25  &  3  & converged  &  760  &  1472 &   0.000    &   0.000    \\
+    ellipse everywhere    &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
+    ellipse segment 1     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
+    ellipse segment 2     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
+    ellipse segment 3     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
+        polyhedral        &   25  &  3  & converged  &  1793 &  3396 &   0.000    &   0.000    \\
+  circumscribed ellipse   &   35  &  3  &   failed   &  781  &  1028 &   0.111    &   0.111    \\
+         ellipse          &   35  &  3  & converged  &   28  &  122  &   0.111    &   0.111    \\
+    ellipse everywhere    &   35  &  3  &   failed   &   24  &   82  &   0.113    &   0.111    \\
+    ellipse segment 1     &   35  &  3  &   failed   &   16  &   76  &   0.112    &   0.111    \\
+    ellipse segment 2     &   35  &  3  &   failed   &   16  &   75  &   0.112    &   0.111    \\
+    ellipse segment 3     &   35  &  3  &   failed   &   16  &   77  &   0.112    &   0.111    \\
+        polyhedral        &   35  &  3  & converged  &   14  &  112  &   0.111    &   0.111    \\
+  circumscribed ellipse   &   36  &  3  &   failed   &   19  &   81  & -3300.000  & -3300.000  \\
+         ellipse          &   36  &  3  & converged  &   53  &  202  & -3300.000  & -3300.000  \\
+    ellipse everywhere    &   36  &  3  &   failed   &   63  &  135  & -3299.808  & -3300.000  \\
+    ellipse segment 1     &   36  &  3  &   failed   &   64  &  140  & -3299.951  & -3300.000  \\
+    ellipse segment 2     &   36  &  3  &   failed   &   64  &  133  & -3299.918  & -3300.000  \\
+    ellipse segment 3     &   36  &  3  &   failed   &   65  &  137  & -3299.870  & -3300.000  \\
+        polyhedral        &   36  &  3  & converged  &   22  &  108  & -3300.000  & -3300.000  \\
+  circumscribed ellipse   &   37  &  3  &   failed   &   27  &   98  & -3456.000  & -3456.000  \\
+         ellipse          &   37  &  3  &   failed   &   15  &   65  & -3455.761  & -3456.000  \\
+    ellipse everywhere    &   37  &  3  &   failed   &   36  &   88  & -3406.653  & -3456.000  \\
+    ellipse segment 1     &   37  &  3  &   failed   &   30  &   82  & -3421.619  & -3456.000  \\
+    ellipse segment 2     &   37  &  3  &   failed   &   36  &   85  & -3415.110  & -3456.000  \\
+    ellipse segment 3     &   37  &  3  &   failed   &   28  &   75  & -3421.157  & -3456.000  \\
+        polyhedral        &   37  &  3  & converged  &   28  &  139  & -3456.000  & -3456.000  \\
+  circumscribed ellipse   &   44  &  4  &   failed   &   17  &  124  &  -13.000   &  -15.000   \\
+         ellipse          &   44  &  4  & converged  &   50  &  298  &  -15.000   &  -15.000   \\
+    ellipse everywhere    &   44  &  4  & converged  &  110  &  416  &  -15.000   &  -15.000   \\
+    ellipse segment 1     &   44  &  4  & converged  &   50  &  262  &  -15.000   &  -15.000   \\
+    ellipse segment 2     &   44  &  4  & converged  &   71  &  304  &  -15.000   &  -15.000   \\
+    ellipse segment 3     &   44  &  4  &   failed   &   7   &   32  &  -10.672   &  -15.000   \\
+    ellipse segment 4     &   44  &  4  &   failed   &   1   &   1   &   -1.338   &  -15.000   \\
+        polyhedral        &   44  &  4  & converged  &   15  &  134  &  -13.000   &  -15.000   \\
+  circumscribed ellipse   &   45  &  5  &   failed   &   21  &  190  &   1.000    &   1.000    \\
+         ellipse          &   45  &  5  & converged  &   51  &  405  &   1.000    &   1.000    \\
+    ellipse everywhere    &   45  &  5  & converged  &  414  &  1121 &   1.000    &   1.000    \\
+    ellipse segment 1     &   45  &  5  & converged  &   63  &  374  &   1.000    &   1.000    \\
+    ellipse segment 2     &   45  &  5  & converged  &   82  &  404  &   1.000    &   1.000    \\
+    ellipse segment 3     &   45  &  5  & converged  &  104  &  453  &   1.000    &   1.000    \\
+    ellipse segment 4     &   45  &  5  & converged  &  130  &  497  &   1.000    &   1.000    \\
+    ellipse segment 5     &   45  &  5  & converged  &  158  &  478  &   1.000    &   1.000    \\
+        polyhedral        &   45  &  5  & converged  &   22  &  269  &   1.000    &   1.000    \\
+  circumscribed ellipse   &   76  &  4  &   failed   &   15  &  111  &   -4.682   &   -4.682   \\
+         ellipse          &   76  &  4  &   failed   &   17  &  137  &   -4.682   &   -4.682   \\
+    ellipse everywhere    &   76  &  4  &   failed   &   25  &  106  &   -4.604   &   -4.682   \\
+    ellipse segment 1     &   76  &  4  &   failed   &   17  &  111  &   -4.682   &   -4.682   \\
+    ellipse segment 2     &   76  &  4  &   failed   &   24  &  105  &   -4.680   &   -4.682   \\
+    ellipse segment 3     &   76  &  4  &   failed   &   25  &  106  &   -4.677   &   -4.682   \\
+    ellipse segment 4     &   76  &  4  &   failed   &   23  &  107  &   -4.674   &   -4.682   \\
+        polyhedral        &   76  &  4  & converged  &   15  &  169  &   -4.682   &   -4.682
 \end{longtable}
 \end{center}
-
-
-\end{tiny}
+\end{scriptsize}
 
 In order to better evaluate the algorithms on the problems across in this test set, we use a performance profile developed in \cite{More:2009:BDO:1654367.1654371}.
 Given a set of Solvers $\mathcal S$ that solved a set of problems $\mathcal P$ with the number of evaluations of solver $s$ on problem $p$ being $N(s, p)$, the performance ratio is defined to be $r(s, p) = \frac{N(s, p)}{\min_{s \in \mathcal S} N(s, p)}$.
