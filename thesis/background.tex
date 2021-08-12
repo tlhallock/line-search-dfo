@@ -67,6 +67,7 @@ This reference provides a convergence proof for a class algorithms when the cons
 
 
 \section{Criticality Measure}
+\label{criticallity_measure_section}
 A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
 The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions. 
 For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is $\chi(x) = \norm{\nabla f(x)}$ 
@@ -119,31 +120,31 @@ Thus, it is possible to use \cref{define_criticality_measure} with general const
 % \end{align*}
 % % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
 
-
-We still employ thresholds 
-\begin{align}
-\tolcrit, \tolrad \ge 0 \label{define_algorithm_tolerances}
-\end{align}
-for stopping conditions.
-
-
-
+% 
+% We still employ thresholds 
+% \begin{align}
+% 
+% \end{align}
+% for stopping conditions.
+% 
 
 
 
-\color{red}
-\begin{boxedcomment}
-Citation?
-\end{boxedcomment}
-For general constraints the first order necessary conditions are the Karush-Kun-Tucker conditions.
-These state, under regularity assumptions, that for any critical point $x^{\star}$ there exists of a dual variable $\lambda \in \Rm$ such that
-\begin{align*}
-\nabla f(x) + \nabla c(x)^T \lambda  = 0, \;
-c(x) \le 0, \;
-\lambda \ge 0, \;
-c(x)^T\lambda = 0. \;
-\end{align*}
-\color{black}
+
+
+% \color{red}
+% \begin{boxedcomment}
+% Citation?
+% \end{boxedcomment}
+% For general constraints the first order necessary conditions are the Karush-Kun-Tucker conditions.
+% These state, under regularity assumptions, that for any critical point $x^{\star}$ there exists of a dual variable $\lambda \in \Rm$ such that
+% \begin{align*}
+% \nabla f(x) + \nabla c(x)^T \lambda  = 0, \;
+% c(x) \le 0, \;
+% \lambda \ge 0, \;
+% c(x)^T\lambda = 0. \;
+% \end{align*}
+% \color{black}
 
 
 
@@ -225,21 +226,19 @@ A large $\rk$ implies progress in minimizing the objective, although the model w
 This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
 
 The user supplies fixed constants
-\begin{align}
-0 < \gammasm < \gammabi \le 1	\label{define_the_gammas}
-\end{align}
+% \label{define_the_gammas}
+% \label{define_the_omegas}
+$
+0 < \gammasm < \gammabi \le 1
+$
 as thresholds on $\rk$ and
-\begin{align}
-0 < \omegadec < 1 \le \omegainc		\label{define_the_omegas}
-\end{align}
-$\omegadec, \omegainc$ as decrement and increment factors to determine the trust region update policy.
-That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and when the trust region is increased by a factor of $\omegainc$
+$
+0 < \omegadec < 1 \le \omegainc
+$
+% $\omegadec, \omegainc$
+as decrement and increment factors to determine the trust region update policy.
+That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and the trust region is increased by a factor of $\omegainc$
 during some iterations in which $\rk > \gammabi$.
-
-
-
-
-
 
 
 \section{Interpolation}
@@ -346,7 +345,7 @@ where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 \end{theorem}
 
 There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.
-Then we have the following result   
+Then we have the following result:
 % \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
 \begin{theorem}\label{Lambda_poised_error_bounds}
@@ -469,14 +468,14 @@ Observe that by using an $L_{\infty}$-ball instead of an $L_2$-ball, $\searchtrk
 
 
 
-\begin{boxedcomment}
-This paragraph addresses a comment, but I don't think it is needed.
-
-
-We do not spend time on the approach of choosing $\searchtrk = \sampletrk$.
-Although our choices $\sampletrk \subseteq \feasible$ must remain close to the current iterate, 
-they do not ensure $\sampletrk$ contains a point decreasing the objective.
-\end{boxedcomment}
+% \begin{boxedcomment}
+% This paragraph addresses a comment, but I don't think it is needed.
+% 
+% 
+% We do not spend time on the approach of choosing $\searchtrk = \sampletrk$.
+% Although our choices $\sampletrk \subseteq \feasible$ must remain close to the current iterate, 
+% they do not ensure $\sampletrk$ contains a point decreasing the objective.
+% \end{boxedcomment}
 
 % are required to lie within the feasible region 
 % $\feasible := \{x|\lca x \le \lcb\}$

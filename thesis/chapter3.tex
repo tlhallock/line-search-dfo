@@ -586,7 +586,7 @@ it is sufficient to ensure a uniform bound on the condition number of $\qk$.
 Indeed, recall from \cref{set_is_poised} that \cref{model_improving_algorithm} produces a $\Lambda$-poised sample set, for $B_2(0,\delta)$.
 Thus, by \cref{quadratic_errors}
 % by \cref{Lambda_poised_error_bounds}
-, the model function $\hat{m_f}$ constructed from that sample set 
+, the model function $\hat{m}_f$ constructed from that sample set 
 % is $\kappa$-fully quadratic,  for some fixed constants $\kappa=(\kappa_{ef},\kappa_{eg}, \kappa_{eh})$, so $\hat{m_f}$ 
 satisfies the hypotheses of \cref{shifted_ellipsoid},
 and $m_f$ will satisfy the provided error bounds over the ellipsoidal region as well.
@@ -696,10 +696,11 @@ while ensuring that it lies entirely within the intersection of the feasible reg
 
 \subsection{A Safe Ellipsoid}
 
+This section shows how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
+
 \subsubsection{Construction}
 \label{the_safe_ellipsoid}
 
-This section shows how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
 We define the active constraints at a point $x \in \feasible$ by
 \begin{align}
 \activei(x) = \left\{i \in [m] | c_i(x) = 0 \Leftrightarrow {\lca}_ix = {\lcb}_i \right\}. \label{define_activei}
@@ -777,6 +778,10 @@ whenever $\activei\left(\xk\right) \ne \emptyset$.
 \subsubsection{Suitability}
 We show that this construction provides a suitable ellipsoid according to \cref{define_suitable_ellipsoid}.
 
+\begin{boxedcomment}
+Somehow it doesn't make sense to say that for an iterate, this construction satisfies a bound on the condition number.
+\end{boxedcomment}
+
 \begin{lemma}
 \label[lemma]{trivial_ellipsoid_exists}
 Let $\activei$ be defined by \cref{define_activei}.
@@ -847,6 +852,13 @@ By \cref{alphas_are_positive}, we know that each of these values must be positiv
 Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these values.
 \end{proof}
 
+% 
+% \begin{align*}
+% \|s\| \le \pi t \\
+% u ^T(tu + s) \ge y \|tu + s\| \\
+% t \ge y (t + \|s\|) \\
+% \end{align*}
+
 It will be useful to define some intermediate cones.
 Namely, for any scalar $\pi$, direction $u$, and point $c$, we define the cone
 \begin{align}
@@ -858,10 +870,25 @@ We can use this to define an shifted and unshifted cone about the point $\xk$ al
 \unshiftedcone = \mathcal C\left(\alphak, \uk, \xk\right). \label{defineunshiftedcone}
 \end{align}
 
-\sbnote{Maybe add a picture of the cones $\unshiftedcone$ and $\shiftedcone$.}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=200px]{images/unshifted_cone.png}
+    \includegraphics[width=200px]{images/shifted_cone.png}
+    \caption[An example of the shifted and unshifted cones]
+	{
+		On the left is an unshifted cone $\unshiftedcone$.
+		The polyhedra is in blue, and the current iterate in green.
+		A feasible drection $u$ from the current iterate is calculated, and the width of the cone is determined to lie within the active constraints of the polyhedra.
+		On the right is a shifted cone $\unshiftedcone$.
+		It is centered at the origin, and points along $e_1$, opening at a rate of $\alphak$.
+    }
+    \label{linear_cones_images}
+\end{figure}
 
 Observe that, by construction, $\unshiftedcone$ is feasible with respect to the active constraints.
 That is,  for all $x \in \unshiftedcone$,  and $i \in \activei\left(\xk\right)$, $\lca x \le \lcb_i$.
+\cref{linear_cones_images} constains a depiction of these cones.
 
 
 % = \left\{x \in \Rn \bigg | \quad x = \xk + t \uk+ s, s^Tu^{\star} = 0, t \ge 0, \|s\| \le {\alphak} t\right\}  \\
@@ -1185,12 +1212,9 @@ This is because $\det\left(\rotk\right) = 1$ means the condition number of $\qk$
 %
 %\color{black}
 
-
-\sbnote{There needs to be some discussion about how the method defined above to construct the suitable ellipsoid relates to the other methods 
-you described}.
-
-
-
+% 
+% \sbnote{There needs to be some discussion about how the method defined above to construct the suitable ellipsoid relates to the other methods 
+% you described}.
 
 \subsection{Ellipsoid Searches}
 
@@ -1243,11 +1267,6 @@ so that the sample points must be contained to also lie within the feasible regi
 For details on how to choose sample points with additional constraints, see \cref{model_improving_algorithm}.
 
 
-\begin{boxedcomment}
-Somewhere, probably not here, I should talk about the current iterate not being in $\sampletrk$.
-\end{boxedcomment}
-
-
  \sbnote{This raises a number of questions.
  First is whether the current iterate will be a sample point.
  If it isn't, then the model function may disagree with the true function at the current iterate, 
@@ -1258,7 +1277,7 @@ Somewhere, probably not here, I should talk about the current iterate not being 
  Actually, we don't even need 2), do we?  We just need the accuracy condition to be satisfied at the current iterate, right?}
 
 
-\subsubsection{Maximizing the Volume given a Center}
+\subsubsection{Maximal Volume}
 \label{ellipse_optimization}
 The error bounds given in \cref{shifted_ellipsoid} suggest that we can obtain more accurate model functions by 
 minimizing the condition number of the matrix $\qk$.
@@ -1291,7 +1310,7 @@ Let $\bar g = \lctrb - \lctra \ck$ and $d = x - \ck$ so that the polytope become
 \end{align*}
 Using this transformation, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
 \begin{align*}
-E = \{ d \in \Rn \; | \; \frac 1 2 d^T Q d \le 1 \}.
+E = \left\{ d \in \Rn \; \bigg | \; \frac 1 2 d^T Q d \le 1 \right\}.
 \end{align*}
 Our goal is to determine the matrix $Q$ that maximizes the volume of $E$ such that $\mu + E \subset P$.
 This is accomplished by solving the following problem for $Q$ for a given center:
@@ -1348,7 +1367,20 @@ Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1
 \end{proof}
 
 
-\section{Polyhedral Trust Region Approach}\label{sec:polyhedral}
+Notice that the constraints for \cref{ellipse_1} can be simplified for the outer trust region's constraints.
+These take the form:
+\begin{align}
+e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall i \in [n].
+\label{ellipsoids_trust_region_constraints}
+\end{align}
+
+\begin{align}
+\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)_{i,i}^{-1} \le \left[\xki - \ck_i \pm \dk \right]^2 \quad \forall i \in [n].
+\end{align}
+
+
+\section{Polyhedral Trust Region Approach}
+\label{sec:polyhedral}
 
 One simple approach to ensuring that all sample points are feasible is to restrict them to lie within the intersection of the feasible region and the outer trust region.
 In particular,  we define the sample and search trust regions by
@@ -1376,9 +1408,10 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.4]{images/bad_lambda.png}
+    \includegraphics[width=200px]{images/small_sample_region.png}
     \caption[An example of constraints limiting sample point choices.]
-    	{An example of constraints limiting sample point choices.   If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set.
+    	{An example of constraints limiting sample point choices.
+    	If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set.
     }
     \label{lspc}
 \end{figure}
@@ -1428,11 +1461,13 @@ When the algorithm fails, it is likely because $\sampletrk$ nearly contained in 
 for which some basis function can be written as a linear combination of other basis functions.
 Because our feasible region contains an interior point, we would expect some $\ximin>0$ to allow the algorithm to run to completion.
 However, for more complicated nonlinear constraints, there may not be such a $\ximin$.
+
 Intuitively, higher order monomials would not improve the accuracy of the model over $\sampletrk$ 
 if their function values do not significantly differ from that of a linear combination of lower order monomials.
-We conjecture that this insight could give rise to yet another model improving algorithm that uses {\em full pivoting} to select only those monomials 
-useful for approximating functions over $\sampletrk$.
-When there is no new point/monomial to the basis that can be added to the existing set of lagrange polynomials, the algorithm would simply stop the LU factorization.
+We conjecture that this insight could give rise to a model improving algorithm that uses Gaussian elimination with {\em full pivoting}
+to select only those monomials useful for approximating functions over $\sampletrk$.
+When there is no new point/monomial to the basis that can be added to the existing set of lagrange polynomials,
+the algorithm would simply stop the Gaussian elimination.
 Note that the maximization over $\sampletrk$ to find a replacement point would need to maximize $|u_j|$ for several $i \le j \le p$ rather than simpy $i$.
 
 
@@ -1446,9 +1481,7 @@ As usual, we may also wish to remove points larger than a certain radius from th
 
 \section{Results}
 
-
 \subsection{Algorithm Variants}
-
 
 \subsubsection{Circular Trust Region}
 The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
@@ -1681,90 +1714,18 @@ Notice that with two line segments, the algorithm can already choose new centers
 \end{figure}
 
 
-\paragraph*{circumscribed ellipse}
+\paragraph*{Circumscribed ellipse}
 
-\begin{boxedcomment}
-Describe this...
-\end{boxedcomment}
-
-
+We also implemented a variant of the algorithm in which the sample region was the smallest volume ellipsoid to contain the feasible region.
+Notice that necessarily includes points that are outside the current trust region, and likely infeasible points.
+Thus, both the trust region and linear constraints have to be added to the optimization problem defining the replacement point while computing the lagrange polynomials.
+For more details about the this modified model improvement algorithm, see \cref{sec:polyhedral}.
 
 \subsection{Sample Problem}
 The first test was on a problem with simple constraints and a pathological objective.
 We let $f(x) = \epsilon x + (1-\epsilon)(y - \alpha x \sin(\gamma x))^2$ for a fixed constant $\epsilon$, and set the constraints to be
 $x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
-
-We summarize the number of function evaluations and iterations taken here:
-\tiny
-\begin{center}
-\begin{longtable}{ c c c c c c c c }
-Shape & Search & Num. Segments & Basis & Iterations & Evaluations \\
-\hline
-                spherical &   anywhere &       &     linear & 159  &   202  &  470 &  630 \\
-                spherical &   anywhere &       &  quadratic & 164  &   277  &  467 &  805 \\
-                spherical &       none &       &     linear &  77* &   122* &  255 &  387 \\
-                spherical &       none &       &  quadratic &  74  &   149  &  250 &  561 \\
-                spherical &    segment &     1 &     linear &  74  &   116  &  224 &  413 \\
-                spherical &    segment &     1 &  quadratic &  74  &   164  &  224 &  525 \\
-                spherical &    segment &     2 &     linear & 164  &   223  &  313 &  503 \\
-                spherical &    segment &     2 &  quadratic & 152  &   259  &  313 &  657 \\
-  circumscribed ellipsoid &       none &       &     linear &  41  &    50  &   41 &   55 \\
-  circumscribed ellipsoid &       none &       &  quadratic &  41  &   104  &   41 &  105 \\
-                ellipsoid &   anywhere &       &     linear &  65  &   109  &   67 &  110 \\
-                ellipsoid &   anywhere &       &  quadratic &  66  &   170  &   67 &  185 \\
-%                ellipsoid &  anywhere* &       &  quadratic &  61  &   157  &   60 &  155 \\
-                ellipsoid &       none &       &     linear &  53  &    65  &   50 &   52 \\
-                ellipsoid &       none &       &  quadratic &  53  &    88  &   50 &   75 \\
-                ellipsoid &    segment &     1 &     linear &  55  &    70  &   58 &   75 \\
-                ellipsoid &    segment &     1 &  quadratic &  55  &    97  &   58 &  104 \\
-                ellipsoid &    segment &     2 &     linear &  67  &   144  &   68 &  121 \\
-                ellipsoid &    segment &     2 &  quadratic &  67  &   196  &   64 &  159 \\
-               polyhedral &       none &       &     linear &  37  &    43  &   38 &   46 \\
-               polyhedral &       none &       &  quadratic &  37  &    82  &   38 &   89 \\
-         scaled ellipsoid &   anywhere &       &     linear &  66  &   103  &   67 &  104 \\
-         scaled ellipsoid &   anywhere &       &  quadratic &  68  &   156  &   67 &  169 \\
-         scaled ellipsoid &    segment &     1 &     linear &  44  &    65  &   45 &   67 \\
-         scaled ellipsoid &    segment &     1 &  quadratic &  44  &    94  &   45 &   93 \\
-         scaled ellipsoid &    segment &     2 &     linear &  67  &   125  &   68 &  122 \\
-         scaled ellipsoid &    segment &     2 &  quadratic &  67  &   189  &   63 &  146 \\
-                  simplex & max volume &       &     linear &  41  &    44  &   41 &   45 \\
-                  simplex & max volume &       &  quadratic &  41  &    94  &   41 &   84 \\
-
-%                spherical &   anywhere &       &     linear &   159 &   202 \\
-%                spherical &   anywhere &       &  quadratic &   164 &   277 \\
-%                spherical &       none &       &     linear &    77* &   122* \\
-%                spherical &       none &       &  quadratic &    74 &   149 \\
-%                spherical &    segment &     1 &     linear &    74 &   116 \\
-%                spherical &    segment &     1 &  quadratic &    74 &   164 \\
-%                spherical &    segment &     2 &     linear &   164 &   223 \\
-%                spherical &    segment &     2 &  quadratic &   152 &   259 \\
-%  circumscribed ellipsoid &       none &       &     linear &    41 &    50 \\
-%  circumscribed ellipsoid &       none &       &  quadratic &    41 &   104 \\
-%                ellipsoid &   anywhere &       &     linear &    65 &   109 \\
-%                ellipsoid &   anywhere &       &  quadratic &    66 &   170 \\
-%                ellipsoid &  anywhere* &       &  quadratic &    61 &   157 \\
-%                ellipsoid &       none &       &     linear &    53 &    65 \\
-%                ellipsoid &       none &       &  quadratic &    53 &    88 \\
-%                ellipsoid &    segment &     1 &     linear &    55 &    70 \\
-%                ellipsoid &    segment &     1 &  quadratic &    55 &    97 \\
-%                ellipsoid &    segment &     2 &     linear &    67 &   144 \\
-%                ellipsoid &    segment &     2 &  quadratic &    67 &   196 \\
-%               polyhedral &       none &       &     linear &    37 &    43 \\
-%               polyhedral &       none &       &  quadratic &    37 &    82 \\
-%         scaled ellipsoid &   anywhere &       &     linear &    66 &   103 \\
-%         scaled ellipsoid &   anywhere &       &  quadratic &    68 &   156 \\
-%         scaled ellipsoid &    segment &     1 &     linear &    44 &    65 \\
-%         scaled ellipsoid &    segment &     1 &  quadratic &    44 &    94 \\
-%         scaled ellipsoid &    segment &     2 &     linear &    67 &   125 \\
-%         scaled ellipsoid &    segment &     2 &  quadratic &    67 &   189 \\
-%                  simplex & max volume &       &     linear &    41 &    44 \\
-%                  simplex & max volume &       &  quadratic &    41 &    94 \\
-
-\end{longtable}
-\end{center}
-\normalsize
-
-*The spherical trust region with no search for the center did not converge.
+We summarize the number of function evaluations and iterations taken within \cref{linear_pathological_results}.
 
 In general, the linear models converge more quickly than quadratic models.
 We see that the method with fewest iterations and function evaluations is the linear polyhedral shape.
@@ -1778,131 +1739,24 @@ Also, the scaled ellipsoid performs comparably to the unscaled version.
 
 We tested these algorithms on several problems from the Hot-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}, \cite{Hock1980}.
 We selected the problems that have linear constraints: 21, 24, 25, 35, 36, 44, 45, 76, 224, 231, 232, 250, 251.
+We summarize the results within \cref{linear_schittowski_results}.
 
 % 37 was left out because it proved to be difficult.
 
-We summarize the results here.
-\begin{boxedcomment}
-This should be in an appendix.
-\end{boxedcomment}
-\begin{scriptsize}
-
-\begin{center}
-\begin{longtable}{ c c c c c c c c }
-Algorithm & Prob. & n & Message & N. It. & N. Eval. & Ret. Min. & Min. \\
-\hline
-  circumscribed ellipse   &   21  &  2  & converged  &   24  &   71  &  -99.960   &  -99.960   \\
-         ellipse          &   21  &  2  & converged  &   36  &   96  &  -99.960   &  -99.960   \\
-    ellipse everywhere    &   21  &  2  & converged  &   24  &   82  &  -99.960   &  -99.960   \\
-    ellipse segment 1     &   21  &  2  & converged  &   24  &   84  &  -99.960   &  -99.960   \\
-    ellipse segment 2     &   21  &  2  & converged  &   24  &   85  &  -99.960   &  -99.960   \\
-        polyhedral        &   21  &  2  & converged  &   26  &   75  &  -99.960   &  -99.960   \\
-  circumscribed ellipse   &  224  &  2  &   failed   &   16  &   56  &  -304.000  &  -304.000  \\
-         ellipse          &  224  &  2  & converged  &   32  &   97  &  -304.000  &  -304.000  \\
-    ellipse everywhere    &  224  &  2  & converged  &   24  &   94  &  -303.774  &  -304.000  \\
-    ellipse segment 1     &  224  &  2  & converged  &   24  &   91  &  -303.774  &  -304.000  \\
-    ellipse segment 2     &  224  &  2  & converged  &   23  &   89  &  -303.774  &  -304.000  \\
-        polyhedral        &  224  &  2  & converged  &   17  &   64  &  -304.000  &  -304.000  \\
-  circumscribed ellipse   &  231  &  2  & converged  &   14  &   44  &   0.000    &   0.000    \\
-         ellipse          &  231  &  2  & converged  &   99  &  193  &   0.000    &   0.000    \\
-    ellipse everywhere    &  231  &  2  & converged  &  181  &  336  &   0.000    &   0.000    \\
-    ellipse segment 1     &  231  &  2  & converged  &   78  &  162  &   0.000    &   0.000    \\
-    ellipse segment 2     &  231  &  2  & converged  &  173  &  321  &   0.000    &   0.000    \\
-        polyhedral        &  231  &  2  & converged  &   95  &  193  &   0.000    &   0.000    \\
-  circumscribed ellipse   &  232  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   \\
-         ellipse          &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
-    ellipse everywhere    &  232  &  2  & converged  &   41  &  102  &   -1.000   &   -1.000   \\
-    ellipse segment 1     &  232  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
-    ellipse segment 2     &  232  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   \\
-        polyhedral        &  232  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   \\
-  circumscribed ellipse   &   24  &  2  &   failed   &   15  &   35  &   -1.000   &   -1.000   \\
-         ellipse          &   24  &  2  & converged  &   34  &   90  &   -1.000   &   -1.000   \\
-    ellipse everywhere    &   24  &  2  & converged  &   41  &  104  &   -1.000   &   -1.000   \\
-    ellipse segment 1     &   24  &  2  & converged  &   34  &   91  &   -1.000   &   -1.000   \\
-    ellipse segment 2     &   24  &  2  & converged  &   35  &   95  &   -1.000   &   -1.000   \\
-        polyhedral        &   24  &  2  & converged  &   15  &   47  &   -1.000   &   -1.000   \\
-  circumscribed ellipse   &  250  &  3  &   failed   &   24  &  103  & -3300.000  & -3300.000  \\
-         ellipse          &  250  &  3  & converged  &   53  &  207  & -3300.000  & -3300.000  \\
-    ellipse everywhere    &  250  &  3  &   failed   &   48  &  103  & -3298.196  & -3300.000  \\
-    ellipse segment 1     &  250  &  3  &   failed   &   53  &  112  & -3299.243  & -3300.000  \\
-    ellipse segment 2     &  250  &  3  &   failed   &   54  &  112  & -3299.082  & -3300.000  \\
-    ellipse segment 3     &  250  &  3  &   failed   &   56  &  116  & -3299.504  & -3300.000  \\
-        polyhedral        &  250  &  3  & converged  &   26  &  113  & -3300.000  & -3300.000  \\
-  circumscribed ellipse   &  251  &  3  &   failed   &   20  &   86  & -3456.000  & -3456.000  \\
-         ellipse          &  251  &  3  &   failed   &   10  &   53  & -3454.018  & -3456.000  \\
-    ellipse everywhere    &  251  &  3  &   failed   &   6   &   17  & -3209.710  & -3456.000  \\
-    ellipse segment 1     &  251  &  3  &   failed   &   4   &   13  & -1698.807  & -3456.000  \\
-    ellipse segment 2     &  251  &  3  &   failed   &   6   &   17  & -3210.341  & -3456.000  \\
-    ellipse segment 3     &  251  &  3  &   failed   &   14  &   64  & -3449.803  & -3456.000  \\
-        polyhedral        &  251  &  3  & converged  &   22  &  124  & -3456.000  & -3456.000  \\
-  circumscribed ellipse   &   25  &  3  & converged  &  760  &  1472 &   0.000    &   0.000    \\
-    ellipse everywhere    &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
-    ellipse segment 1     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
-    ellipse segment 2     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
-    ellipse segment 3     &   25  &  3  &   failed   &   1   &   1   &   32.835   &   0.000    \\
-        polyhedral        &   25  &  3  & converged  &  1793 &  3396 &   0.000    &   0.000    \\
-  circumscribed ellipse   &   35  &  3  &   failed   &  781  &  1028 &   0.111    &   0.111    \\
-         ellipse          &   35  &  3  & converged  &   28  &  122  &   0.111    &   0.111    \\
-    ellipse everywhere    &   35  &  3  &   failed   &   24  &   82  &   0.113    &   0.111    \\
-    ellipse segment 1     &   35  &  3  &   failed   &   16  &   76  &   0.112    &   0.111    \\
-    ellipse segment 2     &   35  &  3  &   failed   &   16  &   75  &   0.112    &   0.111    \\
-    ellipse segment 3     &   35  &  3  &   failed   &   16  &   77  &   0.112    &   0.111    \\
-        polyhedral        &   35  &  3  & converged  &   14  &  112  &   0.111    &   0.111    \\
-  circumscribed ellipse   &   36  &  3  &   failed   &   19  &   81  & -3300.000  & -3300.000  \\
-         ellipse          &   36  &  3  & converged  &   53  &  202  & -3300.000  & -3300.000  \\
-    ellipse everywhere    &   36  &  3  &   failed   &   63  &  135  & -3299.808  & -3300.000  \\
-    ellipse segment 1     &   36  &  3  &   failed   &   64  &  140  & -3299.951  & -3300.000  \\
-    ellipse segment 2     &   36  &  3  &   failed   &   64  &  133  & -3299.918  & -3300.000  \\
-    ellipse segment 3     &   36  &  3  &   failed   &   65  &  137  & -3299.870  & -3300.000  \\
-        polyhedral        &   36  &  3  & converged  &   22  &  108  & -3300.000  & -3300.000  \\
-  circumscribed ellipse   &   37  &  3  &   failed   &   27  &   98  & -3456.000  & -3456.000  \\
-         ellipse          &   37  &  3  &   failed   &   15  &   65  & -3455.761  & -3456.000  \\
-    ellipse everywhere    &   37  &  3  &   failed   &   36  &   88  & -3406.653  & -3456.000  \\
-    ellipse segment 1     &   37  &  3  &   failed   &   30  &   82  & -3421.619  & -3456.000  \\
-    ellipse segment 2     &   37  &  3  &   failed   &   36  &   85  & -3415.110  & -3456.000  \\
-    ellipse segment 3     &   37  &  3  &   failed   &   28  &   75  & -3421.157  & -3456.000  \\
-        polyhedral        &   37  &  3  & converged  &   28  &  139  & -3456.000  & -3456.000  \\
-  circumscribed ellipse   &   44  &  4  &   failed   &   17  &  124  &  -13.000   &  -15.000   \\
-         ellipse          &   44  &  4  & converged  &   50  &  298  &  -15.000   &  -15.000   \\
-    ellipse everywhere    &   44  &  4  & converged  &  110  &  416  &  -15.000   &  -15.000   \\
-    ellipse segment 1     &   44  &  4  & converged  &   50  &  262  &  -15.000   &  -15.000   \\
-    ellipse segment 2     &   44  &  4  & converged  &   71  &  304  &  -15.000   &  -15.000   \\
-    ellipse segment 3     &   44  &  4  &   failed   &   7   &   32  &  -10.672   &  -15.000   \\
-    ellipse segment 4     &   44  &  4  &   failed   &   1   &   1   &   -1.338   &  -15.000   \\
-        polyhedral        &   44  &  4  & converged  &   15  &  134  &  -13.000   &  -15.000   \\
-  circumscribed ellipse   &   45  &  5  &   failed   &   21  &  190  &   1.000    &   1.000    \\
-         ellipse          &   45  &  5  & converged  &   51  &  405  &   1.000    &   1.000    \\
-    ellipse everywhere    &   45  &  5  & converged  &  414  &  1121 &   1.000    &   1.000    \\
-    ellipse segment 1     &   45  &  5  & converged  &   63  &  374  &   1.000    &   1.000    \\
-    ellipse segment 2     &   45  &  5  & converged  &   82  &  404  &   1.000    &   1.000    \\
-    ellipse segment 3     &   45  &  5  & converged  &  104  &  453  &   1.000    &   1.000    \\
-    ellipse segment 4     &   45  &  5  & converged  &  130  &  497  &   1.000    &   1.000    \\
-    ellipse segment 5     &   45  &  5  & converged  &  158  &  478  &   1.000    &   1.000    \\
-        polyhedral        &   45  &  5  & converged  &   22  &  269  &   1.000    &   1.000    \\
-  circumscribed ellipse   &   76  &  4  &   failed   &   15  &  111  &   -4.682   &   -4.682   \\
-         ellipse          &   76  &  4  &   failed   &   17  &  137  &   -4.682   &   -4.682   \\
-    ellipse everywhere    &   76  &  4  &   failed   &   25  &  106  &   -4.604   &   -4.682   \\
-    ellipse segment 1     &   76  &  4  &   failed   &   17  &  111  &   -4.682   &   -4.682   \\
-    ellipse segment 2     &   76  &  4  &   failed   &   24  &  105  &   -4.680   &   -4.682   \\
-    ellipse segment 3     &   76  &  4  &   failed   &   25  &  106  &   -4.677   &   -4.682   \\
-    ellipse segment 4     &   76  &  4  &   failed   &   23  &  107  &   -4.674   &   -4.682   \\
-        polyhedral        &   76  &  4  & converged  &   15  &  169  &   -4.682   &   -4.682
-\end{longtable}
-\end{center}
-\end{scriptsize}
-
+\paragraph*{Performance Profile}
+\label{performance_profile}
 In order to better evaluate the algorithms on the problems across in this test set, we use a performance profile developed in \cite{More:2009:BDO:1654367.1654371}.
 Given a set of Solvers $\mathcal S$ that solved a set of problems $\mathcal P$ with the number of evaluations of solver $s$ on problem $p$ being $N(s, p)$, the performance ratio is defined to be $r(s, p) = \frac{N(s, p)}{\min_{s \in \mathcal S} N(s, p)}$.
 If the algorithm does not complete, then the number of evaluations is set to $\infty$.
 The performance profile of a solver $s$ and parameter $\alpha \in [0, \infty)$ is then the number of problems for which the performance ratio is less than or equal to $\alpha$: 
 
 \begin{align}
-\rho(s, \alpha) = \frac 1 {\|\mathcal P \|} \|p \in \mathcal P | r(s, p) \le \alpha\|.
+\rho(s, \alpha) = \frac 1 {\left\|\mathcal P \right\|} \left\|p \in \mathcal P | r(s, p) \le \alpha\right\|.
 \end{align}
 
 The $y$ axis of a performance plot is the performance profile, and the $x$ axis is the parameter $\alpha$.
-Note that algorithms with high performance profiles for small values of $alpha$ solved a large number of problems the most with the fewest evaluations, while algorithms that eventually reach high performance profiles with larger values of $\alpha$ solve a large set of problems.
-The performance profile for the Hot-Schittkowski problem set is give in figure \cref{performance_profile}.
+Note that algorithms with high performance profiles for small values of $\alpha$ solved a large number of problems the most with the fewest evaluations, while algorithms that eventually reach high performance profiles with larger values of $\alpha$ solve a large set of problems.
+The performance profile for the Hot-Schittkowski problem set is give in figure \cref{performance_profile_image}.
 
 
 \begin{figure}[ht]
@@ -1912,7 +1766,7 @@ The performance profile for the Hot-Schittkowski problem set is give in figure \
     	A performance profile comparing different variants of the algorithm for linear constraints.
     	We see that the polyhedral algorithm is both efficient and robust.
     }
-    \label{performance_profile}
+    \label{performance_profile_image}
 \end{figure}
 
 
