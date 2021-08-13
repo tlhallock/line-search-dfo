@@ -245,11 +245,11 @@ during some iterations in which $\rk > \gammabi$.
 \label{interpolation} 
 Model-based methods for derivative free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
-We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ at which the function $f$ has been evaluated.
+We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\}$ at which the function $f$ has been evaluated.
 Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
 \begin{align}
 \label{interpolation_condition}
-\mf(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
+\mf(y^{(i)}) = \sum^p_{j=0}\alpha_j\phi_j(y^{(i)}) = f(y^{(i)}) \quad \forall \quad 0 \le i \le p.
 \end{align}
 
 % We can also write this equation in matrix form.
@@ -258,16 +258,16 @@ This equation can be written more compactly in the form
 \label{matrix_form}
 V \alpha = \bar{f},
 \end{align}
-where $\bar{f} = [f(y^0), f(y^1), \ldots, f(y^p)]^T$ and the Vandermonde matrix $V$ is defined by 
+where $\bar{f} = [f(y^{(0)}), f(y^{(1)}), \ldots, f(y^{(p)})]^T$ and the Vandermonde matrix $V$ is defined by 
 
 \begin{align}
 \label{vandermonde}
 V=M(\Phi,Y) :=
 \begin{bmatrix}
-    \phi_0(y^0)      & \phi_1(y^0)       & \ldots & \phi_{p}(y^0)      \\
-    \phi_0(y^1)      & \phi_1(y^1)       & \dots  & \phi_{p}(y^1)      \\
+    \phi_0(y^{(0)})      & \phi_1(y^{(0)})       & \ldots & \phi_{p}(y^{(0)})      \\
+    \phi_0(y^{(1)})      & \phi_1(y^{(1)})       & \dots  & \phi_{p}(y^{(1)})      \\
                      &                   & \vdots &                    \\
-    \phi_0(y^{p})    & \phi_1(y^{p})     & \ldots & \phi_{p}(y^{p})
+    \phi_0(y^{(p)})    & \phi_1(y^{(p)})     & \ldots & \phi_{p}(y^{{(p)}})
 \end{bmatrix},
 \end{align}
 
@@ -291,7 +291,7 @@ where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\; 1 \;\text{if} \; i = j \}$ is 
 Thus, as shown in \cite{introduction_book}, we can conveniently write
 \begin{align}
 \label{reg}
-\mf(x) = \sum^p_{j=0}f(y^i)l_i(x).
+\mf(x) = \sum^p_{j=0}f(y^{(i)})l_i(x).
 \end{align}
 
 
@@ -335,17 +335,17 @@ The concept of $\Lambda$-poisedness allows us to establish the following error b
 
 \begin{theorem}
 \label{quadratic_errors}  
-Let $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^0\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^0; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^0;\Delta)$:
+Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^{(0)}\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^{(0)}; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};\Delta)$:
 
 \begin{align}
-\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta) \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta) \label{error_in_gradient} \\
-|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta). \label{error_in_function} 
+\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_gradient} \\
+|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta). \label{error_in_function} 
 \end{align}
 where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 \end{theorem}
 
-There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.
+There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^{(i)}-y^{(0)})}{\Delta}|y^{(i)} \in Y\right\}$.
 Then we have the following result:
 % \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
@@ -376,13 +376,13 @@ The model improvement algorithm starts with a set of $p+1$ sample points and the
 associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \ldots, u_p\}$ that are closely related to the Lagrange polynomials.  
 
 Each iteration of the algorithm identifies a point in the sample set to include in the final sample set.
-In particular, on the $i$th iteration, the points $y^0, \ldots, y^{i-1}$ have already been included.
+In particular, on the $i$th iteration, the points $y^{(0)}, \ldots, y^{i-1}$ have already been included.
 If a point $y^j$, $j \ge i$ can be found such that $u_i(y^j)$ has sufficiently large magnitude, 
 then that point is added to the final sample set (by swapping it with $y^{i}$).
 However, if no such point can be found, it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.
-Therefore, the point $y^i$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
+Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
 
-\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^0$ to create a set with $p+1$ points.
+\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 
 \begin{algorithm}[H]
     \caption{Model Improvement Algorithm \label{alg:model_improvement} }
@@ -391,19 +391,19 @@ Therefore, the point $y^i$ is replaced by a new point which is obtained by maxim
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Given a center $\ck\in\Rn$, a radius $\delta >0$, and set $Y$ of $p+1$ points,
             initialize $i=1$, $\ximin > 0$, and let $\bar \phi_i(x)$ be the monomial basis
-%             Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^i - y^0))$.
+%             Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^{(i)} - y^{(0)}))$.
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
 			Compute the next pivot index $j^{\textrm{max}}_i = \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^j\right)\right|$,
 			and swap points $i$ and $j^{\textrm{max}}_i$ within $Y$.
 			
         \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
-                \item[] If $\left|u_i\left(y^i\right)\right| \ge \ximin$ then go to Step 3.
-                \item[] If $\left|u_i\left(y^i\right)\right| < \ximin$, then replace $y^i \gets \argmax_{x \in B_2\left(\ck, \delta\right)}\left|u_i(x)\right|$
-%                 \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^i\}$
-				\item[] If $\left|u_i\left(y^i\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
+                \item[] If $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin$ then go to Step 3.
+                \item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(\ck, \delta\right)}\left|u_i(x)\right|$
+%                 \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^{(i)}\}$
+				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
             \end{itemize}
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
-        	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^i\right)}{u_i\left(y^i\right)} u_i(x)$ \\
+        	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^{(i)}\right)}{u_i\left(y^{(i)}\right)} u_i(x)$ \\
 %         \begin{itemize}
 %                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
 %                 \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
@@ -413,7 +413,7 @@ Therefore, the point $y^i$ is replaced by a new point which is obtained by maxim
 \end{algorithm}
 
 
-At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, 
+At the completion of the algorithm, we obtain a  sample set $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
 where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result.
 \begin{theorem}
 \label{set_is_poised}
