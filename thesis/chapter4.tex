@@ -2021,22 +2021,25 @@ by $\frac t 4$ to find
 \section{The Trust Region Subproblem}
 \label{decreasing_the_trust_region_for_infeasible_trial}
 
+% To ensure sufficient reduction of the objective's model function during each iteration, 
+% replace the classic trust region $\searchtrk = \feasiblek \cap \trk$ with
+
 Throughout \cref{recovering_feasiblity_section} we showed an approach for handling infeasible sample points.
-The other evaluation that may be infeasible is the trial point.
-Our approach for infeasible trial points is to decrease the trust region radius, which is an acceptable approach, 
-as long as we can ensure that no trial point will be infeasible for sufficiently small $\dk$: that is, $\sampletrk \subseteq \feasible$.
+The other evaluation that may be infeasible is the trial point $\xk + \sk$.
+Our algorithm decreases the trust region radius when it encouters such an infeasible trial pointm,
+which is an acceptable approach assuming that no trial point will be infeasible for sufficiently small $\dk$.
 % However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
-In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
-Thus, we replace the classic trust region $\searchtrk = \feasiblek \cap \trk$:
+In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set: $\sampletrk \subseteq \feasible$.
+Thus, we choose $ \searchtrk = \capcones \cap \trk$, and our trust region subproblem becomes
 \begin{align}
-\label{original_tr_subproblem}
-\begin{array}{ccccc}
-\slin &=& \argmin_{s} & m_f(\xk + s) & \\
-&& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & \forall i \in \activeconstraintsk \\
-&&&s \in \trk &
-\end{array}
+\label{capcones_trust_region_subproblem}
+\begin{array}{ccc}
+\sk = \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
+\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+& s \in \trk \cap \capcones, &
+\end{array}.
 \end{align}
-with $ \searchtrk = \capcones \cap \trk$:
+which we have implemented as
 \begin{align}
 \label{capcones_tr_subproblem}
 \begin{array}{ccc}
@@ -2046,11 +2049,88 @@ with $ \searchtrk = \capcones \cap \trk$:
  & -\left(s^{(i)}\right)^T\hgik \ge \beta \dk^{p_{\beta}} & \quad \forall i \in \activeconstraintsk \\
  & s^{(i)} \in \Rn  & \quad \forall i \in \activeconstraintsk \\
  & t_i > 0          & \quad \forall i \in \activeconstraintsk \\
- & x \in \trk		& \\
+ & x \in \trk.		& \\
 \end{array}
 \end{align}
 
-Notice that not searching all points within $\outertrk \cap \feasible$, we risk not providing sufficient reduction.
+% One of the important qualities of the trial point is that it satisfies an efficiency condition.
+It is important that the trial point satisfies an efficiency condition.
+The authors of \cite{Conejo:2013:GCT:2620806.2621814} impose 
+% the following efficiency condition:
+\begin{align*}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi\left(\xk\right) \min\left\{ \frac{\chi\left(\xk\right)}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
+\end{align*}
+where $\kappa_f$ is a constant independent of $k$.
+Notice that this is nearly the same as our efficiency condition \cref{efficiency}, except that the authors project the gradient onto the true feasible region.
+This is possible because they assume a known, convex feasible region.
+This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
+
+In most applications, an algorithm computes an approximate solution to the trust region subproblem
+\begin{align}
+\label{whole_trust_region_subproblem}
+\begin{array}{ccc}
+\slin = \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
+\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+& s \in \trk. & \\
+\end{array}
+\end{align}
+There are methods, such as the projected gradient descent method described in \cite[Section 12.2.1]{Conn:2000:TM:357813},
+that can efficiently compute an approximate solution to \cref{whole_trust_region_subproblem} satisfying \cref{efficiency}.
+
+We have restricted our trial point to lie within the smaller domain $\capcones \cap \trk$ to maintain feasibility,
+so we risk not providing sufficient reduction.
+\cref{sufficient_reduction_theorem} shows there is a point satisfying satisfying \cref{efficiency} 
+for any iteration $k$ with sufficiently small $\dk$ and $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$.
+However, until we have reached this provided threshold on $\dk$, we must explicitly check the efficiency condition.
+
+To do this, we compute an approximate solution to
+\begin{align}
+\label{half_tr_subproblem}
+\begin{array}{ccccc}
+\slin &\approx& \argmin_{s} & m_f(\xk + s) & \\
+&& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & \forall i \in \activeconstraintsk \\
+&&&s \in B_2\left(\xk, \frac 1 2 \dk\right) &
+\end{array}
+\end{align}
+which satisfies
+\begin{align}
+\label{what_ugc_satisfies}
+m_f^{(k)}(\xk) - m_f^{(k)}(\slin ) \ge \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}
+\end{align}
+for some constant $\kappa_f'$ independent of $k$.
+Notice that the ``true" feasible region used in the analysis of this bound is precisely $\feasiblek$.
+We can then introduce a constant
+\begin{align}
+0 < \tolsr < \frac 1 2
+\end{align}
+and check 
+\begin{align}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \tolsr \left[\mfk\left(\xk\right) - \mfk\left(\xk + \slin\right)\right]. \label{expected_reduction_check}
+\end{align}
+This ensures the efficiency condition \cref{efficiency} is satisfied with a constant $\kappa_f \gets \tolsr \kappa_{f}'$.
+Conveniently, this check can be performed before evaluating the current iterate.
+Because we decrease the trust reigon radius when this check is not satisfied,
+\cref{sufficient_reduction_theorem} also ensures this check can fail only a finite number of times.
+
+The upper bound of $\frac 1 2$ was chosen for theoretical convenience: we believe any value in $(0, 1)$ could work.
+Smaller values of $\tolsr$ imply that the trust region radius can stay large for longer, although trial points may not provide much decrease.
+Large values of $\tolsr$ ensure sufficient reduction, but may force the trust region radius to decrease prematurely.
+
+
+% Thus, we use $\slin$ to check if we can expect decrease.
+% where 
+% \begin{align}
+% \label{define_half_crit_measure}
+% \hat \chi^{(k)} = \left\|\proj_{\feasiblek \cap B_2\left(\xk, \frac 1 2 \dk\right)}\left(\xk - \gk\right)-\xk\right\|
+% \end{align}
+% Within \cref{take_half_of_the_criticality}, we show that such a point satisfies the efficiency condition \cref{efficiency}.
+
+
+
+\color{red}
+
+In general, there may be no solution to \cref{capcones_trust_region_subproblem} that satisfies \cref{efficiency}.
+Notice that not searching all points within 
 However, in \cref{sufficient_reduction_theorem} we show the existence a point within $ \searchtrk $
 that satisfies the efficiency condition \cref{efficiency} for small $\dk$.
 Because $\dk\to 0$, we can only attempt to evaluate an infeasible trial point a finite number of times.
@@ -2060,21 +2140,10 @@ Thus, we also compute a solution to \cref{original_tr_subproblem}, which does sa
 An example of such a point is the generalized Cauchy point $s_{\textrm{GC}}$ as described in \cite{Conn:2000:TM:357813}.
 Thus, with $\hat s$ an approximate solution to \cref{original_tr_subproblem},
 we can check if the expected decrease from \cref{capcones_tr_subproblem} also satisfies the efficiency condition.
-Namely, we introduce a constant 
-\begin{align}
-0 < \tolsr < \frac 1 2
-\end{align}
-and check 
-\begin{align}
-\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \tolsr \left[\mfk\left(\xk\right) - \mfk\left(\xk + \slin\right)\right] \label{expected_reduction_check}
-\end{align}
-Notice that this ensures the efficiency condition \cref{efficiency} is satisfied with a constant $\kappa_f \gets \tolsr \kappa_{f}$.
-Also, this check can be performed without evaluating the current iterate.
-\cref{sufficient_reduction_theorem} ensures this check can fail only a finite number of times.
-The value of $\frac 1 2$ was chosen for convenience, and in practice any value in $(0,1)$ could work.
-Smaller values of $\tolsr$ imply that the trust region radius can stay large for longer, although trial points may not provide much decrease.
+Namely, 
+Notice that
 
-
+\color{black}
 % \begin{boxedcomment}
 % Double check that this is the same as in the masters2.tex
 % \end{boxedcomment}
@@ -2155,7 +2224,7 @@ as well as trust region update parameters
 \end{align}
 were introduced in \cref{rhosection};
 \begin{align}
-0 < \tolsr < \frac 1 2 \label{define_tolsr}
+0 < \tolsr \le \frac 1 2 \label{define_tolsr}
 \end{align}
 was introduced in \cref{decreasing_the_trust_region_for_infeasible_trial};
 and $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ by \cref{define_abpab}.
@@ -2218,7 +2287,7 @@ k \gets 0; &
 		
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
         	Compute $\huk$, $\thetamink$, $\bsk$, $\fik$, $\capcones$, $\rotk$, $\slin$, and $\sk$ by
-        	\cref{define_u}, \cref{define_thetamink}, \cref{define_bsk}, \cref{define_fik}, \cref{define_capcones}, \cref{define_rotation}, \cref{original_tr_subproblem} \cref{capcones_tr_subproblem}. \\
+        	\cref{define_u}, \cref{define_thetamink}, \cref{define_bsk}, \cref{define_fik}, \cref{define_capcones}, \cref{define_rotation}, \cref{half_tr_subproblem} \cref{capcones_tr_subproblem}. \\
         	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
             
 		\end{itemize}
@@ -2290,7 +2359,7 @@ Thus, we show that the model criticallity measure converges to the true critical
 \label{verbiage_hoffman_use_one}
 \chik \approx \chi (\xk).
 \end{align}
-For some results, we also show that the criticallity \cref{define_criticality_measure} measure converges across iterations:
+For some results, we must also show that the criticallity \cref{define_criticality_measure} measure converges across iterations:
 \begin{align}
 \label{verbiage_hoffman_use_two}
 \chik \approx \chil.
@@ -2426,15 +2495,6 @@ Each function $c_i$ for $i \in [m]$ and $f$ has bounded Hessian. That is, there 
 % \paragraph{All functions are smooth}
 % The following assumptions let us know that the functions $f$ and $c_i$ for each $i \in [m]$ are smooth functions.
 
-\begin{assumption}
-\label{lipschitz_gradients_assumption}
-The functions $c_i$ for all $i \in [m]$ and $f$ are differentiable and their gradients are Lipschitz continuous with constant $\lipgrad > 0$ in $ \domain $:
-\begin{align*}
-\|\gradf(x) - \gradf(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \domain, \\
-\|\nabla c_i(x) - \nabla c_i(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \domain, \forall i \in [m].
-\end{align*}
-\end{assumption}
-
 
 \begin{assumption}
 \label{lipschitz_hessians_assumption}
@@ -2511,7 +2571,6 @@ There exists a subroutine \emph{RestoreFeasibility} that accepts a feasible poin
 a new trust region radius $\Delta < \dmax$ and ellipsoid $T_{\textrm{interp}}$ that is trusted for 
 $x, \Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellipsoids_notation_definitions}.
 \end{assumption}
-
 
 
 
@@ -2914,10 +2973,29 @@ Continuing with \cref{define_z}, \cref{define_mingraddelta}, and $\dk \le 1$ we 
 \end{align*}
 \end{proof}
 
+
+\begin{lemma}
+\label[lemma]{lipschitz_gradients_assumption}
+
+\input{assumptions.d/lipschitz_gradients_assumption}
+
+The functions $c_i$ for all $i \in [m]$ and $f$ are differentiable and their gradients are Lipschitz continuous with constant $\lipgrad > 0$ in $ \feasible $:
+\begin{align*}
+\|\gradf(x) - \gradf(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \feasible, \\
+\|\nabla c_i(x) - \nabla c_i(y)\| \le \lipgrad \|x - y\| \quad \forall x,y \in \feasible, \forall i \in [m].
+\end{align*}
+\end{lemma}
+\begin{proof}
+This is a direct consequence of \cref{bounded_hessians_assumption}.
+\end{proof}
+
+% \begin{boxedcomment}
+% Seems like I don't need \cref{lipschitz_hessians_assumption}.
+% \end{boxedcomment}
+
 \begin{lemma}
 \label[lemma]{each_constraints_cone_is_feasible}
 Let $\fik$ be defined by \cref{define_fik}.
-% Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, \cref{minangleassumption_alt}, and \cref{mingradassumption} hold.
 
 \input{assumptions.d/each_constraints_cone_is_feasible}
 
@@ -3194,36 +3272,26 @@ $\capcones \cap \trk \subseteq \feasible$.
 \subsection{Sufficient Reduction}
 \label{sufficient_reduction_section}
 
-To ensure sufficient reduction of the objective's model function during each iteration, the authors of \cite{Conejo:2013:GCT:2620806.2621814} impose the following efficiency condition:
-\begin{align}
-\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \kappa_f \chi\left(\xk\right) \min\left\{ \frac{\chi\left(\xk\right)}{1+\|\nabla^2 \mfk(\xk)\|}, \dk, 1 \right\}
-\end{align}
-where $\kappa_f$ is a constant independent of $k$.
-This is widely used within trust region frameworks such as \cite{Conejo:2013:GCT:2620806.2621814} and \cite{Conn:2000:TM:357813}.
-
-In most applications, an algorithm computes an approximate solution to
-\begin{align}
-\label{whole_trust_region_subproblem}
-\begin{array}{ccc}
-\min_{s \in \Rn} & m_{f}(\xk + s) & \\
-\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
-& s \in \trk & \\
-\end{array}.
-\end{align}
-There are methods, such as the projected gradient descent method described in \cite{Conn:2000:TM:357813},
-that can efficiently compute an approximate solution to \cref{whole_trust_region_subproblem} satisfying \cref{efficiency}.
-However, to maintain feasibility, we have restricted our trial point to lie within a smaller domain:
-\begin{align}
-\label{capcones_trust_region_subproblem}
-\begin{array}{ccc}
-\min_{s \in \Rn} & m_{f}(\xk + s) & \\
-\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
-& s \in \trk \cap \capcones &
-\end{array}.
-\end{align}
-In general, there may be no solution to \cref{capcones_trust_region_subproblem} that satisfies \cref{efficiency}.
-However, we show there is for those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$ and sufficiently small $\dk$.
+As discussed in \cref{decreasing_the_trust_region_for_infeasible_trial}, there may be no solution to \cref{capcones_trust_region_subproblem} 
+that satisfies \cref{efficiency}.
+However, we show such a point exists for those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$ and sufficiently small $\dk$.
 This statement is formalized in \cref{sufficient_reduction_theorem}.
+
+% \begin{lemma}
+% \label[lemma]{take_half_of_the_criticality}
+% Let $\hat \chi^{(k)}$ and $\chik$
+% be defined by
+% \cref{define_half_crit_measure} and \cref{define_criticality_measure}.
+% 
+% Then there exists a constant $\kappa$ such that
+% 
+% Then there exist constants $l, L$ such that
+% \begin{align*}
+% l \chik \le \hat \chi^{(k)} \le L \chik.
+% \end{align*}
+% \end{lemma}
+% \begin{proof}
+% \end{proof}
 
 % We construct a solution by
 
@@ -3409,28 +3477,30 @@ Let
 $\chik$,
 $\kappa_{\chi}$,
 $p_{\Delta}$,
+$\tolsr$
 and $\capcones$
 be defined by
-\cref{define_criticality_measure}
-\cref{define_kappa_chi}
-\cref{define_p_delta}
+\cref{define_criticality_measure},
+\cref{define_kappa_chi},
+\cref{define_p_delta},
+\cref{define_tolsr},
 and \cref{define_capcones}
 respectively.
 
 \input{assumptions.d/sufficient_reduction_theorem}
 
-There exist $\dsr>0$ and $\kappa_f > 0$, such that if
+Also, assume that $\slin$ defined by \cref{half_tr_subproblem} satisfies \cref{what_ugc_satisfies} for some fixed constant $\kappa_f'>0$ independent of $k$.
+Then, there exists and $\kappa_f>0$ and $\dsr>0$, such that if during iteration $k$,
 \begin{align}
-\chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \label{sr_chi_big_enough}
+\chik \ge \kappa_{\chi} \dk^{p_{\Delta}}, \label{sr_chi_big_enough} \\
+\dk \le \dsr, \label{sr_delta_small_enough}
 \end{align}
-and
-\begin{align}
-\dk \le \dsr \label{sr_delta_small_enough}
-\end{align}
-then there exists $v \in \capcones \cap \trk$ such that
+then there exists $v \in \capcones \cap \trk$ such that both
 \begin{align*}
-m_f^{(k)}(\xk) - m_f^{(k)}(v)
-\ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
+\begin{array}{cccc}
+& m_f^{(k)}(\xk) - m_f^{(k)}(v) & \ge & \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
+\textrm{and} \quad & m_f^{(k)}(\xk) - m_f^{(k)}(v) &\ge& \tolsr\left[m_f^{(k)}(\xk) - m_f^{(k)}(\slin)\right].
+\end{array}
 \end{align*}
 % \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
 
@@ -3438,24 +3508,12 @@ m_f^{(k)}(\xk) - m_f^{(k)}(v)
 
 \begin{proof}
 
-Let $\kappa_f' > 0$ be a fixed constant, and $u_{\textrm{GC}}$ be any approximate solution to 
+Let $\kappa_f' > 0$ be a fixed constant, and $\slin$ be as in the theorem statement.
+% Notice that this can be done by using the Generalized Cauchy Point as described in \cite[Section 12.2.1]{Conn:2000:TM:357813}.
+We wish to find a point within the buffered region that provides a percentage of the decrease $\slin $ provides.
+To accomplish this, we move from $\slin $ a distance $t$ along the direction $\minangledirk$ defined in \cref{minangleassumption_alt} by letting 
 \begin{align*}
-\begin{array}{cccc}
-u_{\textrm{GC}} \approx & \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
-& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
-& & s \in B_2\left(\xk, \frac 1 2 \dk\right) & \\
-\end{array}.
-\end{align*}
-satisfying
-\begin{align}
-\label{what_ugc_satisfies}
-m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \ge \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}.
-\end{align}
-This can be done by using the Generalized Cauchy Point as described in \cite[Section 12.2.1]{Conn:2000:TM:357813}.
-We wish to find a point within the buffered region that provides a percentage of the decrease $u_{\textrm{GC}}$ provides.
-To accomplish this, we move from $u_{\textrm{GC}}$ a distance $t$ along the direction $\minangledirk$ defined in \cref{minangleassumption_alt} by letting 
-\begin{align*}
-v(t) = u_{\textrm{GC}} + t \minangledirk.
+v(t) = \slin  + t \minangledirk.
 \end{align*}
 For small enough values of $t$, $v(t)$ will still provide sufficient reduction,
 while large values of $t$ ensure $v(t)$ lies within $\capcones$.
@@ -3466,10 +3524,10 @@ First, we show that for small enough values of $t$, $v(t)$ provides sufficient r
 By \cref{i_thought_i_proved_this_already} and \cref{bounded_model_hessian_lemma}, we see that there exists some $\dacc$ such that if
 $\dk \le \dacc$, then
 \begin{align*}
-\left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}\left(v(t)\right)\right| \\
-\le \left|\gk^T(u_{\textrm{GC}} - v) 
-+ 2 \left(u_{\textrm{GC}} - v(t)\right) ^T \nabla^2m_f^{(k)}\left(\xk\right)\left(u_{\textrm{GC}} - v(t)\right) \right| \\
-\le \left\|\gk\right \|  \left\|u_{\textrm{GC}}- v(t)\right\| + 2  \|u_{\textrm{GC}} - v(t)\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
+\left|m_f^{(k)}(\slin ) - m_f^{(k)}\left(v(t)\right)\right| \\
+\le \left|\gk^T(\slin  - v) 
++ 2 \left(\slin  - v(t)\right) ^T \nabla^2m_f^{(k)}\left(\xk\right)\left(\slin  - v(t)\right) \right| \\
+\le \left\|\gk\right \|  \left\|\slin - v(t)\right\| + 2  \|\slin  - v(t)\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\| \\
 \le t \maxmodelgrad + 2t^2\maxmodelhessian. 
 \end{align*}
 On the other hand, by defining
@@ -3478,7 +3536,7 @@ On the other hand, by defining
 \end{align}
 we can use \cref{sr_chi_big_enough}, \cref{bounded_model_hessian_lemma}, and $\dk \le 1$, to simplify \cref{what_ugc_satisfies}:
 \begin{align*}
-\mfk\left(\xk\right) - \mfk\left(u_{\textrm{GC}}\right)
+\mfk\left(\xk\right) - \mfk\left(\slin \right)
 \ge \kappa_f' \kappa_{\chi} \dk^{p_{\Delta}} \min\left\{ \frac{\kappa_{\chi} \dk^{p_{\Delta}}}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk \right\} \\
 \ge \kappa_f' \kappa_{\chi} \dk^{1 + p_{\Delta}} \min\left\{ \frac{\kappa_{\chi}}{1 + \maxmodelhessian}, \frac 1 2  \right\}
 \ge \delta_2 \dk^{1 + p_{\Delta}}.
@@ -3489,15 +3547,15 @@ t \maxmodelgrad + 2t^2\maxmodelhessian \le \frac 1 2 \delta_2 \dk^{1 + p_{\Delta
 \end{align}
 we will have
 \begin{align*}
-m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(v(t)\right) = \left[\mfk\left(\xk\right) - \mfk(u_{\textrm{GC}})\right] - \left[m_f^{(k)}\left(v(t)\right) - m_f^{(k)}\left(u_{\textrm{GC}}\right)\right] \nonumber \\
- \ge \left[\mfk(\xk) - \mfk(u_{\textrm{GC}})\right] - \left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v(t)) \right| \nonumber \\
-\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right)
+m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(v(t)\right) = \left[\mfk\left(\xk\right) - \mfk(\slin )\right] - \left[m_f^{(k)}\left(v(t)\right) - m_f^{(k)}\left(\slin \right)\right] \nonumber \\
+ \ge \left[\mfk(\xk) - \mfk(\slin )\right] - \left|m_f^{(k)}(\slin ) - m_f^{(k)}(v(t)) \right| \nonumber \\
+\ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(\slin )\right)
 \end{align*}
-implying $v(t)$ provides $\frac 1 2$ the reduction of $u_{\textrm{GC}}$.
+implying $v(t)$ provides $\frac 1 2 \ge \tolsr$ the reduction of $\slin $.
 We can then define $\kappa_f = \frac 1 4 \kappa_f'$, to see
 \begin{align*}
 m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(v(t)\right)
-\ge \frac 1 2 \left[m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right] \\
+\ge \frac 1 2 \left[m_f^{(k)}(\xk) - m_f^{(k)}(\slin )\right] \\
 \ge \frac 1 2 \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\} \\
 \ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\}.
 \end{align*}
@@ -3513,7 +3571,7 @@ t \le \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\right)} \dk^{1 +
 
 \paragraph*{Buffered Feasibility}
 Next, we will show that for large enough values of $t$, $v(t)$ will lie within $\capcones \cap \trk$.
-Notice that because $u_{\textrm{GC}} \in B_2\left(\xk, \dk\right)$, as long as $t \le \frac 1 2 \dk$, we will have $v(t) \in \trk$.
+Notice that because $\slin  \in B_2\left(\xk, \dk\right)$, as long as $t \le \frac 1 2 \dk$, we will have $v(t) \in \trk$.
 By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $i \not \in \activeconstraintsk$, then $v \in \trk \Longrightarrow v \in \fik$.
 Therefore, we only consider the case that $i \in \activeconstraintsk$.
 Thus, as long as $\dk \le \minangledelta$, \cref{minangleassumption_alt} implies that
@@ -3521,18 +3579,18 @@ Thus, as long as $\dk \le \minangledelta$, \cref{minangleassumption_alt} implies
 -\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\| \label{u_is_feasible}
 \end{align}
 where $\zik$ is defined by \cref{define_z}.
-Similarily, because $u_{\textrm{GC}}$ is feasible with respect to the linearization of the constraints, we have
+Similarily, because $\slin $ is feasible with respect to the linearization of the constraints, we have
 \begin{align}
-\left(\zik - \xk\right)^T(u_{\textrm{GC}} - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
+\left(\zik - \xk\right)^T(\slin  - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
 
 % for any $i$ with $\zik \in B_{\infty}\left(\xk, \minangledelta\right)$
 With $\wik$ defined by \cref{define_w}, we can combine \cref{u_is_feasible} and \cref{gc_is_feasible} to find
 \begin{align}
 \left(v(t) - \wik \right)^T\left(\xk - \zik \right) \nonumber \\
-=\left[ u_{\textrm{GC}} + t\huk - \xk - \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right) \right]^T\left(\xk - \zik \right) \nonumber \\
+=\left[ \slin  + t\huk - \xk - \left(1 - \alpha\dk^{p_{\alpha}}\right)\left(\zik - \xk\right) \right]^T\left(\xk - \zik \right) \nonumber \\
 =- \left[
-\left( u_{\textrm{GC}} - \xk\right)^T\left(\zik - \xk \right)
+\left( \slin  - \xk\right)^T\left(\zik - \xk \right)
 \right]
 +\left(1 - \alpha\dk^{p_{\alpha}}\right)\left\|\zik - \xk\right\|^2 \nonumber \\
 + t\left[ -\left(\zik - \xk\right)^T\huk\right] \nonumber \\
@@ -3561,7 +3619,7 @@ To satisfy \cref{backwards_proof_still_require}, we assume that
 $\frac{6 \sqrt{n}}{\minanglealpha} \dk^{1 + \min\left\{p_{\alpha}, p_{\beta}\right\}} \le t \le \sqrt{n}\dk$.
 Because $t \le \sqrt{n} \dk$, the triangle inequality, \cref{define_z}, and \cref{define_w}, we see
 \begin{align*}
-\left\|v(t) - \wik\right\| \le \left\|v(t) - u_{\textrm{GC}}\right\| + \left\|u_{\textrm{GC}} - \xk \right\| + \left\|\xk - \wik\right\| \\
+\left\|v(t) - \wik\right\| \le \left\|v(t) - \slin \right\| + \left\|\slin  - \xk \right\| + \left\|\xk - \wik\right\| \\
 \le t + \frac 1 2 \dk + \sqrt{n}\dk 
 \le 3\sqrt{n}\dk  \\
 \textrm{and} \quad \|\zik - \xk \| \le \sqrt{n}\dk \le 3\sqrt{n}\dk.
@@ -3576,7 +3634,7 @@ These, along with $\dk \le 1$, and $\alpha, \beta, p_{\alpha}, p_{\beta} \le (0,
 
 \paragraph*{Choosing t}
 
-We have shown that $v(t) = u_{\textrm{GC}} + t \minangledirk \in \capcones \cap \trk$ satisfies sufficient reduction 
+We have shown that $v(t) = \slin  + t \minangledirk \in \capcones \cap \trk$ satisfies sufficient reduction 
 if $\dk \le \min\left\{1, \dacc\right\}$, $t \le \min\left\{1, \frac 1 2 \dk\right\} \le \sqrt{n} \dk$, and
 \begin{align*}
 \frac{6 \sqrt{n}}{\minanglealpha} \dk^{1 + \min\left\{p_{\alpha}, p_{\beta}\right\}} \le t 
@@ -3605,7 +3663,7 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % so that  will be satisfied if
 % We can use \cref{define_delta2} to simplify this:
 % \begin{align*}
-% \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge 
+% \mfk(\xk) - \mfk(\slin ) \ge 
 % \end{align*}
 % Then \cref{sr_define_delta} gives
 % \begin{align*}
@@ -3627,16 +3685,16 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % 
 % Putting these inequalities together yields
 % \begin{align*}
-% \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge 2\left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v)\right| \\
-% \Longrightarrow -\left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v)\right| \ge -\frac 1 2 \left(\mfk(\xk) - \mfk(u_{\textrm{GC}})\right)
+% \mfk(\xk) - \mfk(\slin ) \ge 2\left|m_f^{(k)}(\slin ) - m_f^{(k)}(v)\right| \\
+% \Longrightarrow -\left|m_f^{(k)}(\slin ) - m_f^{(k)}(v)\right| \ge -\frac 1 2 \left(\mfk(\xk) - \mfk(\slin )\right)
 % \end{align*}
 % so that
 % \begin{align*}
-% m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(u_{\textrm{GC}})\right] - \left[m_f^{(k)}(v) - m_f^{(k)}(u_{\textrm{GC}})\right] \nonumber \\
-%  \ge \left[\mfk(\xk) - \mfk(u_{\textrm{GC}})\right] - \left|m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v) \right| \nonumber \\
-% \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}})\right)
+% m_f^{(k)}(\xk) - m_f^{(k)}(v) = \left[\mfk(\xk) - \mfk(\slin )\right] - \left[m_f^{(k)}(v) - m_f^{(k)}(\slin )\right] \nonumber \\
+%  \ge \left[\mfk(\xk) - \mfk(\slin )\right] - \left|m_f^{(k)}(\slin ) - m_f^{(k)}(v) \right| \nonumber \\
+% \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(\slin )\right)
 % \end{align*}
-% and $v$ provides $\frac 1 2$ the reduction of $u_{\textrm{GC}}$.
+% and $v$ provides $\frac 1 2$ the reduction of $\slin $.
 % 
 % 
 % 
@@ -3671,7 +3729,7 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 %  \\
 % \delta =& \min\left\{1, \frac{\delta_2}{2\left(\maxmodelgrad + 2 \maxmodelhessian \right)}\right\} \label{sr_define_delta} \\
 % p =& 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
-% v =& u_{\textrm{GC}} - \delta \dk^{p} \huk \label{define_v} \\
+% v =& \slin  - \delta \dk^{p} \huk \label{define_v} \\
 % \epsilon_{\Delta} =& 1-p+\min\{p_{\alpha}, p_{\beta}\}. \label{sr_def_epsilon_delta} \\
 % \dsr =& \min\left\{
 % \dfeas,
@@ -3701,13 +3759,13 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % \end{align}
 % From \cref{define_v}, we see
 % \begin{align}
-% \|u_{\textrm{GC}} - v\| = \delta \dk^{p} \label{sr_v_close_u}
+% \|\slin  - v\| = \delta \dk^{p} \label{sr_v_close_u}
 % \end{align}
 % % Observe that $\zeta \ge 0$ because $\xk \in \tr$.
-% % We know that when $\zeta' = 0,  \zeta' \left(u_{\textrm{GC}} - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
-% % Also, if $u_{\textrm{GC}} - \delta \dk^{p} \huk\in\tr$, then $\zeta' = 1 \Longrightarrow v \in \tr$.
-% % When $u_{\textrm{GC}} - \delta \dk^{p} \huk \not\in\tr$, then because $\tr$ is a convex set, there is a unique, well defined value of $\zeta \in (0, 1)$.
-% and because $u_{\textrm{GC}} \in B_{\infty}(\xk, \frac 1 2 \dk)$, $\delta \le \frac 1 2 $, $p > 1$, and $\dk \le 1$,
+% % We know that when $\zeta' = 0,  \zeta' \left(\slin  - \delta \dk^{p} u\right) + (1-\zeta')\xk = \xk \in \tr$, so that $\zeta \ge 0$.
+% % Also, if $\slin  - \delta \dk^{p} \huk\in\tr$, then $\zeta' = 1 \Longrightarrow v \in \tr$.
+% % When $\slin  - \delta \dk^{p} \huk \not\in\tr$, then because $\tr$ is a convex set, there is a unique, well defined value of $\zeta \in (0, 1)$.
+% and because $\slin  \in B_{\infty}(\xk, \frac 1 2 \dk)$, $\delta \le \frac 1 2 $, $p > 1$, and $\dk \le 1$,
 % 
 % 
 % % so that $v \in \tr$.
@@ -3715,17 +3773,17 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % % then $\zeta' = 1$ is not feasible, but $\zeta' = 0$ still is.
 % % Thus, because $\tr$ is a convex set, there is a well defined value $\zeta \in (0, 1]$ to define $v$.
 % 
-% % Note that because $u_{\textrm{GC}} \in \tr$, 
+% % Note that because $\slin  \in \tr$, 
 % % \begin{align}
-% % \|u_{\textrm{GC}} - v\| \le \left\|u_{\textrm{GC}} - \left(u_{\textrm{GC}} - \delta \dk^{p} \huk\right)\right\| + \left\|\left(u_{\textrm{GC}} - \delta \dk^{p} \huk\right) - v\right\| \nonumber \\
-% % \le \delta 2\dk^{p} + \left\|v - \xk \right\| + \left\|\xk - u_{\textrm{GC}}\right\|
+% % \|\slin  - v\| \le \left\|\slin  - \left(\slin  - \delta \dk^{p} \huk\right)\right\| + \left\|\left(\slin  - \delta \dk^{p} \huk\right) - v\right\| \nonumber \\
+% % \le \delta 2\dk^{p} + \left\|v - \xk \right\| + \left\|\xk - \slin \right\|
 % % \le 2 \delta\left(1 + \sqrt{n}\right) \dk^{p} \label{sr_v_close_u}
 % % \end{align}
 % % 
-% % By \cref{sufficient_reduction_of_projected_gradient}, $u_{\textrm{GC}}$ satisfies
-% % % Because $u_{\textrm{GC}}$ is the Cauchy point for the trust region subproblem with $\frac 1 2$ the current radius, it satisfies
+% % By \cref{sufficient_reduction_of_projected_gradient}, $\slin $ satisfies
+% % % Because $\slin $ is the Cauchy point for the trust region subproblem with $\frac 1 2$ the current radius, it satisfies
 % % \begin{align*}
-% % \mfk(\xk) - \mfk(u_{\textrm{GC}}) \ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
+% % \mfk(\xk) - \mfk(\slin ) \ge \kappa_f \chik \min\left\{ \frac{\chik}{1+\|\nabla^2 \mfk(\xk)\|}, \frac 1 2 \dk, 1 \right\}.
 % % \end{align*}
 % 
 % 
@@ -3779,12 +3837,12 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % % \cref{bounded_gradients_lemma}, and \cref{bounded_hessians_assumption}
 % % Using this, \cref{sr_define_delta}, \cref{sr_p_big}, and \cref{sr_v_close_u} we know that
 % % \begin{align*}
-% % m_f^{(k)}(u_{\textrm{GC}}) - m_f^{(k)}(v) = 
-% % \left(\gk\right)^T(u_{\textrm{GC}} - v) + \left(u_{\textrm{GC}} - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(u_{\textrm{GC}} - v\right) \\
-% % \le \left\|\gk\right \|  \left\|u_{\textrm{GC}}- v\right\|  + \|u_{\textrm{GC}} - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
+% % m_f^{(k)}(\slin ) - m_f^{(k)}(v) = 
+% % \left(\gk\right)^T(\slin  - v) + \left(\slin  - v\right) ^T\left(\nabla^2m_f^{(k)}\left(\xk\right)\right)\left(\slin  - v\right) \\
+% % \le \left\|\gk\right \|  \left\|\slin - v\right\|  + \|\slin  - v\|^2 \left\|\nabla^2m_f^{(k)}\left(\xk\right)\right\|\\
 % % \le \delta\maxgrad \left(1 + \sqrt{n}\right) \dk^{p}  + \delta^2 \left(\maxhessian - 1\right)\left(1 + \sqrt{n}\right)^2\dk^{2p} \\
 % % \le \frac 1 2 \kappa_f \kappa_{\chi} \dk^{1 + p_{\Delta}}\min\left\{ \frac{\kappa_{\chi}}{\maxhessian}, 1 \right\}
-% % \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(u_{\textrm{GC}}) \\
+% % \le \frac 1 2 m_f^{(k)}(\xk) - m_f^{(k)}(\slin ) \\
 % % \end{align*}
 % 
 % % \ge \frac 1 4 \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
@@ -3796,11 +3854,11 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 % 
 % 
 % 
-% % If $u_{\textrm{GC}} \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|u_{\textrm{GC}} - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
-% % If $u_{\textrm{GC}} \not \in \tr$, then a trust region constraint is active and $\left\|u_{\textrm{GC}} - \xk\right\| \ge \dk$.
+% % If $\slin  \in \tr$, then by \cref{sr_chi_big_enough} and \cref{define_p_delta}: $\left\|\slin  - \xk\right\| = \chik \ge \kappa_{\chi} \dk^{p_{\Delta}} \ge  \kappa_{\chi} \dk$.
+% % If $\slin  \not \in \tr$, then a trust region constraint is active and $\left\|\slin  - \xk\right\| \ge \dk$.
 % % In either case, we find that 
 % % \begin{align}
-% % \left\|u_{\textrm{GC}} - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
+% % \left\|\slin  - \xk\right\| \ge \dk \min\{\kappa_{\chi}, 1 \} \label{gc_big_enough}.
 % % \end{align}
 % 
 % 

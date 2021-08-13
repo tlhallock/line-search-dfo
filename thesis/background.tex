@@ -249,14 +249,15 @@ We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \al
 Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
 \begin{align}
 \label{interpolation_condition}
-    \mf(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
+\mf(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
 \end{align}
 
 % We can also write this equation in matrix form.
 This equation can be written more compactly in the form
-\begin{equation}\label{matrix_form}
+\begin{align}
+\label{matrix_form}
 V \alpha = \bar{f},
-\end{equation}
+\end{align}
 where $\bar{f} = [f(y^0), f(y^1), \ldots, f(y^p)]^T$ and the Vandermonde matrix $V$ is defined by 
 
 \begin{align}
