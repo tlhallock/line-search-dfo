@@ -1,20 +1,15 @@
-\sbnote{Questions/discussion points:
-\begin{enumerate}
-\item State the bilevel program for the maximum volume ellipsoid.
+\label{infeasible_point_strategies}
+
+\sbnote{State the bilevel program for the maximum volume ellipsoid.}
+%
+\sbnote{Clean up the alignment of equations.}
+% \item Change $B_{\infty}(\xk,\dk)$ to $\outertrk$ throughout chapter 4.  Also make sure that $\outertrk$ and $\outertrkpo$ are being used correctly.
+% \item Fix inconsistencies in notation for condition number.  $\kappa$ versus $\sigma$.
 % \item The Ideal Solution section doesn't actually spell out an algorithm for finding the maximum volume ellipsoid within $\capcones \cap \outertrkpo$.   You really only describe how to check whether an ellipsoid is contained within a cone.    So I think it would be more honest (and actually would be a more sensible flow of logic) to rename the section as ``Checking if an ellipsoid is contained in a cone''.
 % \item Can we change $\sampletrk$ to $T^{(k)}_{\text{sample}}$?  Whenever we talk about it, we always describe it as the sample trust region rather than the interpolation trust region, so it would be nice if the notation was consistent with that.
 % \item I think you should limit chapter 4 to the case of a convex feasible region.   You don't need the constraint functions themselves to be convex--you just need the feasible region to be a convex set.  For one thing, Conejo's algorithm assumes a convex feasible region, so I am worried that the proof technique will break down for a nonconvex feasible region.
-\end{enumerate}
-}
-%
-\sbnote{To Do: 
-\begin{enumerate}
-% \item Change $B_{\infty}(\xk,\dk)$ to $\outertrk$ throughout chapter 4.  Also make sure that $\outertrk$ and $\outertrkpo$ are being used correctly.
-\item Clean up the alignment of equations.  
-% \item Fix inconsistencies in notation for condition number.  $\kappa$ versus $\sigma$.
-\end{enumerate}
-}
-\label{infeasible_point_strategies}
+
+
 This chapter considers the problem
 \begin{align}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
@@ -55,7 +50,7 @@ As discussed in \cref{chap:background}, we need
  For the constraints, we first use the same sample points to fit quadratic models $q_{c_i}^{(k)}$ of the constraint functions and then define  
  linear models $\mcik$ so that $\mcik(\xk)=f(\xk)$ and $\nabla \mcik(\xk) = \nabla q_{c_i}^{(k)}(x^k)$.   
  
-The trust region subproblems have the form
+The trust region sub-problems have the form
 \begin{align*} \label{trust_problem_nlp}
 \begin{array}{ccl} \min_{s}
  & \mfk \left(\xk+s\right) \\
@@ -272,7 +267,7 @@ and size determined by a parameter $\delta_{k} > 0$:
 \begin{align}
 \sampletrk = \left \{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right \}. \label{define_sampletrk}
 \end{align}
-The starting ellipsoid,  $T_{\text{interp}}^{(1)}$,  is specified by the user.
+The starting ellipsoid,  $T_{\text{interp}}^{(0)}$,  is specified by the user.
 Thereafter,  $\sampletrkpo$ is constructed at the end of iteration $k$ using the cones defined in \cref{buffering_cones}
 In particular,  $\qkpo,\ckpo$, and $\delta_{k+1}$ are chosen so that $\sampletrkpo  \subset \capcones \cap \outertrkpo$.
 To accomplish this, we first need to understand how to verify that an ellipsoid is contained within a cone.
@@ -607,7 +602,7 @@ An example plot of such a function $f$ is found within \cref{antiprojection_imag
 		]{
     		By computing the zeros of this function, we find values of $\lambda$ for each critical point of \cref{antiprojection_problem}.
     		The function $f$ is in blue, and the eigenvalues of $Q$ are red vertical lines.
-    		A binary seach can be used to find one zero (plotted as green vertical lines) to the left of the smallest eigenvalue and one to the right of the largest.
+    		A binary search can be used to find one zero (plotted as green vertical lines) to the left of the smallest eigenvalue and one to the right of the largest.
     		Between any two eigenvalues, we first find the minimum.
     		If the minimum is negative, we can then use a binary search to compute two more zeros.
 	}
@@ -983,12 +978,12 @@ We have
 Let $x$ be such that $f_e(\epsilon, \delta, \theta, x) \le 0$.
 First, note that a square is non-negative, so
 \begin{align*}
-0 \le 2(e_1^Tx - \frac 1 2 \epsilon )^2
-= 2(e_1^Tx)^2 - 2e_1^Tx\epsilon + \frac 1 2 \epsilon^2.
+0 \le 2\left(e_1^Tx - \frac 1 2 \epsilon \right)^2
+= 2\left(e_1^Tx\right)^2 - 2e_1^Tx\epsilon + \frac 1 2 \epsilon^2.
 \end{align*}
 By moving the second and third terms to the right hand side, we find
 \begin{align}
-(e_1^Tx)^2 \ge \frac 1 2 \epsilon^2 - \left((e_1^Tx)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) 
+\left(e_1^Tx\right)^2 \ge \frac 1 2 \epsilon^2 - \left(\left(e_1^Tx\right)^2 - 2e_1^Tx\epsilon + \epsilon^2\right) 
 = \frac 1 2 \epsilon^2 - (e_1^Tx - \epsilon)^2. \label{ellipse_in_cone_eqn1}
 \end{align}
 If we substitute \cref{define_ellipse_function} into $f_e(\epsilon, \delta, \theta, x) \le 0$, we find that
@@ -1665,14 +1660,14 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
     \label{restore_feasible_ellipsoid_convex}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            $P_{\textrm{hull}} = \emptyset$
+            $\hullpoly = \emptyset$
             
         \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
-	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyplerplane $ax\le b$ running through the points $S \cup \xk$.
-	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $P_{\textrm{hull}}$.
+	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyper-plane $ax\le b$ running through the points $S \cup \xk$.
+	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $\hullpoly$.
 	
 	\item[\textbf{Step 1}] \textbf{(Construct ellipsoid)} \\
-	   Construct an ellipsoid within $P_{\textrm{hull}} \cap \trk$ \\
+	   Construct an ellipsoid within $\hullpoly \cap \trk$ \\
     \end{itemize}
 \end{algorithm}
 
@@ -1696,16 +1691,16 @@ computations.
 
 The final step of constructing the ellipsoid within the vertex of the polyhedron is done several times throughout this thesis.
 For completeness, we describe the process here.
-Let $P_{\textrm{hull}}$ be the constraints for the convex hull of previous evaluations:
+Let $\hullpoly$ be the constraints for the convex hull of previous evaluations:
 \begin{align*}
-P_{\textrm{hull}} = \left\{x \in \Rn \bigg | A^{\textrm{hull}} x \le b^{\textrm{hull}}, \left\|A_i^{\textrm{hull}}\right\| = 1 \forall i \right\}
+\hullpoly = \left\{x \in \Rn \bigg | A^{\textrm{hull}} x \le b^{\textrm{hull}}, \left\|A_i^{\textrm{hull}}\right\| = 1 \forall i \right\}
 \end{align*}
 and let $\mathcal A^{\textrm{hull}}$ be the set of active constraints:
 \begin{align*}
 \mathcal A^{\textrm{hull}} = \left\{i \in [m] \bigg | A_i^{\textrm{hull}} \xk = b_i^{\textrm{hull}} \right\}
 \end{align*}
 
-If $\xk$ is not on the boundary of $P_{\textrm{hull}}$, then $\mathcal A^{\textrm{hull}} = \emptyset$ and we are free to construct the ellipsoid
+If $\xk$ is not on the boundary of $\hullpoly$, then $\mathcal A^{\textrm{hull}} = \emptyset$ and we are free to construct the ellipsoid
 \begin{align*}
 \Delta = \min_{i} b_i^{\textrm{hull}} - A_i^{\textrm{hull}} \xk,
 \left\{x \in \Rn \bigg | \left\|x - \xk\right\|^2 \le \Delta^2\right\}.
@@ -1726,7 +1721,7 @@ so that the cone
 \begin{align*}
 C^{\textrm{hull}} = \left\{x \in \Rn | \; x = \xk + s, s^Tu^{\textrm{hull}} \ge \beta^{\textrm{hull}} \left\|s\right\| \right\}
 \end{align*}
-is contained within $P_{\textrm{hull}}$ near $\xk$.
+is contained within $\hullpoly$ near $\xk$.
 To see this, consider constraint $j$ and apply \cref{cone_subset_cone} with
 $u \gets u^{\textrm{hull}}$, 
 $v \gets -A_j^{\textrm{hull}}$, 
@@ -1751,7 +1746,7 @@ for any $t > 0$, the ellipsoid
 \end{align*}
 
 Notice that by \cref{Lambda_poised_error_bounds} if a set of points is $\Lambda$-poised, their Vandermonde matrix cannot have $0$ determinant.
-This means the interier of their convex hull is non-empty.
+This means the interior of their convex hull is non-empty.
 We summarize what we have shown here:
 \begin{itemize}
 \item We have that \cref{ellipse_fits} ensures adjacency.
@@ -1791,13 +1786,13 @@ Choose a value of $t$.
 % \end{align*}
 
 
-\subsection{Nonconvex feasible region}
+\subsection{Non-convex feasible region}
 
 \subsubsection{Problem difficulty}
 
 For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
 This means that the current iterate lies within the interior of the feasible region,
-and there is gauranteed to be a feasible ellipsoid centered at the current iterate with a small enough trust region.
+and there is guaranteed to be a feasible ellipsoid centered at the current iterate with a small enough trust region.
 However, if the current iterate lies on the boundary of the feasible region, namely some constraint value is $0$ at $\xk$, finding the sample region can be much more difficult.
 \cref{nonconvex_ellipsoid_existence} shows that \cref{minangleassumption_alt} ensures a feasible ellipsoid near the current iterate,
 but we do not know which direction $\minangledirk$ to use.
@@ -2026,7 +2021,7 @@ by $\frac t 4$ to find
 
 Throughout \cref{recovering_feasiblity_section} we showed an approach for handling infeasible sample points.
 The other evaluation that may be infeasible is the trial point $\xk + \sk$.
-Our algorithm decreases the trust region radius when it encouters such an infeasible trial pointm,
+Our algorithm decreases the trust region radius when it encounters such an infeasible trial point,
 which is an acceptable approach assuming that no trial point will be infeasible for sufficiently small $\dk$.
 % However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
 In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set: $\sampletrk \subseteq \feasible$.
@@ -2069,8 +2064,8 @@ In most applications, an algorithm computes an approximate solution to the trust
 \begin{align}
 \label{whole_trust_region_subproblem}
 \begin{array}{ccc}
-\slin = \argmin_{s \in \Rn} & m_{f}(\xk + s) & \\
-\textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & i \in [m]\\
+\slin = \argmin_{s \in \Rn} & m_{f}\left(\xk + s\right) & \\
+\textrm{s.t.} & m_{c_i}\left(\xk + s\right) \le 0 & i \in [m]\\
 & s \in \trk. & \\
 \end{array}
 \end{align}
@@ -2087,15 +2082,15 @@ To do this, we compute an approximate solution to
 \begin{align}
 \label{half_tr_subproblem}
 \begin{array}{ccccc}
-\slin &\approx& \argmin_{s} & m_f(\xk + s) & \\
-&& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & \forall i \in \activeconstraintsk \\
+\slin &\approx& \argmin_{s} & m_f\left(\xk + s\right) & \\
+&& \textrm{s.t.} & m_{c_i}\left(\xk + s\right) \le 0 & \forall i \in \activeconstraintsk \\
 &&&s \in B_2\left(\xk, \frac 1 2 \dk\right) &
 \end{array}
 \end{align}
 which satisfies
 \begin{align}
 \label{what_ugc_satisfies}
-m_f^{(k)}(\xk) - m_f^{(k)}(\slin ) \ge \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}
+m_f^{(k)}(\xk) - m_f^{(k)}\left(\slin \right) \ge \kappa_f' \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \frac 1 2 \dk, 1 \right\}
 \end{align}
 for some constant $\kappa_f'$ independent of $k$.
 Notice that the ``true" feasible region used in the analysis of this bound is precisely $\feasiblek$.
@@ -2109,7 +2104,7 @@ and check
 \end{align}
 This ensures the efficiency condition \cref{efficiency} is satisfied with a constant $\kappa_f \gets \tolsr \kappa_{f}'$.
 Conveniently, this check can be performed before evaluating the current iterate.
-Because we decrease the trust reigon radius when this check is not satisfied,
+Because we decrease the trust region radius when this check is not satisfied,
 \cref{sufficient_reduction_theorem} also ensures this check can fail only a finite number of times.
 
 The upper bound of $\frac 1 2$ was chosen for theoretical convenience: we believe any value in $(0, 1)$ could work.
@@ -2205,7 +2200,7 @@ and check
 \begin{align}
 \kappa_{\chi} \dk^{p_{\Delta}} \le \chik \label{criticallity_check}
 \end{align}
-to ensure the trust region radius does not remain large while approaching criticallity.
+to ensure the trust region radius does not remain large while approaching criticality.
 Here,
 $p_{\alpha}$ and $p_{\beta}$ are introduced by \cref{define_abpab},
 while $\chik$ is introduced in \cref{define_criticality_measure}.
@@ -2340,26 +2335,26 @@ This is because the only way to quit iteration $k$ without reaching Step 3 is
 \label{convex_convergence_analysis}
 
 Let $\left\{\xk\right\}$ be the sequence of iterates generated by \cref{constrained_dfo}.
-For convex constraints, we can let $\chi\left(x\right) = \left\|x - \textrm{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$ be the criticallity measure for \cref{the_dfo_problem}, 
+For convex constraints, we can let $\chi\left(x\right) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$ be the criticality measure for \cref{the_dfo_problem}, 
 For general constraints, this projection is not well defined.
 However, to show convergence to a first order critical point, we can project onto the linearization of the constraints.
 Namely, for any $x \in \feasible$, if we define $F_c(x) = \left\{y \in \Rn \big | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \; \forall i \in [m] \right\}$, 
-then we can let the criticallity measure be
-$\chi\left(x\right) = \left\|x - \textrm{Proj}_{F_c(x)}\left(x- \nabla f\left(x\right)\right)\right\|$.
+then we can let the criticality measure be
+$\chi\left(x\right) = \left\|x - \proj_{F_c(x)}\left(x- \nabla f\left(x\right)\right)\right\|$.
 In this section we prove that under appropriate conditions, the criticality measure $\chi\left(\xk\right)$ converges to $0$ as $k\to\infty$.
 
 For much of our analysis, we work with the model criticality measure
 \begin{align*}
-\chi_m\left(x\right) = \left\|x - \textrm{Proj}_{\feasiblek}\left(x- \nabla \mfk\left(x\right)\right)\right\|.
+\chi_m\left(x\right) = \left\|x - \proj_{\feasiblek}\left(x- \nabla \mfk\left(x\right)\right)\right\|.
 \end{align*}
 in accordance with \cref{define_criticality_measure}: $\chik = \chi_m\left(\xk\right)$.
 $\chik$ depends on the current approximation of the constraints, which change each iteration.
-Thus, we show that the model criticallity measure converges to the true criticallity measure
+Thus, we show that the model criticality measure converges to the true criticality measure
 \begin{align}
 \label{verbiage_hoffman_use_one}
 \chik \approx \chi (\xk).
 \end{align}
-For some results, we must also show that the criticallity \cref{define_criticality_measure} measure converges across iterations:
+For some results, we must also show that the criticality \cref{define_criticality_measure} measure converges across iterations:
 \begin{align}
 \label{verbiage_hoffman_use_two}
 \chik \approx \chil.
@@ -2385,7 +2380,7 @@ This is done within \cref{limit_of_criticallity_to_zero}.
 This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on results within \cref{bounding_the_projection_section}.
 % the Hoffman constant of the constraint's model's Jacobians.
 % This is done within \cref{bounding_the_projection_section}.
-This is complicated by the fact that we do not assume bounded level sets, so we do not have a gaurantee that the sequence $\left\{\xk\right\}$ is Cauchy.
+This is complicated by the fact that we do not assume bounded level sets, so we do not have a guarantee that the sequence $\left\{\xk\right\}$ is Cauchy.
 % Thus, we introduce \cref{criteria_from_contradiction}, which
 % \begin{itemize}
 % \item is sufficient to prove \cref{verbiage_hoffman_use_two},
@@ -2397,7 +2392,7 @@ This is complicated by the fact that we do not assume bounded level sets, so we 
 % \item This is one uses of the hoffman bound
 % \item motivate criteria mention contradiction
 % \end{itemize}
-\item Show the limit of true criticallity measure is zero \\
+\item Show the limit of true criticality measure is zero \\
 This is done within \cref{limit_of_true_criticallity}.
 This relies on \cref{verbiage_hoffman_use_two}.
 % , which in turn relies on bounding the Hoffman constant of the Jacobians of the constraints.
@@ -2569,7 +2564,7 @@ In \cref{convex_restoration}, we show how to satisfy the assumption for convex c
 \label{restorability_assumption}
 There exists a subroutine \emph{RestoreFeasibility} that accepts a feasible point $x \in \feasible$ and a maximum radius $\dmax$ to produce
 a new trust region radius $\Delta < \dmax$ and ellipsoid $T_{\textrm{interp}}$ that is trusted for 
-$x, \Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellipsoids_notation_definitions}.
+$x$, $\Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellipsoids_notation_definitions}.
 \end{assumption}
 
 
@@ -2929,8 +2924,8 @@ Notice that $\dkpo \le \omegainc \dk$ and $\left\|\xk - \xkpo\right\| \le \sqrt{
 
 By \cref{bounded_hessians_assumption}, we have
 \begin{align}
-c_i(y) \le c_i(\xk) + \left(\gmcik\right)^T(y - \xk) + \frac 1 2 \left(y - \xk\right)^T\nabla^2{c_i}(\xk)\left(y - \xk\right) \nonumber \\
-\le c_i(\xk) + \left\|\gmcik\right\|\left(1 + \omegainc\right) \sqrt{n}\dk +n \left(1 + \omegainc\right)^2\maxmodelhessian\dk^2.
+c_i(y) \le c_i\left(\xk\right) + \left(\gmcik\right)^T\left(y - \xk\right) + \frac 1 2 \left(y - \xk\right)^T\nabla^2{c_i}\left(\xk\right)\left(y - \xk\right) \nonumber \\
+\le c_i\left(\xk\right) + \left\|\gmcik\right\|\left(1 + \omegainc\right) \sqrt{n}\dk +n \left(1 + \omegainc\right)^2\maxmodelhessian\dk^2.
 \label{oszm_first_bound}
 \end{align}
 
@@ -2946,7 +2941,7 @@ Also from \cref{define_mingraddelta} we have
 \begin{align*}
 \left(\frac 3 2 \maxgrad\sqrt{n} \left(1 + \omegainc\right) + n \maxmodelhessian \left(1 + \omegainc\right)^2 \right)\dk \le \mingradepsilon
 \end{align*}
-and using $\dk \le 1$, we can multiply the second term in paranthesis by $\dk$:
+and using $\dk \le 1$, we can multiply the second term in parenthesis by $\dk$:
 \begin{align*}
 \frac 3 2 \maxgrad\sqrt{n} \left(1 + \omegainc\right) \dk + n \maxmodelhessian \left(1 + \omegainc\right)^2\dk^2 \le \mingradepsilon.
 \end{align*}
@@ -3420,8 +3415,8 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % 
 % Define
 % \begin{align}
-% u_l = P_{\feasiblek}(\xk - \gk) \\
-% u_{GC} = P_{\feasiblek\cap B_{\infty}\left(\frac 1 2 \dk\right)}(\xk-\gk) \\
+% u_l = \proj_{\feasiblek}(\xk - \gk) \\
+% u_{GC} = \proj_{\feasiblek\cap B_{\infty}\left(\frac 1 2 \dk\right)}(\xk-\gk) \\
 % p = 1 + \frac 1 2 p_{\Delta} + \frac 1 2\min\{p_{\alpha}, p_{\beta}\} \label{sr_def_p}\\
 % \dsr = \min\left\{
 % \dacc,
@@ -3454,7 +3449,7 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % Let $\feasiblek$, be defined by \cref{define_feasiblek}.
 % The projected gradient descent is defined by:
 % \begin{align}
-% u_{GC} = P_{\feasiblek\cap B_{\infty}\left(\xk, \frac 1 2 \dk\right)}\left(\xk-\gk\right) \label{define_projected_gradient}.
+% u_{GC} = \proj_{\feasiblek\cap B_{\infty}\left(\xk, \frac 1 2 \dk\right)}\left(\xk-\gk\right) \label{define_projected_gradient}.
 % \end{align}
 % \end{definition}
 % 
@@ -3498,8 +3493,8 @@ Then, there exists and $\kappa_f>0$ and $\dsr>0$, such that if during iteration 
 then there exists $v \in \capcones \cap \trk$ such that both
 \begin{align*}
 \begin{array}{cccc}
-& m_f^{(k)}(\xk) - m_f^{(k)}(v) & \ge & \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
-\textrm{and} \quad & m_f^{(k)}(\xk) - m_f^{(k)}(v) &\ge& \tolsr\left[m_f^{(k)}(\xk) - m_f^{(k)}(\slin)\right].
+& \mfk\left(\xk\right) - \mfk(v) & \ge & \kappa_f \chik \min\left\{ \frac{\chik}{1+\left\|\nabla^2 \mfk(\xk)\right\|}, \dk, 1 \right\} \\
+\textrm{and} \quad & \mfk\left(\xk\right) - \mfk(v) &\ge& \tolsr\left[m_f^{(k)}(\xk) - m_f^{(k)}(\slin)\right].
 \end{array}
 \end{align*}
 % \ge \frac 1 2 \left(m_f^{(k)}(\xk) - m_f^{(k)}(u_{GC})\right)
@@ -3579,7 +3574,7 @@ Thus, as long as $\dk \le \minangledelta$, \cref{minangleassumption_alt} implies
 -\frac {\gmcik}{\|\gmcik\|} ^T\huk \ge \minanglealpha \Longrightarrow -\left(\zik - \xk\right)^T\huk \ge \minanglealpha \left\|\zik - \xk\right\| \label{u_is_feasible}
 \end{align}
 where $\zik$ is defined by \cref{define_z}.
-Similarily, because $\slin $ is feasible with respect to the linearization of the constraints, we have
+Similarly, because $\slin $ is feasible with respect to the linearization of the constraints, we have
 \begin{align}
 \left(\zik - \xk\right)^T(\slin  - \xk) \le \left\|\zik - \xk\right\|^2. \label{gc_is_feasible}
 \end{align}
@@ -4044,7 +4039,7 @@ f\left(\xk\right) - f\left(\xkpo\right) \ge \gammabi \left[\mfk\left(\xk\right) 
 \ge \gammabi \kappa_f \kappa_{\chi}\dk^{p_{\Delta}}\min\left\{\frac{\dk}{\oalpha \maxmodelhessian}, \dk, 1\right\}.
 \end{align*}
 % 
-Because $f\left(\xk\right)$ is nonincreasing, the left hand side goes to zero.
+Because $f\left(\xk\right)$ is non-increasing, the left hand side goes to zero.
 Thus,
 \begin{align}
 \lim_{k \in \suffiterates} \dk = 0.
@@ -4062,7 +4057,7 @@ so that $\lim_{k \in \mathcal U} \dk = 0$.
 \end{proof}
 
 
-\subsubsection{Initial Criticallity Convergence}
+\subsubsection{Initial Criticality Convergence}
 
 % \begin{assumptions}
 % Suppose the assumptions for \cref{mathcal_k_subset_bar_s} and \cref{delta_to_zero} hold.
@@ -4090,6 +4085,8 @@ Using the same constants as used in \cref{define_reduceiterates}, let
 1\right\}
 \end{align*}
 and consider a $k \ge k_1$.
+Also, assume that $k_1$ is sufficiently large that $\dk \le \dfeas$ as defined in \cref{searchtrk_is_feasible}
+so that neither a sample point nor the trial point can be infeasible.
 If $\dk \le \tilde \Delta$, then $k \in \reduceiterates$.
 Then, by \cref{mathcal_k_subset_bar_s},  $k \in \miniterates$ and thus $\dkpo \ge \dk$.
 Therefore, the trust region radius can only decrease if $\dk > \tilde \Delta$, and in this case $\dkpo = \omegadec\dk > \omegadec \tilde \Delta$.
@@ -4197,7 +4194,7 @@ so that
 
 
 We also know that $\left\{f\left(\xk\right)\right\}$ is bounded below by \cref{bounded_below_assumption}, 
-and since it is nonincreasing, $f\left(\xk\right)  - f\left(\xl\right) \to 0$.
+and since it is non-increasing, $f\left(\xk\right)  - f\left(\xl\right) \to 0$.
 Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{(k,l) \in \slb}$ converges to zero.
 \end{proof}
 
@@ -4475,30 +4472,30 @@ If $D\left(S, S'\right) \le 1$, then
 % is given with $D\left(S, S'\right) \le \epsilon$.
 % Then 
 \begin{align*}
-\|P_{S}(g) - P_{S'}(g)\| \le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\convexdistance\left(S, S'\right)}.
+\|\proj_{S}(g) - \proj_{S'}(g)\| \le 8\left(1 + \|\proj_{S \cap S'}(g) - g\|\right) \sqrt{\convexdistance\left(S, S'\right)}.
 \end{align*}
 \end{lemma}
 \begin{proof}
 % Because $\convexdistance(S, S') \le \epsilon$, we know that $S \cap S' \ne \emptyset$.
 
-% If $S \cap S' = \emptyset$, then $P_{S \cap S'}\left(g\right) = \infty$.
+% If $S \cap S' = \emptyset$, then $\proj_{S \cap S'}\left(g\right) = \infty$.
 
-If $g \in S \cap S'$, then $\left\|P_S(g) - P_{S'}(g)\right\| = 0 \le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\convexdistance\left(S, S'\right)}$.
+If $g \in S \cap S'$, then $\left\|\proj_S(g) - \proj_{S'}(g)\right\| = 0 \le 8\left(1 + \|\proj_{S \cap S'}(g) - g\|\right) \sqrt{\convexdistance\left(S, S'\right)}$.
 Likewise, the left hand side is $0$ whenever $S = S'$.
 Otherwise, $\convexdistance\left(S, S'\right) > 0$, and let 
 \begin{align*}
 \begin{array}{ccc}
-x = P_S(g) - g      & u = P_{S \cap S'}(g + x) - g & a = P_{S \cap S'}(g) - g \\
-y = P_{S'}(g) - g   & v = P_{S \cap S'}(g + y) - g. &  \\
+x = \proj_S(g) - g      & u = \proj_{S \cap S'}(g + x) - g & a = \proj_{S \cap S'}(g) - g \\
+y = \proj_{S'}(g) - g   & v = \proj_{S \cap S'}(g + y) - g. &  \\
 \end{array}
 \end{align*}
 Because $S \cap S' \subseteq S$ and $S \cap S' \subseteq S'$ we have
-$\|x\| = \|P_S(g) - g\| \le \|P_{S \cap S'} (g) - g\| = \|a\|$ and $\|y\| \le \|a\|$.
+$\|x\| = \|\proj_S(g) - g\| \le \|\proj_{S \cap S'} (g) - g\| = \|a\|$ and $\|y\| \le \|a\|$.
 Also, because $S \cap S'$ is convex, the optimality conditions for $a$ imply the plane $a^Tx \ge a^Ta$ separates $S \cap S'$ from $g$.
 In particular, $a^Tu \ge a^Ta$ and $a^Tv \ge a^Ta$.
-Finally, by letting $0 < \epsilon = \convexdistance(S, S') \le 1$, we have $\|x - u\| = \|P_{S \cap S'}\left(P_S(g)\right)\| \le \epsilon$ and $\|y - v\| \le \epsilon$.
+Finally, by letting $0 < \epsilon = \convexdistance(S, S') \le 1$, we have $\|x - u\| = \|\proj_{S \cap S'}\left(\proj_S(g)\right)\| \le \epsilon$ and $\|y - v\| \le \epsilon$.
 Thus, \cref{properties_of_a_circle} informs us
-$\|P_S(g) - P_{S'}(g)\| = \|x - y\| \le 8(1 + \|a\|) \sqrt{\epsilon}$.
+$\|\proj_S(g) - \proj_{S'}(g)\| = \|x - y\| \le 8(1 + \|a\|) \sqrt{\epsilon}$.
 \end{proof}
 
 
@@ -4507,16 +4504,16 @@ Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
 
 Let $g, g' \in \Rn$ and let $S, S' \subseteq \Rn$ be convex with $S \cap S' \ne \emptyset$.
 Suppose that $0 < \epsilon \le 1$ is given with $D\left(S, S'\right) \le \epsilon$ and $\|g - g'\| \le \epsilon$.
-Then $\|P_S(g) - P_{S'}(g')\| \le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}$.
+Then $\|\proj_S(g) - \proj_{S'}(g')\| \le 9\left(1 + \|\proj_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}$.
 \end{corollary}
 \begin{proof}
 Notice
 \begin{align*}
-\|P_S(g) - P_{S'}(g')\| 
-\le \|P_S(g) - P_{S'}(g)\| + \|P_{S'}(g) - P_{S'}(g')\| \\
-\le \|P_S(g) - P_{S'}(g)\| + \|g - g'\| \\
-\le 8\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon} + \epsilon \\
-\le 9\left(1 + \|P_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}.
+\|\proj_S(g) - \proj_{S'}(g')\| 
+\le \|\proj_S(g) - \proj_{S'}(g)\| + \|\proj_{S'}(g) - \proj_{S'}(g')\| \\
+\le \|\proj_S(g) - \proj_{S'}(g)\| + \|g - g'\| \\
+\le 8\left(1 + \|\proj_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon} + \epsilon \\
+\le 9\left(1 + \|\proj_{S \cap S'}(g) - g\|\right) \sqrt{\epsilon}.
 \end{align*}
 \end{proof}
 
@@ -4538,12 +4535,12 @@ $\delta_{\alpha} > 0$
 be given such that
 \begin{align*}
 \begin{array}{cccc}
-\delta_r \|A_i\| \le b_i,			&
-Cu \ge \delta_{\alpha} e,			&
-\delta_l \le \|A_i\| \le \delta_u	\\
-\delta_r \|A_i'\| \le b_i',			&
-C'u \ge \delta_{\alpha} e, 			&
-\delta_l \le \|A'_i\| \le \delta_u.
+\delta_r \|A_i\| \le b_i,			& \quad
+\delta_l \le \|A_i\| \le \delta_u	& \quad
+Cu \ge \delta_{\alpha} e,			\\
+\delta_r \|A_i'\| \le b_i',			& \quad
+\delta_l \le \|A'_i\| \le \delta_u, & \quad
+C'u \ge \delta_{\alpha} e.
 \end{array}
 \end{align*}
 % be given such that $\left\|A_i\right\| > 0$ and $\left\|A'_i\right\| > 0$ for all $i \in [m]$.
@@ -4552,7 +4549,7 @@ Given $p \in \Rn$ and $r > 0$, define the sets
 \begin{align*}
 \begin{array}{ccccc}
 S  &= \bigg\{x \in \Rn \bigg|& A (x - p) \le b ,& C (x - p) \le d ,& \|x - p\| \le r \bigg\}, \\
-S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\}.
+S' &= \bigg\{x \in \Rn \bigg|& A'(x - p) \le b',& C'(x - p) \le d',& \|x - p\| \le r \bigg\},
 \end{array}
 \end{align*}
 and for any $0 < \epsilon < r$, define the constants
@@ -4767,7 +4764,7 @@ s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
 \end{boxedcomment}
 \end{proof}
 
-\subsubsection{Simplifed Results}
+\subsubsection{Simplified Results}
 \label{simplifed_bounded_projection}
 
 
@@ -4995,10 +4992,10 @@ Thus, we must only set $k_0 = \max \left\{k_1, k_2, k_3\right\}$ and $\activedir
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, 
 and for any fixed $k$, define
 
-% \Amk &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( P_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
+% \Amk &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( \proj_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
 \begin{align}
-\Alk &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( P_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\}, \label{tbbt_a2} \\
-\Ack &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}. \label{tbbt_a3}
+\Alk &= \left\{ i \in [m] \bigg | c_i\left(\xl\right) + \gmcil^T\left( \proj_{\feasiblel}\left(\xk - \gk\right) - \xl\right) = 0\right\}, \label{tbbt_a2} \\
+\Ack &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \nabla c\left(\xk\right)^T\left( \proj_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}. \label{tbbt_a3}
 \end{align}
 
 \begin{lemma}
@@ -5036,14 +5033,14 @@ Before going through several cases, we make four observations.
 First, \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero} imply the existence of $k_1 \in \naturals$
 such that if $k \ge k_1$, then as $\xk \in \feasiblek$ which is convex,
 \begin{align*}
-\left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
+\left\|\proj_{\feasiblek}\left(\xk - \gk\right) - \xk\right\| 
 \le \left\|\xk - \gk - \xk \right\| \le \maxmodelgrad.
 \end{align*}
 Secondly, \cref{accuracy_is_satisfied} and \cref{delta_to_zero} imply the existence of $k_2 \in \naturals$ such that if $k \ge k_2$, then
 \begin{align}
 \left\|\gmcik - \nabla c_i\left(\xk\right)\right\| \le \kappa_g \dk^2 \le \deltalb. \label{hmoydihtp_eqn1}
 \end{align}
-Similarily, \cref{model_gradients_are_cauchy} implies the existence of $k_3 \in \naturals$ such that if $k, l \ge k_3$, then 
+Similarly, \cref{model_gradients_are_cauchy} implies the existence of $k_3 \in \naturals$ such that if $k, l \ge k_3$, then 
 \begin{align}
 \left\|\gmcik - \gmcil\right\| \le \deltalb. \label{hmoydihtp_eqn2}
 \end{align}
@@ -5068,7 +5065,7 @@ Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Ack$.
 Then
 \begin{align*}
 \left\|\nabla c_i\left(\xk\right)  \right\| \maxmodelgrad
-\ge \nabla c_i\left(\xk\right) ^T\left(P_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) \\
+\ge \nabla c_i\left(\xk\right) ^T\left(\proj_{\truefeasiblek}\left(\xk - \gk\right) - \xk\right) \\
 = -c_i\left(\xk\right) > \mingradepsilon \ge 6 \deltalb \maxmodelgrad.
 \end{align*}
 and $\left\|\nabla c_i\left(\xk\right)  \right\| \ge 6 \deltalb$.
@@ -5080,7 +5077,7 @@ Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Amk$.
 Then
 \begin{align*}
 \left\|\gmcik\right\| \maxmodelgrad
-\ge \gmcik^T\left[P_{\feasiblek}\left(\xk - \gk\right) - \xk\right] \\
+\ge \gmcik^T\left[\proj_{\feasiblek}\left(\xk - \gk\right) - \xk\right] \\
 = -c_i\left(\xk\right) > \mingradepsilon \ge 6 \deltalb \maxmodelgrad.
 \end{align*}
 so that $\left\|\gmcik\right\| \ge 6 \deltalb$, and \cref{hmoydihtp_eqn1} implies $\| \nabla c_i\left(\xl\right) \| \ge 5 \deltalb$.
@@ -5090,7 +5087,7 @@ Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Alk$.
 Then \cref{hmoydihtp_eqn3} implies that $-c_i\left(\xl\right) > \mingradepsilon - \deltalb \ge (6\maxmodelgrad - 1) \deltalb \ge 5 \deltalb$, so that
 \begin{align*}
 \left\|\gmcil\right\| \maxmodelgrad
-\ge \gmcil^T\left(P_{\feasiblek}\left(\xl - \gk\right) - \xl\right) \\
+\ge \gmcil^T\left(\proj_{\feasiblek}\left(\xl - \gk\right) - \xl\right) \\
 = -c_i\left(\xl\right) > 5 \deltalb \maxmodelgrad.
 \end{align*}
 Hence, $\left\|\gmcil\right\| \ge 5 \deltalb$.
@@ -5114,8 +5111,8 @@ and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 
 With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
 \begin{align}
-\zlk =& P_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
-\zck =& P_{\truefeasiblek}\left(\xk - \gk\right). \label{define_zck}
+\zlk =& \proj_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
+\zck =& \proj_{\truefeasiblek}\left(\xk - \gk\right). \label{define_zck}
 \end{align}
 
 % \begin{assumptions}
@@ -5169,13 +5166,13 @@ then $\Amk$ is the set of indices for which
 \begin{align*}
 c_i\left(\xk\right) + \gmcik^T\left(\zmk - \xk\right) = 0.
 \end{align*}
-Thus, $\zmk = P_{\feasiblek(\mathcal U)}\left(\xk - \gk\right)$ for any $\mathcal U \subseteq [m]$ with $\Amk \subseteq \mathcal U$.
+Thus, $\zmk = \proj_{\feasiblek(\mathcal U)}\left(\xk - \gk\right)$ for any $\mathcal U \subseteq [m]$ with $\Amk \subseteq \mathcal U$.
 In particular,
 \begin{align*}
-\zmk =& P_{\feasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right) \\
-=& P_{\feasiblek\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right)\\
-\zlk =& P_{\feasiblel\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right) \\
-\zck =& P_{\truefeasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right).
+\zmk =& \proj_{\feasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right) \\
+=& \proj_{\feasiblek\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right)\\
+\zlk =& \proj_{\feasiblel\left(\Amk \cup \Alk\right)}\left(\xk - \gk\right) \\
+\zck =& \proj_{\truefeasiblek\left(\Amk \cup \Ack\right)}\left(\xk - \gk\right).
 \end{align*}
 
 Further, notice that by \cref{i_thought_i_proved_this_already} and \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k, l \ge k_1$, 
@@ -5186,10 +5183,10 @@ $\left\|\gk\right\| \le \maxmodelgrad$
 Combining this with $\xk \in \feasible \subseteq \feasiblel\left(\Amk \cup \Alk\right)$, we have 
 \begin{align}
 \begin{array}{ccc}
-\zmk &=& P_{\feasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right)  \\
-     &=& P_{\feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
-\zlk &=& P_{\feasiblel\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
-\zck &=& P_{\truefeasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right).
+\zmk &=& \proj_{\feasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right)  \\
+     &=& \proj_{\feasiblek\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
+\zlk &=& \proj_{\feasiblel\left(\Amk \cup \Alk\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right), \\
+\zck &=& \proj_{\truefeasiblek\left(\Amk \cup \Ack\right) \cap B_2\left(\xk, \maxmodelgrad\right)}\left(\xk - \gk\right).
 \end{array}\label{cbpt_eqn1}
 \end{align}
 
@@ -5270,8 +5267,8 @@ to conclude that if $k, l \ge k_0 = \max\left\{k_1, k_2, k_3, k_4, k_5, k_6\righ
 then $\convexdistance(\mathcal S, \mathcal S') \le \epsilon'$ where $\convexdistance$ is defined by \cref{define_a_difference_between_sets}.
 By using $g \gets \xk - \gk$, \cref{board_tied_to_sphere} implies
 \begin{align*}
-\left\|P_{\mathcal S}(g) - P_{\mathcal S'}(g)\right\| 
-\le 8\left(1 + \left\|P_{\mathcal S \cap \mathcal S'}(g) - g\right\|\right) \sqrt{\epsilon'} 
+\left\|\proj_{\mathcal S}(g) - \proj_{\mathcal S'}(g)\right\| 
+\le 8\left(1 + \left\|\proj_{\mathcal S \cap \mathcal S'}(g) - g\right\|\right) \sqrt{\epsilon'} 
 \le 8\left(1 + \left\|\gk\right\|\right) \sqrt{\epsilon'} 
 \le \epsilon.
 \end{align*}
@@ -5293,7 +5290,7 @@ Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zl
 \label{convergence_section}
 
 
-\subsubsection{Criticallity Goes to Zero}
+\subsubsection{Criticality Goes to Zero}
 \label{limit_of_criticallity_to_zero}
 
 
@@ -5336,13 +5333,13 @@ Using the triangle inequality, the contraction property of projections,
 \cref{define_criticality_measure}, and \cref{chi2zero2_comp1} we have 
 \begin{align*}
 \frac{\epsilon}{2} \le \chik - \chi^{(l)} \\
-=     \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk\right \| 
-    - \left\|P_{\feasiblel}\left(\xl - \gl\right) - \xl\right \| \\
-\le   \left\|P_{\feasiblek}\left(\xk - \gk\right) - \xk
-    -  P_{\feasiblel}\left(\xl - \gl\right) + \xl\right \| \\
+=     \left\|\proj_{\feasiblek}\left(\xk - \gk\right) - \xk\right \| 
+    - \left\|\proj_{\feasiblel}\left(\xl - \gl\right) - \xl\right \| \\
+\le   \left\|\proj_{\feasiblek}\left(\xk - \gk\right) - \xk
+    -  \proj_{\feasiblel}\left(\xl - \gl\right) + \xl\right \| \\
  \le  \left\|\xk - \xl\right\|
- + \left\|P_{\feasiblek}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xk - \gk\right) \right\| \\
- + \left\|P_{\feasiblel}\left(\xk - \gk\right) -  P_{\feasiblel}\left(\xl - \gl\right) \right\| \\
+ + \left\|\proj_{\feasiblek}\left(\xk - \gk\right) -  \proj_{\feasiblel}\left(\xk - \gk\right) \right\| \\
+ + \left\|\proj_{\feasiblel}\left(\xk - \gk\right) -  \proj_{\feasiblel}\left(\xl - \gl\right) \right\| \\
 \le \left\|\xk - \xl\right\| + \left\|\zmk - \zlk\right\| 
 + \left\| \xk - \gk - \xl + \gl  \right\| \\
 \le \left(2 + \lipgrad\right) \left\|\xk - \xl\right\| 
@@ -5359,7 +5356,7 @@ Using the triangle inequality, the contraction property of projections,
 
 % \le 2\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(\xk) - \gradf(x^{(l_k)})\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\| \\
 % \le \left(2 + \lipgrad\right)\left\|\xk - x^{(l_k)}\right\| + \| p^{(k)} - p^{(k_l)}\| + \left\|\gk - \gradf(\xk)\right\| + \left\|\gradf(x^{(l_k)}) - {\nabla m_f^{(l_k)}\left(x^{(l_k)}\right)}\right\|.
-% \le\left\|\xk - x^{(l_k)}\right\| +  \left\|P_{\Omega_1}\left(\xk - \gk\right) - P_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right)\right\| \\
+% \le\left\|\xk - x^{(l_k)}\right\| +  \left\|\proj_{\Omega_1}\left(\xk - \gk\right) - \proj_{\Omega_2}\left(x^{(l_k)} - g^{(l_k)}\right)\right\| \\
 
 So that
 \begin{align}
@@ -5391,12 +5388,12 @@ be defined by
 
 If $\gammasm = 0$, then
 \begin{align*}
-\liminf_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
+\liminf_{k\to\infty} \left\|\proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align*}
 
 If $\gammasm > 0$, then
 \begin{align*}
-\lim_{k\to\infty} \left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
+\lim_{k\to\infty} \left\|\proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align*}
 
 \end{lemma}
@@ -5410,15 +5407,15 @@ respectively.
 Let $\epsilon > 0$ be fixed.
 By the triangle inequality, and the contraction property of projections, we have
 \begin{align}\left \|
- P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
--P_{\feasiblek}\left(\xk - \gk \right)
+ \proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
+-\proj_{\feasiblek}\left(\xk - \gk \right)
 \right\| \nonumber \\
 \le 
 \bigg \|
- P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) 
--P_{\truefeasiblek}\left(\xk - \gk \right) \nonumber \\
-+P_{\truefeasiblek}\left(\xk - \gk \right)
--P_{\feasiblek}\left(\xk - \gk \right)
+ \proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) 
+-\proj_{\truefeasiblek}\left(\xk - \gk \right) \nonumber \\
++\proj_{\truefeasiblek}\left(\xk - \gk \right)
+-\proj_{\feasiblek}\left(\xk - \gk \right)
 \bigg\| \nonumber \\
 \le \left\|
 \xk - \gradf\left(\xk\right) - \xk + \gk
@@ -5427,11 +5424,11 @@ By the triangle inequality, and the contraction property of projections, we have
 \end{align}
 With $\chik$ defined by \cref{define_criticality_measure}, the triangle inequality implies
 \begin{align*}
-\left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| \\
+\left\|\proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| \\
 = \bigg\|
- P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
--P_{\feasiblek}\left(\xk - \gk \right) \\
-+P_{\feasiblek}\left(\xk - \gk \right)
+ \proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right)
+-\proj_{\feasiblek}\left(\xk - \gk \right) \\
++\proj_{\feasiblek}\left(\xk - \gk \right)
 - \xk\bigg\| \\
 \le \left\|\gk - \gradf\left(\xk\right)\right\| + \left\|\zck - \zmk\right\| + \chik
 \end{align*}
@@ -5463,12 +5460,12 @@ Let $\feasible$ be defined by \cref{define_feasible}.
 
 If $\gammasm = 0$, then
 \begin{align*}
-\liminf_{k\to\infty} \chi\left(\xk\right) = \liminf_{k\to\infty} \left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
+\liminf_{k\to\infty} \chi\left(\xk\right) = \liminf_{k\to\infty} \left\|\proj_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align*}
 
 If $\gammasm > 0$, then
 \begin{align*}
-\lim_{k\to\infty} \chi\left(\xk\right) = \lim_{k\to\infty} \left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
+\lim_{k\to\infty} \chi\left(\xk\right) = \lim_{k\to\infty} \left\|\proj_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| = 0.
 \end{align*}
 \end{theorem}
 
@@ -5477,8 +5474,8 @@ If $\gammasm > 0$, then
 Let $\truefeasiblek$ be defined by \cref{define_truefeasiblek}.
 By convexity of the constraints from \cref{constraints_are_convex}, $\feasible \subseteq \truefeasiblek$, so that
 \begin{align*}
-\left\|P_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| 
-\le \left\|P_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\|.
+\left\|\proj_{\feasible}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\| 
+\le \left\|\proj_{\truefeasiblek}\left(\xk - \gradf\left(\xk\right)\right) - \xk \right\|.
 \end{align*}
 The result then follows from \cref{the_convergence_lemma};
 
@@ -5523,12 +5520,34 @@ The result then follows from \cref{the_convergence_lemma};
 \section{Numerical Results}
 We have implemented \cref{constrained_dfo} in Python to test its efficiency.
 The code is contained in \cite{AlwaysFeasibleDFO}.
-Here we discuss the numerical results of this algorithm.
+Here we discuss the numerical results of this algorithm when run on the Hott-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}.
+
+
+\begin{boxedcomment}
+I ask for your patience with the numerical results section.
+In an attempt to maintain a clean code base, the code implemented on the GitHub repository is a recent implementation that I am still finalizing.
+I hope to update the results soon when this is completed.
+Until then, the numerical results should not prevent reading and understanding the rest of the thesis.
+There are several glaring defects, including but not limited to 
+\begin{itemize}
+\item I have not implemented feasible initial ellipsoids for all problems yet.
+This hurts the always feasible algorithm's performance profile, as it has not been run on these problems.
+\item I have not found the correct parameters for PDFO, so it does not converge on most problems.
+I believe that with some tinkering, I can dramatically improve its performance.
+\item A library optimization routine currently sometimes returns an ellipsoid strictly outside $\capcones$, rather than inside it.
+This creates several unnecessary infeasible attempts, and a small trust region radius.
+\item For the most part, the algorithm variants implemented; but I have not yet included their results.
+\item I have not displayed which problems suffer from irregular constraints.
+\item At times, there are multiple optimum solutions, I currently only compare the result to the first contained in the Hott-Schittkowski problem set.
+\item Although the always feasible algorithm sometimes has many more evaluations than the other algorithms, the solution is accurate to far more decimal places.
+This may be resolved by using ensuring the stopping criteria is as similar as possible.
+\end{itemize}
+\end{boxedcomment}
 
 \subsection{Implementation Details}
 \subsubsection{Parameters}
-In practice a maximum value of $\alpha$ and $\beta$ can be used for large $\dk$.
-Namely, it is possible to define a $\beta_{\textrm{max}}, \alpha_{\textrm{max}} \in (0, 1)$ and compute
+In practice, a maximum value of $\alpha$ and $\beta$ can be used for large $\dk$.
+Namely, it is possible to define a $\beta_{\textrm{min}}, \alpha_{\textrm{max}} \in (0, 1)$ and compute
 \begin{align*}
 \wik = \xk + \max\left\{\alpha_{\textrm{max}}\left(1 - \alpha\dk^{p_{\alpha}}\right)\right\}\left(\zik - \xk\right) \forall i \in \activeconstraintsk.  \\
 \fik = \left\{ \wik + t s \in \Rn | t > 0, \|s\| = 1, -s^T\hgik \ge \min\left\{\beta_{\textrm{min}}, \beta \dk^{p_{\beta}} \right\} \right\}
@@ -5561,7 +5580,7 @@ In most cases, hot starts were provided from naive searches to improve the resul
 \subsection{Algorithm Variants}
 \subsubsection{Largest Volume Ellipsoid}
 We implemented a very naive algorithm to compute the largest possible ellipsoid within the buffering cones, as discussed in \cref{ideal_ellipsoid_in_polyhedron}.
-Ideally, this would use information returned from the inner optimization program to more intelligently expore ellipsoids.
+Ideally, this would use information returned from the inner optimization program to more intelligently explore ellipsoids.
 However, we state the algorithm as implemented:
 
 \begin{algorithm}[H]
@@ -5605,7 +5624,7 @@ However, we state the algorithm as implemented:
 
 \subsubsection{Quadratic Buffered Constraints}
 
-In order to aleviate descent directions being removed from $\capcones$, we experimented with replacing the second order cones with quadratic buffers.
+In order to alleviate descent directions being removed from $\capcones$, we experimented with replacing the second order cones with quadratic buffers.
 Namely, we replaced \cref{define_fik}
 with 
 \begin{align*}
@@ -5626,6 +5645,10 @@ the trust region subproblem becomes
 
 \subsubsection{Penalty Buffered Constraints}
 We evaluated enough points to construct quadratic models the constraints, because we constructed a quadratic model of the objective.
+It is therefore possible to buffer the constraints with a quadratic term added to our models.
+We include a comparison against this implementation.
+
+Namely, we 
 \begin{align*}
 \begin{array}{ccc}
 \min_{s \in \outertrk} & \mfk\left(\xk + s\right) & \\
@@ -5636,8 +5659,8 @@ We evaluated enough points to construct quadratic models the constraints, becaus
 \subsection{Hott Schittkowski Problem Set}
 
 To test our algorithm, we used the Hott-Schittkowski problem set \cite{Hock1980} and \cite{Schittkowski:1987:MTE:27135}.
-We implemented these problems in Python, and ensured our implementation agrees with the Author's fortran library created in 2011 
-up to discrepencies between the code and publication.
+We implemented these problems in Python, and ensured our implementation agrees with the Author's FORTRAN library created in 2011 
+up to discrepancies between the code and publication.
 We considered problems that had
 \begin{itemize}
 \item dimension less than or equal to 10,
@@ -5738,7 +5761,7 @@ I only compare to the first solution, but sometimes there are multiple.
 \end{boxedcomment}
 
 \begin{boxedcomment}
-Define what iteresting means and give performance plot examples.
+Define what interesting means and give performance plot examples.
 \end{boxedcomment}
 
 \subsection{Summary}
@@ -5746,7 +5769,7 @@ Define what iteresting means and give performance plot examples.
 Overall, our algorithm seems to have comparable efficiency to existing derivative free solvers.
 It was able to solve a large percentage of the problems to optimality, and in almost all cases did so with the fewest infeasible evaluation attempts.
 However, we have noticed that in some problems (such as number, number, number) when the search path travels along constraint nearly orthogonal to the negative of the objective gradient.
-This is because the buffering cones limit descent directions, and effictively place a cap on the largest possible trust region radius.
+This is because the buffering cones limit descent directions, and effectively place a cap on the largest possible trust region radius.
 
 \begin{boxedcomment}
 Give an example images of the history that shows this.

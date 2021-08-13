@@ -83,30 +83,30 @@ Once the criticality measure has reached a small enough threshold $\tolcrit > 0$
 
 
 
-In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticallity measure is
+In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticality measure is
 \begin{align*}
-\chi^{(k)}(x) = \left\|\xk - \text{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
+\chi^{(k)}(x) = \left\|\xk - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
-For a first order criticallity measure at $\xk$, we can define
+For a first order criticality measure at $\xk$, we can define
 \begin{align}
 \truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
 \end{align}
 and use
 \begin{align*}
-\chi_c^{(k)} = \left\|\xk - \text{Proj}_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
+\chi_c^{(k)} = \left\|\xk - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
 % This condition is necessary under regularity assumptions, and with convex 
 % For a convex problemconvex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Without derivative information, we model this by
 \begin{align}
 \label{define_criticality_measure}
-\chik = \left\|\xk - \text{Proj}_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
+\chik = \left\|\xk - \proj_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
 \end{align}
 Recall that $\feasiblek$ was defined by \cref{define_feasiblek}.
 For convex constraints, this quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for of $\mfk$.
 In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches an optimum of $f$.
 
-With general constraints, we cannot use $\text{Proj}_{\feasible}$ because the projection is not well defined.
+With general constraints, we cannot use $\proj_{\feasible}$ because the projection is not well defined.
 However, the linearization \cref{define_truefeasiblek} is still well defined.
 Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
 % However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
@@ -116,7 +116,7 @@ Thus, it is possible to use \cref{define_criticality_measure} with general const
 % For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in  of
 % The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
 % \begin{align*}
-% x^{\star} = \text{Proj}_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
+% x^{\star} = \proj_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
 % \end{align*}
 % % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
 
@@ -272,8 +272,8 @@ V=M(\Phi,Y) :=
 \end{align}
 
 
-The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
-However, even when $V$ is nonsingular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is non-singular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
+However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
 
 
 \section{Sample set geometry}
@@ -351,7 +351,7 @@ Then we have the following result:
 
 \begin{theorem}\label{Lambda_poised_error_bounds}
 (\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
-If $\hat{M}$ is  nonsingular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
+If $\hat{M}$ is  non-singular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
 then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B(0;1)$.  
 Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
 then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
@@ -428,7 +428,7 @@ $
 \left|u_i\left(y^{(i)}\right)\right| \ge \ximin \; \forall 0 \le i \le p.
 $
 \cite[Section 6.7, Exercise 3]{introduction_book}
- bounds the condition number of the vandermonde matrix in terms of these pivots:
+ bounds the condition number of the Vandermonde matrix in terms of these pivots:
 \begin{align*}
 \left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}.
 \end{align*}
