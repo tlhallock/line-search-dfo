@@ -424,7 +424,7 @@ where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n
 This result is shown through a sequence of results in \cite{introduction_book}.
 Namely,  \cite[Theorem 6.5]{introduction_book} shows the pivots in the LU-factorization are bounded below by $\ximin$:
 $
-\left|u_i\left(y^{(i)}\right)\right| \ge \ximin\quad \forall 0 \le i \le p.
+\left|u_i\left(y^{(i)}\right)\right| \ge \ximin \; \forall 0 \le i \le p.
 $
 \cite[Section 6.7, Exercise 3]{introduction_book}
  bounds the condition number of the vandermonde matrix in terms of these pivots:
@@ -457,7 +457,7 @@ Both the $\sampletrk$ and the $\searchtrk$ lie within the {\em outer trust regio
 $\outertrk = B_{\infty}\left(\xk, \dk\right)$, which is an $L_{\infty}$-ball of radius $\dk$ centered at the current iterate $\xk$:
 \begin{align}
 \label{define_outer_trust_region}
-\outertrk = B_{\infty}(\xk,\dk) = \left\{x\in \Rn | \; \xki - \dk \le x_i \le \xki + \dk \quad \forall i \in [m] \right \}.
+\outertrk = B_{\infty}\left(\xk,\dk\right) = \left\{x\in \Rn | \; \xki - \dk \le x_i \le \xki + \dk \quad \forall i \in [m] \right \}.
 \end{align}
 
 To allow for the best possible trial point, we would like the search region to be as large as possible within the outer trust region while still remaining feasible.

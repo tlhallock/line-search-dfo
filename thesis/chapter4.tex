@@ -2022,17 +2022,26 @@ by $\frac t 4$ to find
 \label{decreasing_the_trust_region_for_infeasible_trial}
 
 Throughout \cref{recovering_feasiblity_section} we showed an approach for handling infeasible sample points.
-The only other evaluation is the trial point.
+The other evaluation that may be infeasible is the trial point.
 Our approach for infeasible trial points is to decrease the trust region radius, which is an acceptable approach, 
 as long as we can ensure that no trial point will be infeasible for sufficiently small $\dk$: that is, $\sampletrk \subseteq \feasible$.
 % However, in order to do this, we must be sure that we use a search region contained within $\feasible$ for small enough $\dk$.
 In \cref{ellipsoid_is_feasible}, we show that the set $\capcones$ defined in \cref{define_capcones} is just this set.
-Thus, we set $ \searchtrk = \capcones \cap \trk$ by defining the trust region subproblem as
+Thus, we replace the classic trust region $\searchtrk = \feasiblek \cap \trk$:
+\begin{align}
+\label{original_tr_subproblem}
+\begin{array}{ccccc}
+\slin &=& \argmin_{s} & m_f(\xk + s) & \\
+&& \textrm{s.t.} & m_{c_i}(\xk + s) \le 0 & \forall i \in \activeconstraintsk \\
+&&&s \in \trk &
+\end{array}
+\end{align}
+with $ \searchtrk = \capcones \cap \trk$:
 \begin{align}
 \label{capcones_tr_subproblem}
 \begin{array}{ccc}
 \min_{s^{(i)},x,t_i} & m_f(x) & \\
- & x = \wik + t _i s^{(i)} & \quad \forall i \in \activeconstraintsk \\
+\textrm{s.t.}  & x = \wik + t _i s^{(i)} & \quad \forall i \in \activeconstraintsk \\
  & \|s^{(i)}\| = 1 & \quad \forall i \in \activeconstraintsk \\
  & -\left(s^{(i)}\right)^T\hgik \ge \beta \dk^{p_{\beta}} & \quad \forall i \in \activeconstraintsk \\
  & s^{(i)} \in \Rn  & \quad \forall i \in \activeconstraintsk \\
@@ -2041,9 +2050,29 @@ Thus, we set $ \searchtrk = \capcones \cap \trk$ by defining the trust region su
 \end{array}
 \end{align}
 
-Notice that be not searching all points within $\outertrk \cap \feasible$, we risk not providing sufficient reduction.
+Notice that not searching all points within $\outertrk \cap \feasible$, we risk not providing sufficient reduction.
 However, in \cref{sufficient_reduction_theorem} we show the existence a point within $ \searchtrk $
-that satisfies the efficiency condition \cref{efficiency}.
+that satisfies the efficiency condition \cref{efficiency} for small $\dk$.
+Because $\dk\to 0$, we can only attempt to evaluate an infeasible trial point a finite number of times.
+
+With only this modification, the algorithm could still produce iterates without sufficient reduction for large $\dk$.
+Thus, we also compute a solution to \cref{original_tr_subproblem}, which does satisfy sufficient reduction.
+An example of such a point is the generalized Cauchy point $s_{\textrm{GC}}$ as described in \cite{Conn:2000:TM:357813}.
+Thus, with $\hat s$ an approximate solution to \cref{original_tr_subproblem},
+we can check if the expected decrease from \cref{capcones_tr_subproblem} also satisfies the efficiency condition.
+Namely, we introduce a constant 
+\begin{align}
+0 < \tolsr < \frac 1 2
+\end{align}
+and check 
+\begin{align}
+\mfk\left(\xk\right) - \mfk\left(\xk + \sk\right) \ge \tolsr \left[\mfk\left(\xk\right) - \mfk\left(\xk + \slin\right)\right] \label{expected_reduction_check}
+\end{align}
+Notice that this ensures the efficiency condition \cref{efficiency} is satisfied with a constant $\kappa_f \gets \tolsr \kappa_{f}$.
+Also, this check can be performed without evaluating the current iterate.
+\cref{sufficient_reduction_theorem} ensures this check can fail only a finite number of times.
+The value of $\frac 1 2$ was chosen for convenience, and in practice any value in $(0,1)$ could work.
+Smaller values of $\tolsr$ imply that the trust region radius can stay large for longer, although trial points may not provide much decrease.
 
 
 % \begin{boxedcomment}
@@ -2112,9 +2141,40 @@ Here,
 $p_{\alpha}$ and $p_{\beta}$ are introduced by \cref{define_abpab},
 while $\chik$ is introduced in \cref{define_criticality_measure}.
 Note that we reuse several other parameters previously introduced:
-$\tolcrit, \tolrad$ in \cref{criticallity_measure_section}; % by \cref{define_algorithm_tolerances};
-$\gammasm$, $\gammabi$, $\omegadec$, and $\omegainc$ were introduced in \cref{rhosection};
+\begin{align}
+\tolcrit, \tolrad \ge 0; \label{define_algorithm_tolerances}
+\end{align}
+were introduced in \cref{criticallity_measure_section} as thresholds on $\chik$ and $\dk$; % by \cref{define_algorithm_tolerances};
+thresholds on $\rk$
+\begin{align}
+0 < \gammasm < \gammabi \le 1;	\label{define_the_gammas}
+\end{align}
+as well as trust region update parameters
+\begin{align}
+0 < \omegadec < 1 \le \omegainc; \label{define_the_omegas}
+\end{align}
+were introduced in \cref{rhosection};
+\begin{align}
+0 < \tolsr < \frac 1 2 \label{define_tolsr}
+\end{align}
+was introduced in \cref{decreasing_the_trust_region_for_infeasible_trial};
 and $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ by \cref{define_abpab}.
+
+
+% \begin{tabular}{p{.4\textwidth}p{.4\textwidth}}
+% \begin{align}
+% \tolcrit, \tolrad \ge 0; \label{define_algorithm_tolerances}
+% \end{align} &
+% \begin{align}
+% 0 < \gammasm < \gammabi \le 1;	\label{define_the_gammas}
+% \end{align} \\
+% \begin{align}
+% 0 < \omegadec < 1 \le \omegainc; \label{define_the_omegas}
+% \end{align} &
+% \begin{align}
+% d
+% \end{align}
+% \end{tabular}
 
 The algorithm is as follows:
 
@@ -2122,76 +2182,70 @@ The algorithm is as follows:
     \caption{Always-feasible Constrained Derivative Free Algorithm}	
     \label{constrained_dfo}
     \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-        Initialize
-        \begin{align}
-\tolcrit, \tolrad \ge 0; \label{define_algorithm_tolerances} \\
-0 < \gammasm < \gammabi \le 1;	\label{define_the_gammas} \\
-0 < \omegadec < 1 \le \omegainc; \label{define_the_omegas} \\
-\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1);\;
-0 < \kappa_{\chi}; \; 0 < p_{\Delta} < \min\{p_{\alpha}, p_{\beta}\} \le 1; \nonumber \\
-k \gets 0; \; \xinit \in \feasible; \; \Delta_0 > 0; \; T^{(0)}_{\textrm{sample}} \subseteq B_{\infty}\left(\xinit, \Delta_{0}\right) \cap \feasible \nonumber 
-        \end{align}
+        \item[\textbf{Step 0}] \textbf{(Initialization)} Initialize
+\begin{align*}
+\begin{array}{ccc}
+\tolcrit, \tolrad \ge 0; & 
+0 < \gammasm < \gammabi \le 1; & 
+0 < \omegadec < 1 \le \omegainc; \\
+0 < \tolsr < \frac 1 2;  & 
+\alpha, \beta, p_{\alpha}, p_{\beta} \in (0, 1); & 
+0 < p_{\Delta} < \min\{p_{\alpha}, p_{\beta}\} \le 1;  \\
+k \gets 0; &
+\Delta_0, \kappa_{\chi} > 0; &
+\xinit \in T^{(0)}_{\textrm{sample}} \subseteq B_{\infty}\left(\xinit, \Delta_{0}\right) \cap \feasible
+\end{array}
+\end{align*}
         \item[\textbf{Step 1}] \textbf{(Construct the models)} \\
 %         by \cref{define_ellipsek} if $\activeconstraintsk \ne \emptyset$ and \cref{define_trivial_ellipsek} if $\activeconstraintsk =\emptyset$.
-        Call \cref{model_improving_algorithm} with respect to $\sampletrk$ to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}.
-        Construct $\mfk$ and $\mcik$ as described in \cref{reg}. \\
-        While constructing the sample set, if some point within $\sampletrk$ is not feasible, or $\sampletrk = \emptyset$ 
-        run the \emph{RestoreFeasibility} subroutine to construct a new $\sampletrkpo$ and $\dkpo<\omegadec \dk$, $k \gets k + 1$ and go to Step 1.
+%         Call  with on the shifted and scaled $\sampletrk$ 
+%         to ensure the current sample set $Y^{(k)}$ satisfies \cref{accuracy}.
+        Construct $\mfk$ and $\mcik$ with \cref{reg} after calling \cref{model_improving_algorithm} on $\sampletrk$. \\
+        If $\sampletrk \not \subseteq \feasible$ or $\sampletrk = \emptyset$, then call \emph{RestoreFeasibility}  to find $\sampletrkpo$, $\dkpo<\omegadec \dk$, set $k \gets k + 1$ and go to Step 1.
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
-        	Compute $\activeconstraintsk$ by \cref{define_activeconstraints} and $\zik$, $\wik$ by \cref{define_z} and \cref{define_w} for each $i \in \activeconstraintsk$.
-            Compute $\chik$ as in \cref{define_criticality_measure}. \begin{itemize}
-                \item[] If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution.
-                \item[] Otherwise, if \cref{criticallity_check} is not satisfied, then \\
+        	Compute
+        	$\activeconstraintsk$, $\zik$, $\wik$,  $\chik$ 
+        	by \cref{define_activeconstraints}, \cref{define_z}, \cref{define_w}, \cref{define_criticality_measure}. \\
+%         	for each $i \in \activeconstraintsk$.
+%             Compute $\chik$ as in \cref{define_criticality_measure}.
+			If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution. \\
+			Otherwise, if \cref{criticallity_check} is not satisfied, then \\
                 $\Delta_{k+1} \gets \omegadec\dk$, 
                 $x^{(k+1)} \gets \xk$,
                 $k \gets k+1$ and go to Step 1.
-            \end{itemize}
 		
+		
+        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+        	Compute $\huk$, $\thetamink$, $\bsk$, $\fik$, $\capcones$, $\rotk$, $\slin$, and $\sk$ by
+        	\cref{define_u}, \cref{define_thetamink}, \cref{define_bsk}, \cref{define_fik}, \cref{define_capcones}, \cref{define_rotation}, \cref{original_tr_subproblem} \cref{capcones_tr_subproblem}. \\
+        	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
+            
 		\end{itemize}
 		\end{algorithm}
 		
-		\vspace{10cm}
 		\newpage
 		
 		\begin{algorithm}[H]
 		\begin{itemize}
-            
-        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-        	Construct $\huk$, $\thetamink$, $\bsk$, $\fik$, and $\capcones$ according to
-        	\cref{define_u}, \cref{define_thetamink}, \cref{define_bsk}, \cref{define_fik}, \cref{define_capcones}. \\
-        	Use \cref{capcones_tr_subproblem} to compute the trial point $\sk$.
-        	Evaluate the objective and constraints at $\sk$.
-        	If $\sk \not \in \feasible$, reduce the trust region $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
-            
-        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
-            Evaluate $f\left(\xk + \sk\right)$ and evaluate $\rk$ as in \cref{define_rhok} \begin{itemize}
-                \item[] If $\rk < \gammasm$ then $\xkpo=\xk$ (reject) and $\Delta_{k+1} = \omegadec\dk$
-                \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegadec\dk$
-                \item[] If $\rk > \gammabi$ then $\xkpo=\xk+\sk$ (accept), $\Delta_{k+1} = \omegainc\dk$
-                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
-            \end{itemize}
-            
+		
+        \item[\textbf{Step 4}] \textbf{(Test for improvement)}.
+        	Compute $\rk$ by \cref{define_rhok}. \\
+			If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$. \\
+            If $\rk < \gammabi$, then $\dk \gets \min\omegadec\dk$. \\
+            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} = \dk$, then $\dk \gets \omegainc\dk$. \\
+            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} < \dk$, then $\dk \gets \dk$.
         \item[\textbf{Step 5}] \textbf{(Construct next sample region)} \\
-        	Compute $\rotk$, according to \cref{define_rotation}.
 %         	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
-        	If $\activeconstraintskpo \ne \emptyset$, define $\sampletrkpo$ according to \cref{define_ellipsek}.
-        	Otherwise, use \cref{define_trivial_ellipsek}. \\
+        	Compute $\sampletrkpo$ by \cref{define_ellipsek} if $\activeconstraintskpo \ne \emptyset$, otherwise \cref{define_trivial_ellipsek}. \\
             $k \gets k+1$ and go to Step 1.
     \end{itemize}
 \end{algorithm}
 
 
-
-
-
-
-
 \begin{boxedcomment}
-Don't always increase...
+You wanted all of the definitions in Step 3, just to know when they were calculated, do I still need them?
 \end{boxedcomment}
-
 
 \color{red}
 
@@ -5433,7 +5487,8 @@ $p_{\beta} = 0.99$,
 $p_{\alpha} = 0.99$,
 $p_{\Delta} = 0.99\min\left\{p_{\alpha}, p_{\beta}\right\}$,
 $\ximin=0.01$,
-$ \kappa_{\chi} = 0.01$.
+$ \kappa_{\chi} = 0.01$,
+and $\tolsr = 0.1$.
 
 % 		self.threshold_reduction_sufficient = 0.9
 % 		self.threshold_reduction_minimum = 0.1
