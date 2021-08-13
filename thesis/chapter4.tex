@@ -3927,6 +3927,8 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 \subsection{Initial Convergence Results}
 \label{initial_convergence_results}
 
+\sbnote{Remove this note?   Alternatively, reword it to something like:  ``The following analysis follows that in 
+ \cite{Conejo:2013:GCT:2620806.2621814}, where $\eta$ corresponds to $\gammasm$, etc.''}
 \paragraph*{Note:} Within \cite{Conejo:2013:GCT:2620806.2621814}, 
 $\eta$ corresponds to $\gammasm$,
 $\eta_1$ corresponds to $\gammabi$,
@@ -3934,10 +3936,12 @@ $\bar S$ corresponds to $\suffiterates$,
 and
 $S$ corresponds to $\miniterates$.
 
-With 
+Our first task is to show that the outer trust region radius converges to zero and that $\liminf_{k \rightarrow\infty} \chi_m^{(k)} =0$, which will be proved in \cref{liminf_chi_to_zero} below.    The proof involves several sets, which we now define.  
+
+With
 $\gammasm$ and $\gammabi$
 defined by \cref{define_the_gammas},
-let
+define
 \begin{align}
 \suffiterates &= \left\{k \in \naturals | \rk > \gammabi \right\} \label{define_suffiterates} \\
 \textrm{and} \quad \miniterates &= \left\{k \in \naturals | \rk \ge \gammasm \right\} \label{define_miniterates}.
@@ -3947,7 +3951,7 @@ With
 $\kappa_g$, $\kappa_f$, $\lipgrad$, $\maxmodelhessian$
 defined by
 \cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_model_hessian_lemma}
-respectively, let
+respectively,  define
 \begin{align}
 \theircnot &= \lipgrad + \kappa_{g} + \frac 1 2 \maxmodelhessian \label{define_theircnot} \\
 \textrm{and} \quad \theirc &= \frac{\theircnot}{\kappa_f} .  \label{define_theirc}
@@ -3957,7 +3961,7 @@ With
 $\chik$, $p_{\Delta}$, $\dsr$, $\kappa_{\chi}$, $\maxmodelhessian$, $\gammasm$
 defined by 
 \cref{define_criticality_measure}, \cref{define_p_delta}, \cref{sufficient_reduction_theorem}, \cref{define_kappa_chi}, \cref{bounded_hessians_assumption}, and \cref{define_the_gammas}
-let
+define
 \begin{align}
 \label{define_reduceiterates}
 \reduceiterates = \left \{ k \in \naturals \bigg| \dk \le \min \left\{ 
@@ -4134,7 +4138,9 @@ Therefore, one can see that for all $k \ge k_1$
 which contradicts \cref{delta_to_zero}.
 \end{proof}
 
-Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.
+
+Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.    \sbnote{I think you should move on to the next section here since you are done with the initial criticality convergence.    Maybe also say ``To prove this will be considerably more.  We begin the development in the following sections''}
+
 Observe that if this limit does hold, then there exists an $\epsilon_{\textrm{lb}} > 0$ such that the set
 \begin{align}
 \ulb = \left\{k \in \naturals | \chik \ge\elb \right\} \label{define_the_finite_set}
@@ -4160,7 +4166,6 @@ Using the same constants as in \cref{define_reduceiterates}, we define
 
 
 % Using the same , \cref{delta_to_zero} implies the existence of $k_0 \in \naturals$ such that for all $k \ge k_0$,
-
 
 \begin{lemma}
 \label[lemma]{contradiction_portion}
@@ -4241,10 +4246,10 @@ Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{(k,l) \in \slb}$ converges t
 As discussed at the beginning of \cref{convex_convergence_analysis}, this section is devoted to showing convergence of the difference
 between a projection onto an iterate's constraint's linearization and
 \begin{itemize}
-\item a different iterate's constraint's linearization.
-\item the true constraint's linearization.
+\item the linearization obtained at a different iterate; 
+\item the linearization of the true constraint.
 \end{itemize}
-This is required within \cref{convergence_section}.
+This result will be required within \cref{convergence_section}.
 
 % \color{red}
 % We initially attempted to prove this result using the results found within \cite{pena2020new},
@@ -4803,6 +4808,7 @@ s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
 
 \subsubsection{Simplified Results}
 \label{simplifed_bounded_projection}
+\sbnote{What do you mean by the section title ``Simplified Results'' ?   What are they simplified from?}
 
 
 
@@ -5146,6 +5152,9 @@ and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 % Use a superscript of $(k, l)$
 % \end{boxedcomment}
 
+
+We are now ready to state the main result of this section.   
+
 With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
 \begin{align}
 \zlk =& \proj_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
@@ -5325,7 +5334,6 @@ Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zl
 
 \subsection{Convergence}
 \label{convergence_section}
-
 
 \subsubsection{Criticality Goes to Zero}
 \label{limit_of_criticallity_to_zero}
