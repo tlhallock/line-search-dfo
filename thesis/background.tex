@@ -83,30 +83,30 @@ Once the criticality measure has reached a small enough threshold $\tolcrit > 0$
 
 
 
-In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticallity measure is
+In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticality measure is
 \begin{align*}
-\chi^{(k)}(x) = \left\|\xk - \text{Proj}_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
+\chi^{(k)}(x) = \left\|\xk - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
-For a first order criticallity measure at $\xk$, we can define
+For a first order criticality measure at $\xk$, we can define
 \begin{align}
 \truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
 \end{align}
 and use
 \begin{align*}
-\chi_c^{(k)} = \left\|\xk - \text{Proj}_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
+\chi_c^{(k)} = \left\|\xk - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
 % This condition is necessary under regularity assumptions, and with convex 
 % For a convex problemconvex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Without derivative information, we model this by
 \begin{align}
 \label{define_criticality_measure}
-\chik = \left\|\xk - \text{Proj}_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
+\chik = \left\|\xk - \proj_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
 \end{align}
 Recall that $\feasiblek$ was defined by \cref{define_feasiblek}.
 For convex constraints, this quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for of $\mfk$.
 In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches an optimum of $f$.
 
-With general constraints, we cannot use $\text{Proj}_{\feasible}$ because the projection is not well defined.
+With general constraints, we cannot use $\proj_{\feasible}$ because the projection is not well defined.
 However, the linearization \cref{define_truefeasiblek} is still well defined.
 Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
 % However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
@@ -116,7 +116,7 @@ Thus, it is possible to use \cref{define_criticality_measure} with general const
 % For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in  of
 % The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
 % \begin{align*}
-% x^{\star} = \text{Proj}_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
+% x^{\star} = \proj_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
 % \end{align*}
 % % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
 
@@ -245,34 +245,35 @@ during some iterations in which $\rk > \gammabi$.
 \label{interpolation} 
 Model-based methods for derivative free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
-We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^0, y^1, \ldots, y^p\}$ at which the function $f$ has been evaluated.
+We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\}$ at which the function $f$ has been evaluated.
 Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
 \begin{align}
 \label{interpolation_condition}
-    \mf(y^i) = \sum^p_{j=0}\alpha_j\phi_j(y^i) = f(y^i) \quad \forall \quad 0 \le i \le p.
+\mf(y^{(i)}) = \sum^p_{j=0}\alpha_j\phi_j(y^{(i)}) = f(y^{(i)}) \quad \forall \quad 0 \le i \le p.
 \end{align}
 
 % We can also write this equation in matrix form.
 This equation can be written more compactly in the form
-\begin{equation}\label{matrix_form}
+\begin{align}
+\label{matrix_form}
 V \alpha = \bar{f},
-\end{equation}
-where $\bar{f} = [f(y^0), f(y^1), \ldots, f(y^p)]^T$ and the Vandermonde matrix $V$ is defined by 
+\end{align}
+where $\bar{f} = [f(y^{(0)}), f(y^{(1)}), \ldots, f(y^{(p)})]^T$ and the Vandermonde matrix $V$ is defined by 
 
 \begin{align}
 \label{vandermonde}
 V=M(\Phi,Y) :=
 \begin{bmatrix}
-    \phi_0(y^0)      & \phi_1(y^0)       & \ldots & \phi_{p}(y^0)      \\
-    \phi_0(y^1)      & \phi_1(y^1)       & \dots  & \phi_{p}(y^1)      \\
+    \phi_0(y^{(0)})      & \phi_1(y^{(0)})       & \ldots & \phi_{p}(y^{(0)})      \\
+    \phi_0(y^{(1)})      & \phi_1(y^{(1)})       & \dots  & \phi_{p}(y^{(1)})      \\
                      &                   & \vdots &                    \\
-    \phi_0(y^{p})    & \phi_1(y^{p})     & \ldots & \phi_{p}(y^{p})
+    \phi_0(y^{(p)})    & \phi_1(y^{(p)})     & \ldots & \phi_{p}(y^{{(p)}})
 \end{bmatrix},
 \end{align}
 
 
-The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
-However, even when $V$ is nonsingular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is non-singular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
+However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
 
 
 \section{Sample set geometry}
@@ -290,7 +291,7 @@ where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\; 1 \;\text{if} \; i = j \}$ is 
 Thus, as shown in \cite{introduction_book}, we can conveniently write
 \begin{align}
 \label{reg}
-\mf(x) = \sum^p_{j=0}f(y^i)l_i(x).
+\mf(x) = \sum^p_{j=0}f(y^{(i)})l_i(x).
 \end{align}
 
 
@@ -334,23 +335,23 @@ The concept of $\Lambda$-poisedness allows us to establish the following error b
 
 \begin{theorem}
 \label{quadratic_errors}  
-Let $Y = \{y^0, y^1, \ldots, y^p\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^0\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^0; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^0;\Delta)$:
+Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^{(0)}\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^{(0)}; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};\Delta)$:
 
 \begin{align}
-\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^0; \Delta) \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^0; \Delta) \label{error_in_gradient} \\
-|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^0; \Delta). \label{error_in_function} 
+\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_gradient} \\
+|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta). \label{error_in_function} 
 \end{align}
 where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 \end{theorem}
 
-There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^i-y^0)}{\Delta}|y^i \in Y\right\}$.
+There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.  In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{(y^{(i)}-y^{(0)})}{\Delta}|y^{(i)} \in Y\right\}$.
 Then we have the following result:
 % \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
 \begin{theorem}\label{Lambda_poised_error_bounds}
 (\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
-If $\hat{M}$ is  nonsingular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
+If $\hat{M}$ is  non-singular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
 then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B(0;1)$.  
 Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
 then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
@@ -375,13 +376,13 @@ The model improvement algorithm starts with a set of $p+1$ sample points and the
 associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \ldots, u_p\}$ that are closely related to the Lagrange polynomials.  
 
 Each iteration of the algorithm identifies a point in the sample set to include in the final sample set.
-In particular, on the $i$th iteration, the points $y^0, \ldots, y^{i-1}$ have already been included.
+In particular, on the $i$th iteration, the points $y^{(0)}, \ldots, y^{i-1}$ have already been included.
 If a point $y^j$, $j \ge i$ can be found such that $u_i(y^j)$ has sufficiently large magnitude, 
 then that point is added to the final sample set (by swapping it with $y^{i}$).
 However, if no such point can be found, it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.
-Therefore, the point $y^i$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
+Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
 
-\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^0$ to create a set with $p+1$ points.
+\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 
 \begin{algorithm}[H]
     \caption{Model Improvement Algorithm \label{alg:model_improvement} }
@@ -390,19 +391,19 @@ Therefore, the point $y^i$ is replaced by a new point which is obtained by maxim
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Given a center $\ck\in\Rn$, a radius $\delta >0$, and set $Y$ of $p+1$ points,
             initialize $i=1$, $\ximin > 0$, and let $\bar \phi_i(x)$ be the monomial basis
-%             Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^i - y^0))$.
+%             Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^{(i)} - y^{(0)}))$.
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
 			Compute the next pivot index $j^{\textrm{max}}_i = \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^j\right)\right|$,
 			and swap points $i$ and $j^{\textrm{max}}_i$ within $Y$.
 			
         \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
-                \item[] If $\left|u_i\left(y^i\right)\right| \ge \ximin$ then go to Step 3.
-                \item[] If $\left|u_i\left(y^i\right)\right| < \ximin$, then replace $y^i \gets \argmax_{x \in B_2\left(\ck, \delta\right)}\left|u_i(x)\right|$
-%                 \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^i\}$
-				\item[] If $\left|u_i\left(y^i\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
+                \item[] If $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin$ then go to Step 3.
+                \item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(\ck, \delta\right)}\left|u_i(x)\right|$
+%                 \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^{(i)}\}$
+				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
             \end{itemize}
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
-        	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^i\right)}{u_i\left(y^i\right)} u_i(x)$ \\
+        	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^{(i)}\right)}{u_i\left(y^{(i)}\right)} u_i(x)$ \\
 %         \begin{itemize}
 %                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
 %                 \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
@@ -412,7 +413,7 @@ Therefore, the point $y^i$ is replaced by a new point which is obtained by maxim
 \end{algorithm}
 
 
-At the completion of the algorithm, we obtain a  sample set $Y=\{y^0, \ldots, y^p\}$ that is $\Lambda$-poised, 
+At the completion of the algorithm, we obtain a  sample set $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
 where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result.
 \begin{theorem}
 \label{set_is_poised}
@@ -424,10 +425,10 @@ where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n
 This result is shown through a sequence of results in \cite{introduction_book}.
 Namely,  \cite[Theorem 6.5]{introduction_book} shows the pivots in the LU-factorization are bounded below by $\ximin$:
 $
-\left|u_i\left(y^{(i)}\right)\right| \ge \ximin\quad \forall 0 \le i \le p.
+\left|u_i\left(y^{(i)}\right)\right| \ge \ximin \; \forall 0 \le i \le p.
 $
 \cite[Section 6.7, Exercise 3]{introduction_book}
- bounds the condition number of the vandermonde matrix in terms of these pivots:
+ bounds the condition number of the Vandermonde matrix in terms of these pivots:
 \begin{align*}
 \left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}.
 \end{align*}
@@ -457,7 +458,7 @@ Both the $\sampletrk$ and the $\searchtrk$ lie within the {\em outer trust regio
 $\outertrk = B_{\infty}\left(\xk, \dk\right)$, which is an $L_{\infty}$-ball of radius $\dk$ centered at the current iterate $\xk$:
 \begin{align}
 \label{define_outer_trust_region}
-\outertrk = B_{\infty}(\xk,\dk) = \left\{x\in \Rn | \; \xki - \dk \le x_i \le \xki + \dk \quad \forall i \in [m] \right \}.
+\outertrk = B_{\infty}\left(\xk,\dk\right) = \left\{x\in \Rn | \; \xki - \dk \le x_i \le \xki + \dk \quad \forall i \in [m] \right \}.
 \end{align}
 
 To allow for the best possible trial point, we would like the search region to be as large as possible within the outer trust region while still remaining feasible.
