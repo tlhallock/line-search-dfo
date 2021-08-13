@@ -1673,17 +1673,18 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
 
 
 % We can then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
+% In dimension $n$, the number of sample points $p_1$ required to construct a quadratic model is $O(n^2)$.
+% In dimension $n$, the number of sample points $p_1$ required to construct a linear model of the constraints $n$.
+% Choose a subset of $n+1$ points in the last lambda poised set that have a non-empty interior.
+
 Note that although constructing the convex hull of an an arbitrary set of points is computationally expensive,
 in practice it is possible to do with a sufficiently small set of sample points.
-% In dimension $n$, the number of sample points $p_1$ required to construct a quadratic model is $O(n^2)$.
 For example, in dimension $n$, if a subset of previously evaluated points of size $n+1$ is found, then not all hyperplanes of the convex hull need to be enumerated.
 Only those that run through the point $\xk$ can be active.
 As it takes $n$ points to construct a hyperplane, and one of them is $\xk$, we must only consider the subsets of size $n-1$ of the remaining $n+1$ sample points.
 Thus, to construct a hyperplane used in the construction of $\pi^{\textrm{hull}}$,
 we consider the hyper-planes running through $\xk$ to any other subset of size $n - 1$ of these points,
 which makes for $n+1$ choose $n-1$ points, or:
-% In dimension $n$, the number of sample points $p_1$ required to construct a linear model of the constraints $n$.
-% Choose a subset of $n+1$ points in the last lambda poised set that have a non-empty interior.
 $
 \frac{(n+1)!}{(n-1)!(n+1 - (n-1))!} = \frac{n(n+1) }{4}
 $
@@ -1839,11 +1840,16 @@ In many situations, there may be more practical means of finding a feasible samp
 
 \subsubsection{Ellipsoid Existence}
 
+In the case when the feasible region is not convex, one must ask the question as to whether an acceptable ellipsoid even exists.
+This section section answers that question in the affirmative if we assume that the following regularity condition is satisfied.
+
+\color{red}
 The above algorithm can only terminate if there is some ellipsoid to find.
 Here, we show that such a feasible ellipsoid exists, using a modification of \cref{minangleassumption_alt}.
 We would have preferred to use this version, as discussed in \cref{alternative_assumptions_section},
 but instead used an assumption about the models of the constraints.
 For showing a feasible ellipsoid without reference to the current iterate, it is more appropriate to use the following version:
+\color{black}
 
 \begin{assumption}
 \label{true_constraints_minangle_assumption}
