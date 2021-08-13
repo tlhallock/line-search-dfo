@@ -2191,11 +2191,11 @@ c\left(\xinit\right) < 0 \Longrightarrow \xinit \in \feasible.
 but also an initial feasible ellipsoid
 \begin{align}
 \label{initial_ellipsoid}
-\left\{x \in\Rn | \left(x - \xinit\right)^T Q^{(0)} \left(x - \xinit\right) \le \delta_0 \right\} \subseteq B_{\infty}\left(\xinit, \Delta_{0}\right) \cap \feasible 
+T_{\text{sample}}^{(0)} = \left\{x \in\Rn | \left(x - \xinit\right)^T Q^{(0)} \left(x - \xinit\right) \le \delta_0 \right\} \subseteq B_{\infty}\left(\xinit, \Delta_{0}\right) \cap \feasible 
 \end{align}
-to construct the first model.
+to construct the first model.   \sbnote{Should the first sample trust region be indexed by $k=0$ or by $k=1$?  The perfectionist in me prefers using $k=0$, since everywhere else, we use the index $k=0$ to denote stuff that is defined prior to the start of the algorithm.   However, all of the prior discussion defined  $\sampletrk$ to be the trust region used to construct the sample points for iteration $k$, so that would mean the initial trust region should use $k=1$.    It probably is not worth the effort to change it now, but I wish we had used $\sampletrkmo$ to be the sample trust region for iteration $k$.   In any case, you need to resolve this indexing inconsistency.}
 % In addition to decreasing the trust region to innacurate trial steps, 
-% it must also be decreased when the criticallity measure is small relative to the trust region.
+% it must also be decreased when the criticality measure is small relative to the trust region.
 % To accomplish this, we introduce constants
 We introduce constants
 \begin{align}
@@ -2204,12 +2204,12 @@ We introduce constants
 \end{align}
 and check
 \begin{align}
-\kappa_{\chi} \dk^{p_{\Delta}} \le \chik \label{criticallity_check}
+\kappa_{\chi} \dk^{p_{\Delta}} \le \chik \label{criticality_check}
 \end{align}
-to ensure the trust region radius does not remain large while approaching criticality.
+to ensure the trust region radius does not remain large while approaching criticality.    If \cref{criticality_check} is not satisfied, we decrease the trust region radius and call the model improvement algorithm.
 Here,
 $p_{\alpha}$ and $p_{\beta}$ are introduced by \cref{define_abpab},
-while $\chik$ is introduced in \cref{define_criticality_measure}.
+while $\chik$ is defined in \cref{define_criticality_measure}.
 Note that we reuse several other parameters previously introduced:
 \begin{align}
 \tolcrit, \tolrad \ge 0; \label{define_algorithm_tolerances}
@@ -2228,7 +2228,7 @@ were introduced in \cref{rhosection};
 0 < \tolsr \le \frac 1 2 \label{define_tolsr}
 \end{align}
 was introduced in \cref{decreasing_the_trust_region_for_infeasible_trial};
-and $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ by \cref{define_abpab}.
+and $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ were introduced by \cref{define_abpab}.
 
 
 % \begin{tabular}{p{.4\textwidth}p{.4\textwidth}}
@@ -2280,7 +2280,7 @@ k \gets 0; &
 %         	for each $i \in \activeconstraintsk$.
 %             Compute $\chik$ as in \cref{define_criticality_measure}.
 			If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$ then return $\xk$ as the solution. \\
-			Otherwise, if \cref{criticallity_check} is not satisfied, then \\
+			Otherwise, if \cref{criticality_check} is not satisfied, then \\
                 $\Delta_{k+1} \gets \omegadec\dk$, 
                 $x^{(k+1)} \gets \xk$,
                 $k \gets k+1$ and go to Step 1.
@@ -2317,13 +2317,20 @@ k \gets 0; &
 You wanted all of the definitions in Step 3, just to know when they were calculated, do I still need them?
 \end{boxedcomment}
 
+
+
+\sbnote{No, this is too tedious.  How about the following for Step 3:  Construct $\capcones$ by \cref{define_capcones} and solve the trust region subproblem \cref{capcones_tr_subproblem} for $\sk$.  If $\sk \not \in \feasible$, etc.}
+
+
+\sbnote{You could also simplify Step 2 by saying ``Compute $\chik$ by  \cref{define_criticality_measure}.  If $ \chik < \tau_{\xi} $ etc.}
 \color{red}
 
 We take a moment to make some observations about the algorithm.
 
 
-Somewhere should I say that there is only a finite number of times that the restore subroutine is called?
+Somewhere should I say that there is only a finite number of times that the restore subroutine is called?    \sbnote{Yes,  that should actually be a Lemma.}
 
+\sbnote{The following paragraph is incomplete.}
 
 Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
 Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
@@ -2333,34 +2340,40 @@ This is because the only way to quit iteration $k$ without reaching Step 3 is
 \item have $\sampletrk = \emptyset$
 \item have $\sampletrk \not \subseteq \feasible$
 \item have $\searchtrk \not \subseteq \feasible$
-\item have \cref{criticallity_check} not satisfied.
+\item have \cref{criticality_check} not satisfied.
 \end{itemize}
 \color{black}
 
 \section{Convergence Analysis}
 \label{convex_convergence_analysis}
 
-Let $\left\{\xk\right\}$ be the sequence of iterates generated by \cref{constrained_dfo}.
-For convex constraints, we can let $\chi\left(x\right) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$ be the criticality measure for \cref{the_dfo_problem}, 
-For general constraints, this projection is not well defined.
+Let $\left\{\xk\right\}$ be the sequence of iterates generated by \cref{constrained_dfo}.  If the feasible region is convex, 
+we can let $\chi\left(x\right) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|$ be the criticality measure for \cref{the_dfo_problem}.     
+
+For general constraints,  when the feasible region is not convex, this projection is not well defined.
 However, to show convergence to a first order critical point, we can project onto the linearization of the constraints.
 Namely, for any $x \in \feasible$, if we define $F_c(x) = \left\{y \in \Rn \big | c_i(x) + \nabla c_i(x)^T(y - x) \le 0 \; \forall i \in [m] \right\}$, 
 then we can let the criticality measure be
 $\chi\left(x\right) = \left\|x - \proj_{F_c(x)}\left(x- \nabla f\left(x\right)\right)\right\|$.
 In this section we prove that under appropriate conditions, the criticality measure $\chi\left(\xk\right)$ converges to $0$ as $k\to\infty$.
+\sbnote{Redefining $\chi(x)$ as above makes me nervous.  How about using $\chi_c(x)$ instead, so that there is no ambiguity about the meaning of $\chi(x)$.  Also, why is proving that $\chi_c(\xk)$ converges to 0 a good thing?  Does $\chi_c(\xk)=0$ imply that $\chi(\xk)=0$   (I think it probably does, but I haven't proven this to myself yet).}
 
 For much of our analysis, we work with the model criticality measure
 \begin{align*}
 \chi_m\left(x\right) = \left\|x - \proj_{\feasiblek}\left(x- \nabla \mfk\left(x\right)\right)\right\|.
 \end{align*}
-in accordance with \cref{define_criticality_measure}: $\chik = \chi_m\left(\xk\right)$.
+In accordance with \cref{define_criticality_measure}, we define $\chik = \chi_m\left(\xk\right)$.  \sbnote{The model criticality measure $\chi_m(x)$ above depends on the iterate $k$, so should probably have a superscript.  For example,
+$\chi_m^{(k)}\left(x\right)$.}
+
 $\chik$ depends on the current approximation of the constraints, which change each iteration.
-Thus, we show that the model criticality measure converges to the true criticality measure
 \begin{align}
 \label{verbiage_hoffman_use_one}
 \chik \approx \chi (\xk).
 \end{align}
+\sbnote{The above equation doesn't seem to connect to the previous sentence.  I'm not sure what you are trying to say here.  }
 For some results, we must also show that the criticality \cref{define_criticality_measure} measure converges across iterations:
+\sbnote{That sentence is weired.  Why do you have a cross reference to \cref{define_criticality_measure} in the middle of ``criticality measure''?}
+
 \begin{align}
 \label{verbiage_hoffman_use_two}
 \chik \approx \chil.
@@ -2371,7 +2384,7 @@ Our convergence analysis follows closely that of \cite{Conejo:2013:GCT:2620806.2
 % To use their analysis, we show that the accuracy and efficiency assumptions required for their proof hold, 
 % this is done within \cref{ellipsoidal_lambda} and \cref{sufficient_reduction_section} respectively.
 We summarize the steps of the proof here:
-\begin{itemize}
+\begin{enumerate}
 \item Show that the accuracy condition \cref{accuracy} is satisfied. \\
 This is done within \cref{accuracy_section}. 
 To do this, we must show our construction of $\sampletrk$ satisfies the conditioned requirement defined by \cref{ellipsoids_notation_definitions}.
@@ -2379,10 +2392,10 @@ This is done within \cref{bounded_condition_numbers_section}.
 \item Show that the efficiency condition \cref{efficiency} is satisfied. \\
 This is the topic of \cref{sufficient_reduction_section}.
 We use a slightly weaker efficiency condition, as stated in \cref{sufficient_reduction_theorem}.
-\item Show $\liminf_{k\to\infty} \chik \to 0$. \\
+\item Show that $\liminf_{k\to\infty} \chik \to 0$. \\
 This is done within \cref{initial_convergence_results}, and is a fairly straight forward use of the analysis within \cite{Conejo:2013:GCT:2620806.2621814}.
-\item Show $\lim_{k\to\infty} \chik \to 0$ whenever $\gammabi > 0$. \\
-This is done within \cref{limit_of_criticallity_to_zero}.
+\item Show that $\lim_{k\to\infty} \chik \to 0$ whenever $\gammabi > 0$. \\
+This is done within \cref{limit_of_criticality_to_zero}.
 This result relies on \cref{verbiage_hoffman_use_one}, which in turn, depends on results within \cref{bounding_the_projection_section}.
 % the Hoffman constant of the constraint's model's Jacobians.
 % This is done within \cref{bounding_the_projection_section}.
@@ -2404,7 +2417,8 @@ This relies on \cref{verbiage_hoffman_use_two}.
 % , which in turn relies on bounding the Hoffman constant of the Jacobians of the constraints.
 Because of the similarity to \cref{verbiage_hoffman_use_one}, this is done in parallel within \cref{bounding_the_projection_section}.
 % bounding the constraint's model's Jacobian's Hoffman's constant in \cref{bounding_the_projection_section}.
-\end{itemize}
+\end{enumerate}
+\sbnote{The outline above doesn't line up with your sections.   For example, after you state the assumptions in \cref{assumptions}, the next section is called ``Bounded Condition Numbers".    Where does that fit in to the outline above?  Then you have a section called ``accuracy'', which fits Step 1 above, but then you move to ``sample region feasibility'', which is not in your outline above.  Etc. }
 
 Throughout this section, we assume that 
 $\left\{\xk\right\}$,
@@ -2417,7 +2431,12 @@ are generated by
 Other quantities such as $\activeconstraintsk$, $\huk$, $\thetamink$, $\qk$, $\ck$, and $\sdk$ 
 that are generated by the conservative ellipsoid method described in
 \cref{ellipsoids_notation_definitions} and \cref{conservative_ellipsoid_construction} and
-include references to their definitions when used.
+include references to their definitions when used.  \sbnote{something is wrong with this sentence.  Did you mean the following?
+\\
+Other quantities such as $\activeconstraintsk$, $\huk$, $\thetamink$, $\qk$, $\ck$, and $\sdk$ 
+\replace{that}{} are generated by the conservative ellipsoid method described in
+\cref{ellipsoids_notation_definitions} and \cref{conservative_ellipsoid_construction}.  We 
+include references to their definitions when they are used. }
 
 
 % \subsection{Restoration Assumption}
@@ -2511,9 +2530,9 @@ The functions $c_i$ for all $i \in [m]$ and $f$ are twice differentiable and the
 
 % We use the following assumptions as our regularity assumptions.
 
-The following was inspired by the Mangasarian Fromovitz constraint qualifications with only inequality constraints.
+The following regularity condition was inspired by the Mangasarian Fromovitz constraint qualifications with only inequality constraints.
 It provides a uniform bound across all points, rather than at just a critical point.
-
+Remember that $\zik$ is defined by \cref{define_z}.
 % For an alternative to this assumption, please see \cref{alternative_assumptions_section}.
 % 
 % \color{red}
@@ -2530,7 +2549,6 @@ It provides a uniform bound across all points, rather than at just a critical po
 % \end{assumption}
 % \color{black}
 
-Remember that $\zik$ is defined by \cref{define_z}.
 \begin{assumption}
 \label{minangleassumption_alt}
 There exists $\minangledelta > 0$ and $\minanglealpha > 0$ such that for each $k \in \naturals$ there exists
@@ -2544,11 +2562,13 @@ then
 Without loss of generality, $\minanglealpha \le \frac 1 2$.
 \end{assumption}
 
-
+\sbnote{Maybe add a comment here to clarify how this relates to Mangasarian-Fromovitz.   Some ideas:   If the MF condition is satisfied, then for sufficiently accurate model functions and for any point $x$, there will be a $u$ such that $-\frac {\gmcik}{\left\|\gmcik\right\|} ^T\minangledirk > 0$.   But we need something stronger--namely that the left hand side is uniformly bounded away from 0.   (I may not have the details right, but something along these lines would be great).   I think this is slightly important because I think you have a very nice idea here in how you generalized the constraint qualification}.
 
 \begin{boxedcomment}
 Use continuity to make $c_i(x) = 0$, then....
 \end{boxedcomment}
+
+\sbnote{I don't understand what that comment was about.}
 
 \begin{assumption}
 \label{mingradassumption}
@@ -2565,7 +2585,7 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 
 The following assumption is motivated in \cref{recovering_feasiblity_section}.
 In \cref{convex_restoration}, we show how to satisfy the assumption for convex constraints.
-
+\sbnote{You should clarify that you only need this assumption in the case of a nonconvex feasible region.   For convex feasible region, you describe the \emph{RestoreFeasibiity} algorithm}.
 \begin{assumption}
 \label{restorability_assumption}
 There exists a subroutine \emph{RestoreFeasibility} that accepts a feasible point $x \in \feasible$ and a maximum radius $\dmax$ to produce
@@ -2664,16 +2684,14 @@ $x$, $\Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellip
 \subsection{Bounded Condition Numbers}
 \label{bounded_condition_numbers_section}
 In this section, we show that the condition numbers $\condition\left(\qk\right)$ are bounded.
-This is required to show the accuracy condition \cref{accuracy}, because this condition number determines the sample sets poisedness, as discussed in \cref{geometry}.
+This is required to show the accuracy condition \cref{accuracy} is satisfied, because this condition number determines the sample set's poisedness, as discussed in \cref{geometry}.
 % The accuracy condition dependThis condition number influences model's accuracy. 
 
 \begin{lemma}
 \label[lemma]{theta_min_is_bounded}
 Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption_alt}, and
 define $\thetamink$ by \cref{define_thetamink}.
-
 \input{assumptions.d/theta_min_is_bounded}
-
 If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \end{lemma}
 
@@ -2693,12 +2711,9 @@ Therefore, $\thetamink \ge \minanglealpha$.
 
 \begin{lemma}
 \label[lemma]{bounded_condition_numbers}
-Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints};
-$\qkpo$ be defined by \cref{define_trivial_ellipsek} when $\activeconstraintsk = \emptyset$ and \cref{conservative_ellipsoid_details} otherwise;
-and $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
-
+Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.  Let
+$\qkpo$ be defined either by \cref{define_trivial_ellipsek} if $\activeconstraintsk = \emptyset$ or by \cref{conservative_ellipsoid_details} if $\activeconstraintsk  \ne \emptyset$.  Let $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
 \input{assumptions.d/bounded_condition_numbers}
-
 % Then the sequence $\left(\qk, \ck, \sk\right)$ is conditioned as defined by \cref{ellipsoids_notation_definitions}.
 There exists a $\dacc > 0$, such that $\condition\left(\qkpo\right) \le {12}\left(\minanglealpha\right)^{-2}$ whenever $\dk \le \dacc$.
 \end{lemma}
@@ -2713,13 +2728,12 @@ If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{
 where $\minangledelta$ is defined by \cref{minangleassumption_alt}.
 \end{proof}
 
+\sbnote{Is  the following lemma in the right place?   What does it have to do with ``bounded condition number''?  Should this be moved to the sample region feasibility section?}
 
 \begin{lemma}
 \label[lemma]{sampletrk_is_nonempty}
 Let $\dacc$ and $\fcki$ be defined by \cref{define_delta_accuracy} and \cref{define_inner_cone}.
-
 \input{assumptions.d/sampletrk_is_nonempty}
-
 If $\dk \le \dacc$, then the tuple $\left(\qk, \ck, \sdk\right)$ defined in \cref{define_ellipsek}
 is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
@@ -2736,17 +2750,16 @@ $\fcki \ne \emptyset$.
 
 \subsection{Accuracy}
 \label{accuracy_section}
+\sbnote{Maybe add a sentence or two introduction to this section rather than just stating Lemmas}
 
 
+\sbnote{Are the indices correct for the following lemma?  It looks like you are indexing the sample trust region used to construct $\mfk$ and $\mcik$ by $(k-1)$ rather than $(k)$.}
 \begin{lemma}
 \label[lemma]{accuracy_is_satisfied_lemma}
-Suppose that $\qkmo$, $\ckmo$, and $\sdkmo$ are non-empty according to \cref{ellipsoids_notation_definitions}.
-
+Suppose that $\qkmo$, $\ckmo$, and $\sdkmo$ are non-empty according to \cref{ellipsoids_notation_definitions}.  \sbnote{You haven't defined what it means for each of these individual objects to be non-empty.  Instead, you defined what it means for the ordered triple $(\qkmo,\ckmo,\sdkmo)$ to be non-empty.}
 \input{assumptions.d/accuracy_is_satisfied_lemma}
-
-
-Fix an iterate $k$, and suppose that the sample points chosen for iteration $k$ are feasible.
-There exist $\kappa_g>0$ and $\kappa_h>0$ such that
+\replace{Fix an iterate $k$, and }{},  \sbnote{you've already assumed a fixed $k$ in the statement of the Lemma} Suppose that the sample points chosen for iteration $k$ are feasible.
+Then there exist $\kappa_g>0$ and $\kappa_h>0$, independent of $k$, such that
 \begin{align*}
 \|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \sqrt{\condition \left(\qkmo\right)} \dk^2, \\
 \|\nabla^2 f(\xk) - \hk \| \le \kappa_h \condition \left(\qkmo\right) \dk,  \\
@@ -2766,7 +2779,7 @@ As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \end{array}
 \end{align*}
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
-there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
+there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
 \left| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right|\le \kappa_f \delta^3, &
@@ -2778,7 +2791,7 @@ there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_
 \end{array}
 \end{align*}
 By \cref{bounded_hessians_assumption} and \cref{lipschitz_hessians_assumption}, we know that the assumptions for \cref{change_radius} hold.
-Thus, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
+Thus,  by \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &
@@ -2790,7 +2803,7 @@ Thus, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0,
 where $\kappa_{g}' = 2 \Lambda_2$ and $\kappa_{h}' = 2\Lambda_3$.
 % Define $\kappa''_{g} =  \sqrt{\sigmamax}\kappa'_g$ and $\kappa''_h = \sigmamax\kappa'_h$.
 Notice that because $\sigma_{\textrm{min}} = 1$, we have that $\sigmamax = \condition \left(\qk\right)$.
-\cref{shifted_ellipsoid} tells us for all $x_0 \in \scaledunshiftedellipsoid$:
+\cref{shifted_ellipsoid} tells us that for all $x_0 \in \scaledunshiftedellipsoid$:
 \begin{align*}
 \left\|\gradf\left(x_0 \right) - \nabla m^{(k)}_f\left(x_0\right)\right\| \le 
 \kappa'_g  \dk^2 \sqrt{\condition \left(\frac 2 {\sdk} \qkmo\right)} \le \kappa'_g \sqrt{\condition \left(\qkmo\right)}\dk^2 \\
@@ -2822,6 +2835,20 @@ whenever $\dk \le \dacc$.
 \begin{proof}
 This is a direct consequence of \cref{accuracy_is_satisfied_lemma}, \cref{ellsoid_is_suitable_theorem_p1}, and \cref{bounded_condition_numbers}.
 \end{proof}
+
+
+\sbnote{At this point, you have finished proving that the accuracy condition is satisfied for sufficiently small $\Delta_k$.    So you should end the subsection here.  The next two lemmas seem to fit better with the next subsection (Sample Region Feasibility).   I suggest the following transition:}
+
+\color{blue}
+The above theorem shows that the accuracy condition \cref{accuracy_condition} is satisfied for sufficiently small $\Delta_k$.   
+We now turn our attention to the feasibility of the sample region.
+
+---Start Sample Region Feasibility Section Here---
+
+This section show that for sufficiently small $\Delta_k$, the conservative ellipsoids defined by 
+\cref{define_ellipsek} are feasible as defined by \cref{ellipsoids_notation_definitions}:
+that is, $\sampletrk \subseteq \feasible$.  We begin by establishing bounds on the Hessians and gradients of the model functions.
+\color{black}
 
 \begin{lemma}
 \label[lemma]{bounded_model_hessian_lemma}
@@ -2874,6 +2901,8 @@ The same applies to each $\left\|\gmcik\right\|$.
 \subsection{Sample Region Feasibility}
 \label{ellipsoid_is_feasible_section}
 
+\sbnote{Maybe rename this section ``Trust Region Feasibility'' since it addresses both the feasibility of the sample trust region as well as the feasibility of the search trust region.}
+
 Within this section, we will show that the conservative ellipsoids defined by \cref{define_ellipsek} are feasible as defined by \cref{ellipsoids_notation_definitions}:
 that is, $\sampletrk \subseteq \feasible$.
 % In order to do this, we would first show 
@@ -2895,7 +2924,7 @@ There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for a
 \end{itemize}
 \end{lemma}
 \begin{proof}
-Fix an $i \in [m]$.
+Fix $i \in [m]$.
 Let
 $\dacc$,
 $\maxgrad$,
@@ -3229,6 +3258,8 @@ be defined by
 \cref{define_feasible}.
 Let $\unshiftedellipsoid$ be defined by \cref{define_trivial_ellipsek} and \cref{conservative_ellipsoid_details}
 
+\sbnote{The last two lemmas of this section are the main result of the section.  I suggest combining these two into a single ``theorem'', and replacing $\unshiftedellipsoid$ by $\sampletrk$.   So you can say cleanly that for small enough $\Delta_k$, both $\sampletrk \subset \feasible$ and $\searchtrk \subset \feasible$.}
+
 \input{assumptions.d/ellipsoid_is_feasible}
 
 If $\dk \le \dfeas$, then $\unshiftedellipsoid$ is feasible according to \cref{ellipsoids_notation_definitions}:
@@ -3275,7 +3306,7 @@ $\capcones \cap \trk \subseteq \feasible$.
 
 As discussed in \cref{decreasing_the_trust_region_for_infeasible_trial}, there may be no solution to \cref{capcones_trust_region_subproblem} 
 that satisfies \cref{efficiency}.
-However, we show such a point exists for those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$ and sufficiently small $\dk$.
+However, we show that such a point exists for those iterates with $\chik \ge \kappa_{\Delta}\dk^{p_{\Delta}}$ and sufficiently small $\dk$.
 This statement is formalized in \cref{sufficient_reduction_theorem}.
 
 % \begin{lemma}
@@ -3896,6 +3927,8 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 \subsection{Initial Convergence Results}
 \label{initial_convergence_results}
 
+\sbnote{Remove this note?   Alternatively, reword it to something like:  ``The following analysis follows that in 
+ \cite{Conejo:2013:GCT:2620806.2621814}, where $\eta$ corresponds to $\gammasm$, etc.''}
 \paragraph*{Note:} Within \cite{Conejo:2013:GCT:2620806.2621814}, 
 $\eta$ corresponds to $\gammasm$,
 $\eta_1$ corresponds to $\gammabi$,
@@ -3903,10 +3936,12 @@ $\bar S$ corresponds to $\suffiterates$,
 and
 $S$ corresponds to $\miniterates$.
 
-With 
+Our first task is to show that the outer trust region radius converges to zero and that $\liminf_{k \rightarrow\infty} \chi_m^{(k)} =0$, which will be proved in \cref{liminf_chi_to_zero} below.    The proof involves several sets, which we now define.  
+
+With
 $\gammasm$ and $\gammabi$
 defined by \cref{define_the_gammas},
-let
+define
 \begin{align}
 \suffiterates &= \left\{k \in \naturals | \rk > \gammabi \right\} \label{define_suffiterates} \\
 \textrm{and} \quad \miniterates &= \left\{k \in \naturals | \rk \ge \gammasm \right\} \label{define_miniterates}.
@@ -3916,7 +3951,7 @@ With
 $\kappa_g$, $\kappa_f$, $\lipgrad$, $\maxmodelhessian$
 defined by
 \cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_model_hessian_lemma}
-respectively, let
+respectively,  define
 \begin{align}
 \theircnot &= \lipgrad + \kappa_{g} + \frac 1 2 \maxmodelhessian \label{define_theircnot} \\
 \textrm{and} \quad \theirc &= \frac{\theircnot}{\kappa_f} .  \label{define_theirc}
@@ -3926,7 +3961,7 @@ With
 $\chik$, $p_{\Delta}$, $\dsr$, $\kappa_{\chi}$, $\maxmodelhessian$, $\gammasm$
 defined by 
 \cref{define_criticality_measure}, \cref{define_p_delta}, \cref{sufficient_reduction_theorem}, \cref{define_kappa_chi}, \cref{bounded_hessians_assumption}, and \cref{define_the_gammas}
-let
+define
 \begin{align}
 \label{define_reduceiterates}
 \reduceiterates = \left \{ k \in \naturals \bigg| \dk \le \min \left\{ 
@@ -4103,7 +4138,9 @@ Therefore, one can see that for all $k \ge k_1$
 which contradicts \cref{delta_to_zero}.
 \end{proof}
 
-Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.
+
+Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.    \sbnote{I think you should move on to the next section here since you are done with the initial criticality convergence.    Maybe also say ``To prove this will be considerably more.  We begin the development in the following sections''}
+
 Observe that if this limit does hold, then there exists an $\epsilon_{\textrm{lb}} > 0$ such that the set
 \begin{align}
 \ulb = \left\{k \in \naturals | \chik \ge\elb \right\} \label{define_the_finite_set}
@@ -4129,7 +4166,6 @@ Using the same constants as in \cref{define_reduceiterates}, we define
 
 
 % Using the same , \cref{delta_to_zero} implies the existence of $k_0 \in \naturals$ such that for all $k \ge k_0$,
-
 
 \begin{lemma}
 \label[lemma]{contradiction_portion}
@@ -4210,10 +4246,10 @@ Therefore $\left\{\left\|\xk - \xl\right\|\right\}_{(k,l) \in \slb}$ converges t
 As discussed at the beginning of \cref{convex_convergence_analysis}, this section is devoted to showing convergence of the difference
 between a projection onto an iterate's constraint's linearization and
 \begin{itemize}
-\item a different iterate's constraint's linearization.
-\item the true constraint's linearization.
+\item the linearization obtained at a different iterate; 
+\item the linearization of the true constraint.
 \end{itemize}
-This is required within \cref{convergence_section}.
+This result will be required within \cref{convergence_section}.
 
 % \color{red}
 % We initially attempted to prove this result using the results found within \cite{pena2020new},
@@ -4772,10 +4808,11 @@ s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
 
 \subsubsection{Simplified Results}
 \label{simplifed_bounded_projection}
+\sbnote{What do you mean by the section title ``Simplified Results'' ?   What are they simplified from?}
 
 
 
-% We prove the convergence results found within \cref{limit_of_true_criticallity} by contradiction.
+% We prove the convergence results found within \cref{limit_of_true_criticality} by contradiction.
 % Namely, we assume the existence of an $\epsilon_{\textrm{lb}} > 0$ within \cref{the_contradiction}, 
 % and within \cref{lim_chi_to_zero}, we show that $\epsilon_{\textrm{lb}}$ cannot exist.
 % To accomplish this, we define a certain set of pairs of iterates within \cref{define_slb}.
@@ -5115,6 +5152,9 @@ and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 % Use a superscript of $(k, l)$
 % \end{boxedcomment}
 
+
+We are now ready to state the main result of this section.   
+
 With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
 \begin{align}
 \zlk =& \proj_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
@@ -5295,7 +5335,6 @@ Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zl
 \subsection{Convergence}
 \label{convergence_section}
 
-
 \subsubsection{Criticality Goes to Zero}
 \label{limit_of_criticallity_to_zero}
 
@@ -5379,7 +5418,7 @@ This is a contradiction, and there is no such $\elb > 0$.
 \end{proof}
 
 \subsubsection{Convergence of Criticality Measure}
-\label{limit_of_true_criticallity}
+\label{limit_of_true_criticality}
 
 
 \begin{lemma}
