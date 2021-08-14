@@ -1,1 +1,15 @@
-A conclusion goes here.
+
+Throughout the thesis we have constructed the model-based, derivative-free algorithms \cref{linearly_constrained_dfo_simple} and \cref{constrained_dfo}
+that can run with partially quantifiable constraints.
+This requires constructing a poised, feasible sample set near the current iterate, even when the iterate is nearly infeasible.
+Our construction buffers the feasible region wtih second order cones, and computes a $\sampletrk$ within the buffered region.
+We show that, even for general non-linear constraints, this buffered region is feasible for small $\dk$.
+Also, sample points can be constructed within $\sampletrk$ with only slight modifications to classic model improving algorithms.
+Although our construction has minimal performance alterations, it fairs well to classic derivative free optimization codes,
+and makes fewer infeasible evaluation attempts.
+We also present multiple methods for improving on the sample set, under a framework that ensures convergence.
+
+We present algorithm \cref{modified_model_improving_algorithm} for constructing poised sets over non-ellipsoidal trust regions.
+Future work includes proving corresponding error bounds for sample sets constructed with these polyhedral sample regions.
+Further, we believe that the algorithm presented naturaly faciliates a model improvement algorithm that reduces the number of sample points for thin domains.
+% eliminates unnecessary 

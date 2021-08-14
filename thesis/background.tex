@@ -32,7 +32,8 @@ This will be discussed in \cref{rhosection}.
 There are a number of books and survey articles that provide good introductions to the field of derivative-free optimization.
 Within \cite{introduction_book} derivative-free methods are developed in detail.
 This is the first text book devoted to derivative free optimization.
-It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free methods including direct-search and line search.
+It contains a good explanation of ensuring geometry of the current set with poisedness for unconstrained problems and also covers other derivative-free 
+methods including direct-search and line-search methods.
 
 A good review of derivative free algorithms and software libraries can be found in \cite{miguel_review}.
 This compares several software libraries, and reviews the development of derivative free optimization since it started.
@@ -55,15 +56,12 @@ COBYLA \cite{pub.1046127469} was one of the first model-based approaches for sol
 The classic sequential quadratic programming algorithm is implemented for equality based constraints within \cite{Troltzsch2016}.
 A two-phased, feasibility and optimization approach that handles infeasible starting points is developed within \cite{BAJAJ2018306}.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
-
-
-
-\paragraph*{}
 The algorithm presented within \cite{doi:10.1080/10556788.2015.1026968} even ensures that each iterate is feasible, 
 although sample points may not be.
 
 Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides a convergence proof for a class algorithms when the constraints are convex.
+This reference provides a remarkably elegent convergence proof for a class algorithms when the constraints are convex.
+Our analysis implements abstractions made in this paper, and shows the implementation satisfies their requirements.
 
 
 \section{Criticality Measure}
@@ -89,12 +87,12 @@ In the presence of convex constraints, a classic \cite{Conejo:2013:GCT:2620806.2
 \end{align*}
 For a first order criticality measure at $\xk$, we can define
 \begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\}. \label{define_truefeasiblek}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
 \end{align}
 and use
-\begin{align*}
-\chi_c^{(k)} = \left\|\xk - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|.
-\end{align*}
+\begin{align}
+\chi_c^{(k)} = \left\|\xk - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
+\end{align}
 % This condition is necessary under regularity assumptions, and with convex 
 % For a convex problemconvex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Without derivative information, we model this by
@@ -268,7 +266,7 @@ V=M(\Phi,Y) :=
     \phi_0(y^{(1)})      & \phi_1(y^{(1)})       & \dots  & \phi_{p}(y^{(1)})      \\
                      &                   & \vdots &                    \\
     \phi_0(y^{(p)})    & \phi_1(y^{(p)})     & \ldots & \phi_{p}(y^{{(p)}})
-\end{bmatrix},
+\end{bmatrix}.
 \end{align}
 
 
@@ -338,8 +336,8 @@ The concept of $\Lambda$-poisedness allows us to establish the following error b
 Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ sample points and $\Delta = \max_{1 \le j \le p} \|y^j-y^{(0)}\|$.  Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^{(0)}; \Delta)$.    Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};\Delta)$:
 
 \begin{align}
-\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta) \label{error_in_gradient} \\
+\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_hessian}\\
+\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_gradient} \\
 |f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta). \label{error_in_function} 
 \end{align}
 where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
@@ -382,7 +380,8 @@ then that point is added to the final sample set (by swapping it with $y^{i}$).
 However, if no such point can be found, it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.
 Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
 
-\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.  Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^{(0)}$ to create a set with $p+1$ points.
+\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.
+Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 
 \begin{algorithm}[H]
     \caption{Model Improvement Algorithm \label{alg:model_improvement} }
@@ -403,6 +402,7 @@ Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by m
 				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
             \end{itemize}
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
+        	For $j = i+1, \ldots, p$: \\
         	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^{(i)}\right)}{u_i\left(y^{(i)}\right)} u_i(x)$ \\
 %         \begin{itemize}
 %                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
@@ -412,9 +412,10 @@ Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by m
     \end{itemize}
 \end{algorithm}
 
-
+In \cref{satisfying_accuracy} show how to construct a $\Lambda$-poised set over an ellipsoidal region.
 At the completion of the algorithm, we obtain a  sample set $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
-where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by the following result.
+where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by \cref{set_is_poised}.
+
 \begin{theorem}
 \label{set_is_poised}
 The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised over $B_2\left(\ck, \delta\right)$ for quadratic interpolation, 
@@ -430,7 +431,7 @@ $
 \cite[Section 6.7, Exercise 3]{introduction_book}
  bounds the condition number of the Vandermonde matrix in terms of these pivots:
 \begin{align*}
-\left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}.
+\left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}
 \end{align*}
 where $\epsilon_{growth}$ is a large, but finite estimate of the growth factor in LU factorizations.
 Our \cref{Lambda_poised_error_bounds} is then a restatement of \cite[Theorem 3.14]{introduction_book} which 
@@ -438,8 +439,38 @@ relates the $\Lambda$-poisedness of $Y$ to $\left\|M\left(\bar \phi, Y\right)^{-
 However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
 \end{proof}
 
-In \cref{satisfying_accuracy} we will show how to modify this algorithm to construct a $\Lambda$-poised set over an ellipsoidal region.
+Note that \cite[Theorem 6.5]{introduction_book} explicitly states bounds on $\ximin$, depending on the choice of basis $\Phi$.
+Namely, $\ximin \in (0,1)$ for the linear case and $\ximin \in (0, \frac 1 4)$ in the quadratic case.
+As a practical matter, these bounds are not restrictive, because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
 
+This bound on $\ximin$ is complicated by our construction of the sample set:
+we choose points {\em near} the current iterate, although the current sample region does not necessarily include the current iterate.
+This is developed later in the thesis, and our requirements for the sample set are formalized in \cref{define_suitable_ellipsoid} for the linear case and \cref{ellipsoids_notation_definitions} for the non-linear case.
+The take away from these requirements is that after an affine transformation to the unit ball, \cref{model_improving_algorithm} 
+will be called to construct sample points within the unit ball $B_2(0, 1)$, with an additional requirement that one of the sample points (the transformed $\xk$)
+ lies within $B_2\left(0, \sqrt{2}\right)$.
+Although most practical implementations of \cref{model_improving_algorithm} choose a small $\ximin$, 
+this additional requirement further limits $\ximin$ in theory.
+This raises a question:
+for what values of $\Lambda$ (and therefore $\ximin$) can a sample set be $\Lambda$-poised if one point is chosen outside the unit ball?
+Namely, given $y^{(0)} \in B_2\left(0, \sqrt{2}\right)$:
+\begin{align*}
+\begin{array}{ccc}
+\min\limits_{\Lambda>0, y^{(i)}\in\Rn, l_i\in\polydn} & \Lambda & \\
+\textrm{s.t.} & |l_i(x)| \le \Lambda & \forall \; x \in B_2(0, 1), 0 \le i \le p \\
+& l_i\left(y^{(j)}\right) = \delta^i_j & \forall \; 0 \le i,j \le p \\
+& y^{(i)} \in B_2(0, 1) & \forall \; 1 \le i \le p.
+\end{array}
+\end{align*}
+We have not encountered an issue choosing $\ximin$ too large,
+but we are interested in a bound of this program's solution.
+
+\begin{boxedcomment}
+I think it is straightforward to come up with a simple bound to this problem:
+construct a perfectly poised set with a point at the center, shifted it.
+What is the maximum value at $\sqrt 2$ of a quadratic that is strictly between $(-1, 1)$ in $B_2(0, 1)$?
+Seems like it would be $2$.
+\end{boxedcomment}
 
 \section{Trust Regions}
 

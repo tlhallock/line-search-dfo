@@ -73,10 +73,10 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
             and $\alpha > 0$.
             
         \item[\textbf{Step 1}] \textbf{(Construct the model)} \\
-           Construct the trust region $\sampletrk$.
+           Construct the trust region $\sampletrk$. \\
 %            $ \sampletrk \gets $ \Call{ConstructTrustRegion}{$\dk, \xk$}.
 %            Ensure that the sample points are poised with respect to $ \sampletrk $ for \cref{accuracy} by calling \cref{model_improving_algorithm}.
-           Select sample points within $\sampletrk$,  and construct the model function $\mfk$.       
+           Construct $\mfk$ by calling \cref{model_construction_algorithm} on $\sampletrk$.
         
         \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
             Compute the criticality measure $\chik$ as in \cref{define_criticality_measure}. \\
@@ -181,7 +181,7 @@ Namely, using $\lca$ and $\lcb$ from \cref{eq:DFO-linear}:
 \label{uniformly_bounded_hessians_of_f}
 The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that
 \begin{align*}
-\left\|\nabla^2 f\left(\xk\right)\right\| \le \beta - 1\quad \forall k \in \naturals
+\left\|\nabla^2 f\left(\xk\right)\right\| \le \beta - 1\quad \forall k \in \naturals.
 \end{align*}
 \end{assumption}
 
@@ -237,7 +237,7 @@ Their last assumption $H_4$ is an accuracy condition.
 Namely, they assume there exists a constant $\delta_g>0$ such that for all $k \in \naturals$
 \begin{align}
 \label{accuracy}
-\left\|\nabla m_k\left(\xk\right) - \nabla f\left(\xk\right)\right\| \le \delta_g \dk
+\left\|\nabla m_k\left(\xk\right) - \nabla f\left(\xk\right)\right\| \le \delta_g \dk.
 \end{align}
 Showing that our construction of $m_f$ satisfies \cref{accuracy} is the topic of \cref{satisfying_accuracy}.
 
@@ -327,8 +327,36 @@ Defining $\beta_2 = \kappa_{h} \Delta_{\text{max}} + \beta_1 \ge 1$, we see that
 
 After an ellipsoidal $\sampletrk$ is constructed,  sample points are then selected by applying  \cref{model_improving_algorithm} 
 to a transformed problem in which the ellipsoid $\ellipsek$ is mapped onto a unit ball.
-The following section analyzes the accuracy of the model functions constructed from the resulting sample points.
-Because of our construction, we first show the intermediate results \cref{change_radius} and \cref{shifted_ellipsoid} 
+This process is summarized within the following algorithm:
+
+\begin{algorithm}[H]
+    \caption{Model Construction Algorithm}
+    \label{model_construction_algorithm}
+    \begin{itemize}
+        \item[\textbf{Step 0}] \textbf{(Inputs)} \\
+			Function $f$;
+			Ellipsoid parameters $\qk \succ 0$, $\ck$, and $\sdk$;
+        	Sample set $Y$
+%         	with $\xk \in Y$;
+%         	Iterate $\xk = y^{(0)} \in Y$
+        \item[\textbf{Step 1}] \textbf{(Construct the Transformation}) \\
+        	Give $\qk$ its eigen-decomposition $\qk = LD^2L^T$  \\
+        	Compute $\delta = \max_{x \in \unshiftedellipsoid} \|x - \ck\|$\\
+			Construct the transformation $T(x) = \delta D L^T(x - \ck)$ wich maps 
+\begin{align*}
+	T\left(\left\{x \in \Rn \bigg | \left(x - \ck\right) \qk \left(x -\ck\right) \le \frac 1 2 \sdk^2\right\}\right) = B_2(0, \delta).
+\end{align*}
+        \item[\textbf{Step 1}] \textbf{(Construct the Sample Set)} \\
+        Construct the tranformed sample set $\hat Y$ by computing $T\left(y^{(i)}\right)$ for each $y^{(i)} \in Y$ \\
+        Call \cref{model_improving_algorithm} on this sample to produce an improved sample set $\hat Y '$.
+        Construct the unshifted sample set $Y'$ by computing $T^{-1}\left(\hat y^{(i)}\right)$ for each $\hat y^{(i)} \in \hat Y'$.
+        \item[\textbf{Step 2}] \textbf{(Construct model functions)} \\
+        Evaluate $f$ at each $y^{(i)} \in Y'$, and construct $m_f$ with \cref{reg}
+    \end{itemize}
+\end{algorithm}
+
+This section analyzes the accuracy of the model functions constructed from the output of \cref{model_construction_algorithm}.
+We first show the intermediate results \cref{change_radius} and \cref{shifted_ellipsoid} 
 before satisfying \cref{accuracy}.
 In particular, \cref{linear_accuracy_is_satisfied} establishes error bounds based on the condition number of $\qk$.
 In subsequent sections we will describe several methods for choosing $\qk$ and $\ck$.
@@ -365,8 +393,8 @@ Suppose further, that there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ su
 Then let $r > 1$ be arbitrary.
 There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^0, r\Delta\right)$,
 \begin{align*}
-\left|f(x) - m_f(x)\right| \le \Lambda_1' r^2 \\ % \Delta^3
-\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r \\ % \Delta^2
+\left|f(x) - m_f(x)\right| \le \Lambda_1' r^2, \\ % \Delta^3
+\left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r, \\ % \Delta^2
 \left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3' r .% \Delta
 \end{align*}
 \end{lemma}
@@ -374,9 +402,9 @@ There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x 
 \begin{proof}
 Let $x \in B\left(y^{0}, r\Delta\right)$, and define
 \begin{align*}
-\Lambda_3' = \Lambda_3 + \liphess \Delta \\
-\Lambda_2' = 2 \Delta M + \Lambda_2 +  \Delta \Lambda_3'\\
-\Lambda_1' = \Lambda_1 + \Lambda_2' \Delta\\
+\Lambda_3' = \Lambda_3 + \liphess \Delta, \\
+\Lambda_2' = 2 \Delta M + \Lambda_2 +  \Delta \Lambda_3',\\
+\Lambda_1' = \Lambda_1 + \Lambda_2' \Delta.
 \end{align*}
 
 By assumption, $\left\|\nabla^2 f(x) - \nabla^2 f(y)\right\| \le \liphess\left\|x-y\right\| \forall x,y \in \domain$.
@@ -395,7 +423,7 @@ By the mean value theorem and by assumption $\left\|\nabla^2 f\right\| \le \maxh
 \le r \Delta \maxhessian \\
 \left\|\nabla m_f\left(x\right) - \nabla m_f\left(y^0\right) \right\|
 \le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
-\le r \Delta \left(\maxhessian + \Lambda_3'\right)
+\le r \Delta \left(\maxhessian + \Lambda_3'\right).
 \end{align*}
 Thus, 
 \begin{align*}
@@ -508,7 +536,7 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 
 Given some symmetric matrix $\qk \succ 0$, we can give it an eigen-decomposition $\qk = L D^2 L^T$,
 where $L^TL = I$ and $D$ is a diagonal matrix with nonnegative entries.
-In fact, since we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
+In fact, because we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
 Let $\delta = \max_{x\in \ellipsek}\left\|x-\ck\right\|$ and define $T:\Rn \rightarrow \Rn$ by $T(x) = \delta DL^T\left(x - \ck\right)$.
 Note that $T$ is invertible and maps $ \ellipsek$ onto the $\delta$-ball $B_2(0,\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$.
 
@@ -522,21 +550,21 @@ Let $T$ and $\delta$ be as defined above, and let $\hat m_f(u)$ be a model of th
 for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error bounds hold for all $u \in B_2(0,\delta)$:
 
 \begin{align}
-|\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta^3 \label{shifted_ellipsoid_bounds}\\
-\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta^2  \nonumber  \\
+|\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta^3, \label{shifted_ellipsoid_bounds}\\
+\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta^2,  \nonumber  \\
 \|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta.  \nonumber 
 \end{align}
 
 Then, with
 \begin{align*}
-\kappa_{ef}' = \kappa_{ef} \\
-\kappa_{eg}' = \kappa_{eg}\sqrt{\kappa(\qk)} \\
+\kappa_{ef}' = \kappa_{ef}, \\
+\kappa_{eg}' = \kappa_{eg}\sqrt{\kappa(\qk)}, \\
 \kappa_{eh}' = \kappa_{eh}\condition(\qk),
 \end{align*}
 the model function $m_f(x) = \hat m_f(T(x))$ satisfies the following error bounds for all $x \in \ellipsek$,
 \begin{align*}
-| m(x) - f(x)| \le \kappa_{ef}'\delta^3 \\
-\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta^2 \\
+| m(x) - f(x)| \le \kappa_{ef}'\delta^3, \\
+\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta^2, \\
 \|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta.
 \end{align*}
 \end{lemma}
@@ -621,7 +649,9 @@ We can now satisfy the accuracy condition.
 Suppose that \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_f}, and \cref{interior_point} hold.
 
 Suppose further that for each iterate $k$, the ellipsoids $\ellipsek$ and $\scaledellipsek$ provided by some \emph{ConstructTrustRegion} subroutine 
-are suitable according to \cref{define_suitable_ellipsoid}.
+are suitable according to \cref{define_suitable_ellipsoid},
+and the sample set is constructed by calling \cref{model_construction_algorithm}.
+
 
 % \item[1.] The ellipsoid $\ellipsek = \left\{x \in \Rn \bigg| \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}$ 
 % satisfies $\ellipsek \subseteq \polyk$ as defined in \cref{polyhedron_k}
@@ -649,9 +679,9 @@ $\hat {m}_f(u) = m_f(T^{-1}(u))$ and
 $\hat f (u) = f(T^{-1}(u))$.
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
 \begin{align*}
-\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3 \\
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2 \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta
+\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta.
 \end{align*}
 
 This, along with \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_f} satisfy the assumptions for \cref{change_radius}.
@@ -730,18 +760,18 @@ We define the set of ``most'' feasible direction from $x$, and quantify how feas
 Here, $\alphaone$ is a set of directions that head away from each of the active constraints at a point.
 For each iterate, this produces the quantities
 \begin{align}
-\alphak =  \alphathree\left(\xk\right) \label{define_alpha_k} \\
+\alphak =  \alphathree\left(\xk\right) \label{define_alpha_k}, \\
 \uk \in  \alphaone\left(\activei\left(\xk\right)\right). \label{define_u_k}
 \end{align}
 We then compute
 \begin{align}
-\alphakp=\left(1+\frac{1}{\sqrt{2}}\right)\sqrt{1+\left(\alphak\right)^2} \label{define_alphakp} \\
+\alphakp=\left(1+\frac{1}{\sqrt{2}}\right)\sqrt{1+\left(\alphak\right)^2}, \label{define_alphakp} \\
 \deltaf = \frac 1 {\alphakp} \min_{i \in [m] \setminus \activei\left(\xk\right)} \left[{\lcb}_i - \left({\lca}_i\right)^T\xk\right]. \label{define_deltaf}
 \end{align}
 Notice that the minimization in the above expression computes the minimum distance to a non-active constraint.
 It will be convenient to define the rotation matrix and affine mapping
 \begin{align}
-\rotk = 2\frac{(e_1 + \uk)(e_1 +\uk)^T}{(e_1 +\uk)^T(e_1 +\uk)} - \boldsymbol I \label{define_r} \\
+\rotk = 2\frac{(e_1 + \uk)(e_1 +\uk)^T}{(e_1 +\uk)^T(e_1 +\uk)} - \boldsymbol I, \label{define_r} \\
 T_k(x) = \rotk\left(x - \xk\right). \label{define_affine_mapping}
 \end{align}
 Recall that $e_1 = (1, 0, \ldots, 0)^T$, and observe that $\rotk e_1 = \uk$, $\rotk \uk = e_1$, $\det(\rotk) = 1$, and 
@@ -818,8 +848,8 @@ Otherwise, let $i \in \activei(x_0)$, so that $c_i(x_0) = 0$.
 % subtract the equations: $G_i^T \bar x < g_i$ and $G_i^T  x_0 = g_i$ to find
 By the  problem definition \cref{eq:DFO-linear} $c_i$ is convex , and we know that if $\bar x$ is defined as in \cref{interior_point}, then
 \begin{align*}
-c_i(\bar x) \ge c_i(x_0) + \nabla c_i(x_0)^T(\bar x - x_0)
-\Longrightarrow \nabla c_i(x_0)^T(\bar x - x_0) \le c_i(\bar x) - c_i(x_0) = c_i(\bar x) < 0
+c_i(\bar x) \ge c_i(x_0) + \nabla c_i(x_0)^T(\bar x - x_0) \\
+\Longrightarrow \nabla c_i(x_0)^T(\bar x - x_0) \le c_i(\bar x) - c_i(x_0) = c_i(\bar x) < 0.
 \end{align*}
 Using \cref{polyhedron_k}, we can write this as
 \begin{align*}
@@ -862,11 +892,11 @@ Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these valu
 It will be useful to define some intermediate cones.
 Namely, for any scalar $\pi$, direction $u$, and point $c$, we define the cone
 \begin{align}
-\mathcal C\left(\pi, u, c\right) = \left\{c + t u + s \in \Rn | \; s^Tu= 0, t \ge 0, \|s\| \le \pi t\right\}
+\mathcal C\left(\pi, u, c\right) = \left\{c + t u + s \in \Rn | \; s^Tu= 0, t \ge 0, \|s\| \le \pi t\right\}.
 \end{align}
 We can use this to define an shifted and unshifted cone about the point $\xk$ along a direction $\uk$:
 \begin{align}
-\shiftedcone = \mathcal C\left(\alphak, e_1, 0\right) \label{defineshiftedcone} \\
+\shiftedcone = \mathcal C\left(\alphak, e_1, 0\right), \label{defineshiftedcone} \\
 \unshiftedcone = \mathcal C\left(\alphak, \uk, \xk\right). \label{defineunshiftedcone}
 \end{align}
 
@@ -919,7 +949,7 @@ f_{e}(\pi, \delta, r; x) = (x - \delta e_1)^T
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \pi^{-2} \boldsymbol I \\
 \end{pmatrix}
-(x - \delta e_1) - r \label{define_ellipsoid_function}
+(x - \delta e_1) - r. \label{define_ellipsoid_function}
 \end{align}
 
 \begin{lemma}
@@ -1033,7 +1063,7 @@ so that
 \|x\|^2 = t^2 + \|\sigma\|^2 \le \left(1 + \left(\alphak\right)^2 \right) t^2 
 \le \left(1 + \left(\alphak\right)^2 \right) \left(1 + \frac 1 {\sqrt{2}}\right)^2 \deltaf^2 
 = \left(\alphakp\right)^2 \deltaf^2 \\
-\Longrightarrow \|x\| \le \alphakp \deltaf \le \min_{i \in [m] \setminus \activei\left(\xk\right)} \left[{\lcb}_i - \left({\lca}_i\right)^T\xk\right]
+\Longrightarrow \|x\| \le \alphakp \deltaf \le \min_{i \in [m] \setminus \activei\left(\xk\right)} \left[{\lcb}_i - \left({\lca}_i\right)^T\xk\right].
 \end{align*}
 Thus, all points within $\ellipsek$ are closer than the nearest point of a non-active constraint.
 Combine this with \cref{unshiftedconeisfeasible} to see that $\ellipsek \subseteq \polyk$.
@@ -1260,7 +1290,7 @@ We use the scaling factor $\sdk$ defined by
 \end{align*}
 and let the ellipsoid be:
 \begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg| \frac 1 2 \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk^2\right\}
+\ellipsek = \left\{x \in \Rn \bigg| \frac 1 2 \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk^2\right\}.
 \end{align*}
 However, this means that in general $\ellipsek \not \subset \feasible$.
 so that the sample points must be contained to also lie within the feasible region: $\ellipsek \cap \feasiblek$.
@@ -1317,8 +1347,8 @@ This is accomplished by solving the following problem for $Q$ for a given center
  \begin{align}
 \begin{array}{cc}
  \sup_{Q \succeq 0} & \det(Q^{-1})  \\
- \textrm{s.t.} & A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2
-\end{array}.
+ \textrm{s.t.} & A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2.
+\end{array}
  \label{ellipse_1}
 \end{align}
 
@@ -1334,7 +1364,6 @@ Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maxi
 
 \begin{proof}
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
-
 Because $Q$ is positive definite, $f$ has a unique minimum on each hyperplane $A_i d = b_i$.
 Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i\in[m]$.
 By the first-order optimality conditions, there exists a $\lambda \in \Rm$ such that for each $i\in[m]$,
@@ -1369,12 +1398,12 @@ Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1
 
 Notice that the constraints for \cref{ellipse_1} can be simplified for the outer trust region's constraints.
 These take the form:
+\begin{align*}
+e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall i \in [n]
+\end{align*}
+or
 \begin{align}
-e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall i \in [n].
 \label{ellipsoids_trust_region_constraints}
-\end{align}
-
-\begin{align}
 \left(\frac{\qk}{\frac 1 2 \sdk^2}\right)_{i,i}^{-1} \le \left[\xki - \ck_i \pm \dk \right]^2 \quad \forall i \in [n].
 \end{align}
 
@@ -1430,6 +1459,8 @@ Conceptually,
 \item and replacement points are ignored if they do not improve the poisedness by more than $\delta_{\text{improv}}$.
 \end{itemize}
 The new modified improvement algorithm is described in \cref{modified_model_improving_algorithm}.
+The \emph{ConstructTrustRegion} subroutine for this approach follows the prototype with $\sampletrk = \searchtrk = \feasible \cap \outertrk $.
+As usual, we may also wish to remove points larger than a certain radius from the current model center.
 
 \begin{algorithm}[H]
     \caption{Modified Model Improvement Algorithm}
@@ -1452,27 +1483,26 @@ The new modified improvement algorithm is described in \cref{modified_model_impr
                 replace point $y^i$ with $\hat y$ and set $\xi_{\text{cur}} \gets |\phi_i(\hat y)|$
                 
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
+        	For $j = i+1, \ldots, p$: \\
         	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^i\right)}{u_i\left(y^i\right)} u_i(x)$ \\
             If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
     \end{itemize}
 \end{algorithm}
 
+\paragraph*{Algorithm Conjecture}
+
 When the algorithm fails, it is likely because $\sampletrk$ nearly contained in a subspace 
 for which some basis function can be written as a linear combination of other basis functions.
-Because our feasible region contains an interior point, we would expect some $\ximin>0$ to allow the algorithm to run to completion.
-However, for more complicated nonlinear constraints, there may not be such a $\ximin$.
+Because our feasible region contains an interior point, we would expect that sufficiently small values of $\ximin>0$ allow the algorithm to run to completion.
+However, for non-linear constraints, or even equality based constraints, there may not be such a $\ximin$.
 
 Intuitively, higher order monomials would not improve the accuracy of the model over $\sampletrk$ 
 if their function values do not significantly differ from that of a linear combination of lower order monomials.
-We conjecture that this insight could give rise to a model improving algorithm that uses Gaussian elimination with {\em full pivoting}
-to select only those monomials useful for approximating functions over $\sampletrk$.
-When there is no new point/monomial to the basis that can be added to the existing set of Lagrange polynomials,
+This insight inspires a model improving algorithm that uses Gaussian elimination with {\em full pivoting}
+to select only those monomials {\em useful} for approximating functions over $\sampletrk$.
+When there is no replacement point or corresponding monomial in the basis that can be added to the existing set of Lagrange polynomials with a pivot larger than $\ximin$,
 the algorithm would simply stop the Gaussian elimination.
 Note that the maximization over $\sampletrk$ to find a replacement point would need to maximize $|u_j|$ for several $i \le j \le p$ rather than simply $i$.
-
-
-The \emph{ConstructTrustRegion} subroutine for this approach follows the prototype with $\sampletrk = \searchtrk = \feasible \cap \outertrk $.
-As usual, we may also wish to remove points larger than a certain radius from the current model center.
 
 % If a lower bound $\kappa_{\phi}$ on the maximum value of each polynomial is known ahead of time, then the check on \cref{impossibly_poised} is not needed.
 % That is, for a given set of linear constraints and largest trust region radius, it may be possible to calculate $\xi_{\text{min}} \le \kappa_{\phi} \le \max_{V}\max_{j}\max_{i}\|\phi_i(y^j)\|$.
@@ -1659,10 +1689,10 @@ We set $s_{i+1} = s_{i} + t p$.
 This process is described in \cref{segment_construction}
 
 Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order for this to be defined.
-\color{red}
+\begin{boxedcomment}
 Also, the algorithm must stop early if $A_E$ contains $n$ parallel normal vectors: 
 as there will no longer be a direction that leads away from all constraints.
-\color{black}
+\end{boxedcomment}
 
 
 \begin{algorithm}[H]
