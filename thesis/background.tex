@@ -227,13 +227,11 @@ To test the accuracy, we calculate a quantity
 \label{define_rhok}
 \rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)}
 \end{align}
-which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.
-A small value of $\rk$ implies the model functions are not sufficiently accurate.
-Values of $\rk$ close to $1$ imply that the model accurately predicted the new objective value.
-A large $\rk$ implies progress in minimizing the objective, although the model was not accurate.
-This has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
+which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.  If $\rk$ is negative, the trial point is rejected and the trust region radius is decreased.   On the other hand, if the trial point is accepted, the trust region radius for the next iteration may still be decreased since 
+a small value of $\rk$ implies that the model functions are not sufficiently accurate.   For larger values of $\rk$ the trial point is accepted and the trust region radius may be increased.
+This strategy has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
 
-The user supplies fixed constants
+To implement the above strategy,  we define parameters
 % \label{define_the_gammas}
 % \label{define_the_omegas}
 $
@@ -280,7 +278,7 @@ V=M(\Phi,Y) :=
 \end{align}
 
 
-The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is non-singular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
 However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
 
 
@@ -422,7 +420,8 @@ Since the Model Improvement Algorithm requires a starting set of $p+1$ points, w
     \end{itemize}
 \end{algorithm}
 
-In \cref{satisfying_accuracy} show how to construct a $\Lambda$-poised set over an ellipsoidal region.
+%In \cref{satisfying_accuracy} show how to construct a $\Lambda$-poised set over an ellipsoidal region.
+
 At the completion of the algorithm, we obtain a  sample set $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
 where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by \cref{set_is_poised}.
 
@@ -452,6 +451,8 @@ However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_b
 Note that \cite[Theorem 6.5]{introduction_book} explicitly states bounds on $\ximin$, depending on the choice of basis $\Phi$.
 Namely, $\ximin \in (0,1)$ for the linear case and $\ximin \in (0, \frac 1 4)$ in the quadratic case.
 As a practical matter, these bounds are not restrictive, because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
+
+\sbnote{The following is a nice discussion!}
 
 This bound on $\ximin$ is complicated by our construction of the sample set:
 we choose points {\em near} the current iterate, although the current sample region does not necessarily include the current iterate.
