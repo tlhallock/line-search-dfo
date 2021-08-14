@@ -3294,7 +3294,7 @@ Add corollary to be referenced when defining the inner cone.
 This follows directly from the definitions and \cref{each_constraints_cone_is_feasible}.
 \end{proof}
 
-
+\sbnote{I like your choice to call the following two results corollaries.   But then, the proofs should be based on the theorem rather than from the lemmas leading up to the theorem. }
 \begin{corollary}
 \label[corollary]{searchtrk_is_feasible}
 Let $\dfeas$, $\capcones$, and $\feasible$
@@ -3313,6 +3313,7 @@ $\searchtrk = \capcones \cap \trk \subseteq \feasible$.
 \begin{proof}
 This is an immediate consequence of \cref{each_constraints_cone_is_feasible}:
 $\capcones \cap \trk \subseteq \feasible$.
+\sbnote{Use \cref{cone_and_tr_are_feasible} instead of  \cref{each_constraints_cone_is_feasible}}
 \end{proof}
 
 \begin{corollary}
@@ -3322,8 +3323,6 @@ be defined by
 \cref{each_constraints_cone_is_feasible} and
 \cref{define_feasible}.
 Let $\unshiftedellipsoid$ be defined by \cref{define_trivial_ellipsek} and \cref{conservative_ellipsoid_details}
-
-\sbnote{The last two lemmas of this section are the main result of the section.  I suggest combining these two into a single ``theorem'', and replacing $\unshiftedellipsoid$ by $\sampletrk$.   So you can say cleanly that for small enough $\Delta_k$, both $\sampletrk \subset \feasible$ and $\searchtrk \subset \feasible$.}
 
 \input{assumptions.d/ellipsoid_is_feasible}
 
@@ -3336,6 +3335,11 @@ If $\dk \le \dfeas$, then $\sampletrk = \unshiftedellipsoid$ is feasible accordi
 \begin{proof}
 This is an immediate consequence of \cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_suitable_theorem_p2} and \cref{each_constraints_cone_is_feasible}:
 $\unshiftedellipsoid \subseteq \capcones \cap \trkpo \subseteq \feasible$.
+
+\sbnote{I think you are asking the reader to do too much thinking to see that this is ``an immediate consequence'' of a bunch of lemmas.   You need to give a more complete argument.   At a minimum, you need to say something like:  ``by 
+\cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_suitable_theorem_p2},  $\unshiftedellipsoid \subseteq \capcones \cap \trkpo$, so by \cref{cone_and_tr_are_feasible}, $\unshiftedellipsoid  \subseteq \feasible$.   But that really isn't enough, since it is not immediately clear how 
+the hypotheses of \cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_suitable_theorem_p2} are satisfied?}
+
 \end{proof}
 
 
@@ -4194,10 +4198,10 @@ Therefore, one can see that for all $k \ge k_1$
 which contradicts \cref{delta_to_zero}.
 \end{proof}
 
+We would like to strengthen the above result to show that  $\lim_{k\to\infty} \chik = 0$.   This will eventually be achieved in \cref{convergence_section} under the assumption that $\gammasm >0$.   However, the proof of this results requires considerably more work.     We begin by defining some index sets that will be fundamental to our proof.
 
-Our next goal is to show that if $\gammasm > 0$, then $\lim_{k\to\infty} \chik = 0$.    \sbnote{I think you should move on to the next section here since you are done with the initial criticality convergence.    Maybe also say ``To prove this will be considerably more.  We begin the development in the following sections''}
-
-Observe that if this limit does not hold, then there exists an $\epsilon_{\textrm{lb}} > 0$ such that the set
+Observe that if $\chik$ does not converge to zero as $k \rightarrow \infty$, then 
+ there exists an $\epsilon_{\textrm{lb}} > 0$ such that the set
 \begin{align}
 \ulb = \left\{k \in \naturals | \chik \ge \elb \right\} \label{define_the_finite_set}
 \end{align}
