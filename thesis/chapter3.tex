@@ -295,9 +295,13 @@ First, we show that \cref{uniformly_bounded_hessians_of_f} can be used instead o
 % \end{align*}
 
 
-\sbnote{The following lemma makes the assumption that the quadratic model function satisfies an error bound on the Hessian. 
-But this is only true if the model function defined by \cref{quadratic_errors} is built with a $\Lambda$-poised sample set.  
-So this needs to be stated explicitly in the lemma.} 
+% \sbnote{The following lemma makes the assumption that the quadratic model function satisfies an error bound on the Hessian. 
+% But this is only true if the model function defined by \cref{quadratic_errors} is built with a $\Lambda$-poised sample set.  
+% So this needs to be stated explicitly in the lemma.} 
+
+\begin{boxedcomment}
+Change this definition of conditioned to match the one for the linear case (Do not say the sequence is conditioned, say for an iterate is conditioned indep of k)
+\end{boxedcomment}
 
 \begin{lemma}
 \label[lemma]{replacing_h3}
@@ -377,7 +381,7 @@ In subsequent sections we will describe several methods for choosing $\qk$ and $
 but I want to do that after you have made the revisions discussed above and carried through any changes into the proofs below.}
 
 
-\sbnote{Steve wanted to double check the exponents in the following lemma.}
+% \sbnote{Steve wanted to double check the exponents in the following lemma.}
 
 \begin{lemma}
 \label[lemma]{change_radius} 
@@ -392,7 +396,7 @@ is bounded by $\maxhessian$ and Lipschitz continuous in $\domain$ with constant 
 % Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
 % Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 
-Suppose further, that there exist constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
+Suppose further, that there exists a quadratic model $m_f$ and constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
 \left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
@@ -428,7 +432,7 @@ By the mean value theorem and by assumption $\left\|\nabla^2 f\right\| \le \maxh
 \begin{align*}
 \left\|\nabla f\left(x\right) - \nabla f\left(y^0\right) \right\|
 \le \left\|x - y^0\right\| \left\| \nabla^2 f\left(\xi^1\right) \right\|
-\le r \Delta \maxhessian \\
+\le r \Delta \maxhessian, \\
 \left\|\nabla m_f\left(x\right) - \nabla m_f\left(y^0\right) \right\|
 \le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
 \le r \Delta \left(\maxhessian + \Lambda_3'\right).
@@ -677,8 +681,8 @@ Namely, there exists $\kappa_{g} > 0$ such that
 Fix an iterate $k$.
 The assumptions provide two ellipsoids:
 \begin{itemize}
-\item $\ellipsek = \{x \in \Rn | \left(x - c^{(k)} \right)^T \qk \left(x - c^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \}$ with $\ellipsek \subset \polyk$.
-\item $\scaledellipsek = \{x \in \Rn | \left(x - c^{(k)}\right)^T \qk \left(x - c^{(k)}\right) \le {\delta_k}^2 \}$ with $\xk \in \scaledellipsek$.
+\item $\ellipsek = \left\{x \in \Rn \bigg | \left(x - c^{(k)} \right)^T \qk \left(x - c^{(k)}\right) \le \frac 1 2 {\delta_k}^2 \right\}$ with $\ellipsek \subset \polyk$.
+\item $\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^T \qk \left(x - c^{(k)}\right) \le {\delta_k}^2 \right\}$ with $\xk \in \scaledellipsek$.
 \end{itemize}
 As in \cref{shifted_ellipsoid}, we can give $Q^{(k)} = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in \unshiftedellipsoid} \|x - \mu^{(k)}\|$, 
 so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the $\delta$ ball.
@@ -816,9 +820,9 @@ whenever $\activei\left(\xk\right) \ne \emptyset$.
 \subsubsection{Suitability}
 We show that this construction provides a suitable ellipsoid according to \cref{define_suitable_ellipsoid}.
 
-\begin{boxedcomment}
-Somehow it doesn't make sense to say that for an iterate, this construction satisfies a bound on the condition number.
-\end{boxedcomment}
+% \begin{boxedcomment}
+% Somehow it doesn't make sense to say that for an iterate, this construction satisfies a bound on the condition number.
+% \end{boxedcomment}
 
 \begin{lemma}
 \label[lemma]{trivial_ellipsoid_exists}
@@ -1305,14 +1309,14 @@ so that the sample points must be contained to also lie within the feasible regi
 For details on how to choose sample points with additional constraints, see \cref{model_improving_algorithm}.
 
 
- \sbnote{This raises a number of questions.
- First is whether the current iterate will be a sample point.
- If it isn't, then the model function may disagree with the true function at the current iterate, 
- so descent of the model function may not correspond to descent of the true function, even for very small steps.
- Also, if the search region is chosen to be equal to the ellipsoidal region, then we may not be able to get descent at all.
- At the end of the day,  we don't necessarily need the current iterate to be in the ellipsoid as long as
- 1) it is within the search trust region, and 2) the model function is sufficiently accurate over the search trust region.
- Actually, we don't even need 2), do we?  We just need the accuracy condition to be satisfied at the current iterate, right?}
+%  \sbnote{This raises a number of questions.
+%  First is whether the current iterate will be a sample point.
+%  If it isn't, then the model function may disagree with the true function at the current iterate, 
+%  so descent of the model function may not correspond to descent of the true function, even for very small steps.
+%  Also, if the search region is chosen to be equal to the ellipsoidal region, then we may not be able to get descent at all.
+%  At the end of the day,  we don't necessarily need the current iterate to be in the ellipsoid as long as
+%  1) it is within the search trust region, and 2) the model function is sufficiently accurate over the search trust region.
+%  Actually, we don't even need 2), do we?  We just need the accuracy condition to be satisfied at the current iterate, right?}
 
 
 \subsubsection{Maximal Volume}
@@ -1668,8 +1672,9 @@ Thus,  there is little gain if the current iterate is close to two or more const
 \end{figure}
 
 To fix this, we search along a piecewise linear path leading away from the closest constraints.   
-The algorithm works by choosing a set of points $s_0, s_1, s_2, \ldots, s_{n_{\text{points}}}$
+The algorithm works by choosing a set of break points $s_0, s_1, s_2, \ldots, s_{n_{\text{points}}}$
 that are each equidistant to a subset of the constraint's faces.
+Intuitively, the search moves away from the nearest constraint until it reaches a point equidistance to the second nearest constraint, and so on.
 The center search then considers points along the line segments between these points.
 % Namely, it starts at the current iterate and travels along a ray away from all the closest constraints until it reaches a point equidistant to yet another constraint.
 
