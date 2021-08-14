@@ -87,11 +87,19 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
                 $\dkpo \gets \omegadec\dk$, 
                 $\xkpo \gets \xk$,
                 $k \gets k+1$ and {\bf go to Step 1}.
+           
         
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
             Compute $\sk = \argmin_{s \in \searchtrk} \mfk\left(\xk + s\right)$. 
             % \item[] This can also be $\sk = \min_{s \in \outertrk \cap \feasible} \mfk(\xk + \sk)$ depending on the choice made in \cref{which_trust_region}.
             
+ 		\end{itemize}
+ 		\end{algorithm}
+ 		
+ 		\newpage
+ 		
+ 		\begin{algorithm}[H]
+ 		\begin{itemize}
         \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
             Evaluate $f(\xk + \sk)$ and $\rk$ as in \cref{define_rhok}.
             \begin{itemize}
