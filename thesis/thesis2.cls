@@ -232,6 +232,15 @@
 % Approval page
 % Add more readers as necessary.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Approval page
+% Add more readers as necessary.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\chair}[1]{
+  \gdef\@chair{#1}
+}
+
+
 
 \newcommand{\advisor}[2]{
   \gdef\@advisor{#2}
@@ -293,11 +302,11 @@
   \null\par
   \null\par
   \begin{center}
+    \@chair, Chair \\
     \@advisor, Advisor \\
     \@readerone\\
     \@readertwo\\
     \@readerthree\\
-    \@readerfour\\
   \end{center}
 
   \@dateline

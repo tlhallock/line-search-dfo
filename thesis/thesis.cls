@@ -207,7 +207,9 @@
 % Approval page
 % Add more readers as necessary.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\newcommand{\chair}[1]{
+  \gdef\@chair{#1}
+}
 \newcommand{\advisor}[2]{
   \gdef\@advisor{#2}
   \gdef\@advisortitle{#1}
@@ -260,6 +262,7 @@
     has been approved \\
     by\\
   \end{center}
+  \@signature{\@chair}  
   \@signature{\@advisor}
   \@signature{\@readerone}
   \@signature{\@readertwo}

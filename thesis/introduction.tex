@@ -37,10 +37,10 @@ where $\xk$ is the current iterate, $\mfk$ is the model function approximating $
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
 The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
 
-Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
-\begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}.  \label{define_feasiblek}
-\end{align}
+%Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
+%\begin{align}
+%\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}.  \label{define_feasiblek}
+%\end{align}
 
 
 
@@ -54,7 +54,7 @@ In this case,  the constraints are called {\em partially quantifiable}.
 \sbnote{Can we find an example of a partially quantifiable constraint?}   
 For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.   We therefore impose 
 the requirement that all sample points must be feasible, and we seek to avoid infeasible function evaluations.
-Notice that this feasibility requirement means that if the algorithm may be stopped at any time, it will still produce a feasible solution.
+Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible solution.
 
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
@@ -70,7 +70,7 @@ As a first step toward developing algorithms to solve such problems,  \cref{chap
 \end{array}
 \end{align*}
 where $\lca$ is an $m \times n$ matrix and $\lcb \in \Rm$.
-We then handle general black-box constraints within \cref{chap:general}, with special attention to convex constraints.
+We then handle general black-box constraints within \cref{chap:general}, with special attention to the  the case where the feasible set $\feasible$ is convex.
 
 % \sbnote{Maybe move the following paragraph to \cref{chap:linear}.}
 % 
@@ -89,7 +89,9 @@ We then handle general black-box constraints within \cref{chap:general}, with sp
 % which describes a class of trust-region algorithms for convex constrained minimization without derivatives. 
 % \end{boxedcomment}
 
-\cref{chap:linear} considers the case a black-box objective with linear,  partially-quantifiable constraints.
+\cref{chap:linear} considers the case of a black-box objective with linear 
+%partially-quantifiable
+constraints.  \sbnote{It doesn't make sense to call linear constraints partially-quantifiable.   The issue is that the objective function can't be evaluated outside the feasible region.}
 Because the constraints are known, we present an algorithm that constructs sample points from the feasible region intersected with the current trust region.
 This region is called the {\em sample region}.
 The algorithm we present is an implementation of the algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
@@ -109,7 +111,7 @@ Any variables that depend on the iteration will be super-scripted by $k$.
 For example, the $k$-th iterate is given by $\xk$, and the model of the objective is given by $\mfk$.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
-We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto $X$.
+We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto $X$.  \sbnote{Do you want to say that $X$ is convex?}
 
 \paragraph*{Matrices}
 Matrices are denoted with capital letters.
@@ -120,7 +122,7 @@ Let the condition number of a matrix $Q$ be denoted $\condition(Q)$.
 % , while the $i$-th column is denoted $A_{\bullet i}$.
 We use $e_i$ to denote the $i$-th unit vector and $e$ to denote the vector of all ones.
 
-$B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$:
+$B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$.  That is,
 \begin{align}
 \label{define_ball}
 B_k\left(c; \Delta\right) = \left\{x \in \Rn \bigg | \left\|x - c\right\|_k \le \Delta \right\}.
