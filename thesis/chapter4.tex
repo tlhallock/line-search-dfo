@@ -744,51 +744,51 @@ with squared distance
 = \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}.
 \end{align*}
 
-\begin{comment}
-
-\begin{align*}
-x = \frac {y}{1 - \lambda} 																		
-= \frac {y}{1 - \frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}} 									
-= \frac {y\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} - t{\beta'} + \|y\|} 			
-= \frac {{\beta'}^2 + \frac{t{\beta'}}{\|y\|}}{1 + {\beta'}^2}y 											
-\end{align*}
-
-\begin{align*}
-s = \frac {t}{1 + \lambda{\beta'}^2 } 
-= \frac {t}{1 +\frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}{\beta'}^2 } 
-= \frac {t\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} + \left(t{\beta'} - \|y\|\right){\beta'}^2 } 
-= \frac {{\beta'}\|y\| + t}{1 + {\beta'}^2 } 
-\end{align*}
-Thus, the projected point is
-
-either
-\begin{align*}
-\left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} - t {\beta'} \lambda          
-\Longrightarrow \lambda = \frac{t {\beta'} - \|y\|}{{\beta'}^2\|y\| + t {\beta'}}
-\end{align*}
-or
-\begin{align*}
-\left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} \lambda - t {\beta'}          
-\Longrightarrow \lambda = -\frac{t {\beta'} + \|y\|}{{\beta'}^2\|y\| - t {\beta'}}.
-\end{align*}
-
-Thus, the projected point is
-\begin{align*}
-\left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2}, \frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y\right)
-\end{align*}
-with squared distance
-\begin{align*}
-\left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - t\right)^2 + \left\|\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y - y\right\|^2 \\
-= \left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - \frac{t + t{\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2} - 1\right)^2\left\|y\right\|^2 \\
-= \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|} - 1 - {\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2\left\|y\right\|^2 \\
-= \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{t {\beta'} - \left\|y\right\|}{1 + {\beta'} ^ 2}\right)^2 \\
-= \left(1 + {\beta'}^2\right)^{-2}\left[\left({\beta'}^2 \|y\|^2 - 2\beta' \|y\| t {\beta'}^2  + t^2 {\beta'}^4\right) + \left(t^2{\beta'}^2 - 2 t {\beta'} \|y\| + \|y\|^2\right) \right] \\
-= \left(1 + {\beta'}^2\right)^{-2}\left[
-\left(1 + {\beta'}^2\right)t^2{\beta'}^2 - 2t{\beta'}\left(1 + {\beta'}^2\right) \|y\| + \left(1 + {\beta'}^2\right)\|y\|^2
-\right] \\
-= \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}.
-\end{align*}
-\end{comment}
+% \begin{comment}
+% 
+% \begin{align*}
+% x = \frac {y}{1 - \lambda} 																		
+% = \frac {y}{1 - \frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}} 									
+% = \frac {y\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} - t{\beta'} + \|y\|} 			
+% = \frac {{\beta'}^2 + \frac{t{\beta'}}{\|y\|}}{1 + {\beta'}^2}y 											
+% \end{align*}
+% 
+% \begin{align*}
+% s = \frac {t}{1 + \lambda{\beta'}^2 } 
+% = \frac {t}{1 +\frac{t{\beta'} - \|y\|}{{\beta'}^2\|y\| + t{\beta'}}{\beta'}^2 } 
+% = \frac {t\left({\beta'}^2\|y\| + t{\beta'}\right)}{{\beta'}^2\|y\| + t{\beta'} + \left(t{\beta'} - \|y\|\right){\beta'}^2 } 
+% = \frac {{\beta'}\|y\| + t}{1 + {\beta'}^2 } 
+% \end{align*}
+% Thus, the projected point is
+% 
+% either
+% \begin{align*}
+% \left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} - t {\beta'} \lambda          
+% \Longrightarrow \lambda = \frac{t {\beta'} - \|y\|}{{\beta'}^2\|y\| + t {\beta'}}
+% \end{align*}
+% or
+% \begin{align*}
+% \left\|y\right\| + {\beta'}^2\left\|y\right\|\lambda = t {\beta'} \lambda - t {\beta'}          
+% \Longrightarrow \lambda = -\frac{t {\beta'} + \|y\|}{{\beta'}^2\|y\| - t {\beta'}}.
+% \end{align*}
+% 
+% Thus, the projected point is
+% \begin{align*}
+% \left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2}, \frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y\right)
+% \end{align*}
+% with squared distance
+% \begin{align*}
+% \left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - t\right)^2 + \left\|\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2}y - y\right\|^2 \\
+% = \left(\frac{{\beta'} \|y\| + t}{1 + {\beta'} ^ 2} - \frac{t + t{\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|}}{1 + {\beta'} ^ 2} - 1\right)^2\left\|y\right\|^2 \\
+% = \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{{\beta'} ^ 2 + t \frac {{\beta'}}{\|y\|} - 1 - {\beta'} ^ 2}{1 + {\beta'} ^ 2}\right)^2\left\|y\right\|^2 \\
+% = \left(\frac{{\beta'} \|y\| - t{\beta'}^2}{1 + {\beta'} ^ 2}\right)^2 + \left(\frac{t {\beta'} - \left\|y\right\|}{1 + {\beta'} ^ 2}\right)^2 \\
+% = \left(1 + {\beta'}^2\right)^{-2}\left[\left({\beta'}^2 \|y\|^2 - 2\beta' \|y\| t {\beta'}^2  + t^2 {\beta'}^4\right) + \left(t^2{\beta'}^2 - 2 t {\beta'} \|y\| + \|y\|^2\right) \right] \\
+% = \left(1 + {\beta'}^2\right)^{-2}\left[
+% \left(1 + {\beta'}^2\right)t^2{\beta'}^2 - 2t{\beta'}\left(1 + {\beta'}^2\right) \|y\| + \left(1 + {\beta'}^2\right)\|y\|^2
+% \right] \\
+% = \frac{\left(t \beta' - \|y\|\right)^2}{1 + {\beta'}^2}.
+% \end{align*}
+% \end{comment}
 
 We summarize the previous statements here:
 \begin{lemma}
@@ -1604,9 +1604,9 @@ Note that for general constraints, we will later assume the existence of such an
 % When the constraints are convex, the method for 
 Constructing a new sample set near our current iterate is much easier for quasi-convex constraints than general constraints.
 Namely, the analysis becomes simpler under the following assumption:
-\begin{comment}
-Should we replace this with quasi convex?
-\end{comment}
+% \begin{comment}
+% Should we replace this with quasi convex?
+% \end{comment}
 
 
 % \begin{assumption}
@@ -1628,10 +1628,10 @@ That is, for any $x,y \in \feasible$ and $\alpha \in[0, 1]$,
 Here, we describe \cref{restore_feasible_ellipsoid_convex}, which satisfies \cref{restorability_assumption}.
 This allows us to replace \cref{restorability_assumption} with \cref{constraints_are_convex}.
 
-\begin{comment}
-Within \cref{the_convergence_theorem} we extend \cref{the_convergence_lemma} to the common criticality measure used for convex constraints.
-Namely, for convex constraints, the projection of $\xk - \nabla f\left(\xk\right)$ onto the feasible set is well defined.
-\end{comment}
+% \begin{comment}
+% Within \cref{the_convergence_theorem} we extend \cref{the_convergence_lemma} to the common criticality measure used for convex constraints.
+% Namely, for convex constraints, the projection of $\xk - \nabla f\left(\xk\right)$ onto the feasible set is well defined.
+% \end{comment}
 
 
 We know that the algorithm was initialized with a set of sample points from a feasible, non-empty ellipsoid.
@@ -1769,9 +1769,9 @@ We summarize what we have shown here:
 \end{itemize}
 
 
-\begin{comment}
-Choose a value of $t$.
-\end{comment}
+% \begin{comment}
+% Choose a value of $t$.
+% \end{comment}
 
 % = \left\{s \in \Rn \bigg | e_1^T s \ge \beta^{\textrm{hull}}\|s\| \right\} \\
 
@@ -1856,13 +1856,13 @@ In many situations, there may be more practical means of finding a feasible samp
 In the case of a non-convex feasible region, one must ask whether an acceptable ellipsoid even exists.
 This section answers that question in the affirmative if we assume that the following regularity condition is satisfied.
 
-\begin{comment}
-The above algorithm can only terminate if there is some ellipsoid to find.
-Here, we show that such a feasible ellipsoid exists, using a modification of \cref{minangleassumption_alt}.
-We would have preferred to use this version, as discussed in \cref{alternative_assumptions_section},
-but instead used an assumption about the models of the constraints.
-For showing a feasible ellipsoid without reference to the current iterate, it is more appropriate to use the following version:
-\end{comment}
+% \begin{comment}
+% The above algorithm can only terminate if there is some ellipsoid to find.
+% Here, we show that such a feasible ellipsoid exists, using a modification of \cref{minangleassumption_alt}.
+% We would have preferred to use this version, as discussed in \cref{alternative_assumptions_section},
+% but instead used an assumption about the models of the constraints.
+% For showing a feasible ellipsoid without reference to the current iterate, it is more appropriate to use the following version:
+% \end{comment}
 
 \begin{assumption}
 \label{true_constraints_minangle_assumption}
@@ -2139,21 +2139,21 @@ Larger values of $\tolsr$ ensure more reduction per accepted trial point but may
 % Within \cref{take_half_of_the_criticality}, we show that such a point satisfies the efficiency condition \cref{efficiency}.
 
 
-\begin{comment}
-In general, there may be no solution to \cref{capcones_trust_region_subproblem} that satisfies \cref{efficiency}.
-Notice that not searching all points within 
-However, in \cref{sufficient_reduction_theorem} we show the existence a point within $ \searchtrk $
-that satisfies the efficiency condition \cref{efficiency} for small $\dk$.
-Because $\dk\to 0$, we can only attempt to evaluate an infeasible trial point a finite number of times.
-
-With only this modification, the algorithm could still produce iterates without sufficient reduction for large $\dk$.
-Thus, we also compute a solution to \cref{half_tr_subproblem}, which does satisfy sufficient reduction.
-An example of such a point is the generalized Cauchy point $s_{\textrm{GC}}$ as described in \cite{Conn:2000:TM:357813}.
-Thus, with $\hat s$ an approximate solution to \cref{half_tr_subproblem},
-we can check if the expected decrease from \cref{capcones_tr_subproblem} also satisfies the efficiency condition.
-Namely, 
-Notice that
-\end{comment}
+% \begin{comment}
+% In general, there may be no solution to \cref{capcones_trust_region_subproblem} that satisfies \cref{efficiency}.
+% Notice that not searching all points within 
+% However, in \cref{sufficient_reduction_theorem} we show the existence a point within $ \searchtrk $
+% that satisfies the efficiency condition \cref{efficiency} for small $\dk$.
+% Because $\dk\to 0$, we can only attempt to evaluate an infeasible trial point a finite number of times.
+% 
+% With only this modification, the algorithm could still produce iterates without sufficient reduction for large $\dk$.
+% Thus, we also compute a solution to \cref{half_tr_subproblem}, which does satisfy sufficient reduction.
+% An example of such a point is the generalized Cauchy point $s_{\textrm{GC}}$ as described in \cite{Conn:2000:TM:357813}.
+% Thus, with $\hat s$ an approximate solution to \cref{half_tr_subproblem},
+% we can check if the expected decrease from \cref{capcones_tr_subproblem} also satisfies the efficiency condition.
+% Namely, 
+% Notice that
+% \end{comment}
 
 % \begin{comment}
 % Double check that this is the same as in the masters2.tex
@@ -2325,25 +2325,25 @@ k \gets 0; &
     \end{itemize}
 \end{algorithm}
 
-\begin{comment}
-We take a moment to make some observations about the algorithm.
-
-
-Somewhere should I say that there is only a finite number of times that the restore subroutine is called?    \sbnote{Yes,  that should actually be a Lemma.}
-
-\sbnote{The following paragraph is incomplete.}
-
-Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
-Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
-These along with \cref{sr_chi_big_enough} ensure that the algorithm reaches Step 3.
-This is because the only way to quit iteration $k$ without reaching Step 3 is
-\begin{itemize}
-\item have $\sampletrk = \emptyset$
-\item have $\sampletrk \not \subseteq \feasible$
-\item have $\searchtrk \not \subseteq \feasible$
-\item have \cref{criticality_check} not satisfied.
-\end{itemize}
-\end{comment}
+% \begin{comment}
+% We take a moment to make some observations about the algorithm.
+% 
+% 
+% Somewhere should I say that there is only a finite number of times that the restore subroutine is called?    \sbnote{Yes,  that should actually be a Lemma.}
+% 
+% \sbnote{The following paragraph is incomplete.}
+% 
+% Because $\dk \le \dacc$, by \cref{sampletrk_is_nonempty} we have $\sampletrk \ne \emptyset$.
+% Because $\dk \le \dfeas$, by \cref{ellipsoid_is_feasible} we have $\sampletrk \subseteq \feasible$ and $\searchtrk \subseteq \feasible$.
+% These along with \cref{sr_chi_big_enough} ensure that the algorithm reaches Step 3.
+% This is because the only way to quit iteration $k$ without reaching Step 3 is
+% \begin{itemize}
+% \item have $\sampletrk = \emptyset$
+% \item have $\sampletrk \not \subseteq \feasible$
+% \item have $\searchtrk \not \subseteq \feasible$
+% \item have \cref{criticality_check} not satisfied.
+% \end{itemize}
+% \end{comment}
 
 \section{Convergence Analysis}
 \label{convex_convergence_analysis}
@@ -3302,9 +3302,9 @@ If $\dk \le \dfeas$, then $\cap_{i \in \activeconstraintsk} \fik \cap \left[\trk
 \end{theorem}
 
 
-\begin{comment}
-Add corollary to be referenced when defining the inner cone.
-\end{comment}
+% \begin{comment}
+% Add corollary to be referenced when defining the inner cone.
+% \end{comment}
 
 \begin{proof}
 This follows directly from the definitions and \cref{each_constraints_cone_is_feasible}.
@@ -3999,14 +3999,14 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 
 \label{initial_convergence_results}
 % \sbnote{Remove this note?   Alternatively, reword it to something like:  ``The following analysis follows that in 
-\begin{comment}
-Within \cite{Conejo:2013:GCT:2620806.2621814}, 
-$\eta$ corresponds to $\gammasm$,
-$\eta_1$ corresponds to $\gammabi$,
-$\bar S$ corresponds to $\suffiterates$,
-and
-$S$ corresponds to $\miniterates$.
-\end{comment}
+% \begin{comment}
+% Within \cite{Conejo:2013:GCT:2620806.2621814}, 
+% $\eta$ corresponds to $\gammasm$,
+% $\eta_1$ corresponds to $\gammabi$,
+% $\bar S$ corresponds to $\suffiterates$,
+% and
+% $S$ corresponds to $\miniterates$.
+% \end{comment}
 
 Our first task is to show that the outer trust region radius converges to zero and that $\liminf_{k \rightarrow\infty} \chi_m^{(k)} =0$, which will be proved in \cref{liminf_chi_to_zero} below.    The proof involves several sets, which we now define.  
 
@@ -4585,9 +4585,9 @@ and the distance between any two convex sets $S_1$ and $S_2$ as
 Note that $D\left(S_1, S_2\right) \ge 0$ for any two convex sets $S_1$, and $S_2$.
 
 
-\begin{comment}
-Not supposed to worry about $S \cap S' = \emptyset$.
-\end{comment}
+% \begin{comment}
+% Not supposed to worry about $S \cap S' = \emptyset$.
+% \end{comment}
 
 \begin{lemma}
 \label[lemma]{board_tied_to_sphere}
@@ -4717,29 +4717,29 @@ $D(S, S') \le \epsilon$.
 
 \begin{proof}
 % (1 + r)\left[1 + \delta_{\alpha}^{-1} \left(\delta_2 + 1\right)\right]
-\begin{comment}
-No longer usable:
-Define
-\begin{align*}
-\begin{array}{cccccc}
-\delta_l &=& \min_{1\le i\le m} \min\left\{ \left\|A_i\right\|, \left\|A'_i\right\| \right\},  &
-\delta_u &=& \max_{1\le i\le m} \max\left\{ \left\|A_i\right\|, \left\|A'_i\right\| \right\}, \\
-\delta_r &=& \min_{1\le i\le m} \min\left\{ \frac{b_i}{\left\|A_i\right\|}, \frac{b_i}{\left\|A'_i\right\|} \right\}, &
-\textrm{and} \quad \delta_{\alpha} &=& \max \left\{ \left\|Cu\right\|_{\infty}, \left\|C'u\right\|_{\infty} \right\},
-\end{array}
-\end{align*}
-so that
-\begin{align*}
-\begin{array}{cccc}
-\delta_r \|A_i\| \le b_i,			&
-Cu \ge \delta_{\alpha} e,			&
-\delta_l \le \|A_i\| \le \delta_u	\\
-\delta_r \|A_i'\| \le b_i',			&
-C'u \ge \delta_{\alpha} e, 			&
-\delta_l \le \|A'_i\| \le \delta_u.
-\end{array}
-\end{align*}
-\end{comment}
+% \begin{comment}
+% No longer usable:
+% Define
+% \begin{align*}
+% \begin{array}{cccccc}
+% \delta_l &=& \min_{1\le i\le m} \min\left\{ \left\|A_i\right\|, \left\|A'_i\right\| \right\},  &
+% \delta_u &=& \max_{1\le i\le m} \max\left\{ \left\|A_i\right\|, \left\|A'_i\right\| \right\}, \\
+% \delta_r &=& \min_{1\le i\le m} \min\left\{ \frac{b_i}{\left\|A_i\right\|}, \frac{b_i}{\left\|A'_i\right\|} \right\}, &
+% \textrm{and} \quad \delta_{\alpha} &=& \max \left\{ \left\|Cu\right\|_{\infty}, \left\|C'u\right\|_{\infty} \right\},
+% \end{array}
+% \end{align*}
+% so that
+% \begin{align*}
+% \begin{array}{cccc}
+% \delta_r \|A_i\| \le b_i,			&
+% Cu \ge \delta_{\alpha} e,			&
+% \delta_l \le \|A_i\| \le \delta_u	\\
+% \delta_r \|A_i'\| \le b_i',			&
+% C'u \ge \delta_{\alpha} e, 			&
+% \delta_l \le \|A'_i\| \le \delta_u.
+% \end{array}
+% \end{align*}
+% \end{comment}
 
 Let $x \in S$, and define
 \begin{align*}
@@ -4773,17 +4773,17 @@ so that
 -sC_i'u \le d_i' - C_i'(x - p) \Longrightarrow C'(z - p) = C'(x - su - p) \le d'. \label{reun_eqn3}
 \end{align}
 
-\begin{comment}
-Explanation for next sentence:
-\begin{align*}
-s\delta_u + \delta \left(s + r\right) + \delta 
-&= \frac{\delta(r + 1)}{\delta_{\alpha}}\delta_u + \delta \left(s + r\right) + \delta \\
-&\le \delta \left[(r + 1)\frac{\delta_u}{\delta_{\alpha}} + (r+1)\frac{\delta}{\delta_{\alpha}} + r + 1\right] \\
-&\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{\delta}{\delta_{\alpha}} + 1\right] \\
-&\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}}\right] \\
-&\le \delta \delta_{\alpha}^{-1}(r + 1) (\delta_u + 2)
-\end{align*}
-\end{comment}
+% \begin{comment}
+% Explanation for next sentence:
+% \begin{align*}
+% s\delta_u + \delta \left(s + r\right) + \delta 
+% &= \frac{\delta(r + 1)}{\delta_{\alpha}}\delta_u + \delta \left(s + r\right) + \delta \\
+% &\le \delta \left[(r + 1)\frac{\delta_u}{\delta_{\alpha}} + (r+1)\frac{\delta}{\delta_{\alpha}} + r + 1\right] \\
+% &\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{\delta}{\delta_{\alpha}} + 1\right] \\
+% &\le \delta (r + 1) \left[\frac{\delta_u}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}} + \frac{1}{\delta_{\alpha}}\right] \\
+% &\le \delta \delta_{\alpha}^{-1}(r + 1) (\delta_u + 2)
+% \end{align*}
+% \end{comment}
 Also, without loss of generality, $\delta_{\alpha} \le 1$, so that
 \begin{align}
 A_i'(z - p) - b_i' 
@@ -4840,17 +4840,17 @@ Lastly, $t \ge \frac{s}{r + s} \Longrightarrow (1 - t) \left(r + s\right) \le r$
 \le r
 \end{align*}
 and $v \in S'$.
-\begin{comment}
-Explanation:
-\begin{align*}
-t \ge \frac{s}{r + s} \\
- tr + ts \ge s \\
-- tr - ts \le -s \\
-r - tr + s - ts \le r \\
-(1 - t) r + (1 - t)s \le r \\
-(1 - t) \left(r + s\right) \le r \\
-\end{align*}
-\end{comment}
+% \begin{comment}
+% Explanation:
+% \begin{align*}
+% t \ge \frac{s}{r + s} \\
+%  tr + ts \ge s \\
+% - tr - ts \le -s \\
+% r - tr + s - ts \le r \\
+% (1 - t) r + (1 - t)s \le r \\
+% (1 - t) \left(r + s\right) \le r \\
+% \end{align*}
+% \end{comment}
 
 Finally, we will show $\|v - x\| \le \epsilon$.
 Notice that $\delta \le \eta = \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)} \Longrightarrow s \le \frac{\epsilon}{4 + 2r - \epsilon}$, which implies two things.
@@ -4870,25 +4870,25 @@ Combining these produces,
 \end{align*}
 % = s + \|(1-t) z + tp - z\| 
 
-\begin{comment}
-Explanations:
-\begin{align*}
-\delta \le \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)}
-\le \frac{\epsilon\delta_{\alpha}}{(4 + 2r - \epsilon)(r + 1)} \\
-\Longrightarrow \frac{\delta(r + 1)}{\delta_{\alpha}}  \le \frac{\epsilon}{4 + 2r - \epsilon} 
-\Longrightarrow s\le \frac{\epsilon}{4 + 2r - \epsilon}
-\end{align*}
-\begin{align*}
-s\le \frac{\epsilon}{(2r - \epsilon)} \Longrightarrow
-s(2r - \epsilon)\le \epsilon \Longrightarrow
-2rs \le \epsilon(1 + s) \Longrightarrow
-\frac {s}{1 + s} \le \frac {\epsilon} {2r}
-\end{align*}
-\begin{align*}
-s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
-(1 + t)s \le 2s \le \frac 1 2 \epsilon
-\end{align*}
-\end{comment}
+% \begin{comment}
+% Explanations:
+% \begin{align*}
+% \delta \le \frac{\epsilon\delta_{\alpha}}{2(r+2)(r + 1)}
+% \le \frac{\epsilon\delta_{\alpha}}{(4 + 2r - \epsilon)(r + 1)} \\
+% \Longrightarrow \frac{\delta(r + 1)}{\delta_{\alpha}}  \le \frac{\epsilon}{4 + 2r - \epsilon} 
+% \Longrightarrow s\le \frac{\epsilon}{4 + 2r - \epsilon}
+% \end{align*}
+% \begin{align*}
+% s\le \frac{\epsilon}{(2r - \epsilon)} \Longrightarrow
+% s(2r - \epsilon)\le \epsilon \Longrightarrow
+% 2rs \le \epsilon(1 + s) \Longrightarrow
+% \frac {s}{1 + s} \le \frac {\epsilon} {2r}
+% \end{align*}
+% \begin{align*}
+% s \le \frac{\epsilon}{4 + 2r - \epsilon} \le \frac 1 4 \epsilon \Longrightarrow
+% (1 + t)s \le 2s \le \frac 1 2 \epsilon
+% \end{align*}
+% \end{comment}
 \end{proof}
 
 \subsubsection{Bounded Projections}
@@ -5581,9 +5581,9 @@ Because $\epsilon$ was arbitrary, it follows that
 In the particular case of convex constraints, we find the following stronger result.
 Note that we no longer require \cref{restorability_assumption}, because we have provided such an algorithm in \cref{convex_restoration}.
 
-\begin{comment}
-Make sure this does not state \cref{restorability_assumption}: the script automatically adds it in there...
-\end{comment}
+% \begin{comment}
+% Make sure this does not state \cref{restorability_assumption}: the script automatically adds it in there...
+% \end{comment}
 
 \begin{corollary}
 \label{the_convergence_theorem}
@@ -5861,26 +5861,26 @@ The code is contained in \cite{AlwaysFeasibleDFO}.
 Here we discuss the numerical results of this algorithm when run on the Hock-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}.
 
 
-\begin{comment}
-I ask for your patience with the numerical results section.
-In an attempt to maintain a clean code base, the code implemented on the GitHub repository is a recent implementation that I am still finalizing.
-I hope to update the results soon when this is completed.
-Until then, the numerical results should not prevent reading and understanding the rest of the thesis.
-There are several glaring defects, including but not limited to 
-\begin{itemize}
-\item I have not implemented feasible initial ellipsoids for all problems yet.
-This hurts the always feasible algorithm's performance profile, as it has not been run on these problems.
-\item I have not found the correct parameters for PDFO, so it does not converge on most problems.
-I believe that with some tinkering, I can dramatically improve its performance.
-\item A library optimization routine currently sometimes returns an ellipsoid strictly outside $\capcones$, rather than inside it.
-This creates several unnecessary infeasible attempts and a small trust region radius.
-\item For the most part, the algorithm variants implemented; but I have not yet included their results.
-\item I have not displayed which problems suffer from irregular constraints.
-\item At times, there are multiple optimum solutions, I currently only compare the result to the first contained in the Hock-Schittkowski problem set.
-\item Although the always feasible algorithm sometimes has many more evaluations than the other algorithms, the solution is accurate to far more decimal places.
-This may be resolved by using ensuring the stopping criteria is as similar as possible.
-\end{itemize}
-\end{comment}
+% \begin{comment}
+% I ask for your patience with the numerical results section.
+% In an attempt to maintain a clean code base, the code implemented on the GitHub repository is a recent implementation that I am still finalizing.
+% I hope to update the results soon when this is completed.
+% Until then, the numerical results should not prevent reading and understanding the rest of the thesis.
+% There are several glaring defects, including but not limited to 
+% \begin{itemize}
+% \item I have not implemented feasible initial ellipsoids for all problems yet.
+% This hurts the always feasible algorithm's performance profile, as it has not been run on these problems.
+% \item I have not found the correct parameters for PDFO, so it does not converge on most problems.
+% I believe that with some tinkering, I can dramatically improve its performance.
+% \item A library optimization routine currently sometimes returns an ellipsoid strictly outside $\capcones$, rather than inside it.
+% This creates several unnecessary infeasible attempts and a small trust region radius.
+% \item For the most part, the algorithm variants implemented; but I have not yet included their results.
+% \item I have not displayed which problems suffer from irregular constraints.
+% \item At times, there are multiple optimum solutions, I currently only compare the result to the first contained in the Hock-Schittkowski problem set.
+% \item Although the always feasible algorithm sometimes has many more evaluations than the other algorithms, the solution is accurate to far more decimal places.
+% This may be resolved by using ensuring the stopping criteria is as similar as possible.
+% \end{itemize}
+% \end{comment}
 
 \subsection{Implementation Details}
 \subsubsection{Parameters}
@@ -5916,16 +5916,16 @@ Namely, if $\sampletrk = \emptyset$ or $\sampletrk \not \subseteq \feasible$, we
 \end{align*}
 and ensure $\sampletrk(t) \subseteq \capcones \cap \trkpo$.
 
-\begin{comment}
-I am guessing this actually slows the algorithm down...
-
-The only reason I did it this way was because I didn't have the recover feasible ellipsoid algorithm yet.
-% This allows the initial ellipsoid to propagate th
-\end{comment}
-
-\begin{comment}
-Make an argument why this works for convex constraints.
-\end{comment}
+% \begin{comment}
+% I am guessing this actually slows the algorithm down...
+% 
+% The only reason I did it this way was because I didn't have the recover feasible ellipsoid algorithm yet.
+% % This allows the initial ellipsoid to propagate th
+% \end{comment}
+% 
+% \begin{comment}
+% Make an argument why this works for convex constraints.
+% \end{comment}
 
 % 		self.threshold_reduction_sufficient = 0.9
 % 		self.threshold_reduction_minimum = 0.1
@@ -6189,9 +6189,9 @@ There were multiple approaches for accomplishing this when an infeasible point $
 For example, NOMAD conveniently implemented this last option, while it seems we have to return accurate function data for SciPy.
 
 
-\begin{comment}
-The results are going to change as I finish implementing feasible initial ellipsoids, ensure PDFO runs properly...
-\end{comment}
+% \begin{comment}
+% The results are going to change as I finish implementing feasible initial ellipsoids, ensure PDFO runs properly...
+% \end{comment}
 
 We compare our algorithm to NOMAD \cite{AMAIOUA201813}, PDFO \cite{PDFO}, and Scipy Optimize
 in \cref{nonlinear_results}.
