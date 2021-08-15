@@ -113,7 +113,7 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
 \end{algorithm}
 
 In Step 1, this algorithm relies on constructing and choosing sample points from $\sampletrk$.
-Different variations of the algorithm implement this step differently with their own \emph{ConstructTrustRegion} subroutine.
+Different variations of the algorithm implement this step differently with their \emph{ConstructTrustRegion} subroutine.
 We show convergence for the ellipsoidal approach, in which sample points are chosen using \cref{model_improving_algorithm}
 and the choice of $\sampletrk$ satisfies some additional restrictions.
 We discuss those restrictions here.
@@ -228,9 +228,9 @@ The Generalized Cauchy Point is shown to satisfy \cref{efficiency} within \cite{
 This is a reasonable choice for $\sk$, but the exact solution as chosen within \cref{linearly_constrained_dfo_simple} 
 necessarily also satisfies \cref{efficiency} as it can only improve upon the Generalized Cauchy Point.
 Also, note that although \cite{Conejo:2013:GCT:2620806.2621814} presents a criticality measure based on the true projection onto the constraints,
-for linear constraints this precisely coincides with the models used in \cref{define_criticality_measure}.
+for linear constraints, this precisely coincides with the models used in \cref{define_criticality_measure}.
 
-They authors of \cite{Conejo:2013:GCT:2620806.2621814} also make four explicit assumptions.
+The authors of \cite{Conejo:2013:GCT:2620806.2621814} also make four explicit assumptions.
 Their first assumption $H_1$ requires the function $f$ to be differentiable and its gradient $\nabla f$ to be Lipchitz continuous with constant $L > 0$ in $\domain$.
 We have assumed \cref{lipschitz_hessian} which is a strictly stronger assumption.
 As their second assumption $H_2$, they assume our \cref{lower_bound}.
@@ -371,7 +371,7 @@ This section analyzes the accuracy of the model functions constructed from the o
 We first show the intermediate results \cref{change_radius} and \cref{shifted_ellipsoid} 
 before satisfying \cref{accuracy}.
 In particular, \cref{linear_accuracy_is_satisfied} establishes error bounds based on the condition number of $\qk$.
-In subsequent sections we will describe several methods for choosing $\qk$ and $\ck$.
+In subsequent sections, we will describe several methods for choosing $\qk$ and $\ck$.
 
 % We construct our sample set by calling \cref{model_improving_algorithm} after first transforming an ellipsoidal sample region 
 % to the a ball centered around the origin.
@@ -552,7 +552,7 @@ In fact, because we require $\qk$ to be positive definite, the diagonal entries 
 Let $\delta = \max_{x\in \ellipsek}\left\|x-\ck\right\|$ and define $T:\Rn \rightarrow \Rn$ by $T(x) = \delta DL^T\left(x - \ck\right)$.
 Note that $T$ is invertible and maps $ \ellipsek$ onto the $\delta$-ball $B_2(0,\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$.
 
-The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the the ellipsoid $\ellipsek$.
+The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the ellipsoid $\ellipsek$.
 
 %Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$-ball to the ellipsoidal region $ \ellipsek $.
 % \cref{fully_quadratic}
@@ -644,7 +644,7 @@ We can now satisfy the accuracy condition.
 % \sbnote{Move the following to later}
 % For the purposes of a convergence proof, we need only satisfy the weaker accuracy condition \cref{accuracy}.
 % Notice that, in practice, the model functions do not need to be mapped to the $\delta$ ball, because $\Lambda$-poisedness is scale invariant \cite{introduction_book}.
-% The implications of this theorem are discussed futher in the convergence discussion \cref{linear_convergence_discussion}.
+% The implications of this theorem are discussed further in the convergence discussion \cref{linear_convergence_discussion}.
 
 
 %Because the ellipsoid we construct must be feasible with respect to both the trust region and the constraints,
@@ -837,7 +837,7 @@ This simplifies $\scaledellipsek$ to
 \begin{align*}
 \left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longleftrightarrow \left\|x - \xk\right\|^2 \le \dk^2
 \end{align*}
-Because $\ellipsek$ is then a sphere with within the outer trust region, $\ellipsek \subseteq \polyk$.
+Because $\ellipsek$ is then a sphere within the outer trust region, $\ellipsek \subseteq \polyk$.
 Because the sphere $\scaledellipsek$ is centered at $\xk$, $\xk \in \scaledellipsek$.
 Also, $\condition\left(\qk\right) = 1$.
 \end{proof}
@@ -920,7 +920,7 @@ We can use this to define an shifted and unshifted cone about the point $\xk$ al
     \caption[An example of the shifted and unshifted cones]
 	{
 		On the left is an unshifted cone $\unshiftedcone$.
-		The polyhedra is in blue, and the current iterate in green.
+		The polyhedron is in blue, and the current iterate in green.
 		A feasible direction $u$ from the current iterate is calculated, and the width of the cone is determined to lie within the active constraints of the polyhedra.
 		On the right is a shifted cone $\unshiftedcone$.
 		It is centered at the origin, and points along $e_1$, opening at a rate of $\alphak$.
@@ -1332,10 +1332,10 @@ $\polyk := \left\{x \in \Rn | \lca x\le \lcb,   \xki - \dk \le x_i \le \xki + \d
 
 This is not the only reasonable approach: maximizing ensures a larger region for which the models will be accurate, 
 but we are most interested in decent directions.
-Namely, we may wish to use previously evaluated points to provide a hint where the next ellipsoid should be.
+Namely, we may wish to use previously evaluated points to provide a hint of where the next ellipsoid should be.
 Another consideration is where points have been evaluated: it may be more economical to choose a smaller ellipsoid that can reuse existing points.
 However, in this section,  we consider the problem of choosing $\qk$ and $\sdk$ to maximize the volume of $\ellipsek \subseteq \polyk$ given a fixed center $\ck$.
-Later, in \cref{center_searches}, we will explore strategies for moving the center of the ellipsoid in order to improve performance of our trust region algorithm.
+Later, in \cref{center_searches}, we will explore strategies for moving the center of the ellipsoid to improve the performance of our trust region algorithm.
 
 We adopt a method similar to that described in \cite{Khachiyan1993},
 which presents an algorithm for finding the maximum volume inscribed ellipsoid for a polytope.
@@ -1443,7 +1443,7 @@ We modify this step by choosing $\hat{y} \in \argmax_{t\in \sampletrk} \left|u_i
 
 The challenge lies in finding sufficiently poised sample points.
 Note that \cref{model_improving_algorithm} uses a parameter $  \ximin $ as a lower bound of the pivot values of the Vandermonde matrix.
-For unconstrained problems, this approach could always find a pivot value for any $ \ximin \in (0,1)$ because it optimized over a sphere.
+For unconstrained problems, this approach could always find a pivot value for any $ \ximin \in (0,1)$ because it optimizes over a sphere.
 However, when requiring points to live within $ \feasible \cap \outertrk $, it can happen that even after replacing a point, we still have not satisfied this bound.
 In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible \cap \outertrk $ that will leave a sufficiently large pivot.
 
@@ -1459,7 +1459,7 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
 
 %As the number of dimensions grows the ratio of volume of the trust region intersect the feasible region to the feasible region can become smaller.
 
-One way to handle this is to  introduce a $\xi_{\text{cur}}$ which is allowed to decrease.
+One way to handle this is to introduce a $\xi_{\text{cur}}$ which is allowed to decrease.
 (Possibly, until a threshold is reached for maintaining a fixed $\Lambda$.)
 If the new point does not improve the geometry of the set significantly, then there is no other point that would do better.
 To test this, we introduce a constant $\delta_{\text{improv}}>0$ and require a new point to increase the current pivot by a factor greater than $\delta_{\text{improv}}$.
@@ -1501,12 +1501,12 @@ As usual, we may also wish to remove points larger than a certain radius from th
     \end{itemize}
 \end{algorithm}
 
-\paragraph*{Algorithm Conjecture}
+% \paragraph*{Algorithm Conjecture}
 
-When the algorithm fails, it is likely because $\sampletrk$ nearly contained in a subspace 
+When the algorithm fails, it is likely because $\sampletrk$ is nearly contained in a subspace 
 for which some basis function can be written as a linear combination of other basis functions.
 Because our feasible region contains an interior point, we would expect that sufficiently small values of $\ximin>0$ allow the algorithm to run to completion.
-However, for non-linear constraints, or even equality based constraints, there may not be such a $\ximin$.
+However, for non-linear constraints, or even equality-based constraints, there may not be such an $\ximin$.
 
 Intuitively, higher order monomials would not improve the accuracy of the model over $\sampletrk$ 
 if their function values do not significantly differ from that of a linear combination of lower order monomials.
@@ -1550,7 +1550,7 @@ Of course, both of these can be done at the same time.
 \end{figure}
 
 
-In order to address this issue we considered using ellipsoidal trust regions.
+In order to address this issue, we considered using ellipsoidal trust regions.
 Whereas the circle does not allow improvement when the current iterate lies along a constraint, an ellipsoid elongates along this constraint.
 In figure \cref{ellipse_adv}, we have this type of iterate, but by using an ellipsoid we are still able to search towards the vertex of the feasible region.
 \begin{figure}[ht]
@@ -1599,7 +1599,7 @@ The simplest approach is to simply let the center of the ellipsoid be the curren
 
 The most obvious choice for the center of the ellipsoid is to choose $\ck$ (i.e., the current iterate).  
 However, if $\xk$ is too close to a boundary of the feasible region, this can result in a badly shaped or very small ellipsoid.
-We therefore explore strategies where the \emph{ConstructTrustRegion} subroutine moves the center of the ellipsoid away from the boundary. 
+We, therefore, explore strategies where the \emph{ConstructTrustRegion} subroutine moves the center of the ellipsoid away from the boundary. 
 This is depicted in \cref{ellipse_adv}.
 
 
@@ -1649,15 +1649,15 @@ The following section addresses this problem by proposing a path search method f
 % 
 % %The ellipsoid with maximum volume, however, tends to lead $ \sampletrk $ away from vertices.
 % One way of trying to ensure a feasible direction towards a vertex, while still allowing a larger volume ellipsoid, 
-% is by limiting the search for the new center to lie on piecewise linear path starting at the current iterate $\xk$.
+% is by limiting the search for the new center to lie on a piecewise linear path starting at the current iterate $\xk$.
 
-Rather than searching over all possible center, it may be more efficient to only move away from the boundary.
-This can be done using one dimensional search along an appropriate direction.
+Rather than searching over all possible centers, it may be more efficient to only move away from the boundary.
+This can be done using one-dimensional search along an appropriate direction.
 For example, our first attempt was to simply search a line directed orthogonally away from the closest constraint.
 This has obvious problems as shown in \cref{first_line_search}: we should avoid letting the new center get closer to another constraint.    
 
 \sbnote{This could be clearer.   
-A key point is that with this method, you can determine the ellipsoid center simply by moving along this line until you are equi-distant from the 2 closest constraints. 
+A key point is that with this method, you can determine the ellipsoid center simply by moving along this line until you are equidistant from the 2 closest constraints. 
 Thus,  there is little gain if the current iterate is close to two or more constraints.}
 
 \begin{figure}[ht]
@@ -1672,7 +1672,7 @@ Thus,  there is little gain if the current iterate is close to two or more const
 \end{figure}
 
 To fix this, we search along a piecewise linear path leading away from the closest constraints.   
-The algorithm works by choosing a set of break points $s_0, s_1, s_2, \ldots, s_{n_{\text{points}}}$
+The algorithm works by choosing a set of breakpoints $s_0, s_1, s_2, \ldots, s_{n_{\text{points}}}$
 that are each equidistant to a subset of the constraint's faces.
 Intuitively, the search moves away from the nearest constraint until it reaches a point equidistance to the second nearest constraint, and so on.
 The center search then considers points along the line segments between these points.
@@ -1760,9 +1760,9 @@ Notice that with two line segments, the algorithm can already choose new centers
 \paragraph*{Circumscribed ellipse}
 
 We also implemented a variant of the algorithm in which the sample region was the smallest volume ellipsoid to contain the feasible region.
-Notice that necessarily includes points that are outside the current trust region, and likely infeasible points.
+Notice that necessarily includes points that are outside the current trust region and likely infeasible points.
 Thus, both the trust region and linear constraints have to be added to the optimization problem defining the replacement point while computing the Lagrange polynomials.
-For more details about the this modified model improvement algorithm, see \cref{sec:polyhedral}.
+For more details about this modified model improvement algorithm, see \cref{sec:polyhedral}.
 
 \subsection{Sample Problem}
 The first test was on a problem with simple constraints and a pathological objective.
@@ -1771,8 +1771,8 @@ $x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
 We summarize the number of function evaluations and iterations taken within \cref{linear_pathological_results}.
 
 In general, the linear models converge more quickly than quadratic models.
-We see that the method with fewest iterations and function evaluations is the linear polyhedral shape.
-This is likely due to the fact that the polyhedral shape is allowed to search the entire outer trust region.
+We see that the method with the fewest iterations and function evaluations is the linear polyhedral shape.
+This is likely because the polyhedral shape is allowed to search the entire outer trust region.
 This also explains why the circumscribed ellipse and maximum volume simplex also perform well.
 %We also notices that with a simple heuristic we were able to improve the ellipse slightly from 170 to 157.
 Also, the scaled ellipsoid performs comparably to the unscaled version.
@@ -1780,7 +1780,7 @@ Also, the scaled ellipsoid performs comparably to the unscaled version.
 \subsection{Schittkowksi Test Problems}
 
 
-We tested these algorithms on several problems from the Hot-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}, \cite{Hock1980}.
+We tested these algorithms on several problems from the Hock-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}, \cite{Hock1980}.
 We selected the problems that have linear constraints: 21, 24, 25, 35, 36, 44, 45, 76, 224, 231, 232, 250, 251.
 We summarize the results within \cref{linear_schittowski_results}.
 
@@ -1799,7 +1799,7 @@ The performance profile of a solver $s$ and parameter $\alpha \in [0, \infty)$ i
 
 The $y$ axis of a performance plot is the performance profile, and the $x$ axis is the parameter $\alpha$.
 Note that algorithms with high performance profiles for small values of $\alpha$ solved a large number of problems the most with the fewest evaluations, while algorithms that eventually reach high performance profiles with larger values of $\alpha$ solve a large set of problems.
-The performance profile for the Hot-Schittkowski problem set is give in figure \cref{performance_profile_image}.
+The performance profile for the Hock-Schittkowski problem set is given in figure \cref{performance_profile_image}.
 
 
 \begin{figure}[ht]
@@ -1814,9 +1814,9 @@ The performance profile for the Hot-Schittkowski problem set is give in figure \
 
 
 
-The line segment search with 5 segments does not solve many problems, this is because several of the problems have dimension less than $5$, so that it was not even ran on these.
+The line segment search with 5 segments does not solve many problems, this is because several of the problems have dimension less than $5$, so that it was not even run on these.
 Notice that the polyhedral search does very well.
-We conjecture that this may not hold with modelled, nonlinear constraints.
+We conjecture that this may not hold with modeled, nonlinear constraints.
 
 
 \subsection{Summary}
@@ -1825,7 +1825,7 @@ Another way of dealing with this is to shift the constraints closer to the curre
 Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
 Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
 Before doing this, the rows of $A$ are normalized.
-This produces the buffered segment searches withing the results.
+This produces the buffered segment searches within the results.
 
 % \color{red}
 % 

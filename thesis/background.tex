@@ -1,17 +1,17 @@
 \section{Literature Review}
 
-Recently, there has been a growth in applications of derivative free optimization.
+Recently, there has been a growth in applications of derivative-free optimization.
 Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, 
 circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, 
 and reliability based optimization \cite{Gao2017}.
 
-As the number of applications grow, so do the number of Derivative-free algorithms.
+As the number of applications grows, so do the number of Derivative-free algorithms.
 Most of these algorithms fall into two main categories:  direct-search methods and model-based methods.
 Direct-search methods use comparatively simple strategies to explore the solution space 
 using only the relative ranks of function values rather than their numerical values.
 A classic example is the popular Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} for unconstrained optimization.
 
-Model-based methods guide the search with approximate derivative information from models of the black box functions.
+Model-based methods guide the search with approximate derivative information from models of the black-box functions.
 Our work is model-based.
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
@@ -31,20 +31,20 @@ This will be discussed in \cref{rhosection}.
 \paragraph*{Reviews}
 There are a number of books and survey articles that provide good introductions to the field of derivative-free optimization.
 Within \cite{introduction_book} derivative-free methods are developed in detail.
-This is the first text book devoted to derivative free optimization.
-It contains a good explanation of how to ensure good sample set geometry for unconstrained problems  poisedness for unconstrained problems and also covers other derivative-free 
+This is the first textbook devoted to derivative-free optimization.
+It contains a good explanation of how to ensure good sample set geometry for unconstrained problems, poisedness for unconstrained problems, and also covers other derivative-free 
 methods including direct-search and line-search methods.
 
-A good review of derivative free algorithms and software libraries can be found in \cite{miguel_review}.
-This compares several software libraries, and reviews the development of derivative free optimization since it started.
+A good review of derivative-free algorithms and software libraries can be found in \cite{miguel_review}.
+This compares several software libraries and reviews the development of derivative-free optimization since it started.
 Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
 
-\paragraph*{Constrained derivative free algorithms}
+\paragraph*{Constrained derivative-free algorithms}
 The development of DFO algorithms for constrained optimization has been relatively recent,
 with much of the early work in this area focused on direct-search methods.
 
-Direct search methods easily accomidate partially quantifiable constraints, as their points do not have to satisfy geometry requirements.
+Direct search methods easily accommodate partially quantifiable constraints, as their points do not have to satisfy geometry requirements.
 However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
 
 The coordinate descent algorithm is among the simplest direct-search methods, 
@@ -58,15 +58,15 @@ We compare our results to the Mesh Adaptive Search algorithm implemented within 
 The literature on model-based DFO methods for constrained optimization is smaller. 
 
 COBYLA \cite{pub.1046127469} was one of the first model-based approaches for solving constrained black-box problems.
-The classic sequential quadratic programming algorithm is implemented for equality based constraints within \cite{Troltzsch2016}.
+The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
 A two-phased, feasibility and optimization approach that handles infeasible starting points is developed within \cite{BAJAJ2018306}.
-\cite{Gao2018} also presents an algorithm for linearly constrained derivative free optimization that uses a backtracking technique to minimize the number of evaluations required.
+\cite{Gao2018} also presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
 The algorithm presented within \cite{doi:10.1080/10556788.2015.1026968} even ensures that each iterate is feasible, 
 although sample points may not be.
 
 Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides a remarkably elegant convergence proof for a class algorithms when the constraints are convex.
-Our analysis implements abstractions made in this paper, and shows the implementation satisfies their requirements.
+This reference provides a remarkably elegant convergence proof for a class of algorithms when the constraints are convex.
+Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
 
 
 \section{Criticality Measure}
@@ -102,8 +102,8 @@ and use
 \end{align}
 
 Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the Karush-Kuhn-Tucker conditions.
-% This condition is necessary under regularity assumptions, and with convex 
-% For a convex problemconvex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
+% This condition is necessary under regularity assumptions and with convex 
+% For a convex problem convex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Unfortunately,  without derivatives information, we cannot calculate $\chi_c^{(k)}$ directly, so in our algorithms we approximate it with
 \begin{align}
 \label{define_criticality_measure}
@@ -232,7 +232,7 @@ To test the accuracy, we calculate a quantity
 \end{align}
 which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.  If $\rk$ is negative, the trial point is rejected and the trust region radius is decreased.   On the other hand, if the trial point is accepted, the trust region radius for the next iteration may still be decreased since 
 a small value of $\rk$ implies that the model functions are not sufficiently accurate.   For larger values of $\rk$ the trial point is accepted and the trust region radius may be increased.
-This strategy has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative free context \cite{introduction_book}.
+This strategy has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative-free context \cite{introduction_book}.
 
 To implement the above strategy,  we define parameters
 % \label{define_the_gammas}
@@ -252,7 +252,7 @@ during some iterations in which $\rk > \gammabi$.
 
 \section{Interpolation}
 \label{interpolation} 
-Model-based methods for derivative free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
+Model-based methods for derivative-free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
 We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \alpha_p]^T$ so that $\mfk$ agrees with $f$ on a set of $p+1$ sample points $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\}$ at which the function $f$ has been evaluated.
 Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
@@ -386,7 +386,7 @@ associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \l
 
 Each iteration of the algorithm identifies a point in the sample set to include in the final sample set.
 In particular, on the $i$th iteration, the points $y^{(0)}, \ldots, y^{i-1}$ have already been included.
-If a point $y^j$, $j \ge i$ can be found such that $u_i(y^j)$ has sufficiently large magnitude, 
+If a point $y^j$, $j \ge i$ can be found such that $u_i(y^j)$ has a sufficiently large magnitude, 
 then that point is added to the final sample set (by swapping it with $y^{i}$).
 However, if no such point can be found, it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.
 Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
@@ -451,16 +451,16 @@ relates the $\Lambda$-poisedness of $Y$ to $\left\|M\left(\bar \phi, Y\right)^{-
 However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
 \end{proof}
 
-Note that \cite[Theorem 6.5]{introduction_book} explicitly states bounds on $\ximin$, depending on the choice of basis $\Phi$.
-Namely, $\ximin \in (0,1)$ for the linear case and $\ximin \in (0, \frac 1 4)$ in the quadratic case.
-As a practical matter, these bounds are not restrictive, because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
+Note that \cite[Theorem 6.5]{introduction_book} explicitly states an upper bound $\xi_{\textrm{alg}} > 0$ on $\ximin$, so that $\ximin \in \left(0 , \xi_{\textrm{alg}}\right)$.
+This bound depends on the choice of basis $\Phi$: $\xi_{\textrm{alg}} = 1$ for the linear case and $\xi_{\textrm{alg}} = \frac 1 4$ for the quadratic case.
+As a practical matter, these bounds are not restrictive because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
 
 \sbnote{The following is a nice discussion!}
 
 This bound on $\ximin$ is complicated by our construction of the sample set:
 we choose points {\em near} the current iterate, although the current sample region does not necessarily include the current iterate.
 This is developed later in the thesis, and our requirements for the sample set are formalized in \cref{define_suitable_ellipsoid} for the linear case and \cref{ellipsoids_notation_definitions} for the non-linear case.
-The take away from these requirements is that after an affine transformation to the unit ball, \cref{model_improving_algorithm} 
+The takeaway from these requirements is that after an affine transformation to the unit ball, \cref{model_improving_algorithm} 
 will be called to construct sample points within the unit ball $B_2(0, 1)$, with an additional requirement that one of the sample points (the transformed $\xk$)
  lies within $B_2\left(0, \sqrt{2}\right)$.
 Although most practical implementations of \cref{model_improving_algorithm} choose a small $\ximin$, 
@@ -477,7 +477,7 @@ Namely, given $y^{(0)} \in B_2\left(0, \sqrt{2}\right)$:
 \end{array}
 \end{align*}
 We have not encountered an issue choosing $\ximin$ too large,
-but we are interested in a bound of this program's solution.
+but we are interested in bounding this program's solution.
 
 \begin{boxedcomment}
 I think it is straightforward to come up with a simple bound to this problem:
@@ -492,7 +492,7 @@ To define our algorithms, we distinguish between three types of trust regions:
 the {\em sample region} $\sampletrk$,
 the {\em search region} $\searchtrk$,
 and the {\em outer trust region} $\outertrk$.
-For unconstrained optimization,  these trust regions are typically identical,  and are chosen to be an $L_2$-ball of radius $\Delta_k$.
+For unconstrained optimization,  these trust regions are typically identical and are chosen to be an $L_2$-ball of radius $\Delta_k$.
 However, for constrained optimization, it is useful to distinguish between the two regions.
 
 
@@ -506,7 +506,7 @@ $\outertrk = B_{\infty}\left(\xk, \dk\right)$, which is an $L_{\infty}$-ball of 
 \outertrk = B_{\infty}\left(\xk,\dk\right) = \left\{x\in \Rn | \; \xki - \dk \le x_i \le \xki + \dk \quad \forall i \in [m] \right \}.
 \end{align}
 
-To allow for the best possible trial point, we would like the search region to be as large as possible within the outer trust region while still remaining feasible.
+To allow for the best possible trial point, we would like the search region to be as large as possible within the outer trust region while remaining feasible.
 Ideally, we would set $\searchtrk=\outertrk \cap \feasible$.
 However, this is only possible when the constraints are known.
 In \cref{chap:general}, we can only take $\searchtrk = \outertrk \cap \feasiblek$.

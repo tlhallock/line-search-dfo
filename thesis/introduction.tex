@@ -2,7 +2,9 @@
 % \section{Derivative Free Optimization}
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
-Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.  Applications of DFO appear in many fields, including photo-injector optimization \cite{1742-6596-874-1-012062}, circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability based optimization \cite{Gao2017}.
+Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
+Applications of DFO appear in many fields, including photo-injector optimization \cite{1742-6596-874-1-012062},
+circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability-based optimization \cite{Gao2017}.
 In such applications, function evaluations are typically expensive, so it is sensible to invest significant computational resources to minimize the number of function evaluations.
 
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
@@ -35,7 +37,7 @@ For example, the trust-region subproblem might have the form
 \end{align*}
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
-The key differences between the trust-region subproblem problem and the original is that all functions are replaced with their model functions, and a trust region constraint has been added.
+The key differences between the trust-region subproblem problem and the original are that all functions are replaced with their model functions, and a trust region constraint has been added.
 
 %Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 %\begin{align}
@@ -52,16 +54,16 @@ As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be 
 For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
 In this case,  the constraints are called {\em partially quantifiable}.    
 \sbnote{Can we find an example of a partially quantifiable constraint?}   
-For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.   We therefore impose 
-the requirement that all sample points must be feasible, and we seek to avoid infeasible function evaluations.
+For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.
+We, therefore, require all sample points to be feasible, and we seek to avoid infeasible function evaluations.
 Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible solution.
 
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
 This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
 When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.
-It is well understood how to do this for unconstrained problems; but for constrained problems
-our requirement that the sample points must be feasible  poses some interesting challenges with respect to maintaining good geometry.   
+It is well understood how to do this for unconstrained problems, but for constrained problems,
+our requirement that the sample points must be feasible poses some interesting challenges to maintaining good geometry.   
 
 As a first step toward developing algorithms to solve such problems,  \cref{chap:linear}  considers a simplified problem where all of the constraints are linear; namely:
 \begin{align*}
@@ -100,7 +102,7 @@ We then discuss several variants to improve on the base algorithm, as well as pr
 
 \cref{chap:general} considers the case of nonlinear black-box constraints.
 In contrast to the case of linear constraints, we can no longer be assured that feasible points for the model sub-problems are feasible for the original problem.
-We therefore propose a methodology that constructs second-order cones for each nearly-active constraint and then constructs an ellipsoidal sample trust region within the intersection of these cones.
+We, therefore, propose a methodology that constructs second-order cones for each nearly-active constraint and then constructs an ellipsoidal sample trust region within the intersection of these cones.
 We show that under reasonable assumptions, this sample trust region is guaranteed to be feasible when the trust region is sufficiently small.
 Using this result,  we prove that the criticality measure for the iterates generated by the algorithm converges to zero.
 Thus,  any accumulation point of the iterates satisfies the first-order optimality conditions.
@@ -147,10 +149,3 @@ a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise}. \en
 For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
 % For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.
-
-
-
-
-
-
-
