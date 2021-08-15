@@ -1,15 +1,46 @@
+This thesis presented several model-based algorithms for solving constrained optimization problems involving black-box functions, 
+where only function values, not derivatives, can be obtained.
+These algorithms ensure the geometry of their sample points while maintaining the points' feasibility.
+Our study, in \cref{chap:linear}, of the linear constraints case laid a foundation for developing algorithms for more
+challenging problems involving nonlinear constraints.  
+The main theoretical contribution from that study was to show how to construct a well-poised sample set over an ellipsoidal trust region.
+We also proposed several methods for constructing this ellipsoidal trust region.
 
-Throughout the thesis we have constructed the model-based, derivative-free algorithms \cref{linearly_constrained_dfo_simple} and \cref{constrained_dfo}
-that can run with partially quantifiable constraints.
-This requires constructing a poised, feasible sample set near the current iterate, even when the iterate is nearly infeasible.
-Our construction buffers the feasible region with second order cones, and computes a $\sampletrk$ within the buffered region.
-We show that, even for general non-linear constraints, this buffered region is feasible for small $\dk$.
-Also, sample points can be constructed within $\sampletrk$ with only slight modifications to classic model improving algorithms.
-Although our construction has minimal performance alterations, it fairs well to classic derivative-free optimization codes,
-and makes fewer infeasible evaluation attempts.
-We also present multiple methods for improving on the sample set, under a framework that ensures convergence.
+The work of \cref{chap:linear} laid a foundation for addressing the case of nonlinear black-box constraints.
+A particular challenge for such problems is the fact that we cannot guarantee that infeasible function evaluations will never be attempted;
+but we strive to minimize such occurrences.
+Toward that end, we proposed a methodology for constructing second order buffering cones, 
+and we show how to construct an ellipsoidal sample trust region within the intersection of the cones and an outer trust region.
+We presented several methods for constructing these ellipsoids and proved that for one of these methods,
+the resulting ellipsoids are guaranteed to be feasible for sufficiently small outer trust regions, even for nonconvex feasible regions.
+This ellipsoid choice is a very conservative strategy, 
+which produces ellipsoids that are very small relative to the size of the feasible region intersected with the outer trust region.
+We explored other ellipsoid constructions and provided a set of conditions for ensuring their convergence.
 
-We present algorithm \cref{modified_model_improving_algorithm} for constructing poised sets over non-ellipsoidal trust regions.
-Future work includes proving corresponding error bounds for sample sets constructed with these polyhedral sample regions.
-Further, we believe that the algorithm presented naturally facilitates a model improvement algorithm that reduces the number of sample points for thin domains.
-% eliminates unnecessary 
+Computational results for our algorithms are encouraging: 
+the total number of evaluations is comparable to classic algorithms while reducing the number of infeasible evaluation attempts.
+However, there are several avenues for which future work is warranted.
+For example, it may be possible simplify one of the assumptions required for convergence.
+Also, it would be desirable to provide error bounds for models interpolating sample sets chosen from polyhedral regions.
+
+% were able to prove under reasonable assumptions that a conservative method for constructing these ellipsoids can 
+% ensure that the resulting ellipsoids are guaranteed to be feasible for sufficiently small outer trust regions.  
+% Using this result, we proved that the criticality of the iterates converges to zero.  
+
+
+%
+%Throughout the thesis we have constructed the model-based, derivative-free algorithms \cref{linearly_constrained_dfo_simple} and \cref{constrained_dfo}
+%that can run with partially quantifiable constraints.
+%This requires constructing a poised, feasible sample set near the current iterate, even when the iterate is nearly infeasible.
+%Our construction buffers the feasible region wtih second order cones, and computes a $\sampletrk$ within the buffered region.
+%We show that, even for general non-linear constraints, this buffered region is feasible for small $\dk$.
+%Also, sample points can be constructed within $\sampletrk$ with only slight modifications to classic model improving algorithms.
+%Although our construction has minimal performance alterations, it fairs well to classic derivative free optimization codes,
+%and makes fewer infeasible evaluation attempts.
+%We also present multiple methods for improving on the sample set, under a framework that ensures convergence.
+%
+%We present algorithm \cref{modified_model_improving_algorithm} for constructing poised sets over non-ellipsoidal trust regions.
+%Future work includes proving corresponding error bounds for sample sets constructed with these polyhedral sample regions.
+%Further, we believe that the algorithm presented naturaly faciliates a model improvement algorithm that reduces the number of sample points for thin domains.
+%% eliminates unnecessary 
+% >>>>>>> Steve7
