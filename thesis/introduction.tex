@@ -10,7 +10,7 @@ In such applications, function evaluations are typically expensive, so it is sen
 This work is ultimately aimed at developing algorithms to solve constrained optimization problems of the form 
 \begin{align}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-\mbox{subject to} \quad & c_i(x) \le 0, & 1 \le i \le m,
+\mbox{subject to} \quad & c_i(x) \le 0, &\quad \forall 1 \le i \le m,
 \end{array}
 \label{the_dfo_problem}
 \end{align}
@@ -20,7 +20,7 @@ $f$ and $c_i, \forall 1 \le i \le m$ are real-valued functions on $\Rn$ with at 
 
 We will let the feasible set be represented as 
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0 \; \forall 1 \le i \le m \}.
+\feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}.
 \end{align}
 
 We are interested in developing {\em model-based} {\em trust-region} algorithms for solving these problems.
@@ -37,7 +37,7 @@ For example, the trust-region subproblem might have the form
 \end{align*}
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
-The key differences between the trust-region subproblem problem and the original are that all functions are replaced with their model functions, and a trust region constraint has been added.
+The key differences between the trust-region subproblem problem and the original are that all functions are replaced with their model functions, and a trust region constraint $\|s\| \le \dk$ has been added.
 
 %Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 %\begin{align}
@@ -47,16 +47,16 @@ The key differences between the trust-region subproblem problem and the original
 
 
 Conceptually, the model functions are ``trusted'' only within a distance $ \dk $ of the current iterate $\xk$; so the trust-region subproblem restricts the length of step $s$ to be no larger than $\dk$.
-To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within, or at least near, the trust-region.
+To ensure that the model functions are good approximations of the true functions over the trust region, the sample points are typically chosen to lie within the trust-region.
 
 We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
-As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $X$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $\feasible$ and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
 For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
 In this case,  the constraints are called {\em partially quantifiable}.    
 \sbnote{Can we find an example of a partially quantifiable constraint?}   
 For problems involving partially quantifiable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.
 We, therefore, require all sample points to be feasible, and we seek to avoid infeasible function evaluations.
-Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible solution.
+Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output.
 
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
@@ -97,7 +97,7 @@ constraints.  \sbnote{It doesn't make sense to call linear constraints partially
 Because the constraints are known, we present an algorithm that constructs sample points from the feasible region intersected with the current trust region.
 This region is called the {\em sample region}.
 The algorithm we present is an implementation of the algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
-As such, we can prove its convergence by showing that it satisfies the required assumptions presented in this reference.
+As such, we can prove its convergence by showing that it satisfies the required assumptions presented in \cite{Conejo:2013:GCT:2620806.2621814}.
 We then discuss several variants to improve on the base algorithm, as well as provide numerical results.
 
 \cref{chap:general} considers the case of nonlinear black-box constraints.
@@ -110,7 +110,7 @@ Finally, numerical results are presented comparing the performance of our algori
 
 \section{Notation}  Throughout the thesis, we use the following notational conventions.
 Any variables that depend on the iteration will be super-scripted by $k$.
-For example, the $k$-th iterate is given by $\xk$, and the model of the objective is given by $\mfk$.
+For example, the $k$-th iterate is given by $\xk$, and iterate $k$'s model of the objective is given by $\mfk$.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto a convex set $X$.
@@ -138,7 +138,7 @@ Note that some of the common norms are:
 
 \paragraph*{Sets}
 The complement of a set $S$ is denoted as $\bar S$.
-Define a point $x$ subtracted from a set $S$ as $S - x = \left\{y \in \Rn | y - s \in S\right\}$.
+Define a point $x$ subtracted from a set $S$ as $S - x = \left\{s \in \Rn | s - x \in S\right\}$.
 Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.
 
 $\delta_{i,j}$ is the Kronecker delta, $\delta_{i, j} = \begin{cases} 1 & \textrm{if} \; i = j \\ 0 & \textrm{if} \; i \ne j \end{cases}$.

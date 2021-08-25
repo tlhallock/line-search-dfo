@@ -1,0 +1,588 @@
+% This text is proprietary.
+% It's a part of presentation made by myself.
+% It may not used commercial.
+% The noncommercial use such as private and study is free
+% Sep. 2005 
+% Author: Sascha Frank 
+% University Freiburg 
+% www.informatik.uni-freiburg.de/~frank/
+
+
+\documentclass{beamer}
+
+
+\newcommand{\Rn}{\mathbb R ^ {n}}
+\newcommand{\xk}{{{x}^{(k)}}}
+\newcommand{\dk}{{\Delta_k}}
+\newcommand{\mk}{{m_f}}
+\newcommand{\fk}{{f_k}}
+\newcommand{\fgk}{{g^{(k)}_f}}
+\newcommand{\fhk}{{H^{(k)}_f}}
+\newcommand{\ck}{{c^{(k)}_{i}(\xk)}}
+\newcommand{\cgk}{{g^{(k)}_{c_i}}}
+\newcommand{\mck}{{m_{c_i}}}
+\newcommand{\bk}{{B_{\infty}(\xk, \dk)}}
+\newcommand{\feasible}{\mathcal F}
+\newcommand{\feasiblek}{\mathcal F^{(k)}}
+\newcommand{\proj}{\textbf{P}}
+
+
+
+\usepackage{color}
+\usepackage{amsmath}
+
+
+\begin{document}
+
+
+\title{Always Feasile Derivative Free Optimization}   
+\author{Trever Hallock} 
+\date{\today} 
+
+\frame{\titlepage} 
+
+\section{Introduction}
+
+\begin{frame}{Introduction}
+    \begin{itemize}
+        \item We develop an algorithm to find local optima of constrained problems
+        \item Derivatives not available, only function values
+        \item This algorithm is useful for problems where function values are not provided at infeasible points
+    \end{itemize}
+\end{frame}
+
+\section{Derivative Free Background}
+
+\begin{frame}{Derivative Free Problem Formulation}
+\begin{center}
+\label{Problem}
+\begin{align*}
+\min_x & \quad f(x) \\
+  c_i(x) \le 0   & \quad \forall \; 1 \le i \le m \\
+\end{align*}
+\end{center}
+    \begin{itemize}
+        \item All functions are black-box functions, meaning that we have no information about their derivatives
+        \item For example, optimization problems where the objective or some of the constraints depend on an expensive simulation
+        \item Function values may not be available outside of the feasible region, we call this \emph{partially-quantifiable}
+%        \item $S(x)$ is a black-box function, meaning that we have no information about its derivatives
+%        \item We assume that $f$ and $c$ are apriori functions
+%         \item We assume the level sets of $f$ are bounded
+%         \item We assume $f$, $c$ are continuously twice differentiable
+%         \item The goal of my research is to develop algorithms for this problem
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Example Problem}
+
+\end{frame}
+
+
+\begin{frame}{Strategy}
+    \begin{itemize}
+        \item Extend our current algorithm for solving linear constraints to non-linear constraints
+        \item Account for uncertainty in constraint boundaries
+        \item Ensure convergence does not require evaluation at infeasible points
+        \item Avoid evaluating functions at infeasible points
+    \end{itemize}
+\end{frame}
+
+
+\frame{\frametitle{Table of Contents}\tableofcontents} 
+
+
+
+\begin{frame}{Model Based Trust Region Methods}
+    \begin{itemize}
+        \setlength\itemsep{2em}
+    	\item Approximate derivatives of $f$ and $c$ using model functions created from a sample set
+    	\item We approximate $f$ using a second order model, meaning that we approximate:
+    	\begin{itemize}
+            \item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
+            \item $\fhk \approx \nabla ^2 f(\xk)$
+            \item $\fgk \approx \nabla f(\xk)$
+            \item $\cgk \approx c_i(\xk)$
+            \item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(x)$
+    	\end{itemize}
+	    \item Choose next iterate by minimizing a model over a trust region
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Model Fitting}
+% 	\begin{align*}
+% 		l_1(x) = -(x-1)(x+1), \;
+% 		l_2(x) = \frac 1 2 x(x+1), \;
+% 		l_3(x) = \frac 1 2 x(x-1) \\
+% 		f(x) = 3 + \sin(x) \quad
+% 		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
+% 	\end{align*}
+	\begin{center}
+		\includegraphics[width=250px]{images/lagrange_polynomials.png}
+	\end{center}
+\end{frame}
+
+
+% 12
+\begin{frame}{Trust Region Subproblem}
+    \begin{itemize}
+        \item In each iteration, we attempt to solve the trust region subproblem to compute a step direction $s$
+
+        \begin{displaymath}
+\begin{array}{lrcc}
+min_s & \mk(\xk + s)   &     &            \\
+s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m       \\
+      &  s & \in & B_{\infty}(0, \dk).  \\
+\end{array}
+        \end{displaymath}
+        \item Replaced true functions with model functions
+        \item Added trust region constraint
+        \item The solution is then used as a trial point for the next iterate
+    \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Criticality Measure}
+	\begin{itemize}
+		\item We had to modify the convergence analysis in a few significant ways
+		\item One of these was within the criticality measure, $\xi(x)$
+		\item If $x$ satisfies the first order necessary conditions for optimality, $\xi(x) = 0$
+	\end{itemize}
+	\begin{center}
+		\includegraphics[width=150px]{images/criticality.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Criticality Measure}
+	\begin{itemize}
+		\item The classic criticality for convex constraints
+\begin{align*}
+\xi(x) = \proj_{\feasible}\left(x - \nabla f(x)\right)
+\end{align*}
+		\item We only have access to models of the true functions, so this becomes
+\begin{align*}
+\xi_m^{(k)}(x) = \proj_{\feasiblek}\left(x - \nabla m_f^{(k)}(x)\right)
+\end{align*}
+		\item This is still sufficient for general constraints
+% Notice that this still implies the first order necessary conditions are satisfied
+
+\color{red}
+		\item We must show that $\xi_m^{(k)}(x) \approx \xi(x)$ and $\xi_m^{(k)}(x) \approx \xi_m^{(l)}(x)$
+\color{black}
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Trust Region Management}
+    \setlength\itemsep{2em}
+    \begin{itemize}
+		\item $\rho_k = \frac{f(x^{(k)}) - f(x^{(k)}+s^{(k)})}{m_k(x^{(k)}) - m_k(x^{(k)}+s^{(k)})}$
+        \item This is the actual decrease over the predicted decrease
+        \begin{itemize}
+            \item measures accuracy of model functions
+            \item ensures reduction in the objective
+        \end{itemize}
+        \item Helps determine new trust region radius
+		\begin{itemize}
+		    \item If $\rho_k$ is small, $x^{(k+1)}=x^{(k)}$ (reject) and decrease radius
+		    \item If $\rho_k$ is intermediate, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and decrease radius
+		    \item If $\rho_k$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and increase radius
+		\end{itemize}
+%         \item There are several potential approaches for incorporating constraints
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Geometry of the Sample Set}
+    \begin{itemize}
+        \item<1, 2, 3> Geometry refers to the relative positions of the sample set of sample points
+        \item<1, 2, 3> When the points are not ``well poised", the constructed model can be innacurate \\
+        \only<2>{
+            \includegraphics[width=120px]{images/poised_good.png} \includegraphics[width=120px]{images/poised_bad.png}
+        }
+        \item<3> Constructing poised sets over ellipses is well known
+        \item<3> Constraints limit what points are available for the sample set
+        \item<3> With narrow constraints, this means ``well poised" sets may not exist
+        \only<3>{
+			\begin{center}
+				\includegraphics[width=180px]{images/impossible_poised.png}
+			\end{center}
+        }
+    \end{itemize}
+\end{frame}
+
+
+% \begin{frame}{Problem with choice of Poised points}
+% \begin{center}
+% \includegraphics[width=120px]{images/nearly_poised.png} \includegraphics[width=120px]{images/nearly_poised_for_subset.png}  
+% \end{center}
+% \end{frame}
+
+
+%         \item<3> The geometry can be measured by its $\Lambda$-poisedness
+
+\section{Always Feasible Algorithm}
+
+
+\begin{frame}{Feasible Derivative Free Algorithm}
+    \begin{itemize}
+        \item Our algorithm is based on a general algorithmic framework proposed by \cite{CONEJO2013324}
+        \item This paper provides convergence analysis, without depending on implementation details
+		\item Algorithm assumes known constraints for a projection operator
+        \item This framework assumes the following properties
+            \begin{itemize}
+				\item Quadratic or linear model functions
+                \item Ability to satisfy an efficiency condition
+                \item Ability to satisfy an accuracy condition
+                \item A method for projecting points onto the feasible set
+            \end{itemize}
+%         \item This algorithm was promising after bench-marking our algorithms on the Hott-Schittowski problem set.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Algorithm outline}
+	\begin{itemize}
+		\item Construct a model for the current point
+		\item Check optimality
+		\item Compute step
+		\item Evaluate trial
+		\item Check reduction and update radius
+	\end{itemize}
+\end{frame}
+
+% 
+% \begin{frame}{Feasible Derivative Free Algorithm Part 2}
+%     \begin{itemize}
+%         \item The efficiency condition requires: $$m_f^{(k)}(x^{(k)}) - m_f^{(k)}(x^{(k+1)}) \ge c_1 \xi^{(k)} \min \{\frac{\xi^{(k)}}{1 + \|\nabla^2 m_f^{(k)}(x^{(k)})\|}, \Delta_k, 1\}$$
+%         \item This can be satisfied using the Generalized Cauchy Point
+%         \item The accuracy condition requires: $$\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k$$
+%         \item To satisfy this, we require the ellipsoid we find to have bounded condition number
+%     \end{itemize}
+% \end{frame}
+
+
+\begin{frame}{Criticality Measure}
+	\begin{itemize}
+		\item The algorithm's criticality measure used the projection operator onto the true constraints
+		\item We only use the projection onto the linearization of the model constraints
+	\end{itemize}
+	\begin{center}
+		\includegraphics[width=150px]{images/criticality_measure.png}
+	\end{center}
+\end{frame}
+
+
+
+\begin{frame}{Ellipsoid Recovery}
+\begin{itemize}
+	\item Given a single feasible point, in general, it can be difficult to find even a second feasible point.
+	\item This means that we must assume a feasible starting set.
+	\begin{center}
+		\includegraphics[width=300px]{images/only_one_feasible_point.png}
+	\end{center}
+	\item For general constraints, this necessates an assumption.
+	\item For convex constraints, we provide such an algorithm
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Feasible Derivative Free Trust Regions}
+    \begin{itemize}
+        \item We define three trust regions
+        \item The sample region:
+        	\begin{itemize}
+        		\item Used to construct sample points
+        		\item Must become feasible
+        		\item Must be constructed from the previous models
+        		\item Has an ellipsoidal shape
+        	\end{itemize}
+        \item The search region:
+            \begin{itemize}
+            	\item Used to construct trial points
+            	\item Must allow for sufficient reduction
+            	\item Must become feasible
+            \end{itemize}
+        \item The outer trust region:
+            \begin{itemize}
+                \item Is an $L_{\infty}$ ball
+                \item Can contain infeasible points, even for the linearization of the constraints
+                \item Contains both the other trust regions.
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Ellipsoid Requirements}
+	\begin{itemize}
+		\item The poisendess of the set depends on the condition number of $Q$
+		\item The ellipsoid must be near the current iterate, to satisfy the accuracy condition
+% 		Alternatively, it could simply be large enough, which ours is
+		\item It must be feasible for small enough $\dk$.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Buffering Cones}
+	\begin{itemize}
+		\item Buffering cones can be used to compute these trust regions
+		\item Other ideas were possible (quadratic cones...)
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Buffering Cones}
+	\begin{itemize}
+		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
+		\[\|\nabla m_f(x) - \nabla f(x)\| \le \epsilon_g \dk \]
+		\item This usually not an issue, as any point can be added to the sample set to replace ill-poised points
+		\begin{center}
+			\includegraphics[width=120px]{images/impossible_poised.png}
+		\end{center}
+		\item We had to show that we can still find a ``large" enough region to choose sample points
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/explanation_1.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/explanation_2.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/explanation_3.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/completed_1.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/completed_2.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=300px]{images/feasible_direction.png}
+	\end{center}
+\end{frame}
+
+
+
+\begin{frame}{Example trust region}
+\begin{center}
+    \includegraphics[width=300px]{images/trust_regions.png}
+\end{center}
+% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+\end{frame}
+
+
+\begin{frame}{Algorithm Variants}
+
+\begin{itemize}
+	\item Different forms of the sample region
+	\item Different forms of the search region
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Regularity Assumption}
+\begin{itemize}
+\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\begin{align*}
+\forall x^{\star}, \xi\left(x^{\star}\right) = 0 
+\Longrightarrow \exists d \in \Rn, \forall i, \nabla c_i\left(x^{\star}\right)^T d < 0 
+\end{align*}
+\item We strengthened this qualification, to allow construction of the feasible ellipsoid:
+\begin{align*}
+\forall x \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < 0 \\
+\exists \epsilon>0 \forall x, \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < -\epsilon \\
+\exists \epsilon>0 \forall x,\exists d\in \Rn, \forall i, c_i\left(x\right) \approx 0
+\Longrightarrow \nabla c_i\left(x\right)^T d < -\epsilon \\
+\end{align*}
+\color{red}
+\item Add a picture to motivate each of these changes...
+\color{black}
+\end{itemize}
+% Add pictures of a sphere...
+\end{frame}
+
+
+
+\begin{frame}{Sufficient Reduction}
+\begin{itemize}
+\item To ensure the trial point is feasible, we limit the search trust region
+\item Well-known algorithms for computing an efficient trial points do not apply
+\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
+\color{red}
+\item Picture of its construction...
+\color{black}
+\end{itemize}
+% Could talk about the details here
+\end{frame}
+
+\begin{frame}{Bounded Projection}
+\begin{itemize}
+\item Initially, this was done with the Hoffman Constant
+\item I found a simpler proof using my own assumptions
+\item The method works using the regularity assumption for constraints that are nearly active
+\item The other constraints are sufficiently far from zero.
+\item This eliminates the need for a bound on $\xk$.
+\color{red}
+\item I could make a picture of the lemma.
+\color{black}
+\item This result is discuss in <reference>
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Contributions}
+	\begin{itemize}
+		\item First model-based dfo algorithm for partially quantifiable constraints
+		\item Constructing the feasible ellipsoid
+		\item Showing that the criticality measure converges
+		\item Modified regularity condition
+		\item Showing sufficient reduction within a smaller search region
+	\end{itemize}
+\end{frame}
+
+
+
+\section{Future Work}
+
+
+\frame {
+\frametitle{Extensions to the Algorithm}
+\begin{itemize}
+    \item Show error bounds for Polyhedral Trust Regions
+    \item Make assumptions only reference the true constraints (not the models)
+    \item Use fewer sample points on narrow constraints
+\end{itemize}
+
+}
+
+
+\frame {
+    \frametitle{Questions?}
+}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{References}
+    \bibliographystyle{apalike}
+    \bibliography{presentation}
+\end{frame}
+
+% 
+% \frame {
+% \frametitle{Adding Linear Cuts to Feasible Region}
+% \begin{itemize}
+%     \item For efficiency, we do not limit the trial point to the inner trust region
+%     \item It is then possible that the trial point found by the trust region subproblem is infeasible
+%     \item If so, we add a constraint that removes this infeasible sample point
+%     \item The program is:
+% %         \begin{itemize}
+% %             \item Start with a polynomial $p$, a tolerance $\epsilon \in (0, 1)$, an set of infeasible points $u_{\text{infe}}^{(j)}$, and a set of feasible points $u_{\text{fe}}^{(i)}$.
+%             \item Compute
+%             \begin{displaymath}
+%                 \begin{array}{ccccc}
+%     \min_{s, v^{(j)}, b^{(j)}}   & p(s)            &       &                            \\
+%                                 & \left(u_{\text{fe}}^{(i)}\right)^T v^{(j)}     & \le   & b^{(j)}                     \\
+%                                 & \left(u_{\text{infe}}^{(j)}\right)^T v^{(i)}      & \ge   & b^{(j)} + \epsilon \Delta_k       \\
+%                                 & \|v^{(i)}\|^2   & =     & 1                           \\
+%                                 & s          & \in   & B_{\infty}(x^{(k)}, \Delta_k)    \\
+%                 \end{array}
+%             \end{displaymath}
+% %         \end{itemize}
+% \end{itemize}
+% }
+% 
+% 
+% %                                 & I[i]^T v^{(i)}      & \ge   & \epsilon                \\
+% 
+% 
+% \begin{frame}{Visualizing Linear Cuts}
+% \begin{center}
+%     \includegraphics[width=300px]{images/cut_infeasible_points.png}
+% \end{center}
+% % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+% \end{frame}
+
+
+% 
+% 
+% \frame{
+% \frametitle{Using Fewer Sample Points}
+%     \begin{itemize}
+%         \item With general convex constraints, sufficiently poised sets within the feasible region may not exist.
+%         \item To illustrate, consider finding a fully quadratic model in 2-dimensions.
+%         \item As the constraints become more thin,
+%             \begin{itemize}
+%                 \item The model becomes less poised
+%                 \item There is less need for requiring the model to be quadratic in $y$.
+%             \end{itemize}
+%         \item We would prefer to use a subset of all quadratics, with fewer points to approximate them.
+%     \end{itemize}
+% }
+% 
+% \frame {
+% \frametitle{2D Illustration}
+%     \includegraphics[width=150px]{images/2_2_4_68.png}
+%     \includegraphics[width=150px]{images/2_3_5_1.png}
+% }
+% 
+% \frame {
+% \frametitle{Full pivoting}
+%     \begin{itemize}
+%         \item One approach is to use full pivoting within the LU factorization used compute the Lagrange polynomials.
+% 
+%         \item When there are no more pivots greater than a threshold, the LU factorization terminates, and only uses the points and polynomials already computed after zeroing the remaining entries.
+%         
+%         \item This method will provide the next point to use as well as the next polynomial to include.
+%         
+%     \end{itemize}
+% }
+% 
+
+
+% Circle
+
+
+
+
+
+% \begin{frame}{Orders of models}
+% 	\begin{itemize}
+% 		\item Our algorithm assumes linear models for constraints, and a quadratic model for the objective
+% 		\item This is not required, but does introduce the question of how to choose points poised for different orders of models
+% 		\item We could select separate points for each different order
+% 		\item We could create points for for a quadratic model, and only add points for a linear model if required
+% 		\item We could choose points that are best for both models
+% 		\item We currently use quadratic models for both
+% 	\end{itemize}
+% \end{frame}
+
+
+\end{document}

@@ -668,6 +668,7 @@ An example plot of such a function $f$ is found within \cref{antiprojection_imag
 
 
 \subsection{Spherical Solution}
+\label{spherical_solution_description}
 
 One simplification that allows an explicit formulation is to restrict the ellipsoid to be a sphere.
 Although this may produce an ellipsoid with less volume, it may be used as a hot start while searching over all ellipsoids.
@@ -1579,7 +1580,7 @@ For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\left(\xkpo - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
 \end{proof}
 
-\section{Dealing with infeasible sample points}
+\section{Dealing with Infeasible Sample Points}
 \label{recovering_feasiblity_section}
 
 The above results will be used in \cref{ellipsoid_is_feasible_section} to prove that for small enough $\dk$, 
@@ -1588,7 +1589,7 @@ But for large $\dk$, there is no such guarantee, so we must consider how to reco
 This section describes methods for recovering a feasible ellipsoid.
 Note that for general constraints, we will later assume the existence of such an algorithm in \cref{restorability_assumption}.
 
-\subsection{Convex feasible region}
+\subsection{Convex Feasible Region}
 \label{convex_restoration}
 % If the feasible region is convex,  (for example, when the constraints are quasi-convex),
 %\section{Recover Feasible Ellipsoid}
@@ -1800,9 +1801,9 @@ We summarize what we have shown here:
 % \end{align*}
 
 
-\subsection{Non-convex feasible region}
+\subsection{Non-Convex Feasible Region}
 
-\subsubsection{Problem difficulty}
+\subsubsection{Problem Difficulty}
 
 For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
 This means that the current iterate lies within the interior of the feasible region,
@@ -5883,7 +5884,7 @@ Here we discuss the numerical results of this algorithm when run on the Hock-Sch
 % \end{comment}
 
 \subsection{Implementation Details}
-\subsubsection{Parameters}
+% \subsubsection{Parameters}
 
 Our code implements \cref{constrained_dfo} with parameter values
 $\tolcrit = 0.0001$, 
@@ -5908,7 +5909,8 @@ Namely, it is possible to define a $\beta_{\textrm{min}}, \alpha_{\textrm{max}} 
 \end{align*}
 in place of \cref{define_w} and \cref{define_fik} without changing asymptotic results.
 
-Also, our implementation avoids calling the restore feasible sample region when possible by scaling the previous sample region to lie within the current trust region.
+Also, our implementation avoids calling the restore feasible sample region when possible by scaling the previous sample region to
+lie within the current trust region.
 Namely, if $\sampletrk = \emptyset$ or $\sampletrk \not \subseteq \feasible$, we first parameterize a set of ellipsoids by $t$:
 \begin{align*}
 \ck(t) = t \ckmo + (1-t) \xk, \quad \sdk(t) = t \sdkmo, \\
@@ -5936,9 +5938,16 @@ In most cases, hot starts are provided from naive searches to improve the result
 % I wrote my own code to find the extrema while computing the Lagrange multipliers.
 
 
-\ifbool{showcomments}{
-
 \subsection{Algorithm Variants}
+
+We experimented with different variants of the algorithm.
+The results for these variants can be found in \cref{nonlinear_variants_results}.
+The spherical approach was described in \cref{spherical_solution_description}.
+The quadratic buffered is described in \cref{quadratic_buffered_description}.
+The penalty buffered, and convex penalty buffered are described in \cref{penalty_buffered_description}.
+Another variant called the recover feasible ellipsoid method for all empty search regions.
+Lastly, we included a variant that only used linear models of the objective.
+
 \subsubsection{Largest Volume Ellipsoid}
 We implemented a very naive algorithm to compute the largest possible ellipsoid within the buffering cones, as discussed in \cref{ideal_ellipsoid_in_polyhedron}.
 Ideally, this would use the information returned from the inner optimization program to more intelligently explore ellipsoids.
@@ -5984,8 +5993,9 @@ However, we state the algorithm as implemented:
 \end{algorithm}
 
 \subsubsection{Quadratic Buffered Constraints}
+\label{quadratic_buffered_description}
 
-In order to alleviate descent directions being removed from $\capcones$, 
+To alleviate how many descent directions within $\feasiblek \cap \outertrk$ are missing from $\capcones$, 
 we experimented with replacing the second order cones $\fik$ defined in \cref{define_fik} with quadratic buffers.
 Namely, these became
 \begin{align*}
@@ -6003,9 +6013,31 @@ the trust region subproblem becomes
 & \xk + s \in \trk. &
 \end{array}
 \end{align*}
+
+
+A depiction of the trust region subproblem can be found in \cref{quadratic_buffered}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=300px]{images/quadratic_buffered.png}
+    \caption[The quadratic buffered region.]
+	{
+		In these images, the search region uses quadratic buffering regions rather than second order cones.
+		The blue lines are the linearization of the constraints,
+		the current iterate is in green,
+		the outer trust region is in black,
+		the buffering functions for each constraint are in magenta,
+		an the trial point is in blue.
+    }
+    \label{quadratic_buffered}
+\end{figure}
+
+
 % \textrm{s.t.} & \beta \left\| \left(I - uu^T\right)x \right\|^2 = \beta (x-\wik)^T\left(I - uu^T\right) (x-\wik)\le u^T\left(x-\wik\right)
 
 \subsubsection{Penalty Buffered Constraints}
+\label{penalty_buffered_description}
+
 Notice that the algorithm evaluated enough points to construct quadratic models of the constraints because it constructed a quadratic model for the objective.
 It is therefore possible to use the original quadratic models of the constraints
 \begin{align*}
@@ -6019,14 +6051,33 @@ Namely, the trust region subproblem is replaced with
 \begin{align*}
 \begin{array}{ccc}
 \min_{s \in \outertrk} & \mfk\left(\xk + s\right) & \\
-\textrm{s.t.} & q_{c_i}^{(k)}\left(\xk + s\right) + \beta \dk^{p_{\beta}}\left\|s - \xk\right\|^2 \le 0 & \forall i \in \activeconstraintsk.
+\textrm{s.t.} & q_{c_i}^{(k)}\left(\xk + s\right) + \beta \dk^{p_{\beta}}\left\|s - \xk\right\|^2 \le 0 &\quad \forall i \in \activeconstraintsk.
 \end{array}
 \end{align*}
 
 Unfortunately, this no longer provides a convex $\searchtrk$, unless modifications are made to $H^{(k, i)}$.
 Namely, by giving $H^{(k, i)} = L D L^T$ its eigen decomposition with $D$ diagonal, and $LL^T = I$, and 
 constructing $\hat H^{(k, i)} = L D^+ L^T$ where $D^+$ is the diagonal matrix $[D^+]_{jj} = D_{jj}^+$.
+Depictions of the trust region subproblem with are found in \cref{quadratic_penalty}.
 
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=200px]{images/penalty_tr_0.png}
+    \includegraphics[width=200px]{images/penalty_tr_1.png}
+    \caption[The quadratic buffered region.] {
+		In these images, the search region uses a quadratic penalty function to buffer the modelled feasible region.
+		On the left, the original constraints are used, and on the right the constraints are forced to be convex.
+		The current iterate is in green,
+		the outer trust region and model objective is in black,
+		the model constraint is in magenta,
+		the buffered constraint is in red,
+		an the trial point is in blue.
+    }
+    \label{quadratic_penalty}
+\end{figure}
+
+
+\ifbool{showcomments}{
 
 \subsubsection{Linear Cuts}
 \label{linear_cuts_section}
@@ -6167,7 +6218,7 @@ These were problems
 and 359.
 Note that although many of these problems do not have convex constraints, we still used the convex restore feasible ellipsoid routine.
 
-For each problem in the problem set, we assigned a starting ellipsoid.
+For each problem in the problem set, we attempted to assign a starting ellipsoid.
 Whenever possible, we used a sphere centered around $\xinit$ of radius $1$.
 Otherwise, we applied a heuristic to approximate a feasible direction and construct an ellipsoid near $\xinit$.
 

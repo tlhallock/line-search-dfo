@@ -2,183 +2,293 @@
 \begin{scriptsize}
 \begin{center}
 \begin{longtable}{ccccccccc}
-\label{nonlinear_results}
+\caption{Numerical Results for Non-linear Test Problems} \\
+\label{nonlinear_results}  
   N &       algorithm &  n & N succ & N fail & optimal &         min &    true min &  x-error\\
- 12 & always feasible &  2 &     67 &     21 &     yes &       -30.0 &         -30 & 2.20e-05\\
- 12 &           nomad &  2 &    184 &    649 &     yes &      -29.99 &         -30 &     0.06\\
+ 12 &           nomad &  2 &    208 &    185 &     yes &       -30.0 &         -30 &      0.0\\
  12 &            pdfo &  2 &     37 &     20 &      no &      -29.55 &         -30 &     0.49\\
  12 &           scipy &  2 &      3 &     26 &      no &   -1.04e-07 &         -30 &     3.61\\
  24 & always feasible &  2 &     44 &      0 &     yes &        -1.0 &          -1 & 1.04e-06\\
- 24 &           nomad &  2 &      1 &      0 &      no &       -0.01 &          -1 &     2.35\\
+ 24 &           nomad &  2 &    369 &    295 &     yes &        -1.0 &          -1 &      0.0\\
  24 &            pdfo &  2 &     36 &     23 &      no &       -0.32 &          -1 &     1.03\\
  24 &           scipy &  2 &      9 &      6 &      no &       -0.12 &          -1 &     1.62\\
- 29 & always feasible &  3 &    300 &     31 &     yes &      -22.63 &      -22.63 & 2.02e-05\\
- 29 &           nomad &  3 &      5 &     50 &      no &       -16.0 &      -22.63 &     0.83\\
+ 29 & always feasible &  3 &    292 &     30 &     yes &      -22.63 &      -22.63 & 5.11e-06\\
+ 29 &           nomad &  3 &    694 &    566 &     yes &      -22.63 &      -22.63 &     0.03\\
  29 &            pdfo &  3 &     49 &     18 &      no &      -18.76 &      -22.63 &     1.36\\
  29 &           scipy &  3 &     12 &     29 &     yes &      -22.63 &      -22.63 & 8.85e-04\\
  30 & always feasible &  3 &    209 &     66 &     yes &         1.0 &           1 & 3.17e-05\\
- 30 &           nomad &  3 &      1 &      0 &      no &         3.0 &           1 &     1.41\\
+ 30 &           nomad &  3 &    696 &     52 &     yes &         1.0 &           1 & 5.61e-08\\
  30 &            pdfo &  3 &     80 &      3 &     yes &         1.0 &           1 &     0.03\\
  30 &           scipy &  3 &     33 &      0 &     yes &         1.0 &           1 &      0.0\\
- 31 &           nomad &  3 &      1 &      0 &      no &        19.0 &           6 &     1.31\\
+ 31 & always feasible &  3 &    142 &     21 &     yes &         6.0 &           6 & 1.28e-05\\
+ 31 &           nomad &  3 &    898 &    689 &     yes &         6.0 &           6 &     0.01\\
  31 &            pdfo &  3 &     33 &     23 &      no &        9.54 &           6 &      0.8\\
  31 &           scipy &  3 &      8 &     22 &     yes &         6.0 &           6 & 5.68e-04\\
- 33 &           nomad &  3 &      1 &      0 &      no &        -3.0 &       -4.59 &     2.12\\
+ 33 & always feasible &  3 &    119 &     17 &     yes &       -4.59 &       -4.59 & 5.86e-07\\
+ 33 &           nomad &  3 &    726 &    579 &     yes &       -4.59 &       -4.59 &      0.0\\
  33 &            pdfo &  3 &     40 &     34 &     yes &       -4.59 &       -4.59 & 1.00e-09\\
  33 &           scipy &  3 &     16 &      0 &      no &        -4.0 &       -4.59 &     1.53\\
- 34 &           nomad &  3 &      1 &      0 &      no &         0.0 &       -0.83 &     7.26\\
+ 34 & always feasible &  3 &   1766 &    183 &      no &        -0.6 &       -0.83 &     3.86\\
+ 34 &           nomad &  3 &   1202 &   1049 &     yes &       -0.83 &       -0.83 & 1.57e-12\\
  34 &            pdfo &  3 &     40 &     26 &      no &       -0.05 &       -0.83 &     7.25\\
  34 &           scipy &  3 &      4 &     25 &      no &   -1.49e-08 &       -0.83 &     7.26\\
- 35 &           nomad &  3 &      1 &      0 &      no &        2.25 &        0.11 &     0.88\\
+ 35 & always feasible &  3 &     87 &      4 &     yes &        0.11 &        0.11 & 4.31e-06\\
+ 35 &           nomad &  3 &    344 &    333 &     yes &        0.11 &        0.11 &      0.0\\
  35 &            pdfo &  3 &     63 &     28 &     yes &        0.11 &        0.11 &      0.0\\
  35 &           scipy &  3 &      8 &     13 &      no &        0.12 &        0.11 &     0.07\\
  36 & always feasible &  3 &     79 &      0 &     yes &     -3300.0 &       -3300 & 4.52e-09\\
- 36 &           nomad &  3 &      1 &      0 &      no &     -1000.0 &       -3300 &    11.22\\
+ 36 &           nomad &  3 &    305 &    162 &     yes &     -3300.0 &       -3300 &      0.0\\
  36 &            pdfo &  3 &     49 &     32 &      no &    -3262.39 &       -3300 &     0.72\\
  36 &           scipy &  3 &      7 &      1 &     yes &     -3300.0 &       -3300 & 1.46e-10\\
  37 & always feasible &  3 &    742 &      0 &     yes &    -3455.99 &       -3456 &     0.06\\
- 37 &           nomad &  3 &      1 &      0 &      no &     -1000.0 &       -3456 &    14.28\\
+ 37 &           nomad &  3 &    357 &    321 &     yes &    -3455.85 &       -3456 &     0.19\\
  37 &            pdfo &  3 &     50 &     27 &      no &    -3065.52 &       -3456 &     9.32\\
  37 &           scipy &  3 &     11 &     21 &     yes &     -3456.0 &       -3456 & 9.75e-05\\
  43 & always feasible &  4 &    306 &     36 &     yes &       -44.0 &         -44 & 5.58e-06\\
- 43 &           nomad &  4 &      1 &      0 &      no &         0.0 &         -44 &     2.45\\
+ 43 &           nomad &  4 &   2578 &   1992 &     yes &       -44.0 &         -44 &     0.01\\
  43 &            pdfo &  4 &     67 &     27 &      no &      -34.09 &         -44 &     1.28\\
  43 &           scipy &  4 &     15 &     32 &      no &      -38.16 &         -44 &     0.44\\
  44 & always feasible &  4 &    153 &      1 &     yes &       -15.0 &         -15 & 7.37e-10\\
- 44 &           nomad &  4 &      1 &      0 &      no &         0.0 &         -15 &      5.0\\
+ 44 &           nomad &  4 &    285 &    342 &     yes &       -15.0 &         -15 &      0.0\\
  44 &            pdfo &  4 &     51 &     38 &      no &      -11.13 &         -15 &     1.17\\
  44 &           scipy &  4 &     17 &     13 &     yes &       -15.0 &         -15 & 7.51e-10\\
  57 & always feasible &  2 &    642 &      0 &      no &        0.03 &        0.03 &     3.65\\
- 57 &           nomad &  2 &      1 &      0 &      no &        0.03 &        0.03 &     3.72\\
+ 57 &           nomad &  2 &    264 &    244 &     yes &        0.03 &        0.03 & 1.57e-04\\
  57 &            pdfo &  2 &     42 &      4 &      no &        0.03 &        0.03 &     3.72\\
  57 &           scipy &  2 &      7 &      1 &      no &        0.03 &        0.03 &     3.72\\
- 66 &           nomad &  3 &      1 &      0 &      no &        0.58 &        0.52 &     0.49\\
+ 66 & always feasible &  3 &   1741 &    187 &     yes &        0.52 &        0.52 &     0.02\\
+ 66 &           nomad &  3 &    666 &    733 &     yes &        0.52 &        0.52 &     0.12\\
  66 &            pdfo &  3 &     34 &     28 &      no &        0.54 &        0.52 &     0.48\\
  66 &           scipy &  3 &      4 &     17 &      no &        0.58 &        0.52 &     0.49\\
  67 & always feasible &  3 &   1287 &      0 &      no &     -1047.9 &    -1162.37 &  2130.47\\
- 67 &           nomad &  3 &      1 &      0 &      no &     -868.73 &    -1162.37 &  4000.05\\
+ 67 &           nomad &  3 &    599 &    383 &     yes &    -1162.12 &    -1162.37 &     0.04\\
  67 &            pdfo &  3 &     54 &     28 &      no &      -870.9 &    -1162.37 &   3998.7\\
  67 &           scipy &  3 &     72 &     16 &     yes &    -1162.12 &    -1162.37 &     0.07\\
- 76 &           nomad &  4 &      1 &      0 &      no &       -1.25 &       -4.68 &     1.68\\
+ 76 & always feasible &  4 &    847 &     59 &     yes &       -4.68 &       -4.68 &      0.0\\
+ 76 &           nomad &  4 &    416 &    451 &     yes &       -4.68 &       -4.68 &     0.01\\
  76 &            pdfo &  4 &     67 &     53 &      no &       -4.42 &       -4.68 &     0.56\\
  76 &           scipy &  4 &      8 &     17 &     yes &       -4.68 &       -4.68 & 9.73e-04\\
- 84 &           nomad &  5 &      1 &      0 &      no & -2351243.48 & -5290335.13 &    22.59\\
+ 84 & always feasible &  5 &   1839 &    166 &      no & -5242231.32 & -5290335.13 &    22.49\\
+ 84 &           nomad &  5 &   3091 &   2275 &      no & -5280334.85 & -5290335.13 & 7.92e-06\\
  84 &            pdfo &  5 &     81 &     52 &      no &  -5243494.5 & -5290335.13 &    21.74\\
  84 &           scipy &  5 &      6 &     47 &      no & -2351243.51 & -5290335.13 &    22.59\\
- 86 &           nomad &  5 &      1 &      0 &      no &        20.0 &      -32.35 &     1.07\\
+ 86 & always feasible &  5 &    434 &      8 &     yes &      -32.35 &      -32.35 & 9.93e-08\\
+ 86 &           nomad &  5 &   1554 &   1876 &     yes &      -32.35 &      -32.35 & 1.61e-04\\
  86 &            pdfo &  5 &    105 &     79 &      no &       13.12 &      -32.35 &     1.01\\
  86 &           scipy &  5 &     12 &     19 &      no &      -15.55 &      -32.35 &     0.52\\
- 93 &           nomad &  6 &      1 &      0 &      no &      137.07 &      135.08 &     1.64\\
+ 93 &           nomad &  6 &   2344 &   2737 &      no &      135.69 &      135.08 &     1.55\\
  93 &            pdfo &  6 &     48 &     46 &      no &      136.95 &      135.08 &     1.64\\
  93 &           scipy &  6 &      7 &     65 &      no &      137.07 &      135.08 &     1.64\\
-100 & always feasible &  7 &   3327 &    177 &     yes &      680.63 &      680.63 &      0.0\\
-100 &           nomad &  7 &      1 &      0 &      no &       714.0 &      680.63 &      1.7\\
+100 & always feasible &  7 &   3709 &    133 &     yes &      680.63 &      680.63 &      0.0\\
+100 &           nomad &  7 &   1690 &   1888 &     yes &      680.66 &      680.63 &     0.07\\
 100 &            pdfo &  7 &     93 &     40 &      no &      700.89 &      680.63 &     1.68\\
 100 &           scipy &  7 &     24 &     72 &      no &      690.62 &      680.63 &     0.65\\
 105 &           scipy &  8 &    120 &      0 &      no &     1151.49 &     1138.42 &    50.11\\
 113 &           nomad & 10 &      1 &      0 &      no &       753.0 &       24.31 &    10.09\\
 113 &            pdfo & 10 &    271 &    154 &      no &      156.47 &       24.31 &     4.25\\
 113 &           scipy & 10 &     11 &    113 &      no &       753.0 &       24.31 &    10.09\\
-215 & always feasible &  2 &     50 &     12 &     yes &    1.05e-06 &         0.0 & 2.64e-05\\
-215 &           nomad &  2 &    205 &    186 &     yes &         0.0 &         0.0 &      0.0\\
+215 &           nomad &  2 &    332 &    256 &     yes &    6.82e-09 &         0.0 & 8.26e-05\\
 215 &            pdfo &  2 &     33 &     17 &      no &        0.72 &         0.0 &     1.11\\
 215 &           scipy &  2 &      3 &     18 &     yes &    1.22e-08 &         0.0 & 1.22e-08\\
 218 & always feasible &  2 &    100 &     31 &     yes &    9.57e-10 &         0.0 & 3.05e-05\\
-218 &           nomad &  2 &    268 &    206 &     yes &         0.0 &         0.0 &      0.0\\
+218 &           nomad &  2 &    254 &    182 &     yes &         0.0 &         0.0 &      0.0\\
 218 &            pdfo &  2 &     52 &     26 &      no &       80.45 &         0.0 &    80.95\\
 218 &           scipy &  2 &      9 &     31 &      no &        94.0 &         0.0 &    94.43\\
-221 & always feasible &  2 &     97 &      9 &      no &       -0.97 &          -1 &     0.03\\
-221 &           nomad &  2 &      1 &      0 &      no &       -0.25 &          -1 &     0.79\\
+221 &           nomad &  2 &    147 &    225 &     yes &        -1.0 &          -1 & 2.46e-12\\
 221 &            pdfo &  2 &    981 &     19 &      no &       -0.98 &          -1 &     0.02\\
 221 &           scipy &  2 &     52 &      6 &     yes &        -1.0 &          -1 & 1.58e-04\\
 223 & always feasible &  2 &    167 &     12 &     yes &       -0.83 &       -0.83 & 8.81e-09\\
-223 &           nomad &  2 &      1 &      0 &      no &        -0.1 &       -0.83 &     6.74\\
+223 &           nomad &  2 &    330 &    241 &     yes &       -0.83 &       -0.83 &      0.0\\
 223 &            pdfo &  2 &     31 &     17 &      no &       -0.18 &       -0.83 &     6.73\\
 223 &           scipy &  2 &      3 &     21 &      no &        -0.1 &       -0.83 &     6.74\\
 224 & always feasible &  2 &     43 &      4 &     yes &      -304.0 &        -304 & 2.55e-06\\
-224 &           nomad &  2 &      1 &      0 &      no &       -8.77 &        -304 &     5.52\\
+224 &           nomad &  2 &    310 &    268 &     yes &      -304.0 &        -304 &     0.01\\
 224 &            pdfo &  2 &     63 &     17 &     yes &      -304.0 &        -304 & 2.07e-07\\
 224 &           scipy &  2 &      6 &      6 &      no &      -302.0 &        -304 &     1.15\\
 226 & always feasible &  2 &     58 &      7 &     yes &        -0.5 &        -0.5 & 8.92e-06\\
-226 &           nomad &  2 &      1 &      0 &      no &       -0.04 &        -0.5 &     0.66\\
+226 &           nomad &  2 &    187 &    170 &     yes &        -0.5 &        -0.5 & 4.77e-05\\
 226 &            pdfo &  2 &     32 &     17 &      no &       -0.44 &        -0.5 &     0.24\\
 226 &           scipy &  2 &      3 &     19 &      no &       -0.04 &        -0.5 &     0.66\\
 227 & always feasible &  2 &     33 &      0 &     yes &         1.0 &           1 & 9.78e-08\\
-227 &           nomad &  2 &     96 &    209 &     yes &         1.0 &           1 &      0.0\\
+227 &           nomad &  2 &    372 &    435 &     yes &         1.0 &           1 &      0.0\\
 227 &            pdfo &  2 &     37 &     24 &      no &        1.57 &           1 &     0.41\\
 227 &           scipy &  2 &      3 &     13 &      no &         2.5 &           1 &     0.71\\
 228 & always feasible &  2 &     42 &      0 &     yes &        -3.0 &          -3 & 4.36e-07\\
-228 &           nomad &  2 &    211 &    197 &     yes &        -3.0 &          -3 &      0.0\\
+228 &           nomad &  2 &    403 &    287 &     yes &        -3.0 &          -3 & 3.47e-05\\
 228 &            pdfo &  2 &     32 &     22 &     yes &        -3.0 &          -3 &     0.02\\
 228 &           scipy &  2 &      6 &     13 &      no &        -1.0 &          -3 &      2.0\\
 231 & always feasible &  2 &    118 &      0 &     yes &         0.0 &         0.0 & 6.08e-07\\
-231 &           nomad &  2 &    331 &     14 &     yes &         0.0 &         0.0 &      0.0\\
+231 &           nomad &  2 &    307 &     13 &     yes &         0.0 &         0.0 &      0.0\\
 231 &            pdfo &  2 &   1000 &      0 &      no &        0.28 &         0.0 &     0.94\\
 231 &           scipy &  2 &    100 &      2 &     yes &    2.22e-06 &         0.0 &      0.0\\
 232 & always feasible &  2 &     37 &      0 &     yes &        -1.0 &          -1 & 9.45e-07\\
-232 &           nomad &  2 &      1 &      0 &      no &       -0.02 &          -1 &     1.59\\
+232 &           nomad &  2 &    384 &    319 &     yes &        -1.0 &          -1 &      0.0\\
 232 &            pdfo &  2 &     11 &     25 &     yes &        -1.0 &          -1 &      0.0\\
 232 &           scipy &  2 &     10 &      5 &      no &       -0.64 &          -1 &     0.46\\
 233 & always feasible &  2 &     59 &      0 &     yes &         0.0 &         0.0 & 9.18e-08\\
-233 &           nomad &  2 &   2145 &      0 &     yes &         0.0 &         0.0 & 1.49e-10\\
+233 &           nomad &  2 &    350 &      0 &     yes &         0.0 &         0.0 &      0.0\\
 233 &            pdfo &  2 &   1000 &      0 &      no &        0.01 &         0.0 &     0.22\\
 233 &           scipy &  2 &     26 &      0 &     yes &    3.89e-05 &         0.0 &     0.01\\
-249 &           nomad &  3 &    586 &     55 &     yes &         1.0 &           1 & 1.13e-08\\
+249 &           nomad &  3 &    595 &     64 &     yes &         1.0 &           1 & 2.09e-08\\
 249 &            pdfo &  3 &     80 &      3 &     yes &         1.0 &           1 &     0.03\\
 249 &           scipy &  3 &     33 &      0 &     yes &         1.0 &           1 &      0.0\\
 250 & always feasible &  3 &     79 &      0 &     yes &     -3300.0 &       -3300 & 4.52e-09\\
-250 &           nomad &  3 &      1 &      0 &      no &     -1000.0 &       -3300 &    11.22\\
+250 &           nomad &  3 &    319 &    137 &     yes &     -3300.0 &       -3300 &      0.0\\
 250 &            pdfo &  3 &     49 &     32 &      no &    -3262.39 &       -3300 &     0.72\\
 250 &           scipy &  3 &      7 &      1 &     yes &     -3300.0 &       -3300 & 1.46e-10\\
-251 & always feasible &  3 &    724 &      7 &     yes &    -3455.99 &       -3456 &     0.04\\
-251 &           nomad &  3 &      1 &      0 &      no &     -1000.0 &       -3456 &    14.28\\
+251 & always feasible &  3 &    766 &     12 &     yes &     -3456.0 &       -3456 &     0.03\\
+251 &           nomad &  3 &    457 &    426 &     yes &    -3455.95 &       -3456 &     0.08\\
 251 &            pdfo &  3 &     50 &     27 &      no &    -3065.52 &       -3456 &     9.32\\
 251 &           scipy &  3 &     11 &     21 &     yes &     -3456.0 &       -3456 & 9.75e-05\\
 253 & always feasible &  3 &    101 &      0 &     yes &       69.28 &       69.28 & 1.53e-07\\
-253 &           nomad &  3 &      1 &      0 &      no &       86.54 &       69.28 &     7.68\\
+253 &           nomad &  3 &    336 &    102 &     yes &       69.28 &       69.28 & 1.11e-07\\
 253 &            pdfo &  3 &     72 &     15 &     yes &       69.28 &       69.28 & 1.16e-05\\
 253 &           scipy &  3 &     10 &      2 &     yes &       69.28 &       69.28 &     0.01\\
-264 &           nomad &  4 &      1 &      0 &      no &         0.0 &         -44 &     2.45\\
+264 &           nomad &  4 &    551 &    597 &     yes &       -44.0 &         -44 &     0.01\\
 264 &            pdfo &  4 &     62 &     22 &      no &      -33.54 &         -44 &     1.32\\
 264 &           scipy &  4 &     15 &     24 &      no &      -38.16 &         -44 &     0.44\\
 268 & always feasible &  5 &    285 &      0 &     yes &   -9.09e-12 &         0.0 & 8.49e-06\\
-268 &           nomad &  5 &      1 &      0 &      no &     12048.0 &         0.0 &     5.83\\
+268 &           nomad &  5 &   1336 &    194 &     yes &   -1.64e-11 &         0.0 & 1.31e-05\\
 268 &            pdfo &  5 &     15 &     49 &      no &     12048.0 &         0.0 &     5.83\\
 268 &           scipy &  5 &     33 &     37 &     yes &    9.53e-07 &         0.0 &      0.0\\
 270 & always feasible &  5 &    217 &      0 &      no &    5.42e-12 &          -1 &     2.05\\
-270 &           nomad &  5 &      1 &      0 &      no &        12.5 &          -1 &     3.01\\
+270 &           nomad &  5 &   3393 &     67 &      no &         0.0 &          -1 &      2.0\\
 270 &            pdfo &  5 &     64 &     34 &      no &         0.0 &          -1 &     2.08\\
 270 &           scipy &  5 &      6 &     31 &      no &        12.5 &          -1 &     3.01\\
 315 & always feasible &  2 &     59 &      0 &     yes &        -0.8 &        -0.8 & 1.41e-06\\
-315 &           nomad &  2 &      1 &      0 &      no &         0.9 &        -0.8 &     1.84\\
+315 &           nomad &  2 &    466 &    376 &     yes &        -0.8 &        -0.8 &      0.0\\
 315 &            pdfo &  2 &     30 &     20 &      no &       -0.51 &        -0.8 &     0.65\\
 315 &           scipy &  2 &     14 &     14 &      no &       -0.67 &        -0.8 &     0.28\\
 323 & always feasible &  2 &     85 &     32 &     yes &         3.8 &         3.8 & 4.49e-04\\
-323 &           nomad &  2 &      1 &      0 &      no &         5.0 &         3.8 &     0.63\\
+323 &           nomad &  2 &    455 &    310 &     yes &         3.8 &         3.8 &      0.0\\
 323 &            pdfo &  2 &     12 &     31 &      no &         5.0 &         3.8 &     0.63\\
 323 &           scipy &  2 &      2 &     15 &      no &         5.0 &         3.8 &     0.63\\
 326 & always feasible &  2 &     44 &      5 &     yes &      -79.81 &      -79.81 & 3.93e-04\\
-326 &           nomad &  2 &      1 &      0 &      no &       -69.0 &      -79.81 &     1.45\\
+326 &           nomad &  2 &    403 &    417 &     yes &      -79.81 &      -79.81 & 3.93e-04\\
 326 &            pdfo &  2 &     28 &     20 &      no &      -78.86 &      -79.81 &      0.4\\
 326 &           scipy &  2 &      3 &     14 &      no &       -69.0 &      -79.81 &     1.45\\
+329 &           nomad &  2 &    517 &    571 &     yes &    -6961.81 &    -6961.81 &     0.01\\
 329 &            pdfo &  2 &    987 &     13 &      no &    -2679.64 &    -6961.81 &     5.13\\
 329 &           scipy &  2 &      3 &     17 &      no &    -1399.23 &    -6961.81 &     7.76\\
 331 & always feasible &  2 &     29 &      0 &     yes &        4.26 &        4.26 &      0.0\\
+331 &           nomad &  2 &    269 &      0 &     yes &        4.26 &        4.26 &      0.0\\
 331 &            pdfo &  2 &     63 &      3 &     yes &        4.26 &        4.26 &      0.0\\
 331 &           scipy &  2 &     18 &      0 &     yes &        4.26 &        4.26 &      0.0\\
+337 &           nomad &  3 &    361 &    305 &     yes &         6.0 &           6 &      0.0\\
+337 &            pdfo &  3 &     33 &     23 &      no &        9.54 &           6 &      0.8\\
 337 &           scipy &  3 &     12 &     11 &     yes &         6.0 &           6 & 3.21e-04\\
+339 & always feasible &  3 &    116 &      5 &     yes &        3.36 &        3.36 & 2.50e-04\\
+339 &           nomad &  3 &    328 &    269 &     yes &        3.36 &        3.36 &      0.0\\
 339 &            pdfo &  3 &    381 &     22 &      no &        3.51 &        3.36 &     0.71\\
 339 &           scipy &  3 &     29 &      8 &     yes &        3.36 &        3.36 & 2.66e-04\\
+341 & always feasible &  3 &    278 &     30 &     yes &      -22.63 &      -22.63 & 4.35e-04\\
+341 &           nomad &  3 &    426 &    433 &     yes &      -22.63 &      -22.63 &     0.02\\
 341 &            pdfo &  3 &     49 &     18 &      no &      -18.76 &      -22.63 &     1.36\\
 341 &           scipy &  3 &     12 &     29 &     yes &      -22.63 &      -22.63 & 8.80e-04\\
-342 &           nomad &  3 &      1 &      0 &      no &        -1.0 &      -22.63 &     3.65\\
+342 & always feasible &  3 &    273 &     29 &     yes &      -22.63 &      -22.63 & 4.32e-04\\
+342 &           nomad &  3 &    454 &    434 &     yes &      -22.63 &      -22.63 &     0.01\\
 342 &            pdfo &  3 &     45 &     20 &      no &      -18.73 &      -22.63 &     1.35\\
 342 &           scipy &  3 &     12 &     29 &     yes &      -22.63 &      -22.63 & 8.80e-04\\
+354 & always feasible &  4 &    148 &      0 &      no &        0.14 &        0.11 &     0.42\\
+354 &           nomad &  4 &    235 &    316 &      no &  -4750509.0 &        0.11 &    68.83\\
 354 &            pdfo &  4 &    288 &     28 &      no &        0.14 &        0.11 &     0.42\\
 354 &           scipy &  4 &      6 &      9 &      no &  -4750509.0 &        0.11 &    68.83\\
-359 &           nomad &  5 &      1 &      0 &      no & -2354161.41 &  -5280420.0 &    179.4\\
+359 & always feasible &  5 &   1625 &      0 &      no &  -3073582.8 &  -5280420.0 &   179.15\\
+359 &           nomad &  5 &   3199 &   3412 &      no & -5732790.82 &  -5280420.0 &   411.64\\
 359 &            pdfo &  5 &     58 &     41 &      no & -2842012.23 &  -5280420.0 &    179.5\\
 359 &           scipy &  5 &      6 &     16 &      no & -2354161.43 &  -5280420.0 &    179.4
+\end{longtable}
+\end{center}
+\end{scriptsize}
+
+
+
+\begin{scriptsize}
+\begin{center}
+\begin{longtable}{ccccccc}
+\caption{Numerical Results for Non-linear Algorithm Variants} \\
+\label{nonlinear_variants_results}
+  N &       algorithm &                                    params & n & N succ & N fail & optimal\\
+ 12 & always feasible &                              basis=linear & 2 &     76 &     30 &     yes\\
+ 12 & always feasible &                   on-empty-sample=recover & 2 &    234 &     65 &     yes\\
+ 12 & always feasible &                     sr-strategy=spherical & 2 &    256 &     66 &     yes\\
+ 12 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     41 &     28 &     yes\\
+ 12 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     44 &     34 &     yes\\
+ 12 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    350 &    313 &     yes\\
+ 24 & always feasible &                                           & 2 &     44 &      0 &     yes\\
+ 24 & always feasible &                              basis=linear & 2 &     43 &     13 &     yes\\
+ 24 & always feasible &                   on-empty-sample=recover & 2 &     84 &     11 &     yes\\
+ 24 & always feasible &                     sr-strategy=spherical & 2 &     73 &     12 &     yes\\
+ 24 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     74 &      2 &     yes\\
+ 24 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     74 &      2 &     yes\\
+ 24 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     71 &      4 &     yes\\
+ 57 & always feasible &                                           & 2 &    642 &      0 &      no\\
+215 & always feasible &                              basis=linear & 2 &    541 &    199 &      no\\
+215 & always feasible &                   on-empty-sample=recover & 2 &    138 &     29 &     yes\\
+215 & always feasible &                     sr-strategy=spherical & 2 &    117 &     28 &     yes\\
+215 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     53 &     11 &     yes\\
+215 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     55 &     16 &     yes\\
+215 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     87 &     29 &     yes\\
+218 & always feasible &                                           & 2 &    100 &     31 &     yes\\
+218 & always feasible &                              basis=linear & 2 &     57 &     31 &     yes\\
+218 & always feasible &                   on-empty-sample=recover & 2 &    169 &     37 &     yes\\
+218 & always feasible &                     sr-strategy=spherical & 2 &    157 &     41 &     yes\\
+218 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     96 &     24 &     yes\\
+218 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    112 &     23 &     yes\\
+218 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    127 &     26 &     yes\\
+223 & always feasible &                                           & 2 &    167 &     12 &     yes\\
+223 & always feasible &                              basis=linear & 2 &    598 &    188 &     yes\\
+223 & always feasible &                   on-empty-sample=recover & 2 &   1033 &    188 &      no\\
+223 & always feasible &                     sr-strategy=spherical & 2 &    992 &    188 &      no\\
+223 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    117 &     35 &     yes\\
+223 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    133 &     42 &     yes\\
+223 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    115 &     24 &     yes\\
+224 & always feasible &                                           & 2 &     43 &      4 &     yes\\
+224 & always feasible &                              basis=linear & 2 &    488 &    154 &     yes\\
+224 & always feasible &                   on-empty-sample=recover & 2 &     86 &     17 &     yes\\
+224 & always feasible &                     sr-strategy=spherical & 2 &     91 &     18 &     yes\\
+224 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    128 &     51 &     yes\\
+224 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    122 &     54 &     yes\\
+224 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    344 &    308 &     yes\\
+226 & always feasible &                                           & 2 &     58 &      7 &     yes\\
+227 & always feasible &                                           & 2 &     33 &      0 &     yes\\
+228 & always feasible &                                           & 2 &     42 &      0 &     yes\\
+228 & always feasible &                              basis=linear & 2 &    532 &    197 &      no\\
+228 & always feasible &                   on-empty-sample=recover & 2 &     80 &     17 &     yes\\
+228 & always feasible &                     sr-strategy=spherical & 2 &     74 &     17 &     yes\\
+228 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     62 &     20 &     yes\\
+228 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     69 &     18 &     yes\\
+228 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     58 &      3 &     yes\\
+231 & always feasible &                                           & 2 &    118 &      0 &     yes\\
+231 & always feasible &                              basis=linear & 2 &    844 &      0 &      no\\
+231 & always feasible &                   on-empty-sample=recover & 2 &    126 &      1 &     yes\\
+231 & always feasible &                     sr-strategy=spherical & 2 &    160 &      0 &     yes\\
+231 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    157 &      0 &     yes\\
+231 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    157 &      0 &     yes\\
+231 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    165 &      0 &     yes\\
+232 & always feasible &                                           & 2 &     37 &      0 &     yes\\
+233 & always feasible &                                           & 2 &     59 &      0 &     yes\\
+233 & always feasible &                              basis=linear & 2 &    841 &      0 &      no\\
+233 & always feasible &                   on-empty-sample=recover & 2 &     68 &      0 &     yes\\
+233 & always feasible &                     sr-strategy=spherical & 2 &     66 &      0 &     yes\\
+233 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     68 &      0 &     yes\\
+233 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     68 &      0 &     yes\\
+233 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     68 &      0 &     yes\\
+315 & always feasible &                                           & 2 &     59 &      0 &     yes\\
+315 & always feasible &                              basis=linear & 2 &     50 &     10 &     yes\\
+315 & always feasible &                   on-empty-sample=recover & 2 &     90 &      9 &     yes\\
+315 & always feasible &                     sr-strategy=spherical & 2 &     84 &     12 &     yes\\
+315 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     78 &      2 &     yes\\
+315 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     84 &      2 &     yes\\
+315 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     80 &      5 &     yes\\
+323 & always feasible &                                           & 2 &     85 &     32 &     yes\\
+323 & always feasible &                              basis=linear & 2 &    570 &    197 &      no\\
+323 & always feasible &                   on-empty-sample=recover & 2 &   1026 &    199 &      no\\
+323 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     48 &     30 &     yes\\
+323 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     43 &     22 &     yes\\
+323 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     74 &     28 &     yes\\
+326 & always feasible &                                           & 2 &     44 &      5 &     yes\\
+331 & always feasible &                                           & 2 &     29 &      0 &     yes
 \end{longtable}
 \end{center}
 \end{scriptsize}

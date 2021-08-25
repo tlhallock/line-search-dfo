@@ -7,7 +7,7 @@ and reliability based optimization \cite{Gao2017}.
 
 As the number of applications grows, so do the number of Derivative-free algorithms.
 Most of these algorithms fall into two main categories:  direct-search methods and model-based methods.
-Direct-search methods use comparatively simple strategies to explore the solution space 
+Direct-search methods use comparatively simple strategies to explore the solution space often
 using only the relative ranks of function values rather than their numerical values.
 A classic example is the popular Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} for unconstrained optimization.
 
@@ -15,8 +15,8 @@ Model-based methods guide the search with approximate derivative information fro
 Our work is model-based.
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
-\[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}(x^{(k)}_s) \\ 
-\st & x^{(k)}+s \in \mathcal{F}_k \\
+\[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}(\xk + s) \\ 
+\st & \xk+s \in \feasiblek\\
 & \norm{s} \le \Delta_k
 \end{array} \]
 where $m_f^{(k)}$ is a model function approximating the objective $f$,   $\dk$ is the trust region radius,  
@@ -89,7 +89,7 @@ Once the criticality measure has reached a small enough threshold $\tolcrit > 0$
 %In the presence of convex constraints, 
 If the feasible region $\feasible$ is convex,  a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{ConnGoulToin00} criticality measure is given by
 \begin{align*}
-\chi^{(k)}(x) = \left\|\xk - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
+\chi(x) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
 If the feasible region is not convex, the projection operation is not well-defined, so this criticality measure is not helpful.   Moreover,  even with a convex feasible region, we need a way to determine the projection, so we prefer a criticality measure based on the  functions defining the constraints.   In particular, for 
 a first order criticality measure at $\xk$, we define
@@ -98,10 +98,10 @@ a first order criticality measure at $\xk$, we define
 \end{align}
 and use
 \begin{align}
-\chi_c^{(k)}(x) = \left\|\xk - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
+\chi_c^{(k)}(x) = \left\|x - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
 \end{align}
 
-Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the Karush-Kuhn-Tucker conditions.
+Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the first order Karush-Kuhn-Tucker conditions.
 % This condition is necessary under regularity assumptions and with convex 
 % For a convex problem convex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
 Unfortunately,  without derivatives information, we cannot calculate $\chi_c^{(k)}$ directly, so in our algorithms we approximate it with
@@ -222,13 +222,13 @@ In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ 
 
 
 
-\section{Assessing Model Accuracy and Radius Management}
+\section{Assessing Model Accuracy and Trust Region Radius Management}
 \label{rhosection}
 In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
 To test the accuracy, we calculate a quantity
 \begin{align}
 \label{define_rhok}
-\rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)}
+\rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)},
 \end{align}
 which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.  If $\rk$ is negative, the trial point is rejected and the trust region radius is decreased.   On the other hand, if the trial point is accepted, the trust region radius for the next iteration may still be decreased since 
 a small value of $\rk$ implies that the model functions are not sufficiently accurate.   For larger values of $\rk$ the trial point is accepted and the trust region radius may be increased.
@@ -250,7 +250,7 @@ That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\o
 during some iterations in which $\rk > \gammabi$.
 
 
-\section{Interpolation}
+\section{Interpolation Based Models}
 \label{interpolation} 
 Model-based methods for derivative-free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
@@ -281,8 +281,10 @@ V=M(\Phi,Y) :=
 \end{align}
 
 
-The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.  In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
-However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, the model's approximation may become inaccurate.
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.
+In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to the basis functions $\phi_i$. 
+However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, 
+the model's approximation may become inaccurate.
 
 
 \section{Sample set geometry}
@@ -290,7 +292,7 @@ However, even when $V$ is non-singular but ``close" to singular, as measured by 
 The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
 
 In the case of polynomial model functions, a careful analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
-Let the space of polynomials with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
+Let the space of polynomials on $\Rn$ with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
 The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
 \begin{align}
 l_i(y^j) = \delta_{i,j}
@@ -339,7 +341,7 @@ $B \subset\Rn$ if and only if the Lagrange polynomials $l_i$ associated with $Y$
 In the case of interpolation over the quadratic polynomials, 
 $ \mathcal{P}^2_n$, we say that $Y$ is \emph{$\Lambda$-poised for quadratic interpolation}.
 
-The concept of $\Lambda$-poisedness allows us to establish the following error bounds, as shown in 
+The concept of $\Lambda$-poisedness yields the following error bounds, as shown in 
  \cite[Theorem 3.16]{introduction_book}:
 
 \begin{theorem}
@@ -349,7 +351,7 @@ Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\fr
 \begin{align}
 \|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_hessian}\\
 \|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_gradient} \\
-|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta). \label{error_in_function} 
+|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_function} 
 \end{align}
 where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 \end{theorem}
@@ -497,7 +499,7 @@ However, for constrained optimization, it is useful to distinguish between the t
 
 
 
-The sample region is where the algorithm chooses sample points: it constrains sample points to ensure their feasibility.
+The sample region is where the algorithm chooses sample points, constraining them to ensure their feasibility.
 The search region is used as the feasible region for trust region subproblem.
 Both the $\sampletrk$ and the $\searchtrk$ lie within the {\em outer trust region}, 
 $\outertrk = B_{\infty}\left(\xk, \dk\right)$, which is an $L_{\infty}$-ball of radius $\dk$ centered at the current iterate $\xk$:

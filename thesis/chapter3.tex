@@ -135,7 +135,7 @@ are said to be a \textbf{suitable} if all of the following are satisfied:
 \item[1.] The ellipsoid $\ellipsek = \left\{x \in \Rn \bigg| \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}$ 
 satisfies $\ellipsek \subseteq \polyk$ as defined in \cref{polyhedron_k}
 \item[2.] The ellipsoid $\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T\qk\left(x - \ck\right) \le  \sdk^2 \right\}$ satisfies $\xk \in \scaledellipsek$.
-\item[3.] $\condition \left(\qk\right)$ is bounded independently of $k$.
+\item[3.] The condition number $\condition \left(\qk\right)$ is bounded independently of $k$.
 \end{itemize}
 \end{definition}
 
@@ -187,7 +187,7 @@ Namely, using $\lca$ and $\lcb$ from \cref{eq:DFO-linear}:
 
 \begin{assumption}
 \label{uniformly_bounded_hessians_of_f}
-The Hessian's of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that
+The Hessians of $f$ are uniformly bounded at each iterate. That is, there exists a constant $\beta \ge 1$ such that
 \begin{align*}
 \left\|\nabla^2 f\left(\xk\right)\right\| \le \beta - 1\quad \forall k \in \naturals.
 \end{align*}
@@ -234,7 +234,7 @@ The authors of \cite{Conejo:2013:GCT:2620806.2621814} also make four explicit as
 Their first assumption $H_1$ requires the function $f$ to be differentiable and its gradient $\nabla f$ to be Lipchitz continuous with constant $L > 0$ in $\domain$.
 We have assumed \cref{lipschitz_hessian} which is a strictly stronger assumption.
 As their second assumption $H_2$, they assume our \cref{lower_bound}.
-Their $H_3$ requires the Hessian's of $\mfk$ to be uniformly bounded.
+Their $H_3$ requires the Hessians of $\mfk$ to be uniformly bounded.
 That is, there exists a constant $\beta \ge 1$ such that
 \begin{align}
 \label{uniformly_bounded_hessians_of_mf}
@@ -362,7 +362,7 @@ This process is summarized within the following algorithm:
         Construct the tranformed sample set $\hat Y$ by computing $T\left(y^{(i)}\right)$ for each $y^{(i)} \in Y$ \\
         Call \cref{model_improving_algorithm} on this sample to produce an improved sample set $\hat Y '$.
         Construct the unshifted sample set $Y'$ by computing $T^{-1}\left(\hat y^{(i)}\right)$ for each $\hat y^{(i)} \in \hat Y'$.
-        \item[\textbf{Step 2}] \textbf{(Construct model functions)} \\
+        \item[\textbf{Step 2}] \textbf{(Construct Model Functions)} \\
         Evaluate $f$ at each $y^{(i)} \in Y'$, and construct $m_f$ with \cref{reg}
     \end{itemize}
 \end{algorithm}
@@ -756,8 +756,8 @@ For any iterate $k$, if there are no active constraints, $\activei\left(\xk\righ
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
-To make this precise, let and $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
-We define the set of ``most'' feasible direction from $x$, and quantify how feasible they with the definitions:
+To make this precise, let $\mathcal S \subseteq \{1, \ldots, m\}$ be arbitrary.
+We define the set of ``most'' feasible direction from $x$, and quantify how feasible they are with the definitions:
 \begin{align}
 \alphaone (\mathcal S) = \begin{cases}
 \argmax_{\|u\| = 1} \min_{i \in \mathcal S} -u^T{\lca}_i & \text{if} \; \mathcal S \ne \emptyset \\
@@ -835,7 +835,7 @@ If $\activei\left(\xk\right) = \emptyset$ during iteration $k$, then \cref{defin
 If $\activei\left(\xk\right) = \emptyset$, then we are free to use \cref{define_linear_trivial_ellipse}.
 This simplifies $\scaledellipsek$ to
 \begin{align*}
-\left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longleftrightarrow \left\|x - \xk\right\|^2 \le \dk^2
+\left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longleftrightarrow \left\|x - \xk\right\|^2 \le \dk^2.
 \end{align*}
 Because $\ellipsek$ is then a sphere within the outer trust region, $\ellipsek \subseteq \polyk$.
 Because the sphere $\scaledellipsek$ is centered at $\xk$, $\xk \in \scaledellipsek$.
@@ -867,7 +867,7 @@ Using \cref{polyhedron_k}, we can write this as
 \begin{align*}
 -{\lca}^T_i\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0  \Longrightarrow \min_{i \in \activei(x_0)} -{\lca}_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
 \end{align*}
-Using this along with definitions of $\alphaone$, $\alphatwo$, and $\alphathree$ in \cref{define_alpha_one}, \cref{define_alpha_two}, and \cref{define_alpha_three}; we see
+Using this along with the definitions of $\alphaone$, $\alphatwo$, and $\alphathree$ in \cref{define_alpha_one}, \cref{define_alpha_two}, and \cref{define_alpha_three}; we see
 \begin{align*}
 \alphathree(x_0) = \alphatwo\left(\activei(x_0)\right) = \max_{\|u\| = 1} \min_{i \in \activei(x_0)} -{\lca}_i^Tu
 \ge \min_{i \in \activei(x_0)} - {\lca}_i^T\frac {\bar x - x_0}{\|\bar x - x_0\|} > 0.
@@ -888,7 +888,7 @@ There exists an $\epsilon_{\alpha} > 0$ such that $\alphak \ge \epsilon_{\alpha}
 \end{lemma}
 \begin{proof}
 Let $\activei$ be defined by \cref{define_activei}.
-Because there are only $m$ constraints, each $\activei(x)$ is one of the only $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$.
+Because there are only $m$ constraints, each $\activei(x)$ is one of the $2^m$ subsets of  $\{1, 2, 3, \ldots, m\}$.
 This means that $\alphaone$, $\alphatwo$, and $\alphak$ as defined by \cref{define_alpha_one}, \cref{define_alpha_two}, and \cref{define_alpha_k} can only take on at most $1 + 2^m$ values.
 By \cref{alphas_are_positive}, we know that each of these values must be positive.
 Thus, we are free to choose $\epsilon_{\alpha}$ to be the smallest of these values.
@@ -906,7 +906,7 @@ Namely, for any scalar $\pi$, direction $u$, and point $c$, we define the cone
 \begin{align}
 \mathcal C\left(\pi, u, c\right) = \left\{c + t u + s \in \Rn | \; s^Tu= 0, t \ge 0, \|s\| \le \pi t\right\}.
 \end{align}
-We can use this to define an shifted and unshifted cone about the point $\xk$ along a direction $\uk$:
+We can use this to define shifted and unshifted cones about the point $\xk$ along a direction $\uk$:
 \begin{align}
 \shiftedcone = \mathcal C\left(\alphak, e_1, 0\right), \label{defineshiftedcone} \\
 \unshiftedcone = \mathcal C\left(\alphak, \uk, \xk\right). \label{defineunshiftedcone}
@@ -1179,7 +1179,7 @@ Let $\activei$ and ${\alphak}$ be defined by \cref{define_activei} and \cref{def
 Suppose that \cref{interior_point} holds.
 
 For some iteration $k$, if $\activei \ne \emptyset$, then the ellipsoid defined by \cref{define_linear_nontrival_ellipsoid}
-is suitable according to definition \cref{define_suitable_ellipsoid}.
+is suitable according to \cref{define_suitable_ellipsoid}.
 
 % For iteration $k$, if ${\alphak} > 0$, then there exists a suitable ellipsoid for iteration $k$ according to .
 \end{lemma}
@@ -1196,7 +1196,7 @@ be defined as in
 \cref{definefeasibleellipsoid}, and
 \cref{definescaledfeasibleellipsoid}
 respectively. 
-Observe \cref{define_suitable_ellipsoid} with \cref{define_linear_nontrival_ellipsoid} defines  $\ellipsek$ and $\scaledellipsek$ to be
+Observe that \cref{define_suitable_ellipsoid} with \cref{define_linear_nontrival_ellipsoid} defines  $\ellipsek$ and $\scaledellipsek$ to be
 \begin{align*}
 \begin{array}{cccc}
 \ellipsek &=& \left\{x \in \Rn \bigg | f_e\left(\alphak, \sdk, \frac 1 2 \sdk^2; T_k(x)\right) \le 0\right\}, &\quad \textrm{and}  \\
@@ -1275,7 +1275,7 @@ Alternatively, it could introduce its own bound.
 We found it simplest to parameterize ellipsoids by their Cholesky factorization $\qk = LL^T$.
 Namely, we parameterized the search space in terms of a lower triangular matrix $L$, and required the diagonal entries to be positive.
 To ensure a bounded condition number, we constrain  $\max_{i\in[n]} \le \epsilon_{\alpha} \min_{i \in [n]}$.
-Then requiring a 
+% Then requiring a 
 
 One potential difficulty created by moving the ellipsoid center $\ck$ is that the current iterate $\xk$ may not lie within near the resulting ellipsoid.   
 The pitfall is that the model function may lose accuracy near the current iterate.
@@ -1294,9 +1294,9 @@ In order to include the original point as a constraint, we add a constraint of t
 Constraints of this nature make finding the ellipsoid much more expensive:
 the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
-\paragraph*{Increase the radius.}
+\paragraph*{Increase the Radius.}
 An alternative is to scale $\qk$ by a constant.
-We use the scaling factor $\sdk$ defined by
+We use the scaling factor $\sdk > 0$ defined by
 \begin{align*}
 \sdk = \max \left\{1, \sqrt{\left(\xk - \ck \right)^T \qk \left(\xk - \ck \right)} \right\}
 \end{align*}
@@ -1331,7 +1331,7 @@ $\polyk := \left\{x \in \Rn | \lca x\le \lcb,   \xki - \dk \le x_i \le \xki + \d
 % defined in \cref{define_outer_trust_region}.
 
 This is not the only reasonable approach: maximizing ensures a larger region for which the models will be accurate, 
-but we are most interested in decent directions.
+but we are most interested in descent directions.
 Namely, we may wish to use previously evaluated points to provide a hint of where the next ellipsoid should be.
 Another consideration is where points have been evaluated: it may be more economical to choose a smaller ellipsoid that can reuse existing points.
 However, in this section,  we consider the problem of choosing $\qk$ and $\sdk$ to maximize the volume of $\ellipsek \subseteq \polyk$ given a fixed center $\ck$.
@@ -1376,13 +1376,13 @@ Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maxi
 
 \begin{proof}
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
-Because $Q$ is positive definite, $f$ has a unique minimum on each hyperplane $A_i d = b_i$.
+Because $Q$ is positive definite, $f$ has a unique minimum on each hyperplane $\left\{d \in \Rn | \; A_i d = b_i\right\}$.
 Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i\in[m]$.
 By the first-order optimality conditions, there exists a $\lambda \in \Rm$ such that for each $i\in[m]$,
 \begin{align*}
 \nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i.
 \end{align*}
-Since $A$ is invertible, we have $d^{(i)} = \lambda_i Q^{-1}A_i$. 
+Since $Q$ is invertible, we have $d^{(i)} = \lambda_i Q^{-1}A_i$. 
 We also know that $A_i^T d^{(i)} = \bar{b_i}$, so 
 \begin{align*}
 A_i^T \lambda_i Q^{-1}A_i = \bar{b_i} \Longrightarrow
@@ -1452,7 +1452,7 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
     \includegraphics[width=200px]{images/small_sample_region.png}
     \caption[An example of constraints limiting sample point choices.]
     	{An example of constraints limiting sample point choices.
-    	If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set.
+    	If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set for sufficiently small $\Lambda$.
     }
     \label{lspc}
 \end{figure}
@@ -1618,7 +1618,7 @@ This has the advantage that it allows for the largest volume.
 However, one problem with this search is that it can force the trust region away from the descent direction.
 Notice that in \cref{ellipse_runs_away}, although the ellipsoid found has larger volume than before being shifted, 
 this ellipsoid contains points farther from the corner that happens to contain the trust region's minimizer.
-Within the results, these algorithms are described as ``ellipse everywhere''.
+Within the numerical results, these algorithms are described as ``ellipse everywhere''.
 
 The following section addresses this problem by proposing a path search method for choosing the ellipsoid center.
 
@@ -1683,7 +1683,7 @@ The algorithm then repeats the following process for $i$ from $0$ to $n_{\text{p
 First, compute the set of nearest constraints, where the distance from the current point the point $s_i$ to each constraint $A_j$: 
 is given by $d_j = b - A_j x$.
 Recall that the rows of $A$ are normalized: $\left\|A_i\right\| = 1$.
-While finding the next point $s_{i+1}$, let  $E$ be the indices of $A$ whose constraints are the equidistant and nearest to $s_i$:
+While finding the next point $s_{i+1}$, let  $E$ be the indices of $A$ whose constraints are equidistant and nearest to $s_i$:
 $\{j \in [m] | d_j = \min_{l \in [m]} d_l\}$.
 Let the remaining indices be $R = [m] \setminus E$.
 The algorithm chooses a search direction $p = {A_E}^Tr$ as a linear combination of the normal vectors of the nearest constraints.
@@ -1697,7 +1697,7 @@ We can travel along this ray until we reach a point that is the same distance to
 By travelling a distance $t$, we see that the $j$-th constraint becomes active when
 $A_j (s_i + t p) = b_j \Longrightarrow t = \frac{b_j - A_j s_i}{A_jp}$
 so that we can travel by 
-$t = \argmin_{j \in R} \left\{\frac{b_j - A_j s_i}{A_jp}  \right\}. $
+$t \in \argmin_{j \in R} \left\{\frac{b_j - A_j s_i}{A_jp}  \right\}. $
 We set $s_{i+1} = s_{i} + t p$.
 This process is described in \cref{segment_construction}
 
@@ -1725,7 +1725,7 @@ Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order fo
             
         \item[\textbf{Step 2}] \textbf{(Compute search segment)} \\
         	Compute the search direction $p = {A_E}^T\left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_{i-1}\right)$
-        	and distance $t = \argmin_{j \in R} \left\{\frac{b_j - A_j s_{i-1}}{A_jp}  \right\}$. \\
+        	and distance $t \in \argmin_{j \in R} \left\{\frac{b_j - A_j s_{i-1}}{A_jp}  \right\}$. \\
         	Set $s_i \gets s_{i-1} + tp$.
         	
         \item[\textbf{Step 4}] \textbf{(Repeat)} \\
@@ -1752,15 +1752,15 @@ Notice that with two line segments, the algorithm can already choose new centers
 %     	\emph{Short:} Why only considering the nearest constraint is not sufficient. 
 %     	\emph{Long:} On the left is the starting ellipsoid.
 %     	By choosing centers further away from only the nearest constraint, the ellipsoid becomes narrow as another constraint is limiting the length of the second axis.
-    Ellipse runs away from the optimizer}
+    Ellipse runs away from the trust region minimizer}
     \label{line_can_run}
 \end{figure}
 
 
 \paragraph*{Circumscribed ellipse}
 
-We also implemented a variant of the algorithm in which the sample region was the smallest volume ellipsoid to contain the feasible region.
-Notice that necessarily includes points that are outside the current trust region and likely infeasible points.
+We also implemented a variant of the algorithm in which the sample region is a smallest volume ellipsoid to contain the feasible region.
+Notice the ellipsoid necessarily includes points that are outside the current trust region and likely infeasible points.
 Thus, both the trust region and linear constraints have to be added to the optimization problem defining the replacement point while computing the Lagrange polynomials.
 For more details about this modified model improvement algorithm, see \cref{sec:polyhedral}.
 
@@ -1770,7 +1770,7 @@ We let $f(x) = \epsilon x + (1-\epsilon)(y - \alpha x \sin(\gamma x))^2$ for a f
 $x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
 We summarize the number of function evaluations and iterations taken within \cref{linear_pathological_results}.
 
-In general, the linear models converge more quickly than quadratic models.
+In general, the linear models converge more quickly with fewer evaluations than quadratic models.
 We see that the method with the fewest iterations and function evaluations is the linear polyhedral shape.
 This is likely because the polyhedral shape is allowed to search the entire outer trust region.
 This also explains why the circumscribed ellipse and maximum volume simplex also perform well.
@@ -1801,7 +1801,7 @@ The $y$ axis of a performance plot is the performance profile, and the $x$ axis 
 Note that algorithms with high performance profiles for small values of $\alpha$ solved a large number of problems the most with the fewest evaluations, while algorithms that eventually reach high performance profiles with larger values of $\alpha$ solve a large set of problems.
 The performance profile for the Hock-Schittkowski problem set is given in figure \cref{performance_profile_image}.
 
-
+	
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/performance_profile_plot.png}
