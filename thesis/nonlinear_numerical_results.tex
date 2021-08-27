@@ -208,87 +208,93 @@
 \begin{longtable}{ccccccc}
 \caption{Numerical Results for Non-linear Algorithm Variants} \\
 \label{nonlinear_variants_results}
-  N &       algorithm &                                    params & n & N succ & N fail & optimal\\
- 12 & always feasible &                              basis=linear & 2 &     76 &     30 &     yes\\
- 12 & always feasible &                   on-empty-sample=recover & 2 &    234 &     65 &     yes\\
- 12 & always feasible &                     sr-strategy=spherical & 2 &    256 &     66 &     yes\\
- 12 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     41 &     28 &     yes\\
- 12 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     44 &     34 &     yes\\
- 12 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    350 &    313 &     yes\\
- 24 & always feasible &                                           & 2 &     44 &      0 &     yes\\
- 24 & always feasible &                              basis=linear & 2 &     43 &     13 &     yes\\
- 24 & always feasible &                   on-empty-sample=recover & 2 &     84 &     11 &     yes\\
- 24 & always feasible &                     sr-strategy=spherical & 2 &     73 &     12 &     yes\\
- 24 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     74 &      2 &     yes\\
- 24 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     74 &      2 &     yes\\
- 24 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     71 &      4 &     yes\\
- 57 & always feasible &                                           & 2 &    642 &      0 &      no\\
-215 & always feasible &                              basis=linear & 2 &    541 &    199 &      no\\
-215 & always feasible &                   on-empty-sample=recover & 2 &    138 &     29 &     yes\\
-215 & always feasible &                     sr-strategy=spherical & 2 &    117 &     28 &     yes\\
-215 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     53 &     11 &     yes\\
-215 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     55 &     16 &     yes\\
-215 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     87 &     29 &     yes\\
-218 & always feasible &                                           & 2 &    100 &     31 &     yes\\
-218 & always feasible &                              basis=linear & 2 &     57 &     31 &     yes\\
-218 & always feasible &                   on-empty-sample=recover & 2 &    169 &     37 &     yes\\
-218 & always feasible &                     sr-strategy=spherical & 2 &    157 &     41 &     yes\\
-218 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     96 &     24 &     yes\\
-218 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    112 &     23 &     yes\\
-218 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    127 &     26 &     yes\\
-223 & always feasible &                                           & 2 &    167 &     12 &     yes\\
-223 & always feasible &                              basis=linear & 2 &    598 &    188 &     yes\\
-223 & always feasible &                   on-empty-sample=recover & 2 &   1033 &    188 &      no\\
-223 & always feasible &                     sr-strategy=spherical & 2 &    992 &    188 &      no\\
-223 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    117 &     35 &     yes\\
-223 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    133 &     42 &     yes\\
-223 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    115 &     24 &     yes\\
-224 & always feasible &                                           & 2 &     43 &      4 &     yes\\
-224 & always feasible &                              basis=linear & 2 &    488 &    154 &     yes\\
-224 & always feasible &                   on-empty-sample=recover & 2 &     86 &     17 &     yes\\
-224 & always feasible &                     sr-strategy=spherical & 2 &     91 &     18 &     yes\\
-224 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    128 &     51 &     yes\\
-224 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    122 &     54 &     yes\\
-224 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    344 &    308 &     yes\\
-226 & always feasible &                                           & 2 &     58 &      7 &     yes\\
-227 & always feasible &                                           & 2 &     33 &      0 &     yes\\
-228 & always feasible &                                           & 2 &     42 &      0 &     yes\\
-228 & always feasible &                              basis=linear & 2 &    532 &    197 &      no\\
-228 & always feasible &                   on-empty-sample=recover & 2 &     80 &     17 &     yes\\
-228 & always feasible &                     sr-strategy=spherical & 2 &     74 &     17 &     yes\\
-228 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     62 &     20 &     yes\\
-228 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     69 &     18 &     yes\\
-228 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     58 &      3 &     yes\\
-231 & always feasible &                                           & 2 &    118 &      0 &     yes\\
-231 & always feasible &                              basis=linear & 2 &    844 &      0 &      no\\
-231 & always feasible &                   on-empty-sample=recover & 2 &    126 &      1 &     yes\\
-231 & always feasible &                     sr-strategy=spherical & 2 &    160 &      0 &     yes\\
-231 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &    157 &      0 &     yes\\
-231 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &    157 &      0 &     yes\\
-231 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &    165 &      0 &     yes\\
-232 & always feasible &                                           & 2 &     37 &      0 &     yes\\
-233 & always feasible &                                           & 2 &     59 &      0 &     yes\\
-233 & always feasible &                              basis=linear & 2 &    841 &      0 &      no\\
-233 & always feasible &                   on-empty-sample=recover & 2 &     68 &      0 &     yes\\
-233 & always feasible &                     sr-strategy=spherical & 2 &     66 &      0 &     yes\\
-233 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     68 &      0 &     yes\\
-233 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     68 &      0 &     yes\\
-233 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     68 &      0 &     yes\\
-315 & always feasible &                                           & 2 &     59 &      0 &     yes\\
-315 & always feasible &                              basis=linear & 2 &     50 &     10 &     yes\\
-315 & always feasible &                   on-empty-sample=recover & 2 &     90 &      9 &     yes\\
-315 & always feasible &                     sr-strategy=spherical & 2 &     84 &     12 &     yes\\
-315 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     78 &      2 &     yes\\
-315 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     84 &      2 &     yes\\
-315 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     80 &      5 &     yes\\
-323 & always feasible &                                           & 2 &     85 &     32 &     yes\\
-323 & always feasible &                              basis=linear & 2 &    570 &    197 &      no\\
-323 & always feasible &                   on-empty-sample=recover & 2 &   1026 &    199 &      no\\
-323 & always feasible & tr-heuristics=['convex-penalty-buffered'] & 2 &     48 &     30 &     yes\\
-323 & always feasible &        tr-heuristics=['penalty-buffered'] & 2 &     43 &     22 &     yes\\
-323 & always feasible &      tr-heuristics=['quadratic-buffered'] & 2 &     74 &     28 &     yes\\
-326 & always feasible &                                           & 2 &     44 &      5 &     yes\\
-331 & always feasible &                                           & 2 &     29 &      0 &     yes
+  N &       algorithm &                                    params & N succ & N fail & optimal\\
+ 12 & always feasible &                              basis=linear &     76 &     30 &     yes\\
+ 12 & always feasible &                   on-empty-sample=recover &    234 &     65 &     yes\\
+ 12 & always feasible &                     sr-strategy=spherical &    256 &     66 &     yes\\
+ 12 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     41 &     28 &     yes\\
+ 12 & always feasible &        tr-heuristics=['penalty-buffered'] &     44 &     34 &     yes\\
+ 12 & always feasible &      tr-heuristics=['quadratic-buffered'] &    350 &    313 &     yes\\
+ 24 & always feasible &                                           &     44 &      0 &     yes\\
+ 24 & always feasible &                              basis=linear &     43 &     13 &     yes\\
+ 24 & always feasible &                   on-empty-sample=recover &     84 &     11 &     yes\\
+ 24 & always feasible &                     sr-strategy=spherical &     73 &     12 &     yes\\
+ 24 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     74 &      2 &     yes\\
+ 24 & always feasible &        tr-heuristics=['penalty-buffered'] &     74 &      2 &     yes\\
+ 24 & always feasible &      tr-heuristics=['quadratic-buffered'] &     71 &      4 &     yes\\
+ 57 & always feasible &                                           &    642 &      0 &      no\\
+ 57 & always feasible &                              basis=linear &     28 &      0 &      no\\
+ 57 & always feasible &                   on-empty-sample=recover &   1013 &      0 &      no\\
+ 57 & always feasible &                     sr-strategy=spherical &    903 &      0 &      no\\
+ 57 & always feasible & tr-heuristics=['convex-penalty-buffered'] &   1016 &      0 &      no\\
+ 57 & always feasible &        tr-heuristics=['penalty-buffered'] &   1016 &      0 &      no\\
+ 57 & always feasible &      tr-heuristics=['quadratic-buffered'] &   1016 &      0 &      no\\
+215 & always feasible &                              basis=linear &    541 &    199 &      no\\
+215 & always feasible &                   on-empty-sample=recover &    138 &     29 &     yes\\
+215 & always feasible &                     sr-strategy=spherical &    117 &     28 &     yes\\
+215 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     53 &     11 &     yes\\
+215 & always feasible &        tr-heuristics=['penalty-buffered'] &     55 &     16 &     yes\\
+215 & always feasible &      tr-heuristics=['quadratic-buffered'] &     87 &     29 &     yes\\
+218 & always feasible &                                           &    100 &     31 &     yes\\
+218 & always feasible &                              basis=linear &     57 &     31 &     yes\\
+218 & always feasible &                   on-empty-sample=recover &    169 &     37 &     yes\\
+218 & always feasible &                     sr-strategy=spherical &    157 &     41 &     yes\\
+218 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     96 &     24 &     yes\\
+218 & always feasible &        tr-heuristics=['penalty-buffered'] &    112 &     23 &     yes\\
+218 & always feasible &      tr-heuristics=['quadratic-buffered'] &    127 &     26 &     yes\\
+223 & always feasible &                                           &    167 &     12 &     yes\\
+223 & always feasible &                              basis=linear &    598 &    188 &     yes\\
+223 & always feasible &                   on-empty-sample=recover &   1033 &    188 &      no\\
+223 & always feasible &                     sr-strategy=spherical &    992 &    188 &      no\\
+223 & always feasible & tr-heuristics=['convex-penalty-buffered'] &    117 &     35 &     yes\\
+223 & always feasible &        tr-heuristics=['penalty-buffered'] &    133 &     42 &     yes\\
+223 & always feasible &      tr-heuristics=['quadratic-buffered'] &    115 &     24 &     yes\\
+224 & always feasible &                                           &     43 &      4 &     yes\\
+224 & always feasible &                              basis=linear &    488 &    154 &     yes\\
+224 & always feasible &                   on-empty-sample=recover &     86 &     17 &     yes\\
+224 & always feasible &                     sr-strategy=spherical &     91 &     18 &     yes\\
+224 & always feasible & tr-heuristics=['convex-penalty-buffered'] &    128 &     51 &     yes\\
+224 & always feasible &        tr-heuristics=['penalty-buffered'] &    122 &     54 &     yes\\
+224 & always feasible &      tr-heuristics=['quadratic-buffered'] &    344 &    308 &     yes\\
+226 & always feasible &                                           &     58 &      7 &     yes\\
+227 & always feasible &                                           &     33 &      0 &     yes\\
+228 & always feasible &                                           &     42 &      0 &     yes\\
+228 & always feasible &                              basis=linear &    532 &    197 &      no\\
+228 & always feasible &                   on-empty-sample=recover &     80 &     17 &     yes\\
+228 & always feasible &                     sr-strategy=spherical &     74 &     17 &     yes\\
+228 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     62 &     20 &     yes\\
+228 & always feasible &        tr-heuristics=['penalty-buffered'] &     69 &     18 &     yes\\
+228 & always feasible &      tr-heuristics=['quadratic-buffered'] &     58 &      3 &     yes\\
+231 & always feasible &                                           &    118 &      0 &     yes\\
+231 & always feasible &                              basis=linear &    844 &      0 &      no\\
+231 & always feasible &                   on-empty-sample=recover &    126 &      1 &     yes\\
+231 & always feasible &                     sr-strategy=spherical &    160 &      0 &     yes\\
+231 & always feasible & tr-heuristics=['convex-penalty-buffered'] &    157 &      0 &     yes\\
+231 & always feasible &        tr-heuristics=['penalty-buffered'] &    157 &      0 &     yes\\
+231 & always feasible &      tr-heuristics=['quadratic-buffered'] &    165 &      0 &     yes\\
+232 & always feasible &                                           &     37 &      0 &     yes\\
+233 & always feasible &                                           &     59 &      0 &     yes\\
+233 & always feasible &                              basis=linear &    841 &      0 &      no\\
+233 & always feasible &                   on-empty-sample=recover &     68 &      0 &     yes\\
+233 & always feasible &                     sr-strategy=spherical &     66 &      0 &     yes\\
+233 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     68 &      0 &     yes\\
+233 & always feasible &        tr-heuristics=['penalty-buffered'] &     68 &      0 &     yes\\
+233 & always feasible &      tr-heuristics=['quadratic-buffered'] &     68 &      0 &     yes\\
+315 & always feasible &                                           &     59 &      0 &     yes\\
+315 & always feasible &                              basis=linear &     50 &     10 &     yes\\
+315 & always feasible &                   on-empty-sample=recover &     90 &      9 &     yes\\
+315 & always feasible &                     sr-strategy=spherical &     84 &     12 &     yes\\
+315 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     78 &      2 &     yes\\
+315 & always feasible &        tr-heuristics=['penalty-buffered'] &     84 &      2 &     yes\\
+315 & always feasible &      tr-heuristics=['quadratic-buffered'] &     80 &      5 &     yes\\
+323 & always feasible &                                           &     85 &     32 &     yes\\
+323 & always feasible &                              basis=linear &    570 &    197 &      no\\
+323 & always feasible &                   on-empty-sample=recover &   1026 &    199 &      no\\
+323 & always feasible & tr-heuristics=['convex-penalty-buffered'] &     48 &     30 &     yes\\
+323 & always feasible &        tr-heuristics=['penalty-buffered'] &     43 &     22 &     yes\\
+323 & always feasible &      tr-heuristics=['quadratic-buffered'] &     74 &     28 &     yes\\
+326 & always feasible &                                           &     44 &      5 &     yes\\
+331 & always feasible &                                           &     29 &      0 &     yes
 \end{longtable}
 \end{center}
 \end{scriptsize}
