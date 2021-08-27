@@ -434,14 +434,16 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 \begin{frame}{Sufficient Reduction}
-\begin{itemize}
-\item To ensure the trial point is feasible, we limit the search trust region
-\item Well-known algorithms for computing an efficient trial points do not apply
-\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
-\color{red}
-\item Picture of its construction...
-\color{black}
-\end{itemize}
+	\begin{itemize}
+		\item To ensure the trial point is feasible, we limit the search trust region
+		\item Well-known algorithms for computing an efficient trial points do not apply
+		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
+		\item Altough we construct an efficient point, it requires a small $\Delta_k$.
+			Therefore, we must perform an explicit efficiency check within the algorithm.
+		\color{red}
+		\item Picture of its construction...
+		\color{black}
+	\end{itemize}
 % Could talk about the details here
 \end{frame}
 
