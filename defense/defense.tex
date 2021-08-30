@@ -47,7 +47,7 @@
 	\begin{itemize}
 		\item We develop an algorithm to find local optima of constrained problems
 		\item Derivatives not available, only function values
-		\item This algorithm is useful for problems where function values are not provided at infeasible points
+		\item This algorithm is designed for problems with unrelaxable constraints
 	\end{itemize}
 \end{frame}
 
@@ -86,7 +86,7 @@
 		\begin{itemize}
 			\item Needed strictly feasible sample sets within linear constraints
 		\end{itemize}
-		\item Extend this algorithm to Non-linear constraints
+		\item Extend this algorithm to non-linear constraints
 		\begin{itemize}
 			\item Account for uncertainty in constraint boundaries
 			\item No gaurantee of feasibility, just avoid infeasible evaluations
@@ -112,7 +112,7 @@
 		\item Approximate derivatives of $f$ and $c$ using model functions created from a sample set
 		\item We approximate $f$ using a second order model, meaning that we approximate:
 		\begin{itemize}
-			\item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
+			\item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \frac 1 2 \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
 			\item $\fhk \approx \nabla ^2 f(\xk)$
 			\item $\fgk \approx \nabla f(\xk)$
 			\item $\cgk \approx c_i(\xk)$
@@ -122,18 +122,36 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Model Fitting}
-% 	\begin{align*}
-% 		l_1(x) = -(x-1)(x+1), \;
-% 		l_2(x) = \frac 1 2 x(x+1), \;
-% 		l_3(x) = \frac 1 2 x(x-1) \\
-% 		f(x) = 3 + \sin(x) \quad
-% 		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
-% 	\end{align*}
-	\begin{center}
-		\includegraphics[width=250px]{images/lagrange_polynomials.png}
-	\end{center}
+\begin{frame}{Trust Region Subproblem}
+	\begin{itemize}
+		\item In each iteration, we attempt to solve the trust region subproblem to compute a step direction $s$
+
+		\begin{displaymath}
+\begin{array}{lrcc}
+min_s & \mk(\xk + s)   &	 &			\\
+s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
+	  &  s & \in & B_{\infty}(0, \dk).  \\
+\end{array}
+		\end{displaymath}
+		\item Replaced true functions with model functions
+		\item Added trust region constraint
+		\item The solution is then used as a trial point for the next iterate
+	\end{itemize}
 \end{frame}
+
+% % Remove this picture
+% \begin{frame}{Model Fitting}
+% % 	\begin{align*}
+% % 		l_1(x) = -(x-1)(x+1), \;
+% % 		l_2(x) = \frac 1 2 x(x+1), \;
+% % 		l_3(x) = \frac 1 2 x(x-1) \\
+% % 		f(x) = 3 + \sin(x) \quad
+% % 		m_f(x) = f(0)l_1(x) + f(1)l_2(x) + f(-1)l_3(x)
+% % 	\end{align*}
+% 	\begin{center}
+% 		\includegraphics[width=250px]{images/lagrange_polynomials.png}
+% 	\end{center}
+% \end{frame}
 
 
 \begin{frame}{Geometry of the Sample Set}
@@ -155,32 +173,15 @@
 \end{frame}
 
 
-\begin{frame}{Trust Region Subproblem}
-	\begin{itemize}
-		\item In each iteration, we attempt to solve the trust region subproblem to compute a step direction $s$
-
-		\begin{displaymath}
-\begin{array}{lrcc}
-min_s & \mk(\xk + s)   &	 &			\\
-s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
-	  &  s & \in & B_{\infty}(0, \dk).  \\
-\end{array}
-		\end{displaymath}
-		\item Replaced true functions with model functions
-		\item Added trust region constraint
-		\item The solution is then used as a trial point for the next iterate
-	\end{itemize}
-\end{frame}
 
 
 \begin{frame}{Criticality Measure}
 	\begin{itemize}
 % 		\item We had to modify the convergence analysis in a few significant ways
-		\item The criticality measure $\xi(x)$ measures how close to optimality a point can be
-		\item It is used within stopping criteria
-% 		\item One of these was within the criticality measure, $\xi(x)$
-		\item If $x$ satisfies the first order necessary conditions for optimality, $\xi(x) = 0$
-		\item We show that $\xi^{(k)} = \xi(\xk)$ converges to zero
+		\item The criticality measure $\chi\left(x\right)$ measures how close to optimality a point $x$ may be
+% 		\item One of these was within the criticality measure, $\chi(x)$
+		\item If $x$ satisfies the first order necessary conditions for optimality, then $\chi(x) = 0$
+		\item We show that $\chi^{(k)} = \chi\left(\xk\right)$ converges to zero
 		\item We use the projection of the negative gradient onto the constraints
 	\end{itemize}
 	\begin{center}
@@ -191,44 +192,6 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 
-\begin{frame}{Sufficient Reduction}
-	\setlength\itemsep{2em}
-	\begin{itemize}
-		\item Many derivative-free algorithms measure reduction with
-\begin{align*}
-	\rho_k = \frac{f\left(x^{(k)}\right) - f\left(x^{(k)}+s^{(k)}\right)}
-		{m_k\left(x^{(k)}\right) - m_k\left(x^{(k)}+s^{(k)}\right)}
-\end{align*}
-\color{red}
-		\item This quantity captures both the model's accuracy and reduction
-\color{black}
-		\item An algorithm can ensure sufficient reduction (large $\rho_k$) by
-		\begin{itemize}
-			\item producing trial points that expect reduction
-\begin{align*}
-	& m_f^{(k)}\left(x^{(k)}\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
-	& \ge c_1 \xi^{(k)} \min \left\{
-		\frac{\xi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
-		\Delta_k, 1\right\}
-\end{align*}
-			\item producing accurate models
-\begin{align*}
-		\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f\left(x^{(k)}\right)\| \le c_2 \Delta_k
-\end{align*}
-		\end{itemize}
-% 		
-% 		\color{red}
-% 		\item Derivative Free Algorithms require the trust region to go to zero
-% 		\item Helps determine new trust region radius
-% 		\begin{itemize}
-% 			\item If $\rho_k$ is small, $x^{(k+1)}=x^{(k)}$ (reject) and decrease radius
-% 			\item If $\rho_k$ is intermediate, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and decrease radius
-% 			\item If $\rho_k$ is large, $x^{(k+1)}=x^{(k)}+s^{(k)}$ (accept) and increase radius
-% 		\end{itemize}
-% 		\color{black}
-%		 \item There are several potential approaches for incorporating constraints
-	\end{itemize}
-\end{frame}
 
 
 
@@ -262,15 +225,52 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-\begin{frame}{Algorithm outline}
-	\begin{itemize}
-		\item Construct a model for the current point
-		\item Check optimality
-		\item Compute step
-		\item Evaluate trial
-		\item Check reduction and update radius
+\begin{frame}{Algorithm Assumptions}
+	\setlength\itemsep{2em}
+% 	\begin{itemize}
+% 		\item Many derivative-free algorithms measure reduction with
+% \begin{align*}
+% 	\rho_k = \frac{f\left(\xk\right) - f\left(\xk+s^{(k)}\right)}
+% 		{m_k\left(\xk\right) - m_k\left(\xk+s^{(k)}\right)}
+% \end{align*}
+% \color{red}
+% 		\item This quantity captures both the model's accuracy and reduction
+% \color{black}
+% 		\item An algorithm can ensure sufficient reduction (large $\rho_k$) by
+		\begin{itemize}
+			\item The algorithm can satisfy the efficiency condition if it produces trial points that reduce the objective's model:
+\begin{align*}
+	& m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
+	& \ge c_1 \chi^{(k)} \min \left\{
+		\frac{\chi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
+		\Delta_k, 1\right\}
+\end{align*}
+
+
+\begin{center}
+\includegraphics[width=120px]{images/sufficient_reduction.png}
+\end{center}
+
+			\item The accuracy condition ensures:
+\begin{align*}
+		\left\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f\left(x^{(k)}\right)\right\| \le c_2 \Delta_k
+\end{align*}
+		
+
+% 		
+% 		\color{red}
+% 		\item Derivative Free Algorithms require the trust region to go to zero
+% 		\item Helps determine new trust region radius
+% 		\begin{itemize}
+% 			\item If $\rho_k$ is small, $x^{(k+1)}=\xk$ (reject) and decrease radius
+% 			\item If $\rho_k$ is intermediate, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and decrease radius
+% 			\item If $\rho_k$ is large, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and increase radius
+% 		\end{itemize}
+% 		\color{black}
+%		 \item There are several potential approaches for incorporating constraints
 	\end{itemize}
 \end{frame}
+
 
 
 \begin{frame}{Feasible Derivative Free Trust Regions}
@@ -298,13 +298,24 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
+\begin{frame}{Algorithm outline}
+	\begin{itemize}
+		\item Construct a model for the current point
+		\item Check optimality
+		\item Compute step
+		\item Evaluate trial
+		\item Check reduction and update radius
+	\end{itemize}
+\end{frame}
+
+
 \begin{frame}{The Algorithm for Linear Constraints}
 	\begin{itemize}
-		\item The linear algorithm is an implementation of the algorithm within <cite>
+		\item The linear algorithm is an implementation of the algorithm within \cite{CONEJO2013324}
 		\item We satisfy the hypothesis presented in their article
 		\item The interesting assumption to satisfy is the accuracy condition
 \begin{align*}
-		\|\nabla m_f^{(k)}(x^{(k)}) - \nabla f (x^{(k)})\| \le c_2 \Delta_k
+		\left\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f \left(x^{(k)}\right)\right\| \le c_2 \Delta_k
 \end{align*}
 		\item We were able to rely on classic derivative-free model improving algorithms
 		by constructing a feasible ellipsoid
@@ -323,6 +334,13 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\item The ellipsoid must be near the current iterate, to satisfy the accuracy condition
 		\item It must be feasible for small enough $\dk$.
 	\end{itemize}
+\end{frame}
+
+\begin{frame}{Example trust region}
+\begin{center}
+	\includegraphics[width=300px]{images/trust_regions.png}
+\end{center}
+% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
 
 
@@ -365,8 +383,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \begin{frame}{Buffering Cones}
 	\begin{itemize}
 		\item Buffering cones can be used to ensure feasibility
-		\item We ensure the sample region is within buffering cones
-		\item We ensure the trial point is within buffering cones
+		\item These restrict both the sample region and the search region
 	\end{itemize}
 \end{frame}
 
@@ -412,26 +429,18 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 
-\begin{frame}{Example trust region}
-\begin{center}
-	\includegraphics[width=300px]{images/trust_regions.png}
-\end{center}
-% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
-\end{frame}
-
-
-\begin{frame}{Buffering Cones, Delete this}
-	\begin{itemize}
-		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
-		\[\|\nabla m_f(x) - \nabla f(x)\| \le \epsilon_g \dk \]
-		\item This usually not an issue, as any point can be added to the sample set to
-		replace ill-poised points
-		\begin{center}
-			\includegraphics[width=120px]{images/impossible_poised.png}
-		\end{center}
-		\item We had to show that we can still find a ``large" enough region to choose sample points
-	\end{itemize}
-\end{frame}
+% \begin{frame}{Buffering Cones, Delete this}
+% 	\begin{itemize}
+% 		\item Also, the paper does not provide a mechanism for satisfying the accuracy condition
+% 		\[\|\nabla m_f(x) - \nabla f(x)\| \le \epsilon_g \dk \]
+% 		\item This usually not an issue, as any point can be added to the sample set to
+% 		replace ill-poised points
+% 		\begin{center}
+% 			\includegraphics[width=120px]{images/impossible_poised.png}
+% 		\end{center}
+% 		\item We had to show that we can still find a ``large" enough region to choose sample points
+% 	\end{itemize}
+% \end{frame}
 
 \begin{frame}{Sufficient Reduction}
 	\begin{itemize}
@@ -440,11 +449,16 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
 		\item Altough we construct an efficient point, it requires a small $\Delta_k$.
 			Therefore, we must perform an explicit efficiency check within the algorithm.
-		\color{red}
-		\item Picture of its construction...
-		\color{black}
 	\end{itemize}
 % Could talk about the details here
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	\begin{center}
+		\includegraphics[width=200px]{images/sufficient_reduction_in_cones.png}
+		\includegraphics[width=200px]{images/no_sufficient_reduction_in_cones.png}
+	\end{center}
 \end{frame}
 
 
@@ -452,14 +466,14 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\begin{itemize}
 		\item The classic criticality for convex constraints is
 \begin{align*}
-\xi(x) = \proj_{\feasible}\left(x - \nabla f(x)\right)
+\chi(x) = \proj_{\feasible}\left(x - \nabla f(x)\right)
 \end{align*}
-		\item We only have access to models of the true functions, so this becomes
+		\item We only have access to models:
 \begin{align*}
-\xi_m^{(k)}(x) = \proj_{\feasiblek}\left(x - \nabla m_f^{(k)}(x)\right)
+\chi_m^{(k)}(x) = \proj_{\feasiblek}\left(x - \nabla m_f^{(k)}(x)\right)
 \end{align*}
-		\item This is still sufficient for general constraints
-		\item We showed that $\xi_m^{(k)}(x) \approx \xi(x)$ and $\xi_m^{(k)}(x) \approx \xi_m^{(l)}(x)$
+% 		\item This is still sufficient for general constraints
+		\item We showed that $\chi_m^{(k)}(x) \approx \chi(x)$ and $\chi_m^{(k)}(x) \approx \chi_m^{(l)}(x)$
 	\end{itemize}
 \end{frame}
 
@@ -476,39 +490,60 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % \color{black}
 % \end{frame}
 
+
 \begin{frame}{Bounded Projection}
-\begin{itemize}
-\item Initially, this was done with the Hoffman Constant
-\item The method works using a regularity assumption for constraints that are nearly active
-\item The other constraints are sufficiently far from zero.
-\item This eliminates the need for a bound on $\xk$.
-\color{red}
-\item I will make a picture of the lemma.
-\color{black}
-\item This result is discussed in <reference>
-\end{itemize}
+	\begin{center}
+		\includegraphics[width=200px]{images/projection_good.png}
+		\includegraphics[width=200px]{images/projection_bad.png}
+	\end{center}
 \end{frame}
+
+
+
+\begin{frame}{Bounded Projection}
+	\begin{center}
+		\includegraphics[width=300px]{images/projection_cases.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Bounded Projection}
+	\begin{itemize}
+		\item Bounding the projection onto a polytope required bounding how close 
+			constraint linearizations can be to each other.
+		\begin{align*}
+			\max_{\|u\| = 1} \min_i \nabla c_i\left(\xk\right)
+		\end{align*}
+		\item This quantity is bounded by a regularity assumption
+		\item This analysis produces Lemma 4.XX
+	\end{itemize}
+\end{frame}
+
 
 
 \begin{frame}{Regularity Assumption}
 \begin{itemize}
 \item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
 \begin{align*}
-\forall x^{\star}, \xi\left(x^{\star}\right) = 0 
+\forall x^{\star}, \chi\left(x^{\star}\right) = 0 
 \Longrightarrow \exists d \in \Rn, \forall i, \nabla c_i\left(x^{\star}\right)^T d < 0 
 \end{align*}
-\item We strengthened this qualification, to allow construction of the feasible ellipsoid:
+\item We strengthened this qualification:
 \begin{align*}
 \forall x \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < 0 \\
 \exists \epsilon>0 \forall x, \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < -\epsilon \\
 \exists \epsilon>0 \forall x,\exists d\in \Rn, \forall i, c_i\left(x\right) \approx 0
 \Longrightarrow \nabla c_i\left(x\right)^T d < -\epsilon \\
 \end{align*}
-\color{red}
-\item Add a picture to motivate each of these changes...
-\color{black}
 \end{itemize}
-% Add pictures of a sphere...
+\end{frame}
+
+
+\begin{frame}{Regularity Assumption}
+	\begin{center}
+		\includegraphics[width=200px]{images/uniform_regularity.png}
+		\includegraphics[width=200px]{images/active_regularity.png}
+	\end{center}
 \end{frame}
 
 
@@ -516,7 +551,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \begin{itemize}
 	\item Given a single feasible point, in general, it can be difficult to find even a second feasible point.
 	\item This means that we must assume a feasible starting set.
-	\item For general constraints, this necessates an assumption.
+	\item For general constraints, this necessitates an assumption.
 	\item For convex constraints, we provide such an algorithm
 	\begin{center}
 		\includegraphics[width=150px]{images/only_one_feasible_point.png}
@@ -525,19 +560,19 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-\begin{frame}{Algorithm Variants}
-\begin{itemize}
-	\item Different forms of the sample region
-	\item Different forms of the search region
-\end{itemize}
-\end{frame}
+% \begin{frame}{Algorithm Variants}
+% \begin{itemize}
+% 	\item Different forms of the sample region
+% 	\item Different forms of the search region
+% \end{itemize}
+% \end{frame}
 
 
 \begin{frame}{Contributions}
 	\begin{itemize}
-		\item First model-based dfo algorithm for partially quantifiable constraints
+		\item First model-based DFO algorithm for non-relaxable constraints
 		\item Constructed the feasible ellipsoid
-		\item Showing that the criticality measure converges
+		\item Showed that the criticality measure converges
 		\item Modified regularity condition
 		\item Showing sufficient reduction within a smaller search region
 	\end{itemize}
@@ -552,8 +587,8 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \frametitle{Extensions to the Algorithm}
 \begin{itemize}
 	\item Show error bounds for Polyhedral Trust Regions
-	\item Make assumptions only reference the true constraints (not the models)
 	\item Use fewer sample points on narrow constraints
+	\item Make assumptions only reference the true constraints
 \end{itemize}
 
 }
