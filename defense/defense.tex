@@ -35,7 +35,7 @@
 \begin{document}
 
 
-\title{Always Feasile Derivative Free Optimization}   
+\title{Model-Based Derivative-Free Optimization with Unrelaxable Constraints}   
 \author{Trever Hallock} 
 \date{\today} 
 
@@ -212,7 +212,6 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\begin{itemize}
 		\item Our algorithm is based on a general algorithmic framework proposed by \cite{CONEJO2013324}
 		\item This paper provides convergence analysis, without depending on implementation details
-		\item \color{red} Algorithm assumes known constraints for a projection operator \color{black}
 		\item This framework assumes the following properties
 			\begin{itemize}
 				\item Quadratic or linear model functions
@@ -312,14 +311,13 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \begin{frame}{The Algorithm for Linear Constraints}
 	\begin{itemize}
 		\item The linear algorithm is an implementation of the algorithm within \cite{CONEJO2013324}
-		\item We satisfy the hypothesis presented in their article
-		\item The interesting assumption to satisfy is the accuracy condition
+		\item We satisfy the hypothesis presented in this article
+		\item We need sample points to ensure the model satisfies the accuracy condition
 \begin{align*}
 		\left\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f \left(x^{(k)}\right)\right\| \le c_2 \Delta_k
 \end{align*}
-		\item We were able to rely on classic derivative-free model improving algorithms
-		by constructing a feasible ellipsoid
-		\item Constructing a feasible ellipsoid also sets the foundation for the non-linear sample region
+		\item We were able to rely on classic model improving algorithms by choosing an ellipsoidal sample region
+% 		\item Constructing a feasible ellipsoid also sets the foundation for the non-linear sample region
 	\end{itemize}
 \end{frame}
 
@@ -328,11 +326,11 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\begin{itemize}
 		\item The sample region is given by
 \begin{align*}
-\left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^TQ^{(k)}\left(x - c^{(k)}\right) \le \delta_k^2 \right\}
+\left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^TQ^{(k)}\left(x - c^{(k)}\right) \le \frac 1 2 \delta_k^2 \right\}
 \end{align*}
-		\item The poisedness of the set depends on the condition number of $Q^{(k)}$
-		\item The ellipsoid must be near the current iterate, to satisfy the accuracy condition
-		\item It must be feasible for small enough $\dk$.
+		\item The condition number of $Q^{(k)}$ must be bounded
+		\item The ellipsoid must be near the current iterate
+		\item The ellipsoid must be feasible
 	\end{itemize}
 \end{frame}
 
@@ -373,19 +371,19 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Nonlinear Algorithm}
 	\begin{itemize}
-		\item Buffer the cone from these constraints
+		\item Find a feasible region by buffering it from the constraint boundaries
 		\item Show sufficient reduction within the buffered region
 		\item Show that the criticality measure approximates the real criticality measure
-		\item Recover a feasible ellipsoid if required
+		\item Recover a feasible ellipsoid when required
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Buffering Cones}
-	\begin{itemize}
-		\item Buffering cones can be used to ensure feasibility
-		\item These restrict both the sample region and the search region
-	\end{itemize}
-\end{frame}
+% \begin{frame}{Buffering Cones}
+% 	\begin{itemize}
+% 		\item Buffering cones can be used to ensure feasibility
+% 		\item These restrict both the sample region and the search region
+% 	\end{itemize}
+% \end{frame}
 
 \begin{frame}{Buffering Cones}
 	\begin{center}
@@ -444,7 +442,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Sufficient Reduction}
 	\begin{itemize}
-		\item To ensure the trial point is feasible, we limit the search trust region
+		\item The buffered region limits trial point choices
 		\item Well-known algorithms for computing an efficient trial points do not apply
 		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
 		\item Altough we construct an efficient point, it requires a small $\Delta_k$.
@@ -501,24 +499,22 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Bounded Projection}
-	\begin{center}
-		\includegraphics[width=300px]{images/projection_cases.png}
-	\end{center}
-\end{frame}
-
-
-\begin{frame}{Bounded Projection}
 	\begin{itemize}
-		\item Bounding the projection onto a polytope required bounding how close 
-			constraint linearizations can be to each other.
+		\item How far a projection onto the linearized feasible region moves depends on
 		\begin{align*}
-			\max_{\|u\| = 1} \min_i \nabla c_i\left(\xk\right)
+			\min_{\|u\| = 1, u \ge 0} \left\|\sum_{i} u_i \nabla \hat c_i\left(\xk\right)\right\|
 		\end{align*}
 		\item This quantity is bounded by a regularity assumption
 		\item This analysis produces Lemma 4.XX
 	\end{itemize}
 \end{frame}
 
+
+\begin{frame}{Bounded Projection}
+	\begin{center}
+		\includegraphics[width=300px]{images/projection_cases.png}
+	\end{center}
+\end{frame}
 
 
 \begin{frame}{Regularity Assumption}
@@ -549,9 +545,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Ellipsoid Recovery}
 \begin{itemize}
-	\item Given a single feasible point, in general, it can be difficult to find even a second feasible point.
-	\item This means that we must assume a feasible starting set.
-	\item For general constraints, this necessitates an assumption.
+	\item Given a single feasible point, in general, it can be difficult to find even a second feasible point
+	\item This motivates a feasible starting set
+	\item For general constraints, we assume a recovery subroutine
 	\item For convex constraints, we provide such an algorithm
 	\begin{center}
 		\includegraphics[width=150px]{images/only_one_feasible_point.png}
