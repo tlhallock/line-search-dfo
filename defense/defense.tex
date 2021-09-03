@@ -10,6 +10,7 @@
 
 \documentclass{beamer}
 
+\usetheme{Berlin}
 
 \newcommand{\Rn}{\mathbb R ^ {n}}
 \newcommand{\xk}{{{x}^{(k)}}}
@@ -30,6 +31,7 @@
 
 \usepackage{color}
 \usepackage{amsmath}
+\usepackage{cancel}
 
 
 \begin{document}
@@ -51,7 +53,6 @@
 	\end{itemize}
 \end{frame}
 
-\section{Derivative Free Background}
 
 \begin{frame}{Derivative Free Problem Formulation}
 \begin{center}
@@ -77,20 +78,59 @@
 
 \begin{frame}{Example Problem}
 
+% \begin{center}
+% \includegraphics[width=50px]{images/hoffman_0.png}
+% \includegraphics[width=50px]{images/hoffman_1.png}
+% \includegraphics[width=50px]{images/hoffman_2.png}
+% \includegraphics[width=50px]{images/hoffman_3.png}
+% 
+% 
+% 
+% 
+% 
+% \includegraphics[width=50px]{images/local_regularity.png}
+% 
+% \includegraphics[width=50px]{images/decreasing_regularity.png}
+% \includegraphics[width=50px]{images/decreasing_regularity_2.png}
+% 
+% \includegraphics[width=50px]{images/classification.png}
+% \end{center}
+
 \end{frame}
+
+
+
+
+
+
+
+
+
 
 
 \begin{frame}{Strategy}
 	\begin{itemize}
 		\item Develop an algorithm for linear constraints
 		\begin{itemize}
-			\item Needed strictly feasible sample sets within linear constraints
+			\item This requires strictly feasible sample sets within linear constraints
 		\end{itemize}
-		\item Extend this algorithm to non-linear constraints
+		\begin{center}
+			\includegraphics[width=125px]{images/poised.png}
+			\includegraphics[width=125px]{images/not_poised.png}
+		\end{center}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Strategy}
+	\begin{itemize}
+		\item Extend the linear algorithm to non-linear constraints
 		\begin{itemize}
 			\item Account for uncertainty in constraint boundaries
 			\item No gaurantee of feasibility, just avoid infeasible evaluations
 		\end{itemize}
+		\begin{center}
+			\includegraphics[width=150px]{images/modeled_constraints.png}
+		\end{center}
 	\end{itemize}
 \end{frame}
 
@@ -98,24 +138,27 @@
 \frame{\frametitle{Table of Contents}\tableofcontents} 
 
 
+\section{Derivative Free Background}
+
+
 \begin{frame}{Background Material}
 	\begin{itemize}
+		\setlength\itemsep{2em}
 		\item Model-based algorithms
 		\item Trust-region algorithms
-		\item Algorithm components: criticality and sufficient reduction
+		\item Criticality
 	\end{itemize}
 \end{frame}
 
 \begin{frame}{Model Based Trust Region Methods}
 	\begin{itemize}
-		\setlength\itemsep{2em}
 		\item Approximate derivatives of $f$ and $c$ using model functions created from a sample set
 		\item We approximate $f$ using a second order model, meaning that we approximate:
 		\begin{itemize}
 			\item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \frac 1 2 \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
 			\item $\fhk \approx \nabla ^2 f(\xk)$
 			\item $\fgk \approx \nabla f(\xk)$
-			\item $\cgk \approx c_i(\xk)$
+			\item $\cgk \approx \nabla c_i(\xk)$
 			\item $\mck(x) = \ck + \left(x - \xk\right)^T\cgk \approx c_i(x)$
 		\end{itemize}
 		\item Choose next iterate by minimizing a model over a trust region
@@ -166,7 +209,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\item<3> With narrow constraints, this means ``well poised" sets may not exist
 		\only<3>{
 			\begin{center}
-				\includegraphics[width=180px]{images/impossible_poised.png}
+				\includegraphics[width=75px]{images/not_poised.png}
 			\end{center}
 		}
 	\end{itemize}
@@ -185,14 +228,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\item We use the projection of the negative gradient onto the constraints
 	\end{itemize}
 	\begin{center}
-		\includegraphics[width=150px]{images/criticality.png}
+		\includegraphics[width=100px]{images/criticality.png}
 	\end{center}
 \end{frame}
-
-
-
-
-
 
 
 
@@ -224,8 +262,6 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-\begin{frame}{Algorithm Assumptions}
-	\setlength\itemsep{2em}
 % 	\begin{itemize}
 % 		\item Many derivative-free algorithms measure reduction with
 % \begin{align*}
@@ -236,25 +272,39 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % 		\item This quantity captures both the model's accuracy and reduction
 % \color{black}
 % 		\item An algorithm can ensure sufficient reduction (large $\rho_k$) by
-		\begin{itemize}
-			\item The algorithm can satisfy the efficiency condition if it produces trial points that reduce the objective's model:
-\begin{align*}
-	& m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
-	& \ge c_1 \chi^{(k)} \min \left\{
-		\frac{\chi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
-		\Delta_k, 1\right\}
-\end{align*}
+% \setlength\itemsep{2em}
+\begin{frame}{Algorithm Assumptions}
+	\begin{itemize}
+		\item The algorithm can satisfy the efficiency condition if it produces trial points that reduce the objective's model:
+		\begin{align*}
+			& m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
+			& \ge c_1 \chi^{(k)} \min \left\{
+				\frac{\chi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
+				\Delta_k, 1\right\}
+		\end{align*}
+
+		\begin{center}
+			\includegraphics[width=120px]{images/sufficient_reduction.png}
+		\end{center}
+	\end{itemize}
+\end{frame}
 
 
-\begin{center}
-\includegraphics[width=120px]{images/sufficient_reduction.png}
-\end{center}
-
-			\item The accuracy condition ensures:
-\begin{align*}
-		\left\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f\left(x^{(k)}\right)\right\| \le c_2 \Delta_k
-\end{align*}
-		
+\begin{frame}{Algorithm Assumptions}
+	\begin{itemize}
+		\item The algorithm can satisfy the efficiency condition if it produces trial points that reduce the objective's model:
+		\begin{align*}
+			& m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
+			& \ge c_1 \chi^{(k)} \min \left\{
+				\frac{\chi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
+				\Delta_k, 1\right\}
+		\end{align*}
+		\item The accuracy condition ensures:
+		\begin{align*}
+			\left\|\nabla m_f^{(k)}\left(x^{(k)}\right) - \nabla f\left(x^{(k)}\right)\right\| \le c_2 \Delta_k
+		\end{align*}
+	\end{itemize}
+\end{frame}
 
 % 		
 % 		\color{red}
@@ -267,8 +317,6 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % 		\end{itemize}
 % 		\color{black}
 %		 \item There are several potential approaches for incorporating constraints
-	\end{itemize}
-\end{frame}
 
 
 
@@ -297,13 +345,17 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-\begin{frame}{Algorithm outline}
+\begin{frame}{Algorithm Outline}
 	\begin{itemize}
-		\item Construct a model for the current point
-		\item Check optimality
-		\item Compute step
-		\item Evaluate trial
-		\item Check reduction and update radius
+		\item[Step 1] \textbf{Construct a model for the current point} \\
+			If a sample point is infeasible, decrease the trust region radius
+		\item[Step 2] \textbf{Check optimality.} \\
+			Compute $\chi\left(\xk\right)$ and compare to a threshold
+		\item[Step 3] \textbf{Compute the trial step, and evaluate} \\
+			If the trial point is infeasible, decrease the trust region radius
+		\item[Step 4] \textbf{Check reduction and update radius} \\
+			If little progress was made decrease the trust region radius. \\
+			Otherwise, set the next iterate to the trial point
 	\end{itemize}
 \end{frame}
 
@@ -324,6 +376,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Ellipsoid Requirements}
 	\begin{itemize}
+		\setlength\itemsep{1.5em}
 		\item The sample region is given by
 \begin{align*}
 \left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^TQ^{(k)}\left(x - c^{(k)}\right) \le \frac 1 2 \delta_k^2 \right\}
@@ -334,10 +387,11 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{Example trust region}
-\begin{center}
-	\includegraphics[width=300px]{images/trust_regions.png}
-\end{center}
+\begin{frame}{Example Trust Region}
+	\begin{center}
+% 	\includegraphics[width=300px]{images/trust_regions.png}
+		\includegraphics[width=200px]{images/00068_iteration_11.png}
+	\end{center}
 % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
 
@@ -346,9 +400,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\begin{itemize}
 		\item Construct a feasible direction
 		\item Find the widest open rate of a second order cone
-\begin{center}
-	\includegraphics[width=150px]{images/unshifted_cone.png}
-\end{center}
+		\begin{center}
+			\includegraphics[width=125px]{images/unshifted_cone.png}
+		\end{center}
 		\item Compute an ellipsoid within this cone
 	\end{itemize}
 \end{frame}
@@ -371,6 +425,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Nonlinear Algorithm}
 	\begin{itemize}
+		\setlength\itemsep{1.5em}
 		\item Find a feasible region by buffering it from the constraint boundaries
 		\item Show sufficient reduction within the buffered region
 		\item Show that the criticality measure approximates the real criticality measure
@@ -387,41 +442,45 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Buffering Cones}
 	\begin{center}
-		\includegraphics[width=300px]{images/explanation_1.png}
+		\includegraphics[width=225px]{images/explanation_1.png}
 	\end{center}
 \end{frame}
 
 
 \begin{frame}{Buffering Cones}
 	\begin{center}
-		\includegraphics[width=300px]{images/explanation_2.png}
+		\includegraphics[width=225px]{images/explanation_2.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Buffering Cones}
+	As the $\dk \to 0$, the buffered region approaches the linearization.
+	\begin{center}
+		\includegraphics[width=225px]{images/explanation_3.png}
 	\end{center}
 \end{frame}
 
 
 \begin{frame}{Buffering Cones}
 	\begin{center}
-		\includegraphics[width=300px]{images/explanation_3.png}
+		\includegraphics[width=225px]{images/completed_1.png}
 	\end{center}
 \end{frame}
 
 
 \begin{frame}{Buffering Cones}
 	\begin{center}
-		\includegraphics[width=300px]{images/completed_1.png}
+		\includegraphics[width=225px]{images/completed_2.png}
 	\end{center}
 \end{frame}
 
-
-\begin{frame}{Buffering Cones}
+\begin{frame}{Conservative Construction}
+	\begin{block}{Theorem 4.24}
+		If $\Delta_k \le \Delta_{\textrm{feasible}}$, then the buffered region is feasible.
+	\end{block}
 	\begin{center}
-		\includegraphics[width=300px]{images/completed_2.png}
-	\end{center}
-\end{frame}
-
-\begin{frame}{Buffering Cones}
-	\begin{center}
-		\includegraphics[width=300px]{images/feasible_direction.png}
+		\includegraphics[width=150px]{images/feasible_direction.png}
 	\end{center}
 \end{frame}
 
@@ -442,20 +501,32 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Sufficient Reduction}
 	\begin{itemize}
-		\item The buffered region limits trial point choices
-		\item Well-known algorithms for computing an efficient trial points do not apply
-		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
-		\item Altough we construct an efficient point, it requires a small $\Delta_k$.
-			Therefore, we must perform an explicit efficiency check within the algorithm.
+		\item Well-known algorithms for computing an efficient trial points do not apply,
+		because the buffered region limits trial point choices
+		
+		\begin{block}{Theorem 4.27}
+			If $\chi^{(k)} \ge \kappa_{\chi} \Delta_k^{p_{\Delta}}$ and $\Delta_k \le \Delta_{\textrm{sf}}$,
+			then there is a $v$ in the buffered region that satisfies the efficiency condition.
+		\end{block}
+% 		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
+		\item Because $\Delta_k$ must be sufficiently small, 
+		we must perform an explicit efficiency check within the algorithm
+		
 	\end{itemize}
 % Could talk about the details here
 \end{frame}
 
 
-\begin{frame}{Buffering Cones}
+\begin{frame}{Feasible Trial Point}
 	\begin{center}
-		\includegraphics[width=200px]{images/sufficient_reduction_in_cones.png}
-		\includegraphics[width=200px]{images/no_sufficient_reduction_in_cones.png}
+		\includegraphics[width=200px]{images/trial_point_constructions.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{No Buffered Reduction Possible}
+	\begin{center}
+		\includegraphics[width=200px]{images/no_reduction.png}
 	\end{center}
 \end{frame}
 
@@ -476,6 +547,15 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
+
+\begin{frame}{Uniform Convergence of Criticality Measure}
+	\begin{center}
+		\includegraphics[width=150px]{images/modeled_constraints_2.png}
+		\includegraphics[width=150px]{images/modeled_constraints_3.png}
+	\end{center}
+\end{frame}
+
+
 % \begin{frame}{Criticality Measure, Delete this}
 % \color{red}
 % 	\begin{itemize}
@@ -491,8 +571,16 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Bounded Projection}
 	\begin{center}
-		\includegraphics[width=200px]{images/projection_good.png}
-		\includegraphics[width=200px]{images/projection_bad.png}
+		\includegraphics[width=150px]{images/hoffman_0.png}
+		\includegraphics[width=150px]{images/hoffman_1.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Bounded Projection}
+	\begin{center}
+		\includegraphics[width=150px]{images/hoffman_2.png}
+		\includegraphics[width=150px]{images/hoffman_3.png}
 	\end{center}
 \end{frame}
 
@@ -501,18 +589,28 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \begin{frame}{Bounded Projection}
 	\begin{itemize}
 		\item How far a projection onto the linearized feasible region moves depends on
-		\begin{align*}
+		$
 			\min_{\|u\| = 1, u \ge 0} \left\|\sum_{i} u_i \nabla \hat c_i\left(\xk\right)\right\|
-		\end{align*}
+		$
 		\item This quantity is bounded by a regularity assumption
-		\item This analysis produces Lemma 4.XX
+		\begin{block}{Theorem 4.41}
+			Let $F_m^{(k)}$ and $F_c^{(k)}$ be the model's and constraints linearized feasible region for iteration $k$ respectively.
+			Then,
+			\begin{align*}
+				\left\|P_{F_m^{(l)}}\left(\xk - \nabla m_f\left(\xk\right)\right)
+				-  P_{F_m^{(k)}}\left(\xk - \nabla m_f\left(\xk\right)\right)\right\| \to 0 \\
+				\left\|P_{F_m^{(l)}}\left(\xk - \nabla m_f\left(\xk\right)\right)
+				-  P_{F_c^{(k)}}\left(\xk - \nabla m_f\left(\xk\right)\right)\right\| \to 0
+			\end{align*}
+		\end{block}
 	\end{itemize}
 \end{frame}
 
 
+
 \begin{frame}{Bounded Projection}
 	\begin{center}
-		\includegraphics[width=300px]{images/projection_cases.png}
+		\includegraphics[width=200px]{images/classification.png}
 	\end{center}
 \end{frame}
 
@@ -526,21 +624,60 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{align*}
 \item We strengthened this qualification:
 \begin{align*}
-\forall x \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < 0 \\
-\exists \epsilon>0 \forall x, \exists d \in \Rn, \forall i, \nabla c_i\left(x\right)^T d < -\epsilon \\
-\exists \epsilon>0 \forall x,\exists d\in \Rn, \forall i, c_i\left(x\right) \approx 0
-\Longrightarrow \nabla c_i\left(x\right)^T d < -\epsilon \\
+\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0
 \end{align*}
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}{Regularity Assumption}
+	We ensure a uniform bound on the ``width" of the feasible set's tangent cone
 	\begin{center}
-		\includegraphics[width=200px]{images/uniform_regularity.png}
-		\includegraphics[width=200px]{images/active_regularity.png}
+% 		\includegraphics[width=200px]{images/uniform_regularity.png}
+% 		\includegraphics[width=200px]{images/active_regularity.png}
+		\includegraphics[width=150px]{images/decreasing_regularity.png}
+		\includegraphics[width=150px]{images/decreasing_regularity_2.png}
 	\end{center}
 \end{frame}
+
+\begin{frame}{Regularity Assumption}
+\begin{itemize}
+\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\begin{align*}
+\forall x^{\star}, \chi\left(x^{\star}\right) = 0 
+\Longrightarrow \exists d \in \Rn, \forall i, \nabla c_i\left(x^{\star}\right)^T d < 0 
+\end{align*}
+\item We strengthened this qualification:
+\begin{align*}
+\xcancel{\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0} \\
+\exists \epsilon>0 \forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < -\epsilon \\
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Regularity Assumption}
+	\begin{center}
+		\includegraphics[width=200px]{images/local_regularity.png}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Regularity Assumption}
+\begin{itemize}
+\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\begin{align*}
+\forall x^{\star}, \chi\left(x^{\star}\right) = 0 
+\Longrightarrow \exists d \in \Rn, \forall i, \nabla c_i\left(x^{\star}\right)^T d < 0 
+\end{align*}
+\item We strengthened this qualification:
+\begin{align*}
+\xcancel{\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0} \\
+\xcancel{\exists \epsilon>0 \forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < -\epsilon} \\
+\exists \epsilon>0 \forall x\exists d\in \Rn\; \forall i\; c_i\left(x\right) \approx 0
+\Longrightarrow \nabla c_i\left(x\right)^T d < -\epsilon \\
+\end{align*}
+\end{itemize}
+\end{frame}
+
 
 
 \begin{frame}{Ellipsoid Recovery}
@@ -564,25 +701,26 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % \end{frame}
 
 
+\section{Conclusion}
+
 \begin{frame}{Contributions}
 	\begin{itemize}
+		\setlength\itemsep{1.5em}
 		\item First model-based DFO algorithm for non-relaxable constraints
-		\item Constructed the feasible ellipsoid
-		\item Showed that the criticality measure converges
-		\item Modified regularity condition
-		\item Showing sufficient reduction within a smaller search region
+		\item Constructed a feasible ellipsoid
+		\item Convergence in criticality measure
+		\item A modified regularity condition
+		\item Showed sufficient reduction within a buffered region
+		\item Numerical results with few infeasible evalution attempts
 	\end{itemize}
 \end{frame}
 
 
-
-\section{Future Work}
-
-
 \frame {
-\frametitle{Extensions to the Algorithm}
+\frametitle{Future Work}
 \begin{itemize}
-	\item Show error bounds for Polyhedral Trust Regions
+	\setlength\itemsep{2em}
+	\item Show error bounds for polyhedral trust regions
 	\item Use fewer sample points on narrow constraints
 	\item Make assumptions only reference the true constraints
 \end{itemize}
