@@ -26,6 +26,7 @@
 \newcommand{\feasible}{\mathcal F}
 \newcommand{\feasiblek}{\mathcal F^{(k)}}
 \newcommand{\proj}{\textbf{P}}
+\newcommand{\neggrad}{d^{(k)}}
 
 
 
@@ -146,7 +147,7 @@
 		\setlength\itemsep{2em}
 		\item Model-based algorithms
 		\item Trust-region algorithms
-		\item Criticality
+		\item Criticality measure
 	\end{itemize}
 \end{frame}
 
@@ -477,7 +478,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Conservative Construction}
 	\begin{block}{Theorem 4.24}
-		If $\Delta_k \le \Delta_{\textrm{feasible}}$, then the buffered region is feasible.
+		If $\Delta_k \le \Delta_{\textrm{feasible}}$, then the buffered region intersected with the trust region is feasible.
 	\end{block}
 	\begin{center}
 		\includegraphics[width=150px]{images/feasible_direction.png}
@@ -594,13 +595,15 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		$
 		\item This quantity is bounded by a regularity assumption
 		\begin{block}{Theorem 4.41}
-			Let $F_m^{(k)}$ and $F_c^{(k)}$ be the model's and constraints linearized feasible region for iteration $k$ respectively.
-			Then,
+			Let $F_m^{(k)}$ and $F_c^{(k)}$ be the model's and constraints linearized feasible region for iteration $k$ respectively,
+			and $\neggrad = \xk - \nabla m_f\left(\xk\right)$. Then,
 			\begin{align*}
-				\left\|P_{F_m^{(l)}}\left(\xk - \nabla m_f\left(\xk\right)\right)
-				-  P_{F_m^{(k)}}\left(\xk - \nabla m_f\left(\xk\right)\right)\right\| \to 0 \\
-				\left\|P_{F_m^{(l)}}\left(\xk - \nabla m_f\left(\xk\right)\right)
-				-  P_{F_c^{(k)}}\left(\xk - \nabla m_f\left(\xk\right)\right)\right\| \to 0
+				\begin{array}{ccc}
+					\left\|P_{F_m^{(k)}}\left(\neggrad\right)
+					-  P_{F_m^{(l)}}\left(\neggrad\right)\right\| & \to 0 & \quad \textrm{and} \\
+					\left\|P_{F_m^{(k)}}\left(\neggrad\right)
+					-  P_{F_c^{(k)}}\left(\neggrad\right)\right\| & \to 0. &
+				\end{array}
 			\end{align*}
 		\end{block}
 	\end{itemize}
@@ -617,7 +620,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Regularity Assumption}
 \begin{itemize}
-\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\item The Mangasarian-Fromovitz constraint qualification requires
 \begin{align*}
 \forall x^{\star}, \chi\left(x^{\star}\right) = 0 
 \Longrightarrow \exists d \in \Rn, \forall i, \nabla c_i\left(x^{\star}\right)^T d < 0 
