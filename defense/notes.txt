@@ -54,7 +54,7 @@ These images describe the challenge.
 Without constraints, classic algorithms can choose sample points within a spherical trust region 
 to ensure accurate models.
 However, on the right, we see that with unrelaxable constraints, sample points 
-may not be able to spread out, and may not provide accurate models.
+may not be able to spread out, hurting the model's accuracy.
 
 We then extend the algorithm for linear constraints to general constraints.
 For non-linear constraints, we must model the constraints as well as the objective,
@@ -68,7 +68,7 @@ Conversely, the linearized feasible region does not allow evaluating some points
 to the concave function on the right.
 Just to be clear, the algorithm may attempt to evaluate an infeasible point.
 However, it does not have access to the objective or constraint values.
-Also, it is preferrable to avoid such evaluations.
+Therefore, it is preferrable to avoid such evaluations.
 
 // Ours is the first work to build accurate model functions using only feasible evaluations
 
