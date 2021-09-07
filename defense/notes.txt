@@ -323,15 +323,16 @@ we first use any classic method to find a point within the constraint's lineariz
 that does satisfy the efficiency condition,
 <emph> but we use half the trust region radius</emph>
 The inner blue square.
-This is because we still need to move the solution into the buffered region.
+This is because we still need to move the solution within the constraint's linearization into the buffered region.
 So in the image, the magenta circle is the negative gradient.
 The blue arrow represents the projection onto the linearized feasible region, 
 intersected with half the trust region radius.
 We then add the green arrow, to ensure that we are once again within the buffered region.
 <describe blue and green arrow>
 Using the smaller trust region radius, ensures we are still within the outer trust region after adding the green arrow.
-In the picture, the feasibility component actually moves us closer, but does not always.
-<turn>
+In the picture, the feasibility component actually moves us closer, but it need not in general.
+
+
 For large trust region radaii, there may not be sufficient reduction within the buffered region.
 This is because the buffering cone may remove all descent directions when a constraint is active at the current iterate.
 describe picture....
@@ -351,7 +352,7 @@ but it also converges uniformly across iterates.
 
 
 This is an issue because the linearized feasible regions can change across iterations.
-This is the same image we showed earlier, motivating issues with inaccurate model functions.
+As you can see, this is the same image we showed earlier, which motivate the issues with inaccurate model functions.
 However, these inaccuracies change each iteration, along with the set of active constraints.
 
 
@@ -366,12 +367,12 @@ perturbing the black constraints to the blue cibstraints does not move a points 
 However, when the constraints are make a smaller angle, and we add the exact same purtubation,
 the projection moves much farther.
 <turn>
-Thus, we can bound the difference in projections onto two similar polytopes by the ``angles" 
+Thus, we can bound the difference in projections onto two similar polytopes by measuring the ``angles" 
 the constraints make with eachother.
 Suppose we can bound how far the negative gradient, namely the point we wish to project, is from the the current iterate.
-Then any constraints that remove the negative gradient, but is also far from the current iterate,
-cannot make a small angle with each other.
-For example the blue lines.
+Then any constraints that remove the negative gradient, but are also far from the current iterate
+- atleast farther than the inner circle, cannot make a small angle with each other.
+For example the blue lines: no matter how we situate them, they will make a large angle with eachother.
 It is only the constraints that are close to the current itreate that can be a problem, namely, 
 those that are in the green circle.
 We use a regularity condition to bound the distance moved along these nearly active constraints.
