@@ -78,7 +78,13 @@
 
 
 \begin{frame}{Example Problem}
-
+	These problems can arise several different ways:
+	\begin{itemize}
+		\item A simulation quantity represents a concentration level
+		\item Well rates in groundwater problems
+		\item When decision variables must be ordered
+		\item Inverse Transport Problems
+	\end{itemize}
 % \begin{center}
 % \includegraphics[width=50px]{images/hoffman_0.png}
 % \includegraphics[width=50px]{images/hoffman_1.png}
@@ -207,7 +213,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		}
 		\item<3> Constructing poised sets over ellipses is well known
 		\item<3> Constraints limit what points are available for the sample set
-		\item<3> With narrow constraints, this means ``well poised" sets may not exist
+		\item<3> With narrow constraints, well poised sets may not exist
 		\only<3>{
 			\begin{center}
 				\includegraphics[width=75px]{images/not_poised.png}
@@ -425,13 +431,15 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Nonlinear Algorithm}
-	\begin{itemize}
-		\setlength\itemsep{1.5em}
-		\item Find a feasible region by buffering it from the constraint boundaries
-		\item Show sufficient reduction within the buffered region
+	To handle innacurate constraint models, we chose to buffer the trust region from the constraint boundaries
+	
+	\begin{block}{Challenges:}
+		\begin{itemize}
+		\item Show sufficient reduction within this buffered region
 		\item Show that the criticality measure approximates the real criticality measure
 		\item Recover a feasible ellipsoid when required
-	\end{itemize}
+		\end{itemize}
+	\end{block}
 \end{frame}
 
 % \begin{frame}{Buffering Cones}
@@ -510,8 +518,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 			then there is a $v$ in the buffered region that satisfies the efficiency condition.
 		\end{block}
 % 		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
-		\item Because $\Delta_k$ must be sufficiently small, 
-		we must perform an explicit efficiency check within the algorithm
+		\item Only works for small $\Delta_k$.
 		
 	\end{itemize}
 % Could talk about the details here
@@ -519,15 +526,18 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Feasible Trial Point}
+	Moving a solution to the buffered region
 	\begin{center}
-		\includegraphics[width=200px]{images/trial_point_constructions.png}
+		\includegraphics[width=175px]{images/trial_point_constructions.png}
 	\end{center}
 \end{frame}
 
 
 \begin{frame}{No Buffered Reduction Possible}
+	While $\Delta_k$ is large, the buffered region may not provide reduction
+% 	Because $\Delta_k$ must be sufficiently small, we must perform an explicit efficiency check within the algorithm
 	\begin{center}
-		\includegraphics[width=200px]{images/no_reduction.png}
+		\includegraphics[width=175px]{images/no_reduction.png}
 	\end{center}
 \end{frame}
 
@@ -588,12 +598,19 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Bounded Projection}
+	Only constraints near the current iterate can make a small angle
+	\begin{center}
+		\includegraphics[width=175px]{images/classification.png}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Bounded Projection}
 	\begin{itemize}
 		\item How far a projection onto the linearized feasible region moves depends on
 		$
 			\min_{\|u\| = 1, u \ge 0} \left\|\sum_{i} u_i \nabla \hat c_i\left(\xk\right)\right\|
 		$
-		\item This quantity is bounded by a regularity assumption
 		\begin{block}{Theorem 4.41}
 			Let $F_m^{(k)}$ and $F_c^{(k)}$ be the model's and constraints linearized feasible region for iteration $k$ respectively,
 			and $\neggrad = \xk - \nabla m_f\left(\xk\right)$. Then,
@@ -606,16 +623,10 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 				\end{array}
 			\end{align*}
 		\end{block}
+		\item This quantity is bounded by a regularity assumption
 	\end{itemize}
 \end{frame}
 
-
-
-\begin{frame}{Bounded Projection}
-	\begin{center}
-		\includegraphics[width=200px]{images/classification.png}
-	\end{center}
-\end{frame}
 
 
 \begin{frame}{Regularity Assumption}
@@ -659,8 +670,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 \begin{frame}{Regularity Assumption}
+	Only assume regularity for near constraints
 	\begin{center}
-		\includegraphics[width=200px]{images/local_regularity.png}
+		\includegraphics[width=175px]{images/local_regularity.png}
 	\end{center}
 \end{frame}
 
@@ -711,9 +723,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\setlength\itemsep{1.5em}
 		\item First model-based DFO algorithm for non-relaxable constraints
 		\item Constructed a feasible ellipsoid
+		\item Showed sufficient reduction within a buffered region
 		\item Convergence in criticality measure
 		\item A modified regularity condition
-		\item Showed sufficient reduction within a buffered region
 		\item Numerical results with few infeasible evalution attempts
 	\end{itemize}
 \end{frame}
