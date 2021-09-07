@@ -51,6 +51,9 @@
 		\item We develop an algorithm to find local optima of constrained problems
 		\item Derivatives not available, only function values
 		\item This algorithm is designed for problems with unrelaxable constraints
+		\begin{block}{Unrelaxable Constraints}
+			Function values are unavailable for infeasible points
+		\end{block}
 	\end{itemize}
 \end{frame}
 
@@ -77,13 +80,20 @@
 \end{frame}
 
 
-\begin{frame}{Example Problem}
+\begin{frame}{Applications}
 	These problems can arise several different ways:
 	\begin{itemize}
-		\item A simulation quantity represents a concentration level
-		\item Well rates in groundwater problems
-		\item When decision variables must be ordered
-		\item Inverse Transport Problems
+		\setlength\itemsep{1.5em}
+		\item Physical models are no longer meaningful:
+		\begin{itemize}
+			\item A simulation quantity represents a concentration level
+			\item Well rates in groundwater problems
+			\item When decision variables must be ordered
+		\end{itemize}
+		\item Simulations may not converge
+		\begin{itemize}
+			\item Inverse Transport Problems \cite{Armstrong}
+		\end{itemize}
 	\end{itemize}
 % \begin{center}
 % \includegraphics[width=50px]{images/hoffman_0.png}
