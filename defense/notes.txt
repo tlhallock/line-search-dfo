@@ -25,22 +25,23 @@ The problem is derivative free, because no derivative information is available f
 these functions are called black box functions.
 For example, this may arise when the objective and constraints are outputs from an expensive simulation.
 // not suitable for automatic differentiation.
-In our case, we assume that all functions are black box.
+In our case, we assume that <emph>all</emph> functions are black box.
 Not only are they black-box but each constraint is also unrelaxable.
-Because of this, we have removed the usual equality constraints.
+Because of this, we have removed the usual equality constraints within the formulation.
 
 
 	Example:
 Problems with unrelaxable constraints ocurr in several situations.
-For example, when simulation results models may not be meaningful when a quantity representing a concentration level
+Sometimes the physical models are not meaningful outside the feasible region, or the algorithm may take a long time to converge.
+For example, simulation results may not be meaningful when a quantity representing a concentration level
 becomes negative, or when a quantity representing the amount of water being pumped is negative.
 Also, some decision variables such as chronological events in time must be ordered.
 One example is the inverse transport problem solved by Armstrong and Favorite \cite{inverseproblem}.
 They note that one of the numerical integration methods used within their algorithm produces large errors 
 or simply does not converge in some regions.
 These hidden constraints are also unrelaxable, because no information is provided when the subroutine does not converge.
-The authors use a simpler, extreme barrier approach to ignore these infeasible evaluations.
-However, in general, the error may quantifiably increase while approaching one of this constraint's boundary,
+// The authors use a simpler, extreme barrier approach to ignore these infeasible evaluations.
+However, in general, the error may quantifiably increase while approaching one of this constraint's boundaries,
 meaning that it would possible to model the constraint's boundary.
 
 
