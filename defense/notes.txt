@@ -49,12 +49,12 @@ meaning that it would possible to model the constraint's boundary.
 For simplicity, we first construct an algorithm for unrelaxable <emph>linear</emph> constraints.
 The main challenge for this algorithm was constructing a feasible sample region.
 We will discuss this in more detail within the background section, but we need feasible sample points 
-to construct model functions.
+to construct accurate model functions.
 These images describe the challenge.
 Without constraints, classic algorithms can choose sample points within a spherical trust region 
 to ensure accurate models.
-However, on the right, we see that if we force points to lie within a smaller region,
-points may not be able to spread out, and may not provide accurate models.
+However, on the right, we see that with unrelaxable constraints, sample points 
+may not be able to spread out, and may not provide accurate models.
 
 We then extend the algorithm for linear constraints to general constraints.
 For non-linear constraints, we must model the constraints as well as the objective,
