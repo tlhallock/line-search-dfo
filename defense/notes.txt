@@ -36,14 +36,16 @@ Because of this, we have removed the usual equality constraints within the formu
 Problems with unrelaxable constraints ocurr in several situations.
 Stefan Wild contributed a taxonomy of constraint types, in which we promoted the terminology,
 and provides examples such as the following scenarios.
-Sometimes the physical models are not meaningful outside the feasible region, or a simulation may take a long time to converge.
+Sometimes the physical models are not meaningful outside the feasible region, 
+or a simulation may take a long time to converge.
 For example, simulation results may not be meaningful when a quantity representing a fluid's concentration level
 becomes negative, or when a quantity representing an amount of water being pumped is negative.
 Also, some decision variables such as chronological events in time must be ordered.
 One interesting example is the inverse transport problem solved by Armstrong and Favorite \cite{inverseproblem}.
 They note that one of the numerical integration methods used within their algorithm produces large errors 
 or simply does not converge in some regions.
-These hidden constraints are also unrelaxable, because no information is provided when the subroutine does not converge.
+These hidden constraints are also unrelaxable, 
+because no information is provided when the subroutine does not converge.
 // The authors use a simpler, extreme barrier approach to ignore these infeasible evaluations.
 However, the error may quantifiably increase while approaching infeasibility,
 meaning it would possible to model the constraint's boundary.
@@ -63,8 +65,8 @@ may not be allowed to spread out over the trust region, which can hurt the model
 This challenge is present within our first algorithm, which only handles linear constraints.
 
 When we extend the algorithm for linear constraints to general constraints, 
-and another problem arises when we to model the constraints:
-Tthe algorithm must account for errors in the modelled feasible region.
+and another problem arises:
+The algorithm must account for errors in the modelled feasible region.
 // For non-linear constraints, we must model the constraints as well as the objective,
 
 In this image, we see that the by constructing red linearizations of the black constraints,
@@ -75,7 +77,7 @@ Conversely, the linearized feasible region does not allow evaluating some points
 to the concave function on the right.
 Just to be clear, our algorithm may... attempt to evaluate infeasible points.
 However, when it does, it will not have access to the objective or constraint values.
-Therefore, it is preferrable to avoid such evaluations.
+Therefore, it is preferrable to avoid them if possible.
 
 // Ours is the first work to build accurate model functions using only feasible evaluations
 
