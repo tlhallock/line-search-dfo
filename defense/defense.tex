@@ -83,7 +83,7 @@
 
 
 \begin{frame}{Applications}
-	Problems can arise several different ways:
+	Problems can arise several different ways \cite{digabel2015taxonomy}:
 	\begin{itemize}
 		\setlength\itemsep{1.5em}
 		\item Physical models are not meaningful for certain inputs
@@ -94,7 +94,7 @@
 		\end{itemize}
 		\item Simulations may not converge
 		\begin{itemize}
-			\item Inverse Transport Problem \cite{Armstrong}
+			\item Inverse Transport Problem \cite{osti_1247138}
 		\end{itemize}
 	\end{itemize}
 \end{frame}
@@ -142,19 +142,22 @@
 	\end{itemize}
 \end{frame}
 
-
-\begin{frame}{Model Based Trust Region Methods}
+% Remove the outer bullet points
+\begin{frame}{Model-Based Trust Region Methods}
 	\begin{itemize}
-		\item Approximate derivatives of $f$ and $c$ using model functions created from a sample set
-		\item We approximate $f$ using a second order model, meaning that we approximate:
-		\begin{itemize}
-			\item $\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \frac 1 2 \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
-			\item $\fhk \approx \nabla ^2 f(\xk)$
-			\item $\fgk \approx \nabla f(\xk)$
-			\item $\cgk \approx \nabla c_i(\xk)$
-			\item $\mck(x) = \ck + \left(x - \xk\right)^T \cgk \approx c_i(x)$
-		\end{itemize}
-		\item The model's accuracy depends on the sample points chosen
+		\item Approximate $f$ and $c$ using model functions interpolated over a sample set
+		\item We approximate $f$ using a second order model: \\
+			$\mk(x) = \fk + \left(x - \xk \right)^T\fgk + \frac 1 2 \left(x - \xk \right)^T\fhk\left(x - \xk \right) \approx f(x)$
+			\begin{itemize}
+				\item $\fgk \approx \nabla f(\xk)$
+				\item $\fhk \approx \nabla ^2 f(\xk)$
+			\end{itemize}
+			$\mck(x) = \ck + \left(x - \xk\right)^T \cgk \approx c_i(x)$ \\
+			\begin{itemize}
+				\item $\cgk \approx \nabla c_i(\xk)$
+			\end{itemize}
+% 		\end{itemize}
+		\item The model's accuracy depends on the sample point choices
 	\end{itemize}
 \end{frame}
 
@@ -182,14 +185,16 @@
 	\begin{itemize}
 % 		\item We had to modify the convergence analysis in a few significant ways
 		\item The criticality measure $\chi\left(x\right)$ measures how close to optimality a point $x$ may be
+		\item For example, with convex constraints, we can use 
+		$\chi(x) = \left\|P_{F}\left(x - \nabla f \left(x\right)\right) - x \right\|$, \\
+		$\chi^{(k)}_m(x) = \left\|P_{F^{(k)}_m}\left(x - \nabla m^{(k)}_f \left(x\right)\right) - x \right\|$ \\
 % 		\item One of these was within the criticality measure, $\chi(x)$
 		\item If $x$ satisfies the first order necessary conditions for optimality, then $\chi(x) = 0$
-		\item We show that $\chi^{(k)} = \chi\left(\xk\right)$ converges to zero
-		\item We use the projection of the negative gradient onto the constraints
-			$\chi^{(k)} = $
+		\item To show a DFO algorithm converges, we show $\chi\left(\xk\right) \to 0$.
+		This can done by showing $\dk \to 0$ and $\chi^{(k)}_m\left(\xk\right) \to 0$
 	\end{itemize}
 	\begin{center}
-		\includegraphics[width=100px]{images/criticality.png}
+		\includegraphics[width=75px]{images/criticality.png}
 	\end{center}
 \end{frame}
 
@@ -225,7 +230,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % \end{frame}
 
 
-\begin{frame}{Evaluating the trial point}
+\begin{frame}{Evaluating the Trial Point}
 	\begin{itemize}
 		\item After evaluating, we check if the trial point produced enough reduction
 		\item One quantity to measure the model's accuracy and the trial points reduction is
@@ -236,9 +241,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % 		\item Derivative Free Algorithms require the trust region to go to zero
 % 		\item Helps determine new trust region radius
 		\begin{itemize}
-			\item If $\rho_k$ is small, $x^{(k+1)}=\xk$ (reject) and decrease radius
-			\item If $\rho_k$ is intermediate, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and decrease radius
-			\item If $\rho_k$ is large, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and increase radius
+			\item If $\rho_k < \gamma_{\textrm{min}}$, $x^{(k+1)}=\xk$ (reject) and decrease radius
+			\item If $\gamma_{\textrm{min}} \le \rho_k < \gamma_{\textrm{suff}}$, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and decrease radius
+			\item If $\gamma_{\textrm{suff}} \le \rho_k$, $x^{(k+1)}=\xk+s^{(k)}$ (accept) and increase radius
 		\end{itemize}
 	\end{itemize}
 \end{frame}
@@ -251,7 +256,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\begin{itemize}
 		\item Our algorithm is based on a general algorithmic framework proposed by \cite{CONEJO2013324}
 		\item This paper provides convergence analysis, without depending on implementation details
-		\item This framework assumes the following properties
+		\item This framework assumes the following properties:
 			\begin{itemize}
 				\item Quadratic or linear model functions
 				\item Ability to satisfy an efficiency condition
@@ -287,8 +292,8 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		\item The algorithm can satisfy the efficiency condition if it produces trial points that reduce the objective's model:
 		\begin{align*}
 			& m_f^{(k)}\left(\xk\right) - m_f^{(k)}\left(x^{(k+1)}\right) \\
-			& \ge c_1 \chi^{(k)} \min \left\{
-				\frac{\chi^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
+			& \ge c_1 \chi_m^{(k)} \min \left\{
+				\frac{\chi_m^{(k)}}{1 + \left\|\nabla^2 m_f^{(k)}\left(x^{(k)}\right)\right\|},
 				\Delta_k, 1\right\}
 		\end{align*}
 		\item The accuracy condition ensures:
@@ -337,11 +342,18 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	\end{itemize}
 \end{frame}
 
+\begin{frame}{Feasible Derivative Free Trust Regions}
+	\begin{center}
+		\includegraphics[width=150px]{images/all_regions_1.png}
+		\includegraphics[width=150px]{images/all_regions_2.png}
+	\end{center}
+\end{frame}
+
 
 \begin{frame}{Sample Region Requirements}
 	\begin{itemize}
 		\setlength\itemsep{1.5em}
-		\item The sample region is given by
+		\item The sample region is given by the ellipsoid
 \begin{align*}
 \left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^TQ^{(k)}\left(x - c^{(k)}\right) \le \frac 1 2 \delta_k^2 \right\}
 \end{align*}
@@ -352,18 +364,18 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-\begin{frame}{Example Trust Region}
-	\begin{center}
-% 	\includegraphics[width=300px]{images/trust_regions.png}
-		\includegraphics[width=200px]{images/example_ellipsoid.png}
-	\end{center}
-% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
-\end{frame}
+% \begin{frame}{Example Trust Region}
+% 	\begin{center}
+% % 	\includegraphics[width=300px]{images/trust_regions.png}
+% 		\includegraphics[width=200px]{images/example_ellipsoid.png}
+% 	\end{center}
+% % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
+% \end{frame}
 
 
 \begin{frame}{Ellipsoid Construction}
 	\begin{itemize}
-		\item Construct direction feasible with respect to nearly active constraints
+		\item Construct a direction feasible with respect to nearly active constraints
 		\begin{center}
 			\includegraphics[width=150px]{images/active_constraints.png}
 		\end{center}
@@ -387,9 +399,17 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Linear Algorithm Summary}
 	\begin{itemize}
-		\item We implemented accurate model construction by constructing a feasible ellipsoid
-		\item We set the search region to the intersection of the trust region and the 
-		\item By satisfying the conditions for Conejo, we know the criticality measure goes to zero
+		\item We implemented the template provided by Conejo et al
+		\begin{itemize}
+			\item[Step 1] \textbf{Construct a model for the current point} \\
+				\color{blue} Construct feasible ellipsoid, and map to unit sphere \color{black}\\
+				Choose sample points to construct a model \\
+			\item[Step 3] \textbf{Compute the trial step, and evaluate} \\
+				Solve the trust region subproblem \\
+				\color{blue} by searching over $B_{\infty}\left(\xk, \Delta_k\right) \cap F_m^{(k)}$\color{black}
+		\end{itemize}
+		\item This implementation satisfies the conditions for convergence by constructing accurate models
+		\item We also explored more performant implementations, such as using a polyhedral sample region
 	\end{itemize}
 \end{frame}
 
@@ -465,7 +485,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		and that $\mathcal A^{(k)}$ is the set of active constraints at iteration $k$. \\
 		There exists a $\Delta_{\textrm{feasible}} > 0$ such that
 		if $\Delta_k \le \Delta_{\textrm{feasible}}$, then 
-		$\left[\cap_{i \in \mathcal A^{(k)}} C^{(i, k)} \right] \cap \left[B_{\infty}\left(\xk, \Delta_{k}\right) \cup B_{\infty}\left(\xk, \Delta_{k+1}\right)\right] \subseteq F$.
+		$\left[\cap_{i \in \mathcal A^{(k)}} C^{(i, k)} \right] \cap \left[B_{\infty}\left(\xk, \Delta_{k}\right) \cup B_{\infty}\left(x^{(k+1)}, \Delta_{k+1}\right)\right] \subseteq F$.
 	\end{block}
 \end{frame}
 
@@ -537,14 +557,14 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \chi_m^{(k)}(x) = \left\|\xk - \proj_{\feasiblek}\left(x - \nabla m_f^{(k)}(x)\right)\right\|
 \end{align*}
 % 		\item This is still sufficient for general constraints
-		\item We showed that both $\left|\chi_m^{(k)}\left(\xk\right) - \chi\left(\xk\right)\right| \to 0$ 
+		\item We showed that $\left|\chi_m^{(k)}\left(\xk\right) - \chi\left(\xk\right)\right| \to 0$ 
 % 		and $\left|\chi_m^{(k)}\left(\xk\right) - \chi_m^{(l)}\left(x^{(l)}\right)\right| \to 0$
 	\end{itemize}
 \end{frame}
 
 
 
-\begin{frame}{Uniform Convergence of Criticality Measure}
+\begin{frame}{Convergence of Criticality Measure}
 	The criticality measure changes with constraint model changes
 	\begin{center}
 		\includegraphics[width=150px]{images/modeled_constraints_2.png}
@@ -606,9 +626,9 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 			\begin{align*}
 				\begin{array}{ccc}
 					\left\|P_{F_m^{(k)}}\left(\neggrad\right)
-					-  P_{F_m^{(l)}}\left(\neggrad\right)\right\| & \to 0 & \quad \textrm{and} \\
+					-  P_{F_c^{(k)}}\left(\neggrad\right)\right\| & \to 0 & \quad \textrm{and} \\
 					\left\|P_{F_m^{(k)}}\left(\neggrad\right)
-					-  P_{F_c^{(k)}}\left(\neggrad\right)\right\| & \to 0. &
+					-  P_{F_m^{(l)}}\left(\neggrad\right)\right\| & \to 0. & 
 				\end{array}
 			\end{align*}
 		\end{block}
@@ -818,34 +838,34 @@ If $\gamma_{\textrm{min}} > 0$,
 % 
 % \frame{
 % \frametitle{Using Fewer Sample Points}
-%	 \begin{itemize}
-%		 \item With general convex constraints, sufficiently poised sets within the feasible region may not exist.
-%		 \item To illustrate, consider finding a fully quadratic model in 2-dimensions.
-%		 \item As the constraints become more thin,
-%			 \begin{itemize}
-%				 \item The model becomes less poised
-%				 \item There is less need for requiring the model to be quadratic in $y$.
-%			 \end{itemize}
-%		 \item We would prefer to use a subset of all quadratics, with fewer points to approximate them.
-%	 \end{itemize}
+% 	 \begin{itemize}
+% 		 \item With general convex constraints, sufficiently poised sets within the feasible region may not exist.
+% 		 \item To illustrate, consider finding a fully quadratic model in 2-dimensions.
+% 		 \item As the constraints become more thin,
+% 			 \begin{itemize}
+% 				 \item The model becomes less poised
+% 				 \item There is less need for requiring the model to be quadratic in $y$.
+% 			 \end{itemize}
+% 		 \item We would prefer to use a subset of all quadratics, with fewer points to approximate them.
+% 	 \end{itemize}
 % }
 % 
 % \frame {
 % \frametitle{2D Illustration}
-%	 \includegraphics[width=150px]{images/2_2_4_68.png}
-%	 \includegraphics[width=150px]{images/2_3_5_1.png}
+% 	 \includegraphics[width=150px]{images/2_2_4_68.png}
+% 	 \includegraphics[width=150px]{images/2_3_5_1.png}
 % }
-% 
+
 % \frame {
 % \frametitle{Full pivoting}
-%	 \begin{itemize}
-%		 \item One approach is to use full pivoting within the LU factorization used compute the Lagrange polynomials.
+% 	 \begin{itemize}
+% 		 \item One approach is to use full pivoting within the LU factorization used compute the Lagrange polynomials.
 % 
-%		 \item When there are no more pivots greater than a threshold, the LU factorization terminates, and only uses the points and polynomials already computed after zeroing the remaining entries.
-%		 
-%		 \item This method will provide the next point to use as well as the next polynomial to include.
-%		 
-%	 \end{itemize}
+% 		 \item When there are no more pivots greater than a threshold, the LU factorization terminates, and only uses the points and polynomials already computed after zeroing the remaining entries.
+% 		 
+% 		 \item This method will provide the next point to use as well as the next polynomial to include.
+% 		 
+% 	 \end{itemize}
 % }
 % 
 

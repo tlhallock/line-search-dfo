@@ -3,7 +3,7 @@ Mention change in title, examples from stephen wild, terminology from stephen wi
 
 	Title Page:
 Hello, Thank you all for attending
-I am Trever Hallock, studying under Steven Billups, and I am here to talk about an algorithm we developed.
+I am Trever Hallock, studying under Steven Billups, and I am here to talk about some algorithms we developed.
 I hope you enjoy the talk.
 
 
@@ -11,6 +11,8 @@ I hope you enjoy the talk.
 Let's start with what this presentation covers.
 For my thesis, I developed local search, model-based algorithms, for constrained derivative-free optimization.
 The significance of our work is that we address the case of <emph>unrelaxable constraints</emph>.
+In the first draft I provided, I used the word ``partially-quantifiable"; 
+however, after receiving feedback, the correct terminology is unrelaxable.
 Unrelaxable constraints are constraints that provide no meaningful information at infeasible points.
 This means the algorithm must construct accurate models with limited sample point choices.
 
@@ -34,8 +36,8 @@ Because of this, we have removed the usual equality constraints within the formu
 
 	Example:
 Problems with unrelaxable constraints ocurr in several situations.
-Stefan Wild contributed a taxonomy of constraint types, in which we promoted the terminology,
-and provides examples such as the following scenarios.
+Digabel and Wild contributed a taxonomy of constraint types, in which we promoted the term unrelaxable constraint,
+and provide examples such as the following scenarios.
 Sometimes the physical models are not meaningful outside the feasible region, 
 or a simulation may take a long time to converge.
 For example, simulation results may not be meaningful when a quantity representing a fluid's concentration level
@@ -51,13 +53,14 @@ However, the error may quantifiably increase while approaching infeasibility,
 meaning it would possible to model the constraint's boundary.
 
 
-	Strategy:
+	Why are unrelaxable constraints hard?:
 // For simplicity, we first construct an algorithm for unrelaxable <emph>linear</emph> constraints.
 // The main challenge for this algorithm was constructing a feasible sample region.
-Well, ok, unrelaxable constraints exist, what makes them difficult?
+Well, ok, unrelaxable constraints exist, 
+		what makes them difficult?
 We will discuss this in more detail within the background section, 
 but <emph>one</emph> issue is that model-based methods need feasible sample points to construct model functions.
-These images describe the challenge.
+These images illustrate the challenge.
 Without constraints, classic algorithms can choose sample points within a spherical region 
 to ensure these accurate models.
 However, on the right, we see that with unrelaxable constraints, sample points 
@@ -75,8 +78,9 @@ The linearization overestimates the convex constraint on the left, meaning an al
 when it is not.
 Conversely, the linearized feasible region does not allow evaluating some points that are feasible with respect 
 to the concave function on the right.
-Just to be clear, our algorithm may... attempt to evaluate infeasible points.
-However, when it does, it will not have access to the objective or constraint values.
+In a perfect world, we would avoid all infeasible evaluation attempts.
+However, because of these innaccuracies, our algorithm may attempt to evaluate infeasible points.
+When it does, because the constraints are unrelaxable, it will not have access to the objective or constraint values.
 Therefore, it is preferrable to avoid them if possible.
 
 // Ours is the first work to build accurate model functions using only feasible evaluations
@@ -92,10 +96,11 @@ We will start by listing the key steps within a Model-based, trust region algori
 First, we construct a model near the current iterate by choosing sample points from some sample region.
 Next, the algorithm checks its stopping conditions 
 by comparing a criticality measure and the trust region radius to user defined thresholds.
-We then compute and evaluate a trial point by minimizing the objective's model function over a search region.
+we will talk more
+We then compute and evaluate a trial point by minimizing the objective's model function over some search region.
 If the trial point is feasible, and provides the expected reduction, we accept it as the new iterate.
 Otherwise, we decrease the trust region radius about the current iterate for more accurate models during the next iteration.
-
+Let's go into
 
 	Model based trust region method:
 Now, the first step was building models.
@@ -127,9 +132,12 @@ Here, we can see an illustration of how the poisedness of the sample set affects
 The plot on the left shows a model from six points that are nearly perfectly poised.
 Both the model and the true function are plotted, however they are so close that we only see one contour.
 On the right, we see a model of the same function, however the sample points are nearly colinear.
-This means that the model is not accurate near the points edges 0,2 and 2,0: there are fewer sample points nearby.
+This results in a model inaccurate near the edges: there are fewer sample points nearby.
+// points 0,2 and 2,0
 <turn>
-There is a well known model improving algorithm within DFO that can construct well poised points within an ellipsoidal shape.
+XXX cite
+There is a well known model improving algorithm within DFO that can construct 
+well poised points within an ellipsoidal shape.
 However, if a sample region has linear constraints that are narrow, there may be limited sample point choices.
 Sometimes, there may not even be a set of points that are sufficiently poised over the entire trust region.
 
@@ -141,12 +149,15 @@ necessary optimality conditions.
 As such, the criticality measure is commonly used within stopping criteria:
 while the criticality measure is large, the algorithm can still make progress minimizing the objective.
 When it is small, the point may be nearly optimal.
-Our convergence proof ensures that the criticality measure tends to zero. // if the tolerances are set to 0,
 In our case, we measure the criticality by computing the length of the objective's negative gradient's projection 
 onto the constraints.
 If the negative gradient is zero, or points outside the feasible region, than no progress can be made, 
 and we would have a small criticality measure.
+XXXXXXX
+Convergence analysis for ensures that the criticality measure tends to zero. // if the tolerances are set to 0,
 
+
+proximity
 
 plural?
 	Trust region subproblem
@@ -164,9 +175,9 @@ this problem is the original DFO problem with the true functions replaced by the
 
 	Evaluating the Trial Point
 That last step of the algorithm is to evaluate the trial point.
-If the models were not accurate, the true function value may be either larger or smaller than the models predicted.
+If the models were not accurate, the true function value may be either larger or smaller than the models prediction.
 Of course, if it is much smaller, we want to accept the unexpectedly good point anyway.
-But the objective is larger, we may need more accurate models.
+But if the objective is larger, we may need more accurate models.
 The quantity we use to measure this is rho k: the true reduction divided by the expected reduction.
 When the models agree with the true function values, this is 1.
 However, when rho is small or negative, we need to decrease the trust region radius to provide 
@@ -174,10 +185,11 @@ more accurate models during the next iteration.
 
 	
 	Feasible Derivative Free Algorithm:
-We now focus on our algorithms.
-Our algorithm for linear constraints implements a template described by Conejo, Karas, Pedroso, Ribeiro, and Sachine in 2013. 
+With that background. We now focus on our algorithms.
+Our algorithm for linear constraints implements a template described by Conejo, Karas, Pedroso, Ribeiro,
+and Sachine in 2013. 
 Their framework assumes quadratic or linear models that satisfy certain conditions.
-Their development is general, without specifying details such as how to construct models, 
+And their development is general, without specifying details such as how to construct models, 
 or how to solve the trust region subproblem.
 We provide these details using <emph> only feasible function evaluations</emph>.
 These conditions include an efficiency and an accuracy condition, which we will talk about next.
@@ -191,7 +203,7 @@ The efficiency condition requires the algorithm to find a good solution to the t
 In theory, even if each iterate decreases the objective, such as the blue points in the figure,
 the iterates may not reach a minimum.
 If each trial point satisfies the efficiency condition, this cannot happen,
-because the efficiency condition ensures not just that each iterate decreases the objective value like the blue dots,
+because the efficiency condition ensures not just that each iterate decreases the objective value,
 but that the reduction is large enough that the iterates do coverge to a critical point such as the green star.
 Notice that the required decrease in the objective depends on the criticality measure:
 we cannot expect much reduction when we are near a critical point.
@@ -199,7 +211,7 @@ we cannot expect much reduction when we are near a critical point.
 However, this condition is only on the model functions, so we need these to be accurate, 
 to translate this information to the true functions.
 The accuracy condition requires the model's gradient to be close to the true function's gradient.
-By the model's construction, the function value at each sample point is actually equal to the model's value,
+By the model's construction, the function value at each sample point is already equal to the model's value,
 so the correspoding bound on the function value comes for free.
 
 
@@ -238,22 +250,24 @@ A good search region should allow reduction in the objective, and must also be f
 // To facilitate unrelaxable constraints, we created multiple trust regions.
 
 
-	Ellipsoid Requirements:
+	Sample Region Requirements:
 We showed convergence for one particular choice of these trust regions.
-Namely, when then sample region is ellipsoidal, and the search region is the outer trust region intersected with the constraints.
+Namely, when then sample region is ellipsoidal, 
+and the search region is the outer trust region intersected with the constraint linearization.
 More precisely, the sample region is an ellipsoid built with a positive definite, 
 symmetric matrix q, a center c, and a radius determined by delta.
 In Lemma 3.4 of our paper, we show the accuracy of models interpolated from a sample set in this ellipsoid
 depends on the condition number of q.
 Thus, one requirement to satisfy the accuracy condition is a bound on q's condition number independent of the iteration.
-The accuracy condition is explicitly stated on the current iterate, so we require the 
+Also, the accuracy condition is explicitly stated on the current iterate, so we need the 
 ellipsoid to be near the current iterate.
 This is done by requiring the current iterate to be in the ellipsoid formed without the one half present in this equation.
 Alternatively, we could have required the ellipsoid to be large enough.
 Namely, if the ellipsoid had an axis as long as some percentage of the outer trust region radius, 
-the sample points would be accurate over the entire trust region.
+the model would be accurate over the entire trust region.
 The ellipsoid we constructed would... have also satisfied this more restrictive condition.
 Lastly, we require the ellipsoid to be feasible.
+This is easier for linear...
 When we discuss more general constraints, we only make this requirement for sufficiently small delta.
 
 // as we decrease the trust region when a sample point is infeasible.
@@ -278,10 +292,12 @@ There are several possible ellipsoid constructions satisfying our conditions.
 In our paper, we provide a method for one such construction.
 We begin by determining the set of what we call nearly active constraints.
 Nearly active means that the constraint linearization has a zero near the current iterate.
-In this image, one constraint is active while another constraint does not even intersect the current trust region.
+In this image, one constraint is actually active while another constraint does not even intersect 
+the current outer trust region.
 However, another constraint intersects the trust region, although it is not active at the current iterate.
 The set of active constraints and those that intersect the current trust region are considered nearly active.
 If a constraint is not nearly active, all the nearby points will be feasible with respect to that constraint anyway.
+// We actually buffer the outer trust region slightly....
 <turn>
 We can compute a direction that is feasible with respect to all these nearly active constraints.
 We then measure the smallest angle between the feasible direction, depicted in black, and any infeasible direction.
@@ -289,11 +305,13 @@ We construct a second order cone, depicted in yellow for the 2d picture, and blu
 of all that directions that make a smaller angle with the feasible direction.
 Although this cone potentially removes several feasible points, 
 it simplifies the expression for the ellipsoid without hurting the condition number of q unnecessarily.
-The ellipsoid is then constructed within this cone.
+We then construct the ellipsoid within this cone.
 This construction sets the foundation for non-linear constraints as well,
 which we will turn to next.
 
 	Linear Algorithm Summary
+
+
 
 
 	Nonlinear algorithm
@@ -304,7 +322,7 @@ We construct one second-order cone for each nearly-active constraint,
 and then force each sample point evaluation and the trial point to lie within the intersection of these cones.
 We could have used any number of other shapes to buffer the infeasible region, 
 and we considered some within our numerical results.
-
+describe image
 // This introduced a number of challenges.
 // Firstly, limiting the trial point to this smaller search region complicates the efficiency condition.
 // Also, we can no longer calculate the criticality measure based on the true constraints.
@@ -314,7 +332,8 @@ and we considered some within our numerical results.
 
 	Buffering Cones
 // To ensure feasibility with imprecise models of the constraints, 
-The method is as follows.
+The method for con.....
+is as follows.
 Suppose we are at an iterate in green, and the true, nonlinear constraint is in black.
 We first construct the linearization of the constraint, which is depicted in blue.
 <turn>
@@ -329,6 +348,11 @@ This is done for each nearly active constraint, and the intersection of all cone
 We show that for small enough trust region radaii, the intersection of each constraint's cone 
 and the outer trust region is feasible.
 <turn>
+Namely, theorem 4.24 states that the feasible region contains the intersection of the cones intersected
+with both the current outer trust region and the next outer trust region.
+We use both trust regions, so the sample region we construct during iteration $k$ 
+used to construct the next iterate's models is also feasible.
+<turn>
 We can then construct a trial point and sample set within the intersection of these cones.
 <turn>
 Within our paper, we show that a similar construction as used for linear constraints can be applied to find a 
@@ -336,13 +360,14 @@ sample region within this buffered region.
 This is called the convervative ellipsoid within our paper, 
 and it lies within the recession cone of the intersection of each constraint's buffering cones.
 The recession cone is in green in this image, while the constraint's cone are in blue.
+there may be better....
 
 	Sufficient Reduction
 Now that we have constructed a buffered region, we can choose our sample points and trial points inside.
 However, limiting the trial point to lie within the buffered region, limits the amount of reduction possible.
-For example, in this image, the negative gradient is magenta, and the red buffering cone for the active, black constraint
-removes all descent directions.
-This means that for large trust region radaii, there may not be sufficient reduction within the buffered region.
+For example, in this image, the negative gradient is magenta, and the red buffering cone for the active,
+black constraint removes all descent directions.
+This means that in some scenarios, there may not be sufficient reduction within the buffered region.
 <turn>
 By choosing a trial point within this smaller region, 
 we can no longer rely on common trust region subproblem algorithms because
@@ -352,13 +377,13 @@ which projects onto the linearized constraints, not the buffered region.
 We show that such a point does exist within Theorem 4.27.
 However, because it depends on a sufficiently small trust region, 
 we must explicitly check for reduction within our algorithm.
-Notice that this check does not require evaluating the objective or constraints.
+Notice that checking the efficiency condition does not require evaluating the objective or constraints.
 
 <turn>
-In this image the search region is depiced in dark red.
+In this image the search region is depiced in dark red, which is the intersection....
 Because the negative gradient is at the magenta circle,
 it is likely that the solution to the trust region subproblem is at the top most vertex.
-However, it is cumbersome to show that this particular point satisfies the efficiency condition,
+However, it is cumbersome to show that this point satisfies the efficiency condition,
 and we don't need to show this particular point does: we just needed to find some point.
 Here, I illustrate the point that we show satisfies efficiency.
 We first use any classic method to find a point within the constraint's linearization, here depicted in black,
@@ -367,9 +392,11 @@ that does satisfy the efficiency condition,
 This is the inner blue square.
 This is because we still need to move the solution at the blue arrow that is 
 within the constraint's linearization into the buffered region.
-We do this by adding the green arrow, the feasible direction, to ensure that we are once again within the buffered region.
+We do this by adding the green arrow, the feasible direction, 
+to ensure that we are once again within the buffered region.
 Using the smaller trust region radius, ensures we are still within the outer trust region after adding the green arrow.
 In the picture, the feasibility component actually moves us closer, but it need not in general.
+We show that there 
 
 
 	Criticality Measure
@@ -391,14 +418,15 @@ is that how much the projection changes with pertubations of the constraints
 depends on how similar the constraint normals are.
 Consider the two dimenionsal case first.
 In the following image, when two constraint linearizations meet at something close to a 90 degree angle,
-perturbing the black constraints to the blue cibstraints does not move the circle's projection by much.
+perturbing the black constraints to the blue cibstraints does not move the green x's projection by much.
 <turn>
 However, when the constraints make a smaller angle, and we add the <emph>exact</emph> same purtubation,
 the projection moves much farther.
 <turn>
 Thus, we can bound the difference in projections onto two similar 2-d polytopes by measuring the ``angles" 
 the constraints make with eachother.
-Suppose we can bound how far the negative gradient, namely the point we wish to project, is from the the current iterate.
+Suppose we can bound how far the negative gradient, namely the point we wish to project,
+is from the the current iterate.
 That distance is shown with the outer, magenta circle.
 Then any constraints that remove the negative gradient, but are also far from the current iterate
 - atleast farther than the inner circle, cannot make a small angle with each other.
@@ -408,7 +436,6 @@ It is only the constraints that are close to the current itreate that can be a p
 those that are in the green circle.
 We use a regularity condition to bound the distance moved by the projection along these nearly active constraints.
 <turn>
-
 My analysis initially relied on a quantity called the Hoffman constant, 
 which uses the above insight, made explicit by this quantity, 
 to quantify how far the projection can move based on pertubations of the constraints.
@@ -431,10 +458,15 @@ However, rather than just using the active constraints, we use the nearly active
 <turn>
 It would be difficult to satisfy if we use all constraints, 
 because there may be feasible regions that have parallel linearized constraints.
-However, simply having a feasible direction does not bound the angle it makes with the constraints.
-For example, in this image, there are no directions that make a positive dot product with both
-of the blue linearizations of the red constraints constructed at the green point.
-However, as the trust region becomes smaller, it would not contain both these constraints and the green dot.
+However, we can't use only the active contraints, 
+because some constraints arbitrarly close to active be seem active within the model functions.
+Thus, we use the nearly-active constraints: when the trust region becomes small enough, 
+it cannot contain both constraint's linearizations and the green x.
+
+// However, simply having a feasible direction does not bound the angle it makes with the constraints.
+// For example, in this image, there are no directions that make a positive dot product with both
+// of the blue linearizations of the red constraints constructed at the green point.
+
 Thus, we only require a uniformly feasible descent direction for the nearly active constraints.
 <turn>
 But this version is not strong enough.
@@ -442,8 +474,8 @@ For example, consider two constraints depected on the left.
 The feasible region lies between the two constraints.
 The width of the feasible region, as measured by two infeasible directions on either side of the feasible region,
 is depicted on the right.
-It can become arbitrarly small as x moves farther from the viewer.
-If you imagine fitting an ellipsoid within these points, it would become arbitrarly poorly conditioned.
+The points become arbitrarly close as x moves farther from the viewer.
+If you imagine fitting an ellipsoid within these directions, it would become arbitrarly poorly conditioned.
 Thus, we created a uniform bound across all feasible points by introducing a small negative epsilon instead of the zero.
 
 
@@ -455,10 +487,11 @@ Thus, we created a uniform bound across all feasible points by introducing a sma
 
 
 	Ellipsoid Recovery:
-One last topic important to the discussion of our algorithm, is ellipsoid recovery.
-To set the stage, imagine if we started the algorithm with a only single point, 
+One last topic important to the discussion of our algorithm, is feasible ellipsoid recovery.
+To set the stage, imagine that we started the algorithm with a only single point, 
 and we needed to construct an entire feasible sample set.
-We know there is some feasible direction headed away from that point, if we are close enough, but it could be very thin.
+We know there is some feasible direction headed away from that point, if we are close enough,
+but it could be very thin.
 For example, in the image.
 We would have no model functions to even approximate the feasible direction.
 This is why we require a feasible sample region, rather than only a point.
@@ -471,27 +504,28 @@ and no sample region to create models to guess which direction is feasible.
 We do show the existence of a feasible ellipsoid for general non-linear constraints, but
 in pathological cases, finding a sample set with no model information could be computationally expensive.
 Thus, we assume a subroutine capable of finding some feasible sample set.
-Of course, we only need to call this subroutine until the trust region radius is small enough that the buffered region is feasible.
-For convex constraints, this becomes easier, and we provide such a subroutine.
+Of course, we only need to call this subroutine until the trust region radius is small enough
+that the buffered region is feasible.
+Also, for convex constraints, this becomes easier, and we provide such a subroutine.
 
 	Convergence results
 
 	Numerical Results
 We compared our algorithm to three other solvers on the Hock-Schittkowski problem set.
 This is a performance profile, where the y-axis is the ratio of problems solved,
-and the x-axis is the number of evaluations used divided by the algorithm with the fewest evaluations.
+and the x-axis is the number of evaluations used divided by the number used by the algorithm fewest evaluations.
 Algorithms that solved a larger percentage of the problems are higher on the chart,
 while faster algorithms are further to the left.
 PDFO is a collection of algorithms written by Powell, some of these are even used within SCIPY.optimize,
-which is a standard collection of optimization routines in python.
+which is a standard collection of optimization routines for python.
 However, the library we found which explicitly supports general, unrelaxable constraints is NOMAD.
 NOMAD does not use derivative information, and therefore does not model the constraint boundary.
-This means we required far fewer infeasible evaluation attempts.
-However, this also means NOMAD is more robust, and can converge on several poorly conditioned problems.
+This means we required fewer infeasible evaluation attempts than NOMAD.
+However, this also makes NOMAD is more robust, so it can converge on several poorly conditioned problems.
 
 	Contributions:
 So that is our algorithm.
-We believe it is the first model-based DFO algorithm for unrelaxable constraints.
+We believe it is the first model-based DFO algorithm for unrelaxable general, constraints.
 There are other algorithms that avoid infeasible evaluations,....
 To show convergence of our algorithm, we explicitly constructed feasible ellipsoids within linear constraints, 
 and then within a buffered region, which we showed to be feasible.
@@ -522,10 +556,11 @@ This is a similar idea, only it uses the feasible region shape rather than objec
 Lastly, our regularity assumption references model functions directly.
 It would be cleaner to only make assumptions about the true functions, 
 and we do provide a result that suggests it may be possible.
-Namely, we show that after trust region radius decreases to a certain threshold, 
-if the ellipsoid is ever well conditioned, it says that way.
+Namely, we show that after the trust region radius decreases to a certain threshold, 
+if the ellipsoid is ever well conditioned, it stays that way.
 This removes the accuracy condition's dependency on the regularity assumption, 
-so the accuracy condition can translate statements about the true constraints to statements about the model functions.
+so the accuracy condition can translate assumptions about the true constraints to statements about the model functions.
+
 
 
 
