@@ -30,6 +30,7 @@
 
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 \usepackage{color}
 \usepackage{amsmath}
@@ -128,7 +129,7 @@
 \section{Derivative Free Background}
 
 
-\begin{frame}{Model-Based Trust Region Methods}
+\begin{frame}{Model-Based Trust Region Framework}
 	\begin{itemize}
 		\item[Step 1] \textbf{Construct a model for the current point} \\
 			Choose sample points to construct a model
@@ -165,11 +166,11 @@
 \begin{frame}{Geometry of the Sample Set}
 	\begin{itemize}
 		\item<1, 2, 3> Geometry refers to the relative positions of the sample set of sample points
-		\item<1, 2, 3> When the points are not ``well poised", the constructed model can be innacurate \\
+		\item<1, 2, 3> When the points are not ``well poised", the constructed model can be inaccurate \\
 		\only<2>{
 			\includegraphics[width=120px]{images/poised_good.png} \includegraphics[width=120px]{images/poised_bad.png}
 		}
-		\item<3> Constructing poised sets over ellipses is well known
+		\item<3> Constructing poised sets over ellipses is well known \cite{introduction_book}
 		\item<3> Constraints limit what points are available for the sample set
 		\item<3> With narrow constraints, well poised sets may not exist
 		\only<3>{
@@ -254,6 +255,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Feasible Derivative Free Algorithm}
 	\begin{itemize}
+		\setlength\itemsep{1.2em}
 		\item Our algorithm is based on a general algorithmic framework proposed by \cite{CONEJO2013324}
 		\item This paper provides convergence analysis, without depending on implementation details
 		\item This framework assumes the following properties:
@@ -343,6 +345,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 \begin{frame}{Feasible Derivative Free Trust Regions}
+	We map the sample region to a sphere while constructing the sample points
 	\begin{center}
 		\includegraphics[width=150px]{images/all_regions_1.png}
 		\includegraphics[width=150px]{images/all_regions_2.png}
@@ -364,52 +367,48 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 
-% \begin{frame}{Example Trust Region}
-% 	\begin{center}
-% % 	\includegraphics[width=300px]{images/trust_regions.png}
-% 		\includegraphics[width=200px]{images/example_ellipsoid.png}
-% 	\end{center}
-% % \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
-% \end{frame}
-
-
-\begin{frame}{Ellipsoid Construction}
-	\begin{itemize}
-		\item Construct a direction feasible with respect to nearly active constraints
-		\begin{center}
-			\includegraphics[width=150px]{images/active_constraints.png}
-		\end{center}
-	\end{itemize}
+\begin{frame}{Example Trust Region}
+	\begin{center}
+% 	\includegraphics[width=300px]{images/trust_regions.png}
+		\includegraphics[width=200px]{images/example_ellipsoid.png}
+	\end{center}
+% \includegraphics[width=300px]{images/ellipse_at_current_iterate.png}
 \end{frame}
 
 \begin{frame}{Ellipsoid Construction}
 	\begin{itemize}
-		\item Construct direction feasible with respect to nearly active constraints
-		\item Find the widest open rate of a second order cone
+		\item Construct direction feasible with respect to the active constraints \\
+			\begin{align*}
+				\hat u^{(k)} = \argmax_{\|u\| = 1} \min_{i \in \mathcal A_k} u^T \frac{-\nabla m_{c_i}\left(\xk\right)}{\left\|\nabla m_{c_i}\left(\xk\right)\right\|}
+			\end{align*}
+		\item Build an ellipsoid within the widest second order cone
 		\begin{center}
 % 			Include 3d picture
 %			Nearly active constraints
 			\includegraphics[width=100px]{images/unshifted_cone.png}
 			\includegraphics[width=100px]{images/second_order_cone.png}
 		\end{center}
-		\item Compute an ellipsoid within this cone
+% 		\item[\textbf{Step 3}] Compute an ellipsoid within this cone
 	\end{itemize}
 \end{frame}
 
 
 \begin{frame}{Linear Algorithm Summary}
 	\begin{itemize}
-		\item We implemented the template provided by Conejo et al
-		\begin{itemize}
-			\item[Step 1] \textbf{Construct a model for the current point} \\
-				\color{blue} Construct feasible ellipsoid, and map to unit sphere \color{black}\\
-				Choose sample points to construct a model \\
-			\item[Step 3] \textbf{Compute the trial step, and evaluate} \\
-				Solve the trust region subproblem \\
-				\color{blue} by searching over $B_{\infty}\left(\xk, \Delta_k\right) \cap F_m^{(k)}$\color{black}
-		\end{itemize}
-		\item This implementation satisfies the conditions for convergence by constructing accurate models
-		\item We also explored more performant implementations, such as using a polyhedral sample region
+		\item We implemented an instance of Conejo et al's algorithm using only feasible sample point
+		\item We provided a set of criteria for sample regions that provide accurate model functions
+		\item We provided one construction satisfying this criteria
+% 		show how to choose well-poised sample points from an ellipsoidal region
+% 		\begin{itemize}
+% 			\item[Step 1] \textbf{Construct a model for the current point} \\
+% 				\color{blue} Construct feasible ellipsoid, and map to unit sphere \color{black}\\
+% 				Choose sample points to construct a model \\
+% 			\item[Step 3] \textbf{Compute the trial step, and evaluate} \\
+% 				Solve the trust region subproblem \\
+% 				\color{blue} by searching over $B_{\infty}\left(\xk, \Delta_k\right) \cap F$\color{black}
+% 		\end{itemize}
+		\item This implementation satisfies the assumptions used in Conejo's proof
+		\item We also explored other implementations, such as a polyhedral sample region
 	\end{itemize}
 \end{frame}
 
@@ -427,6 +426,8 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 %		 \item To satisfy this, we require the ellipsoid we find to have bounded condition number
 %	 \end{itemize}
 % \end{frame}
+
+
 
 
 \begin{frame}{Nonlinear Algorithm}
@@ -447,6 +448,15 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 % 	\end{block}
 \end{frame}
 
+\begin{frame}{Nearly-Active Constraints}
+	\begin{itemize}
+		\item To construct the buffered region, we first identify nearly active constraints
+		\begin{center}
+			\includegraphics[width=150px]{images/active_constraints.png}
+		\end{center}
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{Buffering Cones}
 	We construct the buffering cones as follows:
 	\begin{center}
@@ -456,7 +466,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Buffering Cones}
-	The cone's vertex is the linearizations zero, scaled towards the current iterate
+	The cone's vertex is the linearization's zero, scaled towards the current iterate
 	\begin{center}
 		\includegraphics[width=200px]{images/explanation_2.png}
 	\end{center}
@@ -472,7 +482,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 
 \begin{frame}{Buffering Cones}
-	We show the intersection of these cones is feasible for small $\Delta_k$
+	We show the buffered region--the intersection of these cones--is feasible for small $\Delta_k$
  	\begin{center}
  		\includegraphics[width=125px]{images/completed_1.png}
  	\end{center}
@@ -480,7 +490,8 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Buffering Cones}
 	\begin{block}{Theorem 4.24}
-		Suppose that $C^{(i, k)}$ is the $i$-th's constraints buffering cone during iteration $k$,
+		Suppose that assumptions $4.4$-$4.9$ hold.
+		Suppose that $C^{(i, k)}$ is the buffering cone for the $i$-th constraint during iteration $k$,
 		that $F$ is the true feasible region,
 		and that $\mathcal A^{(k)}$ is the set of active constraints at iteration $k$. \\
 		There exists a $\Delta_{\textrm{feasible}} > 0$ such that
@@ -490,7 +501,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 \end{frame}
 
 \begin{frame}{Conservative Construction}
-	We can reuse the sample region construction for linear constraints
+	We construct an ellipsoid within the recession cone of the buffered region
 	\begin{center}
 		\includegraphics[width=200px]{images/feasible_direction.png}
 	\end{center}
@@ -516,7 +527,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 	While $\Delta_k$ is large, the buffered region may not provide reduction
 % 	Because $\Delta_k$ must be sufficiently small, we must perform an explicit efficiency check within the algorithm
 	\begin{center}
-		\includegraphics[width=175px]{images/no_reduction.png}
+		\includegraphics[width=150px]{images/no_reduction.png}
 	\end{center}
 % 		\item Thus, we constructed a point that satisfies the efficiency condition within the smaller region
 % 		\item Only works for small $\Delta_k$.
@@ -525,9 +536,10 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Sufficient Reduction}
 	\begin{itemize}
-		\item By buffering the trust region, we limit trial points
-		\item We can no longer use well-known algorithms for computing an efficient trial
+		\item We use the the buffered region as the search region, which limits trial points
+		\item We can no longer use well-known algorithms for computing an efficient trial point
 		\begin{block}{Theorem 4.27}
+			Suppose that assumptions $4.4$-$4.7$ and $4.9$ hold.
 			If $\chi^{(k)} \ge \kappa_{\chi} \Delta_k^{p_{\Delta}}$ and $\Delta_k \le \Delta_{\textrm{sf}}$,
 			then there is a $v$ in the buffered region that satisfies the efficiency condition.
 		\end{block}
@@ -621,6 +633,7 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 		$
 		\item This quantity is bounded by a regularity assumption
 		\begin{block}{Theorem 4.41}
+			Suppose that assumptions $4.3$-$4.9$ hold.
 			Let $F_m^{(k)}$ and $F_c^{(k)}$ be the model's and constraints linearized feasible region for iteration $k$ respectively,
 			and $\neggrad = \xk - \nabla m_f\left(\xk\right)$. Then,
 			\begin{align*}
@@ -639,12 +652,11 @@ s.t.  &  \mck(\xk + s) & \le & 0   \quad \forall \; 1 \le i \le m	   \\
 
 \begin{frame}{Regularity Assumption}
 \begin{itemize}
-\item The Mangasarian-Fromovitz constraint qualification requires
+\item The Mangasarian-Fromovitz constraint qualification at a critical point $x^{\star}$ requires
 \begin{align*}
-\forall x^{\star}, \exists d \in \Rn, \forall i, \\
-c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
+\exists d \in \Rn, \forall i, c_i\left(x^{\star}\right)=0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
 \end{align*}
-\item We strengthened this qualification:
+\item We strengthened this qualification in two ways:
 \begin{align*}
 \forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0
 \end{align*}
@@ -661,12 +673,11 @@ c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarro
 
 \begin{frame}{Regularity Assumption}
 \begin{itemize}
-\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\item The Mangasarian-Fromovitz constraint qualification at a critical point $x^{\star}$ requires
 \begin{align*}
-\forall x^{\star}, \exists d \in \Rn, \forall i, \\
-c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
+\exists d \in \Rn, \forall i, c_i\left(x^{\star}\right)=0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
 \end{align*}
-\item We strengthened this qualification:
+\item We strengthened this qualification in two ways:
 \begin{align*}
 \xout{\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0} \\
 \forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right) \approx 0 \Longrightarrow \nabla c_i\left(x\right)^T d < 0 \\
@@ -687,12 +698,11 @@ c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarro
 
 \begin{frame}{Regularity Assumption}
 \begin{itemize}
-\item The Mangasarian-Fromovitz constraint qualification requires that for any critical point 
+\item The Mangasarian-Fromovitz constraint qualification at a critical point $x^{\star}$ requires
 \begin{align*}
-\forall x^{\star}, \exists d \in \Rn, \forall i, \\
-c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
+\exists d \in \Rn, \forall i, c_i\left(x^{\star}\right)=0 \Longrightarrow \nabla c_i\left(x^{\star}\right)^T d < 0 
 \end{align*}
-\item We strengthened this qualification:
+\item We strengthened this qualification in two ways:
 \begin{align*}
 \xout{\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right)^T d < 0} \\
 \xout{\forall x \exists d \in \Rn\; \forall i, \nabla c_i\left(x\right) \approx 0 \Longrightarrow \nabla c_i\left(x\right)^T d < 0} \\
@@ -711,35 +721,43 @@ c_i\left(x^{\star}\right)=0 \wedge \chi\left(x^{\star}\right) = 0 \Longrightarro
 	\item For general constraints, we assume a recovery subroutine
 	\item For convex constraints, we provide such an algorithm
 	\begin{center}
-		\includegraphics[width=150px]{images/only_one_feasible_point.png}
+		\includegraphics[width=175px]{images/only_one_feasible_point.png}
 	\end{center}
 \end{itemize}
 \end{frame}
 
+\begin{frame}{Ellipsoid Recovery for Convex Constraints}
+	We can construct a sample region within the convex hull of previously evaluated feasible points
+	\begin{center}
+		\includegraphics[width=200px]{images/convex_restoration.png}
+	\end{center}
+\end{frame}
+
 \begin{frame}{Convergence Results: The General Case}
-\begin{block}{Corollary 4.43}
+\begin{block}{Theorem 4.43}
+Suppose that assumptions $4.3$-$4.9$ hold.
 Suppose that $F_c^{(k)}$ is the true feasible region's linearization at $\xk$.
 If $\gamma_{\textrm{min}} = 0$,
 \begin{align*}
-\liminf_{k\to\infty} \left\|P_{F_c^{(k)}}\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
+\liminf_{k\to\infty} \chi\left(\xk\right) = \liminf_{k\to\infty} \left\|P_{F_c^{(k)}}\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
 \end{align*}
 If $\gamma_{\textrm{min}} > 0$,
 \begin{align*}
-\lim_{k\to\infty} \left\|P_{F_c^{(k)}}\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
+\lim_{k\to\infty} \chi\left(\xk\right) = \lim_{k\to\infty} \left\|P_{F_c^{(k)}}\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
 \end{align*}
 \end{block}
 \end{frame}
 
 \begin{frame}{Convergence Results: The Convex Case}
 \begin{block}{Corollary 4.44}
-Suppose that the feasible region $F$ is convex. \\
+Suppose that assumptions $4.3$-$4.8$ hold, and that the feasible region $F$ is convex. \\
 If $\gamma_{\textrm{min}} = 0$,
 \begin{align*}
-\liminf_{k\to\infty} \left\|P_F\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
+\liminf_{k\to\infty} \chi\left(\xk\right) = \liminf_{k\to\infty} \left\|P_F\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
 \end{align*}
 If $\gamma_{\textrm{min}} > 0$,
 \begin{align*}
-\lim_{k\to\infty} \left\|P_F\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
+\lim_{k\to\infty} \chi\left(\xk\right) = \lim_{k\to\infty} \left\|P_F\left(\xk - \nabla f\left(\xk\right)\right) - \xk\right\| = 0.
 \end{align*}
 \end{block}
 \end{frame}
@@ -748,7 +766,8 @@ If $\gamma_{\textrm{min}} > 0$,
 \begin{frame}{Numerical Results}
 	We compared our algorithm to PDFO, NOMAD, and SCIPY.optimize
 	\begin{center}
-		\includegraphics[width=175px]{images/nonlinear_performance_profile.png}
+		\includegraphics[width=150px]{images/nonlinear_performance_profile.png}
+		\includegraphics[width=150px]{images/infeasible_evaluation_ratio.png}
 	\end{center}
 \end{frame}
 
@@ -766,12 +785,12 @@ If $\gamma_{\textrm{min}} > 0$,
 \begin{frame}{Contributions}
 	\begin{itemize}
 		\setlength\itemsep{1.5em}
-		\item First model-based DFO algorithm for non-relaxable constraints
+		\item First model-based DFO algorithm for unrelaxable constraints
 		\item Constructed feasible ellipsoids
 		\item Showed sufficient reduction within a buffered region
 		\item Convergence in criticality measure
-		\item A modified regularity condition
-		\item Numerical results with few infeasible evalution attempts
+		\item A modified regularity assumption
+		\item Numerical results with few infeasible evaluation attempts
 	\end{itemize}
 \end{frame}
 
