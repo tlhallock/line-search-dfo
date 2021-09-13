@@ -752,7 +752,7 @@ Recall that $\lca$ and $\lcb$ are defined by \cref{eq:DFO-linear}.
 For any iterate $k$, if there are no active constraints, $\activei\left(\xk\right) = \emptyset$, then we are free to choose
 \begin{align}
 \label{define_linear_trivial_ellipse}
-\qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \dk.
+\qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \min_{i \in [m] \setminus \activei\left(\xk\right)}{b_i - A_i x}.
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
@@ -840,6 +840,12 @@ This simplifies $\scaledellipsek$ to
 Because $\ellipsek$ is then a sphere within the outer trust region, $\ellipsek \subseteq \polyk$.
 Because the sphere $\scaledellipsek$ is centered at $\xk$, $\xk \in \scaledellipsek$.
 Also, $\condition\left(\qk\right) = 1$.
+
+\color{red}
+\begin{align*}
+\min_{i \in [m] \setminus \activei\left(\xk\right)}{b_i - A_i x}
+\end{align*}
+\color{black}
 \end{proof}
 
 
