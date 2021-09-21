@@ -15,9 +15,10 @@ The first method,  which is described in \cref{sec:ellipsoidal},
 defines $\sampletrk$ to be an ellipsoidal region
 \begin{align}
 \label{define_the_sample_region}
-\sampletrk = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk \right\}
+\sampletrk = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk \right\}.
 \end{align}
-that lies within the intersection of the feasible region and the outer trust region:
+We choose the positive definite, symmetric matrix $\qk$, $\ck \in \Rn$ and $\dk > 0$ so that
+the sample region lies within the intersection of the feasible region and the outer trust region:
 $\sampletrk \subseteq \feasible \cap \outertrk$.
 This is referred to as the {\em ellipsoidal trust region approach}.
 For this approach, we present a method for selecting a well-poised set of sample points by a straightforward application 
@@ -72,13 +73,13 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
             $k\gets 0$,
             and $\alpha > 0$.
             
-        \item[\textbf{Step 1}] \textbf{(Construct the model)} \\
+        \item[\textbf{Step 1}] \textbf{(Construct the Model)} \\
            Construct the trust region $\sampletrk$. \\
 %            $ \sampletrk \gets $ \Call{ConstructTrustRegion}{$\dk, \xk$}.
 %            Ensure that the sample points are poised with respect to $ \sampletrk $ for \cref{accuracy} by calling \cref{model_improving_algorithm}.
            Construct $\mfk$ by calling \cref{model_construction_algorithm} on $\sampletrk$.
         
-        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+        \item[\textbf{Step 2}] \textbf{(Check Stopping Criteria)} \\
             Compute the criticality measure $\chik$ as in \cref{define_criticality_measure}. \\
             If $ \chik < \tau_{\xi} $ and $\dk <\tau_{\Delta}$,  {\bf stop}: return $\xk$ as the solution.   \\
             Otherwise, if $\dk > \alpha \chik$,   
@@ -89,8 +90,8 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
                 $k \gets k+1$ and {\bf go to Step 1}.
            
         
-        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-            Compute $\sk = \argmin_{s \in \searchtrk} \mfk\left(\xk + s\right)$. 
+        \item[\textbf{Step 3}] \textbf{(Solve the Trust Region Subproblem)} \\
+            Compute $\sk = \argmin_{s \in \searchtrk - \xk} \mfk\left(\xk + s\right)$. 
             % \item[] This can also be $\sk = \min_{s \in \outertrk \cap \feasible} \mfk(\xk + \sk)$ depending on the choice made in \cref{which_trust_region}.
             
  		\end{itemize}
@@ -100,7 +101,7 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
  		
  		\begin{algorithm}[H]
  		\begin{itemize}
-        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+        \item[\textbf{Step 4}] \textbf{(Test for Improvement)} \\
             Evaluate $f(\xk + \sk)$ and $\rk$ as in \cref{define_rhok}.
             \begin{itemize}
             	\item If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$.
@@ -130,7 +131,7 @@ Note that we will still have $\|\lctra_i\| = 1$ for each $i \in [m]$.
 \begin{definition}
 \label[definition]{define_suitable_ellipsoid}
 The ellipsoids $\ellipsek$ determined by a positive definite, symmetric matrices $\qk$, centers $\ck \in \Rn$, and radii $\sdk > 0$
-are said to be a \textbf{suitable} if all of the following are satisfied:
+are said to be \textbf{suitable} if all of the following are satisfied:
 \begin{itemize}
 \item[1.] The ellipsoid $\ellipsek = \left\{x \in \Rn \bigg| \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}$ 
 satisfies $\ellipsek \subseteq \polyk$ as defined in \cref{polyhedron_k}
@@ -163,6 +164,10 @@ The function $f$ is twice continuously differentiable with Lipschitz continuous 
 \left\|\nabla^2 f(x) - \nabla^2 f(y)\right\| \le \liphess \left\|x - y\right\| \quad \forall x, y \in \domain.
 \end{align}
 \end{assumption}
+
+\begin{boxedcomment}
+Do we need $f$ to be bounded above (since my models are interpolating $f$)?
+\end{boxedcomment}
 
 
 
@@ -353,13 +358,13 @@ This process is summarized within the following algorithm:
 %         	Iterate $\xk = y^{(0)} \in Y$
         \item[\textbf{Step 1}] \textbf{(Construct the Transformation}) \\
         	Give $\qk$ its eigen-decomposition $\qk = LD^2L^T$  \\
-        	Compute $\delta = \max_{x \in \unshiftedellipsoid} \|x - \ck\|$\\
-			Construct the transformation $T(x) = \delta D L^T(x - \ck)$ wich maps 
+        	Compute $\delta = \max_{x \in \sampletrk} \|x - \ck\|$ as in \cref{define_the_sample_region}\\
+			Construct the transformation $T(x) = \delta D L^T\left(x - \ck\right)$ which maps 
 \begin{align*}
 	T\left(\left\{x \in \Rn \bigg | \left(x - \ck\right) \qk \left(x -\ck\right) \le \frac 1 2 \sdk^2\right\}\right) = B_2(0, \delta).
 \end{align*}
         \item[\textbf{Step 1}] \textbf{(Construct the Sample Set)} \\
-        Construct the tranformed sample set $\hat Y$ by computing $T\left(y^{(i)}\right)$ for each $y^{(i)} \in Y$ \\
+        Construct the transformed sample set $\hat Y$ by computing $T\left(y^{(i)}\right)$ for each $y^{(i)} \in Y$ \\
         Call \cref{model_improving_algorithm} on this sample to produce an improved sample set $\hat Y '$.
         Construct the unshifted sample set $Y'$ by computing $T^{-1}\left(\hat y^{(i)}\right)$ for each $\hat y^{(i)} \in \hat Y'$.
         \item[\textbf{Step 2}] \textbf{(Construct Model Functions)} \\
@@ -387,23 +392,24 @@ but I want to do that after you have made the revisions discussed above and carr
 \label[lemma]{change_radius} 
 % Suppose that \cref{bounded_hessians_assumption}, \cref{lipschitz_gradients_assumption}, and \cref{lipschitz_hessians_assumption} hold.
 
-Assume that a function $f$ is twice continuously differentiable in an open domain $\domain$ containing $B(y^0; \Delta_Y)$ and $\nabla^2 f$
+Assume that a function $f$ is twice continuously differentiable in an open domain $\domain$ containing $B(y^{(0)}; \Delta)$ and $\nabla^2 f$
 is bounded by $\maxhessian$ and Lipschitz continuous in $\domain$ with constant $\liphess > 0$.
 
 % Let $f$ be a function with bounded, Lipschitz continuous hessian.
 
 % Assume that $f$ is twice continuously differentiable with bounded and Lipschitz continuous Hessian in $\domain$ with bound $M$ and Lipschitz constant $\liphess$.
-% Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+% Let $Y$ be a poised set of $p + 1$ points, and let $R = \max_{i}\|y^i - y^{(0)}\|$.
 % Let $m_f(x)$ denote the quadratic model of $f$ using \cref{reg}.
 
-Suppose further, that there exists a quadratic model $m_f$ and constants $\Lambda_1, \Lambda_2, \Lambda_3$ such that for all $x \in B\left(y^0, \Delta\right)$,
+Suppose further, that there exists a quadratic model $m_f$ and constants $\Lambda_1, \Lambda_2, \Lambda_3$ 
+such that for all $x \in B\left(y^{(0)}, \Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1 \\ % \Delta^3
 \left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2 \\ % \Delta^2
 \left\|\nabla^2 f(x) - \nabla^2 m_f(x)\right\| \le \Lambda_3. % \Delta
 \end{align*}
 Then let $r > 1$ be arbitrary.
-There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^0, r\Delta\right)$,
+There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x \in B\left(y^{(0)}, r\Delta\right)$,
 \begin{align*}
 \left|f(x) - m_f(x)\right| \le \Lambda_1' r^2, \\ % \Delta^3
 \left\|\gradf(x) - \nabla m_f(x)\right\| \le \Lambda_2' r, \\ % \Delta^2
@@ -412,7 +418,7 @@ There exist constants $\Lambda_1', \Lambda_2', \Lambda_3'$ such that for all $x 
 \end{lemma}
 
 \begin{proof}
-Let $x \in B\left(y^{0}, r\Delta\right)$, and define
+Let $x \in B\left(y^{(0)}, r\Delta\right)$, and define
 \begin{align*}
 \Lambda_3' = \Lambda_3 + \liphess \Delta, \\
 \Lambda_2' = 2 \Delta M + \Lambda_2 +  \Delta \Lambda_3',\\
@@ -423,34 +429,35 @@ By assumption, $\left\|\nabla^2 f(x) - \nabla^2 f(y)\right\| \le \liphess\left\|
 Because of this, and because $m_f$ is a quadratic model, we have
 \begin{align*}
 \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(x\right)\right\|
-= \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \\
-\le \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| + \left\| \nabla^2 f\left(y^0\right) - \nabla^2 m_f\left(y^0\right)\right\|
+= \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^{(0)}\right)\right\| \\
+\le \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^{(0)}\right)\right\| + \left\| \nabla^2 f\left(y^{(0)}\right) - \nabla^2 m_f\left(y^{(0)}\right)\right\|
 \le \liphess \|x - y\| + \Lambda_3 \le  \Lambda_3' r .
 \end{align*}
 
-By the mean value theorem and by assumption $\left\|\nabla^2 f\right\| \le \maxhessian$, there exists $\xi^1 \in [y^0, x]$ with
+By the mean value theorem and by assumption $\left\|\nabla^2 f\right\| \le \maxhessian$, 
+there exist $\xi^{(1)} \in [y^{(0)}, x]$ and $\xi^{(2)} \in [y^{(0)}, x]$ with
 \begin{align*}
-\left\|\nabla f\left(x\right) - \nabla f\left(y^0\right) \right\|
-\le \left\|x - y^0\right\| \left\| \nabla^2 f\left(\xi^1\right) \right\|
+\left\|\nabla f\left(x\right) - \nabla f\left(y^{(0)}\right) \right\|
+\le \left\|x - y^{(0)}\right\| \left\| \nabla^2 f\left(\xi^{(1)}\right) \right\|
 \le r \Delta \maxhessian, \\
-\left\|\nabla m_f\left(x\right) - \nabla m_f\left(y^0\right) \right\|
-\le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+\left\|\nabla m_f\left(x\right) - \nabla m_f\left(y^{(0)}\right) \right\|
+\le \left\|x - y^{(0)}\right\| \left\| \nabla^2 m_f\left(\xi^{(2)}\right) \right\|
 \le r \Delta \left(\maxhessian + \Lambda_3'\right).
 \end{align*}
 Thus, 
 \begin{align*}
 \left\|\nabla f\left(x\right) - \nabla m_f\left(x\right)\right\| \le 
-\left\| \nabla f\left(x\right) - \nabla f\left(y^0\right) \right\| +
-\left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| + \\ \left\|\nabla m_f\left(y^0\right) - \nabla m_f\left(x\right)\right\|
+\left\| \nabla f\left(x\right) - \nabla f\left(y^{(0)}\right) \right\| +
+\left\|\nabla f\left(y^{(0)}\right) - \nabla m_f\left(y^{(0)}\right)\right\| + \\ \left\|\nabla m_f\left(y^{(0)}\right) - \nabla m_f\left(x\right)\right\|
 \le r \Delta \maxhessian + \Lambda_2 + r \Delta \left(\maxhessian + \Lambda_3'\right) \\
 \le r \left(2 \Delta \maxhessian + \Lambda_2 +  \Delta \Lambda_3'\right)
 \le r \Lambda_2'.
 \end{align*}
 
-Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
+Finally, by the mean value theorem, there is a $\xi^{(3)} \in [y^{(0)}, x]$ with
 \begin{align*}
 \left|f(x) - m_f(x)\right|
-\le \left| f(y^0) - m_f(y^0) \right| + \left\| \nabla f(\xi^2) - \nabla f(\xi^2) \right\| \left\|x - y^0\right\| \\
+\le \left| f\left(y^{(0)}\right) - m_f\left(y^{(0)}\right) \right| + \left\| \nabla f\left(\xi^{(3)}\right) - \nabla m_f\left(\xi^{(3)}\right) \right\| \left\|x - y^{(0)}\right\| \\
 \le \Lambda_1 + \Lambda_2' \Delta r^2
 \le \Lambda_1' r^2.
 \end{align*}
@@ -460,36 +467,36 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 % 
 % 
 % \begin{align*}
-% \left| f(x) -  f\left(y^0\right) \right|
-% \le \left\|x - y^0\right\| \left\| \nabla f\left(\xi\right) \right\|
+% \left| f(x) -  f\left(y^{(0)}\right) \right|
+% \le \left\|x - y^{(0)}\right\| \left\| \nabla f\left(\xi\right) \right\|
 % \le r \Delta \liphess \\
-% \left\|\nabla m_f(x) - \nabla m_f\left(y^0\right) \right\|
-% \le \left\|x - y^0\right\| \left\| \nabla^2 m_f\left(y^0\right) \right\|
+% \left\|\nabla m_f(x) - \nabla m_f\left(y^{(0)}\right) \right\|
+% \le \left\|x - y^{(0)}\right\| \left\| \nabla^2 m_f\left(y^{(0)}\right) \right\|
 % \le r \Delta \left(\liphess + \Lambda_3'\right)
 % \end{align*}
 % Thus,
 % \begin{align*}
 % \left\|\nabla f(x) - \nabla m_f(x)\right\| \le 
-% \left\| \nabla f(x) - \nabla f(y^0) \right\| + \left\|\nabla f(y^0) - \nabla m_f(y^0)\right\| + \left\|\nabla m_f(y^0) - \nabla m_f(x)\right\| \\
+% \left\| \nabla f(x) - \nabla f(y^{(0)}) \right\| + \left\|\nabla f(y^{(0)}) - \nabla m_f(y^{(0)})\right\| + \left\|\nabla m_f(y^{(0)}) - \nabla m_f(x)\right\| \\
 % \le r \Delta \liphess + \Lambda_2 + r \Delta \left(\liphess + \Lambda_3'\right)
 % \le r \left(2 \Delta \liphess + \Lambda_2 +  \Delta \Lambda_3'\right)
 % \le r \Lambda_2'.
 % \end{align*} 
 % 
 % 
-% Define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$, and notice $z \in B_{\infty}\left(y^0, \Delta\right)$.
+% Define $z = y^{(0)} + \Delta\frac{x - y^{(0)}}{\left\|x - y^{(0)}\right\|}$, and notice $z \in B_{\infty}\left(y^{(0)}, \Delta\right)$.
 % 
 % 
 % 
 % Subtracting this from
 % \begin{align*}
-% m_f(x) = m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + (x - y^0)^T\nabla^2 m_f(y^0) (x - y^0),
+% m_f(x) = m_f\left(y^{(0)}\right) + \nabla m_f\left(y^{(0)}\right)^T\left(x - y^{(0)}\right) + (x - y^{(0)})^T\nabla^2 m_f(y^{(0)}) (x - y^{(0)}),
 % \end{align*}
 % 
 % 
 % 
-% and define $z = y^0 + \Delta\frac{x - y^0}{\left\|x - y^0\right\|}$.
-% Because $z \in B\left(y^0, \Delta\right)$, we know that
+% and define $z = y^{(0)} + \Delta\frac{x - y^{(0)}}{\left\|x - y^{(0)}\right\|}$.
+% Because $z \in B\left(y^{(0)}, \Delta\right)$, we know that
 % 
 % \begin{align*}
 % \left|f(z) - m_f(z)\right| \le \Lambda_1 \\ % \Delta^3
@@ -498,22 +505,22 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 % \end{align*}
 % and that there exists 
 % % $\alpha \in [0, 1]$, 
-% $\chi_1 \in [y^0, x]$ and
+% $\chi_1 \in [y^{(0)}, x]$ and
 % $\chi_2 \in [z, x]$
 % such that such that
 % \begin{align*}
-% f(x) &= f(y^0) + \nabla f\left(y^0\right)^T(x - y^0) + \left(x - y^0\right)^T\nabla^2 f (\chi_1)\left(x - y^0\right) \\
+% f(x) &= f(y^{(0)}) + \nabla f\left(y^{(0)}\right)^T(x - y^{(0)}) + \left(x - y^{(0)}\right)^T\nabla^2 f (\chi_1)\left(x - y^{(0)}\right) \\
 % f(x) &= f(z) + \nabla f\left(z\right)^T(x - z) + \left(x - z\right)^T \nabla^2 f (\chi_2)\left(x - z\right) \\
-% m_f(x) &= m_f\left(y^0\right) + \nabla m_f\left(y^0\right)^T\left(x - y^0\right) + \left(x - y^0\right)^T\nabla^2 m_f\left(y^0\right)\left(x - y^0\right)
+% m_f(x) &= m_f\left(y^{(0)}\right) + \nabla m_f\left(y^{(0)}\right)^T\left(x - y^{(0)}\right) + \left(x - y^{(0)}\right)^T\nabla^2 m_f\left(y^{(0)}\right)\left(x - y^{(0)}\right)
 % \end{align*}
 % we have
 % \begin{align*}
-% f(x) - m_f(x) = f\left(y^0\right) - m_f\left(y^0\right) 
-% + \left[\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right]^T\left(x - y^0\right) \\
-% + \left(z - y^0\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^0)\right]\left(z - y^0\right) \\
+% f(x) - m_f(x) = f\left(y^{(0)}\right) - m_f\left(y^{(0)}\right) 
+% + \left[\nabla f\left(y^{(0)}\right) - \nabla m_f\left(y^{(0)}\right)\right]^T\left(x - y^{(0)}\right) \\
+% + \left(z - y^{(0)}\right)^T\left[\nabla^2 f(\chi_1) - \nabla^2 m_f(y^{(0)})\right]\left(z - y^{(0)}\right) \\
 % \left|f(x) - m_f(x)\right| 
-% \le \left|f\left(y^0\right) - m_f\left(y^0\right)\right|
-% + \left\|\nabla f\left(y^0\right) - \nabla m_f\left(y^0\right)\right\| \|
+% \le \left|f\left(y^{(0)}\right) - m_f\left(y^{(0)}\right)\right|
+% + \left\|\nabla f\left(y^{(0)}\right) - \nabla m_f\left(y^{(0)}\right)\right\| \|
 % \end{align*}
 % 
 % 
@@ -529,10 +536,10 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 % 
 % 
 % \begin{align*}
-% \nabla^2 f\left(x\right) \le \nabla^2 f\left(y^0\right) + \liphess \|x - y\| \\
-% \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
-% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| + \left\| \nabla^2 m_f\left(y^0\right) - \nabla^2 f\left(y^0\right)\right\| \le \liphess \|x - y\| \\
-% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^0\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
+% \nabla^2 f\left(x\right) \le \nabla^2 f\left(y^{(0)}\right) + \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 f\left(y^{(0)}\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^{(0)}\right)\right\| + \left\| \nabla^2 m_f\left(y^{(0)}\right) - \nabla^2 f\left(y^{(0)}\right)\right\| \le \liphess \|x - y\| \\
+% \left\| \nabla^2 f\left(x\right) - \nabla^2 m_f\left(y^{(0)}\right)\right\| \le \liphess r + \Lambda_3 \le \left(\liphess + \Lambda_3\right) r \\
 % \end{align*}
 % 
 % 
@@ -547,10 +554,14 @@ Finally, by the mean value theorem, there is a $\xi^2 \in [y^0, x]$ with
 
 
 Given some symmetric matrix $\qk \succ 0$, we can give it an eigen-decomposition $\qk = L D^2 L^T$,
-where $L^TL = I$ and $D$ is a diagonal matrix with nonnegative entries.
-In fact, because we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
+where $L^TL = I$ and $D$ is a diagonal matrix with positive entries.
+% In fact, because we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
 Let $\delta = \max_{x\in \ellipsek}\left\|x-\ck\right\|$ and define $T:\Rn \rightarrow \Rn$ by $T(x) = \delta DL^T\left(x - \ck\right)$.
 Note that $T$ is invertible and maps $ \ellipsek$ onto the $\delta$-ball $B_2(0,\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$.
+
+\begin{boxedcomment}
+Should I use a different letter than $\delta$ here so that it is not confused with $\sdk$?
+\end{boxedcomment}
 
 The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the ellipsoid $\ellipsek$.
 
@@ -590,7 +601,7 @@ the model function $m_f(x) = \hat m_f(T(x))$ satisfies the following error bound
 % \end{align*}
 % so that $\frac{\|T(x-c)\|}{\|x-c\|} \le 
 
-Observe that $\delta = \frac 1 {\sqrt{\lambda_{\text{min}}\left(\qk\right)}} = \frac 1 {\min_{i} D_{i, i}}$.
+Observe that because $D_{i, i} > 0$, we can write $\delta = \frac 1 {\sqrt{\lambda_{\text{min}}\left(\qk\right)}} = \frac 1 {\min_{i} D_{i, i}}$.
 This means that 
 \begin{align*}
 \condition\left(\qk\right) = \kappa\left(D^2\right) = \frac{\max_{i}D_{i,i}^2}{\min_{i}D_{i,i}^2} = \delta^2 \max_{i}D_{i,i}^2 = \delta^2 \|D\|^2 \\
@@ -660,7 +671,7 @@ We can now satisfy the accuracy condition.
 \label{linear_accuracy_is_satisfied}
 Suppose that \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_f}, and \cref{interior_point} hold.
 
-Suppose further that for each iterate $k$, the ellipsoids $\ellipsek$ and $\scaledellipsek$ provided by some \emph{ConstructTrustRegion} subroutine 
+Suppose further that for each iterate $k$, the ellipsoids $\ellipsek$ and $\scaledellipsek$ provided by the \emph{ConstructTrustRegion} subroutine 
 are suitable according to \cref{define_suitable_ellipsoid},
 and the sample set is constructed by calling \cref{model_construction_algorithm}.
 
@@ -686,17 +697,18 @@ The assumptions provide two ellipsoids:
 \end{itemize}
 As in \cref{shifted_ellipsoid}, we can give $Q^{(k)} = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in \unshiftedellipsoid} \|x - \mu^{(k)}\|$, 
 so the transformation $T(x) = \delta D L^T(x - \mu^{(k)})$ maps $E^{(k)}$ to the $\delta$ ball.
-As also described in \cref{shifted_ellipsoid}, we  create shifted functions
+As also described in \cref{shifted_ellipsoid}, we create shifted functions
 $\hat {m}_f(u) = m_f(T^{-1}(u))$ and
 $\hat f (u) = f(T^{-1}(u))$.
-After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that there exists a constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} 
+that there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
 \begin{align*}
 \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3, \\
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2, \\
 \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta.
 \end{align*}
 
-This, along with \cref{lipschitz_hessian}, \cref{uniformly_bounded_hessians_of_f} satisfy the assumptions for \cref{change_radius}.
+This, along with \cref{lipschitz_hessian} and \cref{uniformly_bounded_hessians_of_f} satisfy the assumptions for \cref{change_radius}.
 We can conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
 \begin{align*}
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 4 \Lambda_2 \left(2\delta\right)^2 L \sqrt{p+1} = {\kappa'}_g\delta^2
@@ -745,14 +757,14 @@ This section shows how to construct one possible ellipsoid that satisfies \cref{
 
 We define the active constraints at a point $x \in \feasible$ by
 \begin{align}
-\activei(x) = \left\{i \in [m] | c_i(x) = 0 \Leftrightarrow {\lca}_ix = {\lcb}_i \right\}. \label{define_activei}
+\activei(x) = \left\{i \in [m] | {\lca}_ix = {\lcb}_i \right\}. \label{define_activei}
 \end{align}
 Recall that $\lca$ and $\lcb$ are defined by \cref{eq:DFO-linear}.
 
 For any iterate $k$, if there are no active constraints, $\activei\left(\xk\right) = \emptyset$, then we are free to choose
 \begin{align}
 \label{define_linear_trivial_ellipse}
-\qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \min_{i \in [m] \setminus \activei\left(\xk\right)}{b_i - A_i x}.
+\qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \min\left\{\dk, \min_{i \in [m]}{b_i - A_i x}\right\}.
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
@@ -835,9 +847,9 @@ If $\activei\left(\xk\right) = \emptyset$ during iteration $k$, then \cref{defin
 If $\activei\left(\xk\right) = \emptyset$, then we are free to use \cref{define_linear_trivial_ellipse}.
 This simplifies $\scaledellipsek$ to
 \begin{align*}
-\left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longleftrightarrow \left\|x - \xk\right\|^2 \le \dk^2.
+\left(x - \ck\right)^2 \qk \left(x - \ck\right)^2 \le \sdk^2 \Longrightarrow \left\|x - \xk\right\|^2 \le \dk^2.
 \end{align*}
-Because $\ellipsek$ is then a sphere within the outer trust region, $\ellipsek \subseteq \polyk$.
+Because $\ellipsek$ is then a sphere within the outer trust region with radius less than the distance to the nearest constraint, $\ellipsek \subseteq \polyk$.
 Because the sphere $\scaledellipsek$ is centered at $\xk$, $\xk \in \scaledellipsek$.
 Also, $\condition\left(\qk\right) = 1$.
 
@@ -934,8 +946,12 @@ We can use this to define shifted and unshifted cones about the point $\xk$ alon
     \label{linear_cones_images}
 \end{figure}
 
+\begin{boxedcomment}
+Illustrate the open rate...
+\end{boxedcomment}
+
 Observe that, by construction, $\unshiftedcone$ is feasible with respect to the active constraints.
-That is,  for all $x \in \unshiftedcone$,  and $i \in \activei\left(\xk\right)$, $\lca x \le \lcb_i$.
+That is, $\lca_i x \le \lcb_i$ for all $x \in \unshiftedcone$ and $i \in \activei\left(\xk\right)$.
 \cref{linear_cones_images} contains a depiction of these cones.
 
 
@@ -1247,10 +1263,10 @@ This is because $\det\left(\rotk\right) = 1$ means the condition number of $\qk$
 %
 %\begin{lemma}
 %\label[lemma]{larson_change_radius} 
-%Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^0\|$.
+%Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^{(0)}\|$.
 %Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
 %If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
-%Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^0, R)$,
+%Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^{(0)}, R)$,
 %\begin{align*}
 %\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
 %\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
@@ -1280,7 +1296,7 @@ To ensure the condition number is bounded, the algorithm can compute the conditi
 Alternatively, it could introduce its own bound.
 We found it simplest to parameterize ellipsoids by their Cholesky factorization $\qk = LL^T$.
 Namely, we parameterized the search space in terms of a lower triangular matrix $L$, and required the diagonal entries to be positive.
-To ensure a bounded condition number, we constrain  $\max_{i\in[n]} \le \epsilon_{\alpha} \min_{i \in [n]}$.
+To ensure a bounded condition number, we chose a $\epsilon_{\alpha} > 0$, and constrain  $\max_{i\in[n]} \le \epsilon_{\alpha} \min_{i \in [n]}$.
 % Then requiring a 
 
 One potential difficulty created by moving the ellipsoid center $\ck$ is that the current iterate $\xk$ may not lie within near the resulting ellipsoid.   
@@ -1289,7 +1305,7 @@ Thus, we have implemented a few ways of ensuring the current iterate is within t
 This can be done by either of the following two options:
 \begin{itemize}
 \item Adding a constraint to the ellipsoid problem to include the original point.
-\item Expand the size of the ellipsoid.
+\item Expanding the size of the ellipsoid.
 \end{itemize}
 
 \paragraph*{Adding a constraint.}
@@ -1300,9 +1316,9 @@ In order to include the original point as a constraint, we add a constraint of t
 Constraints of this nature make finding the ellipsoid much more expensive:
 the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
-\paragraph*{Increase the Radius.}
+\paragraph*{Increasing the Radius.}
 An alternative is to scale $\qk$ by a constant.
-We use the scaling factor $\sdk > 0$ defined by
+We use a scaling factor $\sdk > 0$ defined by
 \begin{align*}
 \sdk = \max \left\{1, \sqrt{\left(\xk - \ck \right)^T \qk \left(\xk - \ck \right)} \right\}
 \end{align*}
@@ -1344,7 +1360,7 @@ However, in this section,  we consider the problem of choosing $\qk$ and $\sdk$ 
 Later, in \cref{center_searches}, we will explore strategies for moving the center of the ellipsoid to improve the performance of our trust region algorithm.
 
 We adopt a method similar to that described in \cite{Khachiyan1993},
-which presents an algorithm for finding the maximum volume inscribed ellipsoid for a polytope.
+which presents an algorithm for finding the maximum volume ellipsoid inscribed in a given polytope.
 % For the remainder of this section, we drop the superscript $(k)$ and write
 % \begin{align*}
 % P = \polyk =  \{ x \in \Rn\; | \;  Ax \le b \}.
@@ -1354,14 +1370,14 @@ which presents an algorithm for finding the maximum volume inscribed ellipsoid f
 % \bar{\lctrb}
 Let $\bar g = \lctrb - \lctra \ck$ and $d = x - \ck$ so that the polytope becomes
 \begin{align*}
-\polyk = \left\{ \ck + d \in \Rn \; | \;  \lctra d \le \bar{g} \right\}
+\polyk = \left\{ \ck + d \in \Rn \; | \;  \lctra d \le \bar{g} \right\}.
 \end{align*}
 Using this transformation, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
 \begin{align*}
 E = \left\{ d \in \Rn \; \bigg | \; \frac 1 2 d^T Q d \le 1 \right\}.
 \end{align*}
-Our goal is to determine the matrix $Q$ that maximizes the volume of $E$ such that $\mu + E \subset P$.
-This is accomplished by solving the following problem for $Q$ for a given center:
+Our goal is to determine the matrix $Q$ that maximizes the volume of $E$ such that $\mu + E \subset \mathcal{P}$.
+This is accomplished by defining $\bar b = b - Ac$ and solving the following problem for $Q$ for a given center:
  \begin{align}
 \begin{array}{cc}
  \sup_{Q \succeq 0} & \det(Q^{-1})  \\
@@ -1374,10 +1390,10 @@ This is accomplished by solving the following problem for $Q$ for a given center
 \begin{theorem} 
 Let $\mathcal{P} = \{x \in \Rn | Ax \le b\}$, 
 where $A$ is an $m \times n$ matrix, 
-and $b \in \Rm$.  Let $c \in \intr{P}$.
+and $b \in \Rm$.  Let $c \in \intr{\mathcal{P}}$.
 
 Suppose that $Q$ solves \cref{ellipse_1}, where $\bar{b} = b - Ac$.
-Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maximum volume over all ellipsoids centered at $c$ and contained in $P$.
+Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maximum volume over all ellipsoids centered at $c$ and contained in $\mathcal{P}$.
 \end{theorem}
 
 \begin{proof}
@@ -1399,7 +1415,7 @@ so that
 d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
 \end{align*}
 
-Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
+Because $E \subset \mathcal{P}$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
 \begin{align*}
 \frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1 \\
 \Longrightarrow & \frac 1 2 \bigg(\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i\bigg)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
@@ -1407,7 +1423,7 @@ Because $E \subset P$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
 \Longrightarrow & \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1 \\
 \Longrightarrow & \frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1 \\
 \Longrightarrow & \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i \\
-\Longrightarrow & A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2
+\Longrightarrow & A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2.
 \end{align*}
 
 Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1}$, the maximal ellipsoid is defined by \cref{ellipse_1}.
@@ -1458,7 +1474,8 @@ In \cref{lspc}, for some values of $  \ximin $, there is no point in $ \feasible
     \includegraphics[width=200px]{images/small_sample_region.png}
     \caption[An example of constraints limiting sample point choices.]
     	{An example of constraints limiting sample point choices.
-    	If the constraints remove a large region of the trust region, there may be no feasible $\Lambda$-poised set for sufficiently small $\Lambda$.
+    	If the constraints remove a large region of the trust region,
+    	there may be no feasible $\Lambda$-poised set for sufficiently small $\Lambda>0$.
     }
     \label{lspc}
 \end{figure}
@@ -1490,7 +1507,7 @@ As usual, we may also wish to remove points larger than a certain radius from th
             $  \xi_{\text{cur}} = \xi_{\text{desired}}$.
             
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
-			Compute the next pivot index $j^{\textrm{max}}_i = \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^j\right)\right|$,
+			Compute the next pivot index $j^{\textrm{max}}_i \in \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^j\right)\right|$,
 			and swap points $i$ and $j^{\textrm{max}}_i$ within $Y$.
 			
         \item[\textbf{Step 2}] \textbf{(Check threshold)}
@@ -1529,7 +1546,11 @@ Note that the maximization over $\sampletrk$ to find a replacement point would n
 
 \section{Results}
 
+Here, we present numerical results for our implementations of \cref{linearly_constrained_dfo_simple}.
+
 \subsection{Algorithm Variants}
+
+We begin by describing variants of the algorithm with different \emph{ConstructTrustRegion} subroutines.
 
 \subsubsection{Circular Trust Region}
 The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
@@ -1549,8 +1570,8 @@ Of course, both of these can be done at the same time.
     \includegraphics[width=200px]{images/shifted_center.png}
     \caption[The advantage of not requiring the sample region center to be the trust region center.]{
     	When the current iterate is too close to a constraint, the circular trust region becomes too small.
-    	Shifting the trust region center helps remedy this.
-    	The star is the current iterate, the green is the outer trust region, and blue the inner.
+    	Shifting the trust region center can help remedy this.
+    	The star is the current iterate, the outer trust reigon is in green, and the inner trust region is in blue.
     }
     \label{options_basis}
 \end{figure}
@@ -1567,6 +1588,10 @@ In figure \cref{ellipse_adv}, we have this type of iterate, but by using an elli
     }
     \label{ellipse_adv}
 \end{figure}
+
+\begin{boxedcomment}
+Update this image...
+\end{boxedcomment}
 
 
 More specifically, at iteration $k$, we choose a scaling factor $\sdk$ and solve for an ellipsoid center $\ck \in \Rn$ and positive definite matrix $\qk$ to define an ellipsoid
@@ -1603,7 +1628,7 @@ The simplest approach is to simply let the center of the ellipsoid be the curren
 \subsubsection{Choosing the Ellipsoid Center}
 \label{center_searches}
 
-The most obvious choice for the center of the ellipsoid is to choose $\ck$ (i.e., the current iterate).  
+The most obvious choice for the center of the ellipsoid is to choose $\ck = \xk$ (i.e., the current iterate).  
 However, if $\xk$ is too close to a boundary of the feasible region, this can result in a badly shaped or very small ellipsoid.
 We, therefore, explore strategies where the \emph{ConstructTrustRegion} subroutine moves the center of the ellipsoid away from the boundary. 
 This is depicted in \cref{ellipse_adv}.
@@ -1634,7 +1659,7 @@ The following section addresses this problem by proposing a path search method f
     \includegraphics[scale=0.4]{images/everything_runs_2.png}
     \caption[An example of how the search for the sample region center can go wrong.]{
     	An example of how the search for the feasible region center can go wrong.  
-     	On the left, a very small sample region is selected; however its proximity to the the minimizer over the outer trust region makes the model more accurate at the minimizer.
+     	On the left, a very small sample region is selected; however its proximity to the minimizer over the outer trust region makes the model more accurate at the minimizer.
     	On the right, a sample region with larger volume is chosen, but it is further from the trust region minimizer.
 	}
     \label{ellipse_runs_away}
@@ -1686,9 +1711,9 @@ The center search then considers points along the line segments between these po
 
 More precisely, the first point is chosen to be the current iterate: $s_0 = \xk$.
 The algorithm then repeats the following process for $i$ from $0$ to $n_{\text{points}}-1$.
-First, compute the set of nearest constraints, where the distance from the current point the point $s_i$ to each constraint $A_j$: 
+First, compute the set of nearest constraints, where the distance from the current point $s_i$ to each constraint $A_j$ for $j \in [m]$: 
 is given by $d_j = b - A_j x$.
-Recall that the rows of $A$ are normalized: $\left\|A_i\right\| = 1$.
+Recall that the rows of $A$ are normalized: $\left\|A_j\right\| = 1 \quad \forall j \in [m]$.
 While finding the next point $s_{i+1}$, let  $E$ be the indices of $A$ whose constraints are equidistant and nearest to $s_i$:
 $\{j \in [m] | d_j = \min_{l \in [m]} d_l\}$.
 Let the remaining indices be $R = [m] \setminus E$.
@@ -1696,10 +1721,10 @@ The algorithm chooses a search direction $p = {A_E}^Tr$ as a linear combination 
 %When the constraint violation of $s_i$ is non-zero, this search ray can be found by finding the point that doubles the current slack ${A_E}s_i-{b_E}$.
 %This is given by $r{A_E}^T$ where $r$ solves the linear system ${A_E}(s_i + r{A_E}^T) - b_E = 2 ({A_E}n_i - b_E)$.
 %If the current violation is zero, then the right hand side can be set to a vector of all ones to ensure that all slacks violations are the same: $A_E(s_i + r{A_E}^T) - b_E = 1$.
-This search ray can be found by setting the slack of each equidistant constraint to twice its current value:
+This search ray can be found by computing a point whose distance to each equidistant constraint to twice the current value:
 $ b_E - A_E(s_i + {A_E}^Tr) = 2 \left[b_E - A_Es_i\right] \Longrightarrow r = \left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_i\right)$.
 % $A_E(s_i + r{A_E}^T) - b_E = 1$.
-We can travel along this ray until we reach a point that is the same distance to a remaining face.
+We can travel along this ray until we reach a point that is the same distance to a remaining constraint.
 By travelling a distance $t$, we see that the $j$-th constraint becomes active when
 $A_j (s_i + t p) = b_j \Longrightarrow t = \frac{b_j - A_j s_i}{A_jp}$
 so that we can travel by 
@@ -1762,11 +1787,22 @@ Notice that with two line segments, the algorithm can already choose new centers
     \label{line_can_run}
 \end{figure}
 
+\begin{boxedcomment}
+Update this image...
+\end{boxedcomment}
+
+
+\subsection{Buffered Segments}
+Even with these modification, the iterates may approachthe boundary of the feasible region.
+Another way of dealing with this is to shift the constraints closer to the current iterate.
+Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
+Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
+This produces the buffered segment searches within the results.
 
 \paragraph*{Circumscribed ellipse}
 
 We also implemented a variant of the algorithm in which the sample region is a smallest volume ellipsoid to contain the feasible region.
-Notice the ellipsoid necessarily includes points that are outside the current trust region and likely infeasible points.
+Notice the ellipsoid necessarily includes points that are outside the current trust region and may include infeasible points.
 Thus, both the trust region and linear constraints have to be added to the optimization problem defining the replacement point while computing the Lagrange polynomials.
 For more details about this modified model improvement algorithm, see \cref{sec:polyhedral}.
 
@@ -1776,7 +1812,7 @@ We let $f(x) = \epsilon x + (1-\epsilon)(y - \alpha x \sin(\gamma x))^2$ for a f
 $x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
 We summarize the number of function evaluations and iterations taken within \cref{linear_pathological_results}.
 
-In general, the linear models converge more quickly with fewer evaluations than quadratic models.
+In general, we notice the linear models use fewer evaluations than quadratic models.
 We see that the method with the fewest iterations and function evaluations is the linear polyhedral shape.
 This is likely because the polyhedral shape is allowed to search the entire outer trust region.
 This also explains why the circumscribed ellipse and maximum volume simplex also perform well.
@@ -1825,13 +1861,6 @@ Notice that the polyhedral search does very well.
 We conjecture that this may not hold with modeled, nonlinear constraints.
 
 
-\subsection{Summary}
-We still experienced a problem with iterates coming too close to the boundary of the feasible region.
-Another way of dealing with this is to shift the constraints closer to the current iterate.
-Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
-Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
-Before doing this, the rows of $A$ are normalized.
-This produces the buffered segment searches within the results.
 
 % \color{red}
 % 
