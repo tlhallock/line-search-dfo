@@ -27,6 +27,8 @@
 \usepackage{moreverb}
 \usepackage{fancyhdr}
 \usepackage{geometry}
+\usepackage{times}
+\usepackage{titlesec}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special commands for
@@ -43,27 +45,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special class file commands
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-\geometry{ % 1.5in On Left, 1.0in On top/bottom/Right, gives 6x9 For text
-  body={6in, 9in},
-  left=1.5in,
+\geometry{
+%   body={6in, 9in},
+  left=1in,
   top=1in,
-  footskip=.25in % puts .3in between text/footer, so footer Is .75in from bottom of page.
+  right=1in,
+  bottom=1in
+%   footskip=.25in % puts .3in between text/footer, so footer Is .75in from bottom of page.
 }
 
-% Horizotal Margins - removed, overruled by "geometry" package.
-%\setlength{\evensidemargin}{0in} % For two-sided printing
-%\setlength{\oddsidemargin}{.5in}
-%\setlength{\textwidth}{6in}
-% Vertical Margins
-%\setlength{\topmargin}{0in}
-%\setlength{\headheight}{0in}
-%\setlength{\headsep}{0in}
-% 1.5 inch top margin
-%\setlength{\textheight}{8in}
-% 1.5 inch bottom margin (footer .75 in from bottom)
-%\setlength{\footskip}{0.7in}
-
-\setlength{\parindent}{4ex}
+\setlength{\parindent}{0.5in}
 \setlength{\arraycolsep}{0.25\arraycolsep}
 \tolerance=500
 
@@ -97,7 +88,7 @@
 \@addtoreset{subsubsection}{subsection}
 \setcounter{secnumdepth}{3}
 \renewcommand{\thepart}{}
-\renewcommand{\thechapter}{\arabic{chapter}}
+\renewcommand{\thechapter}{\Roman{chapter}}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}
 \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
@@ -406,19 +397,19 @@
 }
 \renewcommand{\@chapter}[2][]{%
   \refstepcounter{chapter}
-  \begin{flushleft}
+  \begin{centering}
   {\bf\thechapter.~~#2}
-  \end{flushleft}
-  \vspace{-1em}
+  \end{centering}
+%   \vspace{-1em}
   \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}#1}
   \@afterheading
 }
 \renewcommand{\@schapter}[1]{%
   \clearpage
-  \begin{flushleft}
+  \begin{centering}
   {\bf#1}
-  \end{flushleft}
-  \vspace{-1em}
+  \end{centering}
+%   \vspace{-1em}
   \@afterheading
 }
 
@@ -430,11 +421,11 @@
 }
 \newcommand{\@section}[2][]{%
   \refstepcounter{section}
-  \begin{flushleft}
+  \begin{centering}
   {\bf\thesection~~#2}
-  \end{flushleft}
+  \end{centering}
   \vspace{-1em}
-  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}
+  \addcontentsline{toc}{section}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssection}[1]{%
@@ -458,14 +449,14 @@
   {\bf\thesubsection~~#2}
   \end{flushleft}
   \vspace{-1em}
-  \addcontentsline{toc}{subsection}{\protect\numberline{\thesubsection}#1}
+  \addcontentsline{toc}{subsection}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssubsection}[1]{%
   \clearpage
-  \begin{flushleft}
+  \begin{centering}
   {\bf#1}
-  \end{flushleft}
+  \end{centering}
   \vspace{-1em}
   \@afterheading
 }
@@ -478,19 +469,17 @@
 }
 \newcommand{\@subsubsection}[2][]{%
   \refstepcounter{subsubsection}
-  \begin{flushleft}
+  \begin{centering}
   {\bf\thesubsubsection~~#2}
-  \end{flushleft}
-  \vspace{-1em}
-  \addcontentsline{toc}{subsubsection}{\protect\numberline{\thesubsubsection}#1}
+  \end{centering}
+  \addcontentsline{toc}{subsubsection}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssubsubsection}[1]{%
   \clearpage
-  \begin{flushleft}
+  \begin{centering}
   {\bf#1}
-  \end{flushleft}
-  \vspace{-1em}
+  \end{centering}
   \@afterheading
 }
 
@@ -525,11 +514,11 @@
     \@afterheading
   }
 
-  \renewcommand{\thechapter}{\Alph{chapter}}
+  \renewcommand{\thechapter}{\Roman{chapter}}
 
   \setcounter{chapter}{0}}
 
-  {\renewcommand{\thechapter}{\arabic{chapter}}
+  {\renewcommand{\thechapter}{\Roman{chapter}}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
