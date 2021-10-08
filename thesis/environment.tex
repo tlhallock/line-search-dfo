@@ -48,6 +48,16 @@
 \crefname{assumptioncounter}{Assumption}{assumption}
 
 
+% \newenvironment{myalgorithm}
+% 	{
+% 		\begin{flushleft}
+% 			\makebox[\linewidth]{%
+%   			\begin{minipage}{\dimexpr\linewidth-5em}
+% 		
+% 	{
+% 	}
+
+
 \newenvironment{boxedcomment}
 	{
 		\ifbool{showcomments}{
@@ -66,7 +76,7 @@
 	}
 
 
-\def\proof{\par{\it Proof}. \ignorespaces}
+\def\proof{\begin{flushleft}\par{\it Proof:}\end{flushleft} \ignorespaces}
 
 \def\endproof{\vbox{\hrule height0.6pt\hbox{%
    \vrule height1.3ex width0.6pt\hskip0.8ex

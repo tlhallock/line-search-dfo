@@ -2,7 +2,7 @@
 
 \sbnote{State the bilevel program for the maximum volume ellipsoid.}
 %
-\sbnote{Clean up the alignment of equations.}
+% \sbnote{Clean up the alignment of equations.}
 % \item Change $B_{\infty}(\xk,\dk)$ to $\outertrk$ throughout chapter 4.  Also make sure that $\outertrk$ and $\outertrkpo$ are being used correctly.
 % \item Fix inconsistencies in notation for condition number.  $\kappa$ versus $\sigma$.
 % \item The Ideal Solution section doesn't actually spell out an algorithm for finding the maximum volume ellipsoid within $\capcones \cap \outertrkpo$.   You really only describe how to check whether an ellipsoid is contained within a cone.    So I think it would be more honest (and actually would be a more sensible flow of logic) to rename the section as ``Checking if an ellipsoid is contained in a cone''.
@@ -161,6 +161,7 @@ within the intersection of the buffering cones and an outer trust region.
 
 \section{Buffering Cones}
 \label{buffering_cones}
+
 As discussed above, both the sample trust region and the search trust will be defined based on a set of buffering cones associated with the nearly active constraints.   
   
 Let $\zik$ denote the projection of the current iterate $\xk$ onto the hyperplane defined by the $i$-th constraint model.
@@ -262,6 +263,7 @@ Therefore, to obtain feasible sample points, we require that
 
 \section{The Sample Trust Region}
 \label{possible_ellipsoids}
+
 The sample trust region $\sampletrk$ is an ellipsoidal region defined by an $n\times n$ symmetric, positive definite matrix $\qk$, center $\ck \in \Rn$, 
 and size determined by a parameter $\delta_{k} > 0$:
 \begin{align}
@@ -352,8 +354,7 @@ In particular, in the definition of ``trusted'', this ellipsoid is $\unshiftedel
 %Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
-
-\subsection{Maximal Volume Sample Region}
+\subsection{Maximal volume sample region}
 \label{ideal_ellipsoid_in_polyhedron}
 \label{ellipsoid_in_cone}
 
@@ -667,7 +668,7 @@ An example plot of such a function $f$ is found within \cref{antiprojection_imag
 % Although not efficient, this can be used to find a large ellipsoid within the buffering cones.
 
 
-\subsection{Spherical Solution}
+\subsection{Spherical solution}
 \label{spherical_solution_description}
 
 One simplification that allows an explicit formulation is to restrict the ellipsoid to be a sphere.
@@ -793,6 +794,7 @@ with squared distance
 
 We summarize the previous statements here:
 \begin{lemma}
+
 Let $t \in \reals$, $y \in \mathbb R^{n-1}$, and $\beta' > 0$.
 Then the point
 \begin{align*}
@@ -850,7 +852,7 @@ Notice that this optimization problem is not convex.
 Although more efficient formulations may exist, this leads us to believe that it may sometimes be expensive
 to even compute the maximum volume sphere within the buffering cones.
 
-\subsection{Conservative Ellipsoid}
+\subsection{Conservative ellipsoid}
 \label{the_conservative_ellipsoid}
 % \sbnote{I think it would be better to reorganize this section by defining the method for constructing the ellipsoid first, and then discuss its properties.
 % In other words, move \cref{ellipsoids_notation_definitions} to \cref{feasible_ellipsoid_analysis}}
@@ -865,7 +867,7 @@ This ellipsoid is constructed in \cref{conservative_ellipsoid_construction}, and
 % \section{Conservative Ellipsoid Derivation}
 % \label{constructing_and_analysizing_conservative_ellipsoid}
 
-\subsubsection{Ellipsoid Definition}
+\subsubsection{Ellipsoid definition}
 \label{conservative_ellipsoid_construction}
 
 % However, we are able to show that this ellipsoid satisfies each of the requirements stated in \cref{ellipsoids_notation_definitions}.
@@ -971,6 +973,7 @@ This is shown within \cref{ellsoid_is_suitable_theorem_p1} and \cref{ellsoid_is_
 
 \begin{lemma}
 \label[lemma]{ellipse_in_cone}
+
 Define $f_e$ by \cref{define_ellipse_function}.
 Let $0 < \delta \le \epsilon$ and $\theta > 0$.
 
@@ -981,6 +984,7 @@ We have
 \end{lemma}
 
 \begin{proof}
+
 Let $x$ be such that $f_e(\epsilon, \delta, \theta, x) \le 0$.
 First, note that a square is non-negative, so
 \begin{align*}
@@ -1033,10 +1037,12 @@ where we can take the square root because $e_1^Tx \ge 0$.
 
 \begin{lemma}
 \label[lemma]{ellipse_fits}
+
 Define $f_e$ by \cref{define_ellipse_function}.
 We have that $f_e(\delta, \sqrt{2}\delta, \theta; 0) = 0$ for any $\delta, \theta > 0$.
 \end{lemma}
 \begin{proof}
+
 We compute
 \begin{align*}
 f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\begin{pmatrix}
@@ -1058,6 +1064,7 @@ f_e(\delta, \sqrt{2}\delta, \theta; 0) =(0 - \delta e_1)^T\begin{pmatrix}
 
 \begin{lemma}
 \label[lemma]{ellipse_fits_part_2}
+
 Define $f_e$ by \cref{define_ellipse_function}.
 
 Suppose that for some $s \in \Rn$ with $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2, 1\right]$, $\delta \in [0, \frac 1 2]$ and $f_e(\delta, \delta, \theta; ts) \le 0$.
@@ -1065,6 +1072,7 @@ Suppose that for some $s \in \Rn$ with $\|s\| = 1$, $s^Te_1 \in \left[\frac 1 2,
 Then $t \le \left(2 + \sqrt{2}\right) \delta$.
 \end{lemma}
 \begin{proof}
+
 Notice that $s^Te_1 - \delta \in \left[0, 1\right]$.
 and $\left[\left(ts^Te_1 - \delta\right) e_1 + t\left(s - \left(s^Te_1\right) e_1\right)\right] = ts - \delta e_1$
 so that
@@ -1099,6 +1107,7 @@ However,
 
 \begin{lemma}
 \label[lemma]{boundbsk}
+
 Let $\beta$, $\bsk$, $\thetamink$, and $p_{\beta}$ be defined by \cref{define_abpab}, \cref{define_bsk}, \cref{define_thetamink}, and \cref{define_abpab}.
 
 If $\dk^{p_{\beta}} \le \frac {1} {4\beta}\left(\thetamink\right)^2$, then $\bsk \le 1 - \frac 1 4 \left(\thetamink\right)^2$.
@@ -1106,6 +1115,7 @@ If $\dk^{p_{\beta}} \le \frac {1} {4\beta}\left(\thetamink\right)^2$, then $\bsk
 
 
 \begin{proof}
+
 First note that $\thetamink \le 1$ and $p_{\beta} \in (0, 1)$, so that $\beta \dk \le \frac 1 4$.
 Because $\left(\thetamink\right)^2 \ge 4\beta\dk^{p_{\beta}}$,
 \begin{align*}
@@ -1216,6 +1226,7 @@ and
 
 \begin{lemma}
 \label[lemma]{boundbeta}
+
 Let $\beta$, $\thetamink$, and $\qkpo$ be defined by \cref{define_abpab}, \cref{define_thetamink}, and \cref{define_ellipsek} respectively.
 
 If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\condition \left(\qkpo\right) \le 12 \left(\thetamink\right)^{-2}$.
@@ -1225,6 +1236,7 @@ If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\condition \left
 \end{lemma}
 
 \begin{proof}
+
 Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma} respectively.
 Also, during iteration $k$, let $\bs$ be defined by \cref{define_bs}.
 % Definition \cref{define_ellipsek} states
@@ -1266,6 +1278,7 @@ as $\det\left(\rotk\right) = 1$.
 
 \begin{lemma}
 \label[lemma]{cone_subset_cone}
+
 Given $u, v \in \Rn$, and $\gamma \in (0, 1]$, $\beta \in [0, \gamma)$ that satisfy $\|u\| = \|v\|= 1$, $u^Tv = \gamma$, define
 \begin{align*}
 B = \{x\in\Rn | {v}^Tx \ge \beta\|x\|\}, \quad
@@ -1275,6 +1288,7 @@ Then, $S \subseteq B$.
 \end{lemma}
 
 \begin{proof}
+
 For a contradiction, let $y \in \Rn$ be such that $y \not \in B$ and $y \in S$ and define $\hat y = \frac{y}{\|y\|}$.
 That is,
 \begin{align}
@@ -1340,6 +1354,7 @@ Thus, any $y \in\Rn$ with $y \in S$ must also have $y \in B$.
 
 \begin{lemma}
 \label[lemma]{large_zik_means_means_no_intersection}
+
 Let
 $\zik$ and $\fik$
 be defined by
@@ -1351,6 +1366,7 @@ For any $R > 0$ and $K > R\sqrt{n}$, there exists $\deltalargzik > 0$ such that 
 then $B_{\infty}\left(\xk, R \dk\right) \subseteq \fik$.
 \end{lemma}
 \begin{proof}
+
 Let $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$ be defined by \cref{define_abpab}.
 We can define
 \begin{align}
@@ -1410,6 +1426,7 @@ Putting this together, we see
 
 \begin{lemma}
 \label[lemma]{inner_cone_inside_each_cone}
+
 Let $\fcki$ and $\capcones$ be defined by \cref{define_inner_cone} and \cref{define_capcones} respectively.
 If 
 % $\dk \le 1$ and 
@@ -1418,6 +1435,7 @@ $\xkpo \in \capcones$, then $\fcki \subseteq \capcones$.
 % \left(\frac 1 {\beta} \sqrt{\frac 3 4}\right)^{\frac 1 {p_{\beta}}}
 
 \begin{proof}
+
 Let 
 $\huk$, $\bsk$, $\thetamink$, $\activeconstraintsk$, and $\fik$
 be defined by
@@ -1474,6 +1492,7 @@ Thus, $\fcki \subseteq \fik$.
 
 \begin{lemma}
 \label[lemma]{ellsoid_is_suitable_theorem_p1}
+
 Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
 If $\activeconstraintsk = \emptyset$ and $\dkpo \le \omegainc\dk$, 
 then there exists $\deltalargzik>0$ such that if $\dk \le \deltalargzik$ the
@@ -1483,6 +1502,7 @@ are trusted, and adjacent according to \cref{ellipsoids_notation_definitions}.
 % satisfy \cref{ellipsoids_notation_definitions}.
 \end{lemma}
 \begin{proof}
+
 Also, \cref{define_suitable_close_to_iterate} is satisfied because $(\xkpo - \xkpo)^T\qkpo(\xkpo - \xkpo) = 0 \le \sdkpo^2$.
 Let $\omegainc$, $\capcones$, $\fik$, and $\zikthresh$ be defined by \cref{define_the_omegas}, \cref{define_capcones}, \cref{define_fik}, and \cref{define_zikthresh} respectively.
 Because $\activeconstraintsk = \emptyset$, we can use 
@@ -1498,6 +1518,7 @@ Thus, \cref{define_suitable_in_tr} is satisfied because
 
 \begin{lemma}
 \label[lemma]{ellsoid_is_suitable_theorem_p2}
+
 Let $\activeconstraintsk$ 
 % and $\omegainc$ 
 be defined by 
@@ -1518,6 +1539,7 @@ then the ellipsoids defined by \cref{define_ellipsek} are trusted and adjacent a
 % as in \cref{define_ellipsek}.
 \end{lemma}
 \begin{proof}
+
 Let $\rotk$, $\gamma$, $f_e$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{define_ellipse_function}, and \cref{define_bs} respectively.
 % Definition \cref{define_ellipsek} states
 % \begin{align*}
@@ -1589,7 +1611,7 @@ But for large $\dk$, there is no such guarantee, so we must consider how to reco
 This section describes methods for recovering a feasible ellipsoid.
 Note that for general constraints, we will later assume the existence of such an algorithm in \cref{restorability_assumption}.
 
-\subsection{Convex Feasible Region}
+\subsection{Convex feasible region}
 \label{convex_restoration}
 % If the feasible region is convex,  (for example, when the constraints are quasi-convex),
 %\section{Recover Feasible Ellipsoid}
@@ -1665,9 +1687,13 @@ This means that the interior of the convex hull of previously evaluated points w
 % \end{array}
 % \end{align}
 
-
 To do this, we first construct the convex hull of the points 
 Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in the previous iteration.
+
+{
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{flushleft}
+
 
 \begin{algorithm}[H]
     \caption{Restore a feasible ellipsoid with convex constraints}
@@ -1684,6 +1710,10 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
 	   Construct an ellipsoid within $\hullpoly \cap \trk$ \\
     \end{itemize}
 \end{algorithm}
+
+\end{flushleft}
+\end{fullwidth}
+}
 
 
 % We can then construct a feasible ellipsoid within the convex hull of the previous feasible points and the current iterate.
@@ -1801,9 +1831,9 @@ We summarize what we have shown here:
 % \end{align*}
 
 
-\subsection{Non-Convex Feasible Region}
+\subsection{Non-convex feasible region}
 
-\subsubsection{Problem Difficulty}
+\subsubsection{Problem difficulty}
 
 For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
 This means that the current iterate lies within the interior of the feasible region,
@@ -1827,6 +1857,10 @@ but it is still possible to exhaustively search over possible sample region atte
 % \item Decrease trust region radius
 % \end{itemize}
 
+{
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{flushleft}
+
 
 \begin{algorithm}[H]
     \caption{Recover Feasible Ellipsoid for Non convex constraints}	
@@ -1847,12 +1881,16 @@ but it is still possible to exhaustively search over possible sample region atte
     \end{itemize}
 \end{algorithm}
 
+\end{flushleft}
+\end{fullwidth}
+}
+
 With an adequate choice of directions, we believe this algorithm would eventually find a feasible ellipsoid.
 However, rather than discussing this further, we believe it is cleaner to assume the existence of such an algorithm.
 Thus, we make \cref{restorability_assumption}.
 In many situations, there may be more practical means of finding a feasible sample set.
 
-\subsubsection{Ellipsoid Existence}
+\subsubsection{Ellipsoid existence}
 
 In the case of a non-convex feasible region, one must ask whether an acceptable ellipsoid even exists.
 This section answers that question in the affirmative if we assume that the following regularity condition is satisfied.
@@ -1891,6 +1929,7 @@ $\left|c_i(x)\right| \le \minangledelta \left\|\nabla c_i(x)\right\|_{\infty}$.
 With this assumption, we are able to show a family of feasible ellipsoids about any feasible point.
 
 \begin{theorem}
+
 \label{nonconvex_ellipsoid_existence}
 Let $\feasible$ and $f_e$ be defined by \cref{define_feasible} and \cref{define_ellipse_function} respectively.
 
@@ -2262,6 +2301,11 @@ The algorithm is as follows:
 % \end{tabular}
 \newpage
 
+{
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{flushleft}
+
+
 \begin{algorithm}[H]
     \caption{Always-feasible Constrained Derivative Free Algorithm}	
     \label{constrained_dfo}
@@ -2325,6 +2369,10 @@ k \gets 0; &
 % 		\begin{itemize}
     \end{itemize}
 \end{algorithm}
+
+\end{flushleft}
+\end{fullwidth}
+}
 
 % \begin{comment}
 % We take a moment to make some observations about the algorithm.
@@ -2462,6 +2510,7 @@ We include references to their definitions when used.
 
 
 \subsection{Assumptions}
+
 Here, we explicitly state the assumptions required for convergence of \cref{constrained_dfo}.
 Let $\domain$ be some open region containing $\feasible$ defined in \cref{define_feasible}.
 We assume the following for the results in this section:
@@ -2709,8 +2758,9 @@ $x$, $\Delta$, feasible, adjacent to $x$, and non-empty according to \cref{ellip
 
 
 
-\subsection{More Properties of the Conservative Ellipsoid}
+\subsection{More properties of the conservative ellipsoid}
 \label{bounded_condition_numbers_section}
+
 In this section, we show that the condition numbers $\condition\left(\qk\right)$ are bounded, and that $\sampletrk \ne \emptyset$.
 This is required to show the accuracy condition \cref{accuracy} is satisfied,
 because this condition number determines the sample set's poisedness, as discussed in \cref{geometry}.
@@ -2719,6 +2769,7 @@ because this condition number determines the sample set's poisedness, as discuss
 
 \begin{lemma}
 \label[lemma]{theta_min_is_bounded}
+
 Let $\minangledelta$ and $\minanglealpha$ be defined by \cref{minangleassumption_alt}, and
 define $\thetamink$ by \cref{define_thetamink}.
 
@@ -2728,6 +2779,7 @@ If $\dk \le \minangledelta$, then $\thetamink \ge \minanglealpha$.
 \end{lemma}
 
 \begin{proof}
+
 Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.
 If $\activeconstraintsk = \emptyset$, then $\thetamink = 1$.
 Otherwise, by \cref{minangleassumption_alt}, there is a $\minangledirk$ such that 
@@ -2743,6 +2795,7 @@ Therefore, $\thetamink \ge \minanglealpha$.
 
 \begin{lemma}
 \label[lemma]{bounded_condition_numbers}
+
 Let $\activeconstraintsk$ be defined by \cref{define_activeconstraints}.  Let
 $\qkpo$ be defined either by \cref{define_trivial_ellipsek} if $\activeconstraintsk = \emptyset$ or by 
 \cref{conservative_ellipsoid_details} if $\activeconstraintsk  \ne \emptyset$.
@@ -2754,6 +2807,7 @@ Let $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
 There exists a $\dacc > 0$, such that $\condition\left(\qkpo\right) \le {12}\left(\minanglealpha\right)^{-2}$ whenever $\dk \le \dacc$.
 \end{lemma}
 \begin{proof}
+
 If $\activeconstraintsk = \emptyset$, then 
 % \cref{define_suitable_condition_numbers} is satisfied because 
 $\condition \left(\qkpo\right) = 1$.
@@ -2768,6 +2822,7 @@ where $\minangledelta$ is defined by \cref{minangleassumption_alt}.
 
 \begin{lemma}
 \label[lemma]{sampletrk_is_nonempty}
+
 Let $\dacc$ and $\fcki$ be defined by \cref{define_delta_accuracy} and \cref{define_inner_cone}.
 
 \input{assumptions.d/sampletrk_is_nonempty}
@@ -2776,6 +2831,7 @@ If $\dk \le \dacc$, then the tuple $\left(\qk, \ck, \sdk\right)$ defined in \cre
 is non-empty according to \cref{ellipsoids_notation_definitions}, and $\fcki \ne \emptyset$.
 \end{lemma}
 \begin{proof}
+
 Let $\minanglealpha$ be defined by \cref{minangleassumption_alt}.
 \cref{theta_min_is_bounded} and \cref{boundbsk} tell us that 
 if $\dk \le \dacc$, then $\thetamink \ge \minanglealpha$, 
@@ -2830,16 +2886,20 @@ Then there exist $\kappa_g>0$ and $\kappa_h>0$, independent of $k$, such that
 \end{lemma}
 
 \begin{proof}
-Give $\qk = LD^2L^T$ its eigen-decomposition, and define $\delta = \max_{x \in \unshiftedellipsoid} \|x - \ck\|$, as in \cref{shifted_ellipsoid}.
-Then the transformation $T(x) = \delta D L^T(x - \ck)$ maps $\unshiftedellipsoid$ to the $\delta$ ball.
+
+Give $\qk = LD^2L^T$ its eigen-decomposition, and define 
+$\delta = \sqrt{2}$,
+% \max_{x \in \unshiftedellipsoid} \|x - \ck\|$, 
+as in \cref{shifted_ellipsoid}.
+Then the transformation $T(x; \delta) = \frac{\delta}{\sdk} D L^T(x - \ck)$ maps $\unshiftedellipsoid$ to the $\delta$ ball.
 As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \begin{align*}
 \begin{array}{ccc}
-\hat {m}_f(u) = m_f(T^{-1}(u)),&  \hat f (u) = f(T^{-1}(u)), &\\
-\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \quad \textrm{and} \quad \hat c_i (u) = c(T^{-1}(u))& \forall i \in [m]
+\hat {m}_f(u) = m_f(T^{-1}(u; \delta)),&  \hat f (u) = f(T^{-1}(u; \delta)), &\\
+\hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u; \delta)), &  \quad \textrm{and} \quad \hat c_i (u) = c(T^{-1}(u; \delta))& \forall i \in [m]
 \end{array}
 \end{align*}
-After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} 
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised} 
 there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
@@ -2851,17 +2911,17 @@ there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such t
 \quad \textrm{and} \quad \left\|\nabla^2 \hat {{c_i}}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le \kappa_h \delta.
 \end{array}
 \end{align*}
-By \cref{bounded_hessians_assumption} and \cref{lipschitz_hessians_assumption}, we know that the assumptions for \cref{change_radius} hold.
-Thus,  by \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
-\begin{align*}
-\begin{array}{cc}
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &
-\left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2 \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le 2\Lambda_3 \delta = {\kappa'}_h\delta^2, &
-\quad \textrm{and} \quad \left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
-\end{array}
-\end{align*}
-where $\kappa_{g}' = 2 \Lambda_2$ and $\kappa_{h}' = 2\Lambda_3$.
+% By \cref{bounded_hessians_assumption} and \cref{lipschitz_hessians_assumption}, we know that the assumptions for \cref{change_radius} hold.
+% Thus,  by \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
+% \begin{align*}
+% \begin{array}{cc}
+% \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &
+% \left\|\nabla \hat {c_i}\left(u\right) - \nabla \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_g\delta^2 \\
+% \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le 2\Lambda_3 \delta = {\kappa'}_h\delta^2, &
+% \quad \textrm{and} \quad \left\|\nabla^2 \hat {c_i}\left(u\right) - \nabla^2 \hat{m}_{c_i}\left(u\right) \right\|\le {\kappa'}_h\delta^2 \\
+% \end{array}
+% \end{align*}
+% where $\kappa_{g}' = 2 \Lambda_2$ and $\kappa_{h}' = 2\Lambda_3$.
 % Define $\kappa''_{g} =  \sqrt{\sigmamax}\kappa'_g$ and $\kappa''_h = \sigmamax\kappa'_h$.
 Notice that because $\sigma_{\textrm{min}} = 1$, we have that $\sigmamax = \condition \left(\qk\right)$.
 \cref{shifted_ellipsoid} tells us that for all $x_0 \in \scaledunshiftedellipsoid$:
@@ -2908,7 +2968,7 @@ it will be during the next iteration.
 The above theorem shows that the accuracy condition \cref{accuracy} is satisfied for sufficiently small $\dk$.   
 We now turn our attention to the feasibility of the sample region.
 
-\subsection{Trust Region Feasibility}
+\subsection{Trust region feasibility}
 \label{ellipsoid_is_feasible_section}
 
 This section show that for sufficiently small $\dk$, the conservative ellipsoids defined in
@@ -2916,6 +2976,7 @@ This section show that for sufficiently small $\dk$, the conservative ellipsoids
 that is, $\sampletrk \subseteq \feasible$.  We begin by establishing bounds on the Hessians and gradients of the model functions.
 \begin{lemma}
 \label[lemma]{bounded_model_hessian_lemma}
+
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 
 \input{assumptions.d/bounded_model_hessian_lemma}
@@ -2929,6 +2990,7 @@ whenever $\dk \le \dacc$.
 \end{lemma}
 
 \begin{proof}
+
 Let $\kappa_h$ and $\maxhessian$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_hessians_assumption} respectively,
 and let $\maxmodelhessian = \maxhessian + \kappa_h \dacc$.
 Then \cref{bounded_hessians_assumption} tells us that
@@ -2939,6 +3001,7 @@ The same applies to each $\nabla^2 m_{c_i}^{(k)}(\xk)$.
 
 \begin{lemma}
 \label[lemma]{i_thought_i_proved_this_already}
+
 Let $\dacc$ be defined by \cref{accuracy_is_satisfied}.
 
 \input{assumptions.d/i_thought_i_proved_this_already}
@@ -2952,6 +3015,7 @@ whenever $\dk \le \dacc$.
 Without loss of generality, we may assume that $\maxmodelgrad \ge 1$.
 \end{lemma}
 \begin{proof}
+
 Let $\kappa_g$ and $\maxgrad$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_gradients_lemma} respectively,
 and let $\maxmodelhessian = \maxgrad + \kappa_g \dacc^2$.
 Using \cref{accuracy_is_satisfied} to define $\kappa_g$, we can let $\maxmodelgrad = \maxgrad + \kappa_g \dacc^2$.
@@ -2973,6 +3037,7 @@ The same applies to each $\left\|\gmcik\right\|$.
 
 \begin{lemma}
 \label[lemma]{only_small_z_matters}
+
 Let $\zik$ and $\mingrad$ be defined by \cref{define_z} and \cref{mingradassumption} respectively.
 
 \input{assumptions.d/only_small_z_matters}
@@ -2984,6 +3049,7 @@ There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for a
 \end{itemize}
 \end{lemma}
 \begin{proof}
+
 Fix $i \in [m]$.
 Let
 $\dacc$,
@@ -3076,6 +3142,7 @@ The functions $c_i$ for all $i \in [m]$ and $f$ are differentiable and their gra
 \end{align*}
 \end{lemma}
 \begin{proof}
+
 This is a direct consequence of \cref{bounded_hessians_assumption}.
 \end{proof}
 
@@ -3085,6 +3152,7 @@ This is a direct consequence of \cref{bounded_hessians_assumption}.
 
 \begin{lemma}
 \label[lemma]{each_constraints_cone_is_feasible}
+
 Let $\fik$ be defined by \cref{define_fik}.
 
 \input{assumptions.d/each_constraints_cone_is_feasible}
@@ -3097,6 +3165,7 @@ c_i(y) \le 0 \quad \forall y \in \fik \cap \left[\trk \cup \trkpo\right].
 \end{lemma}
 
 \begin{proof}
+
 Let
 $\alpha$, $\beta$, $p_{\alpha}$, and $p_{\beta}$
 be defined by
@@ -3290,6 +3359,7 @@ c_i(y) = c_i(\wik + ts) \le c_i(\wik) + t\nabla c_i(\wik)^Ts + \maxhessian t^2 \
 
 \begin{theorem}
 \label[theorem]{cone_and_tr_are_feasible}
+
 Let $\dfeas$, $\activeconstraintsk$, $\fik$, $\feasible$
 be defined by
 \cref{each_constraints_cone_is_feasible},
@@ -3308,6 +3378,7 @@ If $\dk \le \dfeas$, then $\cap_{i \in \activeconstraintsk} \fik \cap \left[\trk
 % \end{comment}
 
 \begin{proof}
+
 This follows directly from the definitions and \cref{each_constraints_cone_is_feasible}.
 \end{proof}
 
@@ -3373,7 +3444,7 @@ Thus, \cref{cone_and_tr_are_feasible} implies $\unshiftedellipsoid \subseteq \fe
 % This justifies the use of a $\dmax > 0$, such that $\dk \le \dmax\;\forall k \in \naturals$.
 
 
-\subsection{Sufficient Reduction}
+\subsection{Sufficient reduction}
 \label{sufficient_reduction_section}
 
 As discussed in \cref{decreasing_the_trust_region_for_infeasible_trial}, there may be no solution to \cref{capcones_trust_region_subproblem} 
@@ -3576,6 +3647,7 @@ This statement is formalized in \cref{sufficient_reduction_theorem}.
 % \end{lemma}
 
 \begin{theorem}
+
 \label{sufficient_reduction_theorem}
 Let 
 $\chik$,
@@ -3996,7 +4068,7 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 
 
 
-\subsection{Initial Convergence Results}
+\subsection{Initial convergence results}
 
 \label{initial_convergence_results}
 % \sbnote{Remove this note?   Alternatively, reword it to something like:  ``The following analysis follows that in 
@@ -4048,7 +4120,7 @@ define
 \right\} \right \}. \label{define_reduceiterates}
 \end{align}
 
-\subsubsection{Trust Region Radius Convergence}
+\subsubsection{Trust region radius convergence}
 
 % Assume that 
 % \cref{lipschitz_gradients_assumption}
@@ -4070,6 +4142,7 @@ We have $\reduceiterates \subseteq \miniterates$.
  
 
 \begin{proof}
+
 By the Mean Value Theorem, there exists a $t_k \in (0, 1)$ such that
 \begin{align*}
 f\left(\xk + \sk\right) = f\left(\xk\right) + \gradf\left(\xk + t_k\sk\right)^T\sk.
@@ -4139,6 +4212,7 @@ The sequence $\left\{\dk\right\}$ converges to zero.
 \end{lemma}
 
 \begin{proof}
+
 Let
 $\suffiterates$, $\kappa_f$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$ $\gammabi$
 be defined by
@@ -4182,7 +4256,7 @@ so that $\lim_{k \in \mathcal U} \dk = 0$.
 \end{proof}
 
 
-\subsubsection{Initial Criticality Convergence}
+\subsubsection{Initial criticality convergence}
 
 % \begin{assumptions}
 % Suppose the assumptions for \cref{mathcal_k_subset_bar_s} and \cref{delta_to_zero} hold.
@@ -4190,6 +4264,7 @@ so that $\lim_{k \in \mathcal U} \dk = 0$.
 
 \begin{lemma}
 \label[lemma]{liminf_chi_to_zero}
+
 Let $\chik$ be defined by \cref{define_criticality_measure}.
 
 \input{assumptions.d/liminf_chi_to_zero}
@@ -4199,6 +4274,7 @@ We have $\liminf_{k\to\infty} \chik = 0$.
  
 
 \begin{proof}
+
 Suppose for a contradiction that there exists a constants $\epsilon > 0$ and an integer $k_1 > 0$ such that $\chik \ge \epsilon$ for each $k \ge k_1$.
 Using the same constants as used in \cref{define_reduceiterates}, let
 \begin{align*}
@@ -4251,6 +4327,7 @@ Using the same constants as in \cref{define_reduceiterates}, we define
 
 \begin{lemma}
 \label[lemma]{contradiction_portion}
+
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
 \input{assumptions.d/contradiction_portion}
@@ -4264,6 +4341,7 @@ If there exists an $\elb > 0$ such that $\ulb$ is infinite, then
 % If \cref{the_contradiction} were true, then the sequence $S_{lb}$ satisfies \cref{criteria_from_contradiction}.
 \end{lemma}
 \begin{proof}
+
 % Notice that \cref{liminf_chi_to_zero} ensures that the sequence $S_{lb}$ is well defined.
 By \cref{delta_to_zero}, there exists $k_1 \in \naturals$ such that if $k \ge k_1$, 
 then $\dk \le\dlb$ as defined in \cref{define_delta_lb}.
@@ -4327,8 +4405,9 @@ In the next section, we make use of the previous result to show agreement betwee
 Within \cref{limit_of_criticallity_to_zero}, we then resume this discussion to show that no such $\elb$ exists.
 
 
-\subsection{Criticality Agreement}
+\subsection{Criticality agreement}
 \label{bounding_the_projection_section}
+
 As discussed at the beginning of \cref{convex_convergence_analysis}, this section is devoted to showing convergence of the difference
 between a projection onto an iterate's constraint's linearization and
 \begin{itemize}
@@ -4350,15 +4429,14 @@ This result will be required within \cref{convergence_section}.
 % and finally show that the projection onto active constraints is bounded within \cref{bounding_the_difference_in_the_active_projection}.
 % \color{black}
 
-\subsubsection{Simple Properties}
+\subsubsection{Simple properties}
 
 
 \begin{figure}[ht]
 	\centering
 % 	\includegraphics[width=300px]{images/first_lemma.png}
 	\includegraphics[width=200px]{images/spokes.png}
-	\caption[
-    		A depiction of the quantities within \cref{properties_of_a_circle}.]{
+	\caption[A depiction of the quantities within \cref{properties_of_a_circle}.]{ % 
 			The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
 			Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
 	}
@@ -4367,6 +4445,7 @@ This result will be required within \cref{convergence_section}.
 The following lemma is illustrated in \cref{first_lemma}.
 \begin{lemma}
 \label[lemma]{properties_of_a_circle}
+
 Suppose that $x, y, u, v, a \in \Rn$ and $0 < \epsilon \le 1$ are given satisfying
 \begin{align*}
 \|x\| \le \|a\|, \quad
@@ -4382,6 +4461,7 @@ Then
 \end{align*}
 \end{lemma}
 \begin{proof}
+
 If $\|a\| = 0$, then $x = y = 0$ so that $\|x - y\| = 0$.
 We may now assume that $a \ne 0$.
 We can combine
@@ -4592,6 +4672,7 @@ Note that $D\left(S_1, S_2\right) \ge 0$ for any two convex sets $S_1$, and $S_2
 
 \begin{lemma}
 \label[lemma]{board_tied_to_sphere}
+
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
 
 Let $g \in \Rn$ and let $S, S' \subseteq \Rn$ be convex with $S \cap S' \ne \emptyset$.
@@ -4604,6 +4685,7 @@ If $D\left(S, S'\right) \le 1$, then
 \end{align*}
 \end{lemma}
 \begin{proof}
+
 % Because $\convexdistance(S, S') \le \epsilon$, we know that $S \cap S' \ne \emptyset$.
 
 % If $S \cap S' = \emptyset$, then $\proj_{S \cap S'}\left(g\right) = \infty$.
@@ -4647,6 +4729,7 @@ Notice
 
 \begin{lemma}
 \label[lemma]{the_lemma_to_end_all_lemmas}
+
 Let $\convexdistance$ be defined by \cref{define_a_difference_between_sets}.
 
 Let
@@ -4892,7 +4975,7 @@ Combining these produces,
 % \end{comment}
 \end{proof}
 
-\subsubsection{Bounded Projections}
+\subsubsection{Bounded projections}
 \label{simplifed_bounded_projection}
 
 
@@ -4918,6 +5001,7 @@ Combining these produces,
 
 \begin{lemma}
 \label[lemma]{model_gradients_are_cauchy}
+
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
 \input{assumptions.d/model_gradients_are_cauchy}
@@ -4927,6 +5011,7 @@ then for each $i \in [m]$ and any $\epsilon > 0$, there is a $k_0 \in \naturals$
 such that if $(k, l) \in \slb$ and $k, l \ge k_0$, then $\left\|\gmcik - \gmcil \right\| \le \epsilon$.
 \end{lemma}
 \begin{proof}
+
 Let $\epsilon > 0$ be arbitrary.
 By \cref{contradiction_portion}, we can choose $k_1 \in \naturals$ such that if $k, l \ge k_1$ and
 $k, l \in \slb$ then $\lipgrad \left\|\xk - \xl \right\| \le \frac 1 3 \epsilon$.
@@ -4964,11 +5049,13 @@ Let $\minangledelta$ be defined by \cref{minangleassumption_alt} and define
 The following observation follows directly from the definition:
 \begin{lemma}
 \label[lemma]{doesntreallyneedtobesaid}
+
 Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
 
 If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
 \end{lemma}
 \begin{proof}
+
 If $c_i\left(\xk\right) = 0$, then $\zik = \xk \in B_{\infty}\left(\xk, \minangledelta \right)$.
 Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta} \ge 0$, so
 \begin{align*}
@@ -4979,6 +5066,7 @@ Otherwise, $\left\|\gmcik\right\| \ge \frac{-c_i\left(\xk\right)}{\minangledelta
 
 \begin{lemma}
 \label[lemma]{underbound}
+
 Let $\activeindicesk$ be defined by \cref{define_activeindicesk}, and $\mingradepsilon$ and $\mingrad$ be defined by \cref{mingradassumption}.
 
 \input{assumptions.d/underbound}
@@ -5128,6 +5216,7 @@ and for any fixed $k$, define
 
 \begin{lemma}
 \label[lemma]{norm_of_active_constraints_bounded_below}
+
 Let $\Alk$ and $\Ack$ be defined by \cref{tbbt_a2} and \cref{tbbt_a3}.
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
@@ -5264,6 +5353,7 @@ With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \c
 
 \begin{theorem}
 \label{bounded_projection_theorem}
+
 Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
 Let $\zlk$ and $\zck$ be defined by \cref{define_zlk} and \cref{define_zck} respectively.
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
@@ -5420,12 +5510,13 @@ Therefore, by \cref{cbpt_eqn1}, $\|\zmk - \zck\| \le \epsilon$ and $\|\zmk - \zl
 \subsection{Convergence}
 \label{convergence_section}
 
-\subsubsection{Criticality Goes to Zero}
+\subsubsection{Criticality goes to zero}
 \label{limit_of_criticallity_to_zero}
 
 
 \begin{lemma}
 \label[lemma]{lim_chi_to_zero}
+
 Let $\chik$ be defined by \cref{define_criticality_measure}.
 
 \input{assumptions.d/lim_chi_to_zero}
@@ -5435,6 +5526,7 @@ If $\gammasm > 0$, then $\lim_{k\to\infty}\chik=0$.
 
 
 \begin{proof}
+
 Let $\ulb$, $\slb$, $\reduceiterates$, and $\miniterates$ be defined by 
 \cref{define_the_finite_set}, \cref{define_slb}, \cref{define_reduceiterates}, and \cref{define_miniterates}.
 Suppose for a contradiction that there exists a $\elb$ such that $\ulb = \left\{k \in \naturals | \chik \ge \elb \right\}$ is infinite.
@@ -5502,7 +5594,7 @@ We can then apply \cref{bounded_projection_theorem} and \cref{delta_to_zero} to 
 This is a contradiction, and there is no such $\elb > 0$.
 \end{proof}
 
-\subsubsection{Convergence of Criticality Measure}
+\subsubsection{Convergence of criticality measure}
 \label{limit_of_true_criticality}
 
 
@@ -5528,6 +5620,7 @@ If $\gammasm > 0$, then
 \end{theorem}
 
 \begin{proof}
+
 Let 
 $\feasiblek$, $\zlk$, $\zck$
 be defined by 
@@ -5588,6 +5681,7 @@ Note that we no longer require \cref{restorability_assumption}, because we have 
 
 \begin{corollary}
 \label{the_convergence_theorem}
+
 Let $\feasible$ be defined by \cref{define_feasible}.
 
 % \input{assumptions.d/the_convergence_theorem}
@@ -5608,6 +5702,7 @@ If $\gammasm > 0$, then
 
 
 \begin{proof}
+
 Let $\truefeasiblek$ be defined by \cref{define_truefeasiblek}.
 By convexity of the constraints from \cref{constraints_are_convex}, $\feasible \subseteq \truefeasiblek$, so that
 \begin{align*}
@@ -5654,7 +5749,7 @@ The result then follows from \cref{the_convergence_lemma};
 % \end{align*}
 % \end{assumption}
 
-\subsection{Weakening an Assumption}
+\subsection{Weakening an assumption}
 \label{alternative_assumptions_section}
 
 We have made \cref{minangleassumption_alt}, which is an assumption about the constraint's models.
@@ -5698,6 +5793,7 @@ there is a unit vector $\minanglediralt(x)$ such that
 
 \begin{lemma}
 \label[lemma]{mingradlemma}
+
 Suppose that 
 \cref{minangleassumption_alt_func} holds.
 There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \Omega$ we have
@@ -5706,6 +5802,7 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 \end{align*}
 \end{lemma}
 \begin{proof}
+
 Let $x \in \Omega$ be arbitrary.
 By \cref{minangleassumption_alt_func} we know there are some constants $\minanglealpha>0$ and $\epsilon>0$ and unit vector $\minanglediralt(x)$
 such that for all $i \in \epsactive(x; \epsilon)$,
@@ -5723,6 +5820,7 @@ It claims that a well conditioned $\qk$ is found at any point after the trust re
 % Notice that this could also be satisfied by using a user supplied parameter $\dmax>0$ and ensuring throughout the algorithm that $\dk \le \dmax$.
 
 \begin{lemma}
+
 Suppose \cref{minangleassumption_alt_func} and \cref{bounded_gradients_lemma} are satisfied as well as the assumptions for \cref{accuracy_is_satisfied_lemma}.
 
 There exists $\dacc > 0$ and $\sigma_0 \ge 1$ such that if $\dk \le \dacc$, and
@@ -5737,6 +5835,7 @@ then
 
 
 \begin{proof}
+
 Let $\epsilon, \minanglealpha > 0$ be defined by \cref{minangleassumption_alt_func}, and $\maxgrad$ be defined by \cref{bounded_gradients_lemma}.
 Define
 \begin{align}
@@ -5857,6 +5956,7 @@ Then \cref{idk_alt_proof_eqn5} tells us
 \end{proof}
 
 \section{Numerical Results}
+
 We have implemented \cref{constrained_dfo} in Python to test its efficiency.
 The code is contained in \cite{AlwaysFeasibleDFO}.
 Here we discuss the numerical results of this algorithm when run on the Hock-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}.
@@ -5883,7 +5983,7 @@ Here we discuss the numerical results of this algorithm when run on the Hock-Sch
 % \end{itemize}
 % \end{comment}
 
-\subsection{Implementation Details}
+\subsection{Implementation details}
 % \subsubsection{Parameters}
 
 Our code implements \cref{constrained_dfo} with parameter values
@@ -5938,7 +6038,7 @@ In most cases, hot starts are provided from naive searches to improve the result
 % I wrote my own code to find the extrema while computing the Lagrange multipliers.
 
 
-\subsection{Algorithm Variants}
+\subsection{Algorithm variants}
 
 We experimented with different variants of the algorithm.
 Results for these variants on problems with $n=2$ can be found in \cref{nonlinear_variants_results}.
@@ -5948,10 +6048,14 @@ The penalty buffered, and convex penalty buffered are described in \cref{penalty
 Another variant called the recover feasible ellipsoid method for all empty search regions.
 Lastly, we included a variant that only used linear models of the objective.
 
-\subsubsection{Largest Volume Ellipsoid}
+\subsubsection{Largest volume ellipsoid}
 We implemented a very naive algorithm to compute the largest possible ellipsoid within the buffering cones, as discussed in \cref{ideal_ellipsoid_in_polyhedron}.
 Ideally, this would use the information returned from the inner optimization program to more intelligently explore ellipsoids.
 However, we state the algorithm as implemented:
+
+{
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{flushleft}
 
 \begin{algorithm}[H]
     \caption{Search for feasible ellipsoid}
@@ -5992,7 +6096,11 @@ However, we state the algorithm as implemented:
     \end{itemize}
 \end{algorithm}
 
-\subsubsection{Quadratic Buffered Constraints}
+\end{flushleft}
+\end{fullwidth}
+}
+
+\subsubsection{Quadratic buffered constraints}
 \label{quadratic_buffered_description}
 
 To alleviate how many descent directions within $\feasiblek \cap \outertrk$ are missing from $\capcones$, 
@@ -6035,7 +6143,7 @@ A depiction of the trust region subproblem can be found in \cref{quadratic_buffe
 
 % \textrm{s.t.} & \beta \left\| \left(I - uu^T\right)x \right\|^2 = \beta (x-\wik)^T\left(I - uu^T\right) (x-\wik)\le u^T\left(x-\wik\right)
 
-\subsubsection{Penalty Buffered Constraints}
+\subsubsection{Penalty buffered constraints}
 \label{penalty_buffered_description}
 
 Notice that the algorithm evaluated enough points to construct quadratic models of the constraints because it constructed a quadratic model for the objective.
@@ -6060,7 +6168,7 @@ Namely, by giving $H^{(k, i)} = L D L^T$ its eigen decomposition with $D$ diagon
 constructing $\hat H^{(k, i)} = L D^+ L^T$ where $D^+$ is the diagonal matrix $[D^+]_{jj} = D_{jj}^+$.
 Depictions of the trust region subproblem with are found in \cref{quadratic_penalty}.
 
-\begin{figure}[!h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=200px]{images/penalty_tr_0.png}
     \includegraphics[width=200px]{images/penalty_tr_1.png}
@@ -6077,83 +6185,93 @@ Depictions of the trust region subproblem with are found in \cref{quadratic_pena
 \end{figure}
 
 
-\ifbool{showcomments}{
+% \ifbool{showcomments}{
+% 
+% \subsubsection{Linear cuts}
+% \label{linear_cuts_section}
+% 
+% Our implementation decreases the trust region when an infeasible trial point is found.
+% Another strategy that may allow for larger trust region radaii is to solve the trust region subproblem again, 
+% after adding a linear constraint that removes the infeasible point.
+% Each new linear constraint not only cuts off the last trial point but also stays at least a fraction of the trust region radius away.
+% 
+% \begin{figure}[ht]
+%     \centering
+%     \includegraphics[width=300px]{images/pyomo_cut_solution.png}
+%     \caption
+%     		[Infeasible points can be removed from the search with linear cuts.]
+%     	{
+% 			Adding linear cuts to remove infeasible points.
+% 			Sample points that have already been evaluated and found to be feasible are shown as green circles.
+% 			Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
+% 			The linear cuts (blue lines) are chosen to minimize the value of the objective (in black) while ensuring that all failed evaluations are infeasible.
+% 	}
+%     \label{pvip}
+% \end{figure}
+% 
+% Suppose that the algorithm has evaluated multiple infeasible points after solving the trust region subproblem.
+% These are stored in a set $\trsinfset = \{n_1, n_2, \ldots, n_{|\trsinfset|}\}$.
+% We then choose one hyperplane $\{x \in \Rn | d_k^Tx = b_k\}$ for each infeasible point to remove that point from our next attempt.
+% Notice that these hyperplanes are \emph{decision variables} during the next attempt, to give as much descent as possible.
+% 
+% If we let $\trstol \in (0, 1)$ be the percentage of the trust region radius with which we wish buffer our next solution, 
+% we arrive at the following optimization problem with $\searchtrk = \capcones \cap \trk $:
+% 
+% \begin{align}
+% \label{buffered_trust_region_subproblem}
+% \begin{array}{ccc}
+% \sk = \argmin_{s, d^{(k)} \in \Rn, b_i \in \reals}	& \mfk\left(\xk + s\right) & 	\\
+%  \mbox{subject to}  & n_k^Td^{(k)} \ge b_k + \trstol \dk& \forall k \in \left[ |\trsinfset |\right] \\
+%  & s^T d^{(k)} \le b_k &   \forall k \in \left[|\trsinfset |\right]  \\
+%  & \|d^{(k)}\| = 1 & \forall k \in \left[|\trsinfset |	\right]\\
+%  & \nabla \mcik(\xk) ^T s \le \mcik\left(\xk\right) & \forall i \in [m] \\
+%  & \|s - \xk \|_{\infty} \le \dk & \\
+% \end{array}
+% \end{align}
+% 
+% We use this optimization problem as a subroutine of the trust region subproblem algorithm \cref{linear_cut_trust_region_subproblem}.
+% 
+% {
+% \begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+% \begin{flushleft}
+% 
+% 
+% \begin{algorithm}[ht]
+%     \caption{Solve Trust Region Subproblem}
+%     \label{linear_cut_trust_region_subproblem}
+%     \begin{itemize}
+%         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+% 	    Initialize the set of infeasible points $\trsinfset = \emptyset$.
+%         
+%         \item[\textbf{Step 1}] \textbf{Solve Trust Region Problem} \\
+% 	    Solve \cref{buffered_trust_region_subproblem} to find trial point $s$.
+% 	    If the feasible set is empty, \textbf{Fail}
+%         
+%         \item[\textbf{Step 2}] \textbf{(Check feasibility)} \\
+%             Evaluate the objective and constraints at $s$. \\
+%             If $s\in\feasible$, \textbf{return} $s$.
+%             Otherwise, if $s\in\feasible$ and $s \in \sampletrk$, \textbf{Fail} \\
+% 	    	If $s\in\feasible$ and $s \not \in \sampletrk$, then $\trsinfset \gets \trsinfset \cup \{s\}$ and Go to Step 1
+%     \end{itemize}
+% \end{algorithm}
+% 
+% \end{flushleft}
+% \end{fullwidth}
+% }
+% 
+% % We believe that, for a convex feasible region, this algorithm finds the minimizer over the set 
+% % \begin{align*}
+% % \left\{x \in \Rn \; \bigg | \; \|x - y \| \ge \trstol \dk \; \forall y \not \in \feasible \right\}
+% % \end{align*}
+% % which is potentially larger than $\capcones$.
+% % Although this is a desirable property, it also may require more infeasible evaluation attempts.
+% % Note that infeasible evaluations can be recorded across iterations.
+% % Also, we experimented with using this strategy within the \cref{modified_model_improving_algorithm} 
+% % to allow more sample point choices.
+% 
+% }{}
 
-\subsubsection{Linear Cuts}
-\label{linear_cuts_section}
-
-Our implementation decreases the trust region when an infeasible trial point is found.
-Another strategy that may allow for larger trust region radaii is to solve the trust region subproblem again, 
-after adding a linear constraint that removes the infeasible point.
-Each new linear constraint not only cuts off the last trial point but also stays at least a fraction of the trust region radius away.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=300px]{images/pyomo_cut_solution.png}
-    \caption
-    		[Infeasible points can be removed from the search with linear cuts.]
-    	{
-			Adding linear cuts to remove infeasible points.
-			Sample points that have already been evaluated and found to be feasible are shown as green circles.
-			Attempted evaluations that resulted in infeasible evaluations are shown as red x's.
-			The linear cuts (blue lines) are chosen to minimize the value of the objective (in black) while ensuring that all failed evaluations are infeasible.
-	}
-    \label{pvip}
-\end{figure}
-
-Suppose that the algorithm has evaluated multiple infeasible points after solving the trust region subproblem.
-These are stored in a set $\trsinfset = \{n_1, n_2, \ldots, n_{|\trsinfset|}\}$.
-We then choose one hyperplane $\{x \in \Rn | d_k^Tx = b_k\}$ for each infeasible point to remove that point from our next attempt.
-Notice that these hyperplanes are \emph{decision variables} during the next attempt, to give as much descent as possible.
-
-If we let $\trstol \in (0, 1)$ be the percentage of the trust region radius with which we wish buffer our next solution, 
-we arrive at the following optimization problem with $\searchtrk = \capcones \cap \trk $:
-
-\begin{align}
-\label{buffered_trust_region_subproblem}
-\begin{array}{ccc}
-\sk = \argmin_{s, d^{(k)} \in \Rn, b_i \in \reals}	& \mfk\left(\xk + s\right) & 	\\
- \mbox{subject to}  & n_k^Td^{(k)} \ge b_k + \trstol \dk& \forall k \in \left[ |\trsinfset |\right] \\
- & s^T d^{(k)} \le b_k &   \forall k \in \left[|\trsinfset |\right]  \\
- & \|d^{(k)}\| = 1 & \forall k \in \left[|\trsinfset |	\right]\\
- & \nabla \mcik(\xk) ^T s \le \mcik\left(\xk\right) & \forall i \in [m] \\
- & \|s - \xk \|_{\infty} \le \dk & \\
-\end{array}
-\end{align}
-
-We use this optimization problem as a subroutine of the trust region subproblem algorithm:
-
-\begin{algorithm}[H]
-    \caption{Solve Trust Region Subproblem}
-    \label{linear_cut_trust_region_subproblem}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-	    Initialize the set of infeasible points $\trsinfset = \emptyset$.
-        
-        \item[\textbf{Step 1}] \textbf{Solve Trust Region Problem} \\
-	    Solve \cref{buffered_trust_region_subproblem} to find trial point $s$.
-	    If the feasible set is empty, \textbf{Fail}
-        
-        \item[\textbf{Step 2}] \textbf{(Check feasibility)} \\
-            Evaluate the objective and constraints at $s$. \\
-            If $s\in\feasible$, \textbf{return} $s$.
-            Otherwise, if $s\in\feasible$ and $s \in \sampletrk$, \textbf{Fail} \\
-	    	If $s\in\feasible$ and $s \not \in \sampletrk$, then $\trsinfset \gets \trsinfset \cup \{s\}$ and Go to Step 1
-    \end{itemize}
-\end{algorithm}
-
-We believe that, for a convex feasible region, this algorithm finds the minimizer over the set 
-\begin{align*}
-\left\{x \in \Rn \; \bigg | \; \|x - y \| \ge \trstol \dk \; \forall y \not \in \feasible \right\}
-\end{align*}
-which is potentially larger than $\capcones$.
-Although this is a desirable property, it also may require more infeasible evaluation attempts.
-Note that infeasible evaluations can be recorded across iterations.
-Also, we experimented with using this strategy within the \cref{modified_model_improving_algorithm} to allow more sample point choices.
-
-}{}
-
-\subsection{Hock Schittkowski Problem Set}
+\subsection{Hock Schittkowski problem set}
 
 To test our algorithm, we used the Hock-Schittkowski problem set \cite{Hock1980} and \cite{Schittkowski:1987:MTE:27135}.
 We implemented these problems in Python and ensured our implementation agrees with the Author's FORTRAN library created in 2011 

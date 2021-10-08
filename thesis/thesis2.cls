@@ -4,6 +4,7 @@
 \NeedsTeXFormat{LaTeX2e}[2001]
 \ProvidesClass{thesis2}[2003/11/30 UCD Thesis Class]
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Declaration of options
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,6 +31,7 @@
 \usepackage{times}
 \usepackage{titlesec}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special commands for
 % package and class files
@@ -37,10 +39,10 @@
 % Tells the fancyhdr package to put page numbers on the right - For this, use \pagestyle{fancy} instead of {plain}
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\rfoot{\thepage}
+\cfoot{\thepage}
 
 % Sets up the \verbatim environment To Print As \small by default.
-\g@addto@macro\@verbatim\small 
+% \g@addto@macro\@verbatim\small 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Special class file commands
@@ -51,8 +53,15 @@
   top=1in,
   right=1in,
   bottom=1in
-%   footskip=.25in % puts .3in between text/footer, so footer Is .75in from bottom of page.
 }
+
+
+% \usepackage{setspace}
+% \doublespacing
+
+% \newcommand{\dblspace}[0]{}
+% \newcommand{\normalspace}[0]{}
+% \newcommand{\baslinestretch}[1]{}
 
 \setlength{\parindent}{0.5in}
 \setlength{\arraycolsep}{0.25\arraycolsep}
@@ -108,7 +117,8 @@
 % List of Tables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Someone Put this so there was no indentation of the tables of contents; seems the graduate school DOES want this, so I fixed it.
+% Someone Put this so there was no indentation of the tables of contents; 
+% seems the graduate school DOES want this, so I fixed it.
 % To revert, swap the commented out lines For section, subsection, subsubsection.
 % I also removed the vertical Space above the titles For these pages; I think they are supposed To be flush With the page.
 
@@ -124,14 +134,14 @@
 \renewcommand{\l@table}{\@dottedtocline{0}{0em}{2.4em}}
 \renewcommand{\tableofcontents}{
   \clearpage
-  %\vspace*{0.25in}
+  \vspace*{0.25in}
   \centerheading{TABLE OF CONTENTS}
   \@starttoc{toc}
   \clearpage
 }
 \renewcommand{\listoffigures}{
   \clearpage
-  %\vspace*{0.25in}
+  \vspace*{0.25in}
   \part[Figures]{FIGURES}
   \addtocontents{lof}{Figure}
   \@starttoc{lof}
@@ -139,7 +149,7 @@
 }
 \renewcommand{\listoftables}{
   \clearpage
-  %\vspace*{0.25in}
+  \vspace*{0.25in}
   \part[Tables]{TABLES}
   \addtocontents{lot}{Table}
   \@starttoc{lot}
@@ -391,40 +401,36 @@
 }
 
 \renewcommand{\chapter}{\clearpage
-  %\vspace*{0.24in}
+  \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@chapter\@schapter
 }
 \renewcommand{\@chapter}[2][]{%
   \refstepcounter{chapter}
-  \begin{centering}
-  {\bf\thechapter.~~#2}
-  \end{centering}
-%   \vspace{-1em}
+  {\begin{center}\bf\thechapter.~~#2\end{center}}
+  \vspace{-1em}
   \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}#1}
   \@afterheading
 }
 \renewcommand{\@schapter}[1]{%
   \clearpage
-  \begin{centering}
-  {\bf#1}
-  \end{centering}
+  {\begin{center}\bf#1\end{center}}
 %   \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\section}{
-  \vspace{-0.24in}
-  \vspace*{0.24in}
+%   \vspace{-0.24in}
+%   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@section\@ssection
 }
 \newcommand{\@section}[2][]{%
   \refstepcounter{section}
-  \begin{centering}
+  \begin{flushleft}
   {\bf\thesection~~#2}
-  \end{centering}
-  \vspace{-1em}
+  \end{flushleft}
+%   \vspace{-1em}
   \addcontentsline{toc}{section}{\protect\numberline{}#1}
   \@afterheading
 }
@@ -433,56 +439,78 @@
   \begin{flushleft}
   {\bf#1}
   \end{flushleft}
-  \vspace{-1em}
+%   \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\subsection}{
-  \vspace{-0.24in}
-  \vspace*{0.24in}
+%   \vspace{-0.24in}
+%   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@subsection\@ssubsection
 }
 \newcommand{\@subsection}[2][]{%
   \refstepcounter{subsection}
   \begin{flushleft}
-  {\bf\thesubsection~~#2}
+  {\textit{\thesubsection~~#2}}
   \end{flushleft}
-  \vspace{-1em}
+%   \vspace{-1em}
   \addcontentsline{toc}{subsection}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssubsection}[1]{%
   \clearpage
-  \begin{centering}
-  {\bf#1}
-  \end{centering}
-  \vspace{-1em}
+  \begin{flushleft}
+  {\textit{#1}}
+  \end{flushleft}
+%   \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\subsubsection}{
-  \vspace{-0.24in}
-  \vspace*{0.24in}
+%   \vspace{-0.24in}
+%   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@subsubsection\@ssubsubsection
 }
 \newcommand{\@subsubsection}[2][]{%
   \refstepcounter{subsubsection}
-  \begin{centering}
-  {\bf\thesubsubsection~~#2}
-  \end{centering}
+  \begin{flushleft}
+  {\textit{\thesubsubsection~~#2}}
+  \end{flushleft}
   \addcontentsline{toc}{subsubsection}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssubsubsection}[1]{%
   \clearpage
-  \begin{centering}
-  {\bf#1}
-  \end{centering}
+  \begin{flushleft}
+  {\textit{#1}}
+  \end{flushleft}
   \@afterheading
 }
 
+
+% \renewcommand{\paragraph}{
+% %   \vspace{-0.24in}
+% %   \vspace*{0.24in}
+%   \@afterindenttrue
+%   \secdef\@paragraph\@sparagraph
+% }
+% \newcommand{\@paragraph}[2][]{%
+%   \refstepcounter{paragraph}
+%   \begin{flushleft}
+%   {\textit{\thesubsubsection~~#2}}
+%   \end{flushleft}
+%   \addcontentsline{toc}{paragraph}{\protect\numberline{}#1}
+%   \@afterheading
+% }
+% \newcommand{\@sparagraph}[1]{%
+%   \clearpage
+%   \begin{flushleft}
+%   {\textit{#1}}
+%   \end{flushleft}
+%   \@afterheading
+% }
 
 % New environment for appendix
 \renewenvironment{appendix}{%

@@ -71,6 +71,7 @@ Our analysis implements abstractions made in this paper and shows the implementa
 
 
 \section{Criticality Measure}
+
 \label{criticallity_measure_section}
 A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
 The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions. 
@@ -225,6 +226,7 @@ In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ 
 
 
 \section{Assessing Model Accuracy and Trust Region Radius Management}
+
 \label{rhosection}
 In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
 To test the accuracy, we calculate a quantity
@@ -253,6 +255,7 @@ during some iterations in which $\rk > \gammabi$.
 
 
 \section{Interpolation-Based Models}
+
 \label{interpolation} 
 Model-based methods for derivative-free optimization construct models of a function $f(x)$ from a family of functions spanned by a set of $p + 1 \in \naturals$ basis functions  $\Phi = \{\phi_0, \phi_1, \ldots, \phi_p\}$. Each member of this family has the form $\mf(x) = \sum_{i=0}^p\alpha_i\phi_i(x)$ for some scalar coefficients $\alpha_i, i \in \{0, \ldots, p\}$.
 
@@ -290,6 +293,7 @@ the model's approximation may become inaccurate.
 
 
 \section{Sample Set Geometry}
+
 \label{geometry}
 The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
 
@@ -297,7 +301,7 @@ In the case of polynomial model functions, a rigourous analysis of model accurac
 Let the space of polynomials on $\Rn$ with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
 The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
 \begin{align}
-l_i(y^j) = \delta_{i,j}
+l_i(y^{(j)}) = \delta_{i,j}
 \end{align}
 where $\delta_{i,j} = \{0 \;\text{if}\; i\ne j,\; 1 \;\text{if} \; i = j \}$ is the Kronecker-delta function.
 %For example, after this change of basis, note that the Vandermonde matrix becomes the identity matrix.
@@ -347,12 +351,13 @@ The concept of $\Lambda$-poisedness yields the following error bounds, as shown 
  \cite[Theorem 3.16]{introduction_book}:
 
 \begin{theorem}
-\label{quadratic_errors}  
+\label{quadratic_errors}
+
 Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ 
-sample points and $\Delta = \max_{1 \le j \le p} \|y^{(j)} -y^{(0)}\|$.
+sample points and $\Delta = \max_{1 \le j \le p} \|y^{(j)}-y^{(0)}\|$.
 Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^{(0)}; \Delta)$.
-Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, 
-and $\kappa_{f}$ such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ 
+Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ 
+such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ 
 that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};\Delta)$:
 
 \begin{align}
@@ -363,12 +368,19 @@ that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};
 where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
 \end{theorem}
 
-There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix associated with the monomial basis $\bar{\Phi}$ $= \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\}$ $=\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}$.
+There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix 
+associated with the monomial basis for $\mathcal{P}^2_n$
+\begin{align}
+\label{define_monomial}
+\bar{\Phi} = \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\} =\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}.
+\end{align}
 In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{y^{(i)}-y^{(0)}}{\Delta}|y^{(i)} \in Y\right\}$.
 Then we have the following result:
 % \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
-\begin{theorem}\label{Lambda_poised_error_bounds}
+\begin{theorem}
+\label{Lambda_poised_error_bounds}
+
 (\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
 If $\hat{M}$ is  non-singular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
 then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B_2(0;1)$.  
@@ -377,12 +389,31 @@ then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is 
 constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
 \end{theorem}
 
-% \begin{comment}
-% Is this result important to discuss?
-% \end{comment}
+A limitation of \cref{Lambda_poised_error_bounds} is that it assumes $\hat{Y}$ is contained in the unit ball $B(0;1)$.
+The following theorem does not make this assumption.
 
+\begin{theorem}
+\label{Lambda_poised_error_bounds_delta}
 
+Let $\Delta >0$, $Y$ be a sample set with $Y \subset B_2(0,\Delta)$ and let $M=M(\bar{\Phi},Y)$ where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
+If $M$ is nonsingular, and $\norm{M^{-1}} \le \Lambda$, then $Y$ is $\hat{\Lambda}$-poised in $B_2(0,\Delta)$,
+where $\hat{\Lambda} = \Lambda \sqrt{p+1}\max\{1, \Delta^2\}$.
+\end{theorem}
 
+\begin{proof}
+
+Let $x \in B_2(0,\Delta)$ be arbitrary and let $\ell(x) = (\ell_0(x), \ldots, \ell_p(x))^T$.
+As shown in \cite{introduction_book}, we can write $\ell(x) = M^{-T}\bar{\phi}(x)$, 
+where $\bar{\phi}(x) = (\bar{\phi}_0(x), \ldots, \bar{\phi}_p(x))$.
+Thus,
+\begin{align*}
+\norm{\ell(x)}_{\infty} & \le \norm{M^{-T}}_{\infty} \norm{\bar{\phi(x)}}_{\infty} \\
+& \le \sqrt{p+1} \norm{M^{-1}}_2 \norm{\bar{\phi}(x)}_{\infty} \\
+& \le \Lambda \sqrt{p+1} \max\left\{1, |x_1|, \ldots,|x_n|, \frac 1 2 x_1^2/2, \ldots, \frac 1 2 x_n^2, x_1x_2, \ldots, x_{n-1}x_n\right\}\\
+& \le \Lambda \sqrt{p+1}  \max\{1, \Delta^2\} = \hat{\Lambda}.
+\end{align*}
+
+\end{proof}
 
 
 \section{Model Improvement Algorithms}
@@ -391,37 +422,51 @@ Efficient implementations of model-based methods re-use sample points from previ
 New points are then added to the sample set using a model improvement algorithm as described in 
 \cite{introduction_book}  and stated here in \cref{model_improving_algorithm}.
 
-The model improvement algorithm starts with a set of $p+1$ sample points and then uses LU factorization with partial pivoting of the 
-associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \ldots, u_p\}$ that are closely related to the Lagrange polynomials.  
+The model improvement algorithm starts with a set of $p+1$ sample points that have been shifted and scaled so that they lie within a ball $B_2(0;\Delta)$, with $\Delta \ge 1$.   
+The algorithm then uses LU factorization with partial pivoting of the 
+associated Vandermonde matrix to construct a set of pivot polynomials $\{u_0, \ldots, u_p\}$ that are closely related to the Lagrange polynomials. 
 
-Each iteration of the algorithm identifies a point in the sample set to include in the final sample set.
-In particular, on the $i$th iteration, the points $y^{(0)}, \ldots, y^{(i-1)}$ have already been included.
-If a point $y^{(j)}$, $j \ge i$ can be found such that $u_i(y^{(j)})$ has a sufficiently large magnitude, 
+
+Each iteration of the algorithm identifies a point to include in the final sample set.
+In particular, on the $i$th iteration, the points $y^{(0)}, \ldots, y^{(i-1)}$ have already been included.   
+If a point $y^{(j)}$,  $j \ge i$ from the original set can be found such that 
+$u_i(y^{(j)})$ has a sufficiently large magnitude  (i.e.,  $|u_i(y^{(j)})| \ge \xi_{\min}$),  
 then that point is added to the final sample set (by swapping it with $y^{(i)}$).
 However, if no such point can be found, 
 it indicates that including any of the remaining points in the final sample set would result in a poorly poised set.
-Therefore, the point $y^{(i)}$ is replaced by a new point which is obtained by maximizing $|u_i(x)|$ over the trust region.
+Therefore, the point $y^{(i)}$ is replaced by a new point that is obtained by maximizing $|u_i(x)|$ 
+over the unit ball $B_2(0;1)$.
+The pivot polynomials are then updated so that 
+$u_j(y^{(i})) = 0$ for $j > i$.
+At the successful completion of the algorithm, the final set of points $Y$ is $\Lambda$-poised over $B_2(0;\Delta)$,
+where $\Lambda$ depends on $\Delta$,  $n$ and $\xi_{\min}$,  and is inversely proportional to $\xi_{\min}$
+(see \cref{set_is_poised} below).
 
-\paragraph*{Note:}  Typically, we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.
-Since the Model Improvement Algorithm requires a starting set of $p+1$ points, we add copies of $y^{(0)}$ to create a set with $p+1$ points.
+\paragraph*{Note:}
+Typically,  we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.
+Since the Model Improvement Algorithm requires a starting set of $p+1$ points, 
+we add copies of $y^{(0)}$ to create a set with $p+1$ points.
+
+{
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{flushleft}
 
 \begin{algorithm}[H]
     \caption{Model Improvement Algorithm \label{alg:model_improvement} }
     \label{model_improving_algorithm}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            Given a center $\ck\in\Rn$, a radius $\delta >0$, and set $Y$ of $p+1$ points,
-            initialize $i=1$, $\ximin > 0$, and let $\bar \phi_i(x)$ be the monomial basis for $\polydn$.
-%             Construct the Vandermonde matrix $V_{i,j} = \bar{\phi}_j(\frac 1 {\Delta}(y^{(i)} - y^{(0)}))$.
+            Given a  set $Y \subset B_2(0;\Delta)$, $\Delta \ge 1$ of $p+1$ points.
+            Initialize $i=0$, $\ximin \in (0,1/4]$, and let $u_i(x)= \bar \phi_i(x)$ be the monomial basis for $\polydn$.
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
+			If $i = 0$, go to Step 3. \\
 			Compute the next pivot index $j^{\textrm{max}}_i = \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^{(j)}\right)\right|$,
-			and swap points $i$ and $j^{\textrm{max}}_i$ within $Y$.
+			and swap points $y^{(i)}$ and $y^{(j^{\textrm{max}}_i)}$ within $Y$.
 			
         \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
                 \item[] If $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin$ then go to Step 3.
-                \item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(\ck, \delta\right)}\left|u_i(x)\right|$
-%                 \item[] $Y \gets Y \cup \{\hat y \}\setminus \{y^{(i)}\}$
-				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement, then $\ximin$ was chosen too small.
+                \item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(0; 1 \right)}\left|u_i(x)\right|$.
+				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement,  \textbf{Stop}: $\ximin$ was chosen too small.
             \end{itemize}
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
         	For $j = i+1, \ldots, p$: \\
@@ -430,73 +475,192 @@ Since the Model Improvement Algorithm requires a starting set of $p+1$ points, w
 %                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
 %                 \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
 %             \end{itemize}
-            If $i = p$ then \textbf{Stop}, otherwise Set $i \gets i+1$ and go to Step 1
+            If $i = p$ then \textbf{Stop}, otherwise.  Set $i \gets i+1$ and go to Step 1
     \end{itemize}
 \end{algorithm}
 
+\end{flushleft}
+\end{fullwidth}
+}
+
 %In \cref{satisfying_accuracy} show how to construct a $\Lambda$-poised set over an ellipsoidal region.
 
-At the completion of the algorithm, we obtain a  sample set $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
-where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by \cref{set_is_poised}.
+%At the successful completion of the algorithm,  the matrix
+%\[U = \left[ \begin{array}{cccc}
+%u_0(y^{(0)}) & u_0(y^{(1)}) & \cdots & u_0(y^{(p)}) \\
+%u_1(y^{(0)}) & u_1(y^{(1)}) & \cdots & u_1(y^{(p)}) \\
+%&& \vdots & \\
+%u_p(y^{(0)}) & u_0(y^{(1)}) & \cdots & u_p(y^{(p)}) 
+%\end{array}\right\]
+%is the upper triangular portion of the $LU$ factorization of the Vandermonde matrix $M =M(\bar{\Phi},Y)$ corresponding to the sample set $Y$ generated by the algorithm.     The following results establishes that $M$ has a bounded condition number:
+%
+%
+%
+%
+%Since all of the diagonal entries of this matrix have magnitude greater than or equal to $\xi_{\min}$,  we
+%we obtain a sample set
+% $Y=\{y^{(0)}, \ldots, y^{(p)}\}$ that is $\Lambda$-poised, 
+%where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by \cref{set_is_poised}.
+%\sbnote{I changed the last line of Step 2 in the algorithm to include a \textbf{Stop}}
+
+Observe that \cref{model_improving_algorithm} uses a threshold parameter $\xi_{\min}$ to select the next sample point.
+If $\xi_{\min}$ is too large, it is possible that there might not exist a point $x \in B_2(0;1)$ 
+in the unit ball such that $\|u_i(x)\| \ge \ximin$.
+In this case,  the algorithm stops prematurely in Step 2.
+However,  in \cref{terminates} below, we show that this cannot happen as long as $0 < \ximin \le \frac 1 4$.
+To establish the result, we first need the following Lemma from \cite{introduction_book}.
+
+
+%\begin{lemma}
+%\label{maximum_value_for_quad}
+%Let $v^T\bar \phi(x)$ be a quadratic polynomial of degree at most $d$, where $\|v\|_{\infty} = 1$
+%and $\bar \phi(x)$ is the monomial bases for $\polydn$.
+%Then, for any $r \ge 1$,
+%\begin{align*}
+%\max_{x \in B(0; r)} \left|v^T\bar\phi(x)\right| \ge \frac 1 4
+%\end{align*}
+%\end{lemma}
+%\begin{proof}
+% When $d = 1$,
+% we have that $\bar \phi(x) = (1, x_1, x_2, \ldots, x_n)^T$.
+% Then by letting $w = (v_2, \ldots, v_{n+1})^T$ and $\hat w = r \frac w {\|w\|}$, we see that
+% \begin{align*}
+% v^T\bar\phi\left(\pm w\right) = v_1 + r^2
+% \end{align*}
+% \end{proof}
+
+\begin{lemma}(\cite[Lemma 6.7]{introduction_book})
+\label[lemma]{book_lemma6p7}
+
+Let $v^T \bar{\phi}(x)$ be a quadratic polynomial, where $\norm{v}_{\infty}=1$ and $\bar{\phi}$ is the monomial basis.
+Then,
+\begin{align*}
+\max_{x \in B(0;1)} \left\|v^T \bar{\phi}(x)\right\| \ge \frac{1}{4}.
+\end{align*}
+\end{lemma}
+
+\begin{lemma}
+\label[lemma]{terminates}
+
+For any given $\xi_{\min} \in (0,1/4]$, \cref{model_improving_algorithm}
+computes a set $Y$ of $p+1$ points in the ball $B(0;\Delta)$ for which the pivots of the Gaussian elimination of
+$M=M(\bar{\phi},Y)$ satisfy
+\begin{align*}
+\left\|u_i(y^{(i)})\right\| \ge \xi_{\min},  \quad i=0,\ldots,p.
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+
+The first pivot polynomial is $u_0 = (1, 0, \ldots, 0)$, so that $\left\|u_0\left(y^{(0)}\right)\right\| = 1 \ge \ximin$.
+For $i > 1$, the $(i+1)$st pivot polynomial $u_i(x)$ can be expressed as $v^T \bar{\phi}(x)$,
+where $v = (v_0, \ldots, v_{i-1},1,0,\ldots,0)^T$.
+Observe that $\norm{v}_{\infty} \ge 1$.
+Let $\bar{v} = v/\norm{v}_{\infty}$.
+Then by \cref{book_lemma6p7},
+\[ \max_{x \in B(0;1)} u_i(x) = \max_{x \in B(0;1)} \left| v^T \bar{\phi}(x)\right| = 
+\norm{v}_{\infty} \max_{x \in B(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right| \ge \frac{1}{4} \norm{v}_{\infty} \ge \frac{1}{4}.\]
+
+%\max_{x \in B(0;1)} \norm{v}_{\infty} \left|\bar{v}^T \bar{\phi}(x)\right|\max_{x \in B(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right|
+%\ge 1/4.\]
+It follows that the algorithm does not stop in Step 2 for $\ximin \le 1/4$.   Hence, at the end of the $i$th iteration, we have that  $\left| u_i(y^{(i)})\right| \ge \ximin$.  Moreover,  after the $i$ iteration has been completed,  $u_i$,  and $y^{(i)}$ are never altered.  Thus, the algorithm terminates with  $|u_i(y^{(i)}| \ge \ximin$ for $i=0, \ldots, p$. 
+
+Finally,  observe that all points in the final sample set $Y$ are selected either from the original sample set, which is contained in $B(0;\Delta)$,  or are obtained in Step 2 from within $B(0;1)$.  Since $\Delta  \ge 1$, it follows that $Y \subset B(0;\Delta)$.  
+
+\end{proof}
+
+
 
 \begin{theorem}
 \label{set_is_poised}
-The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised over $B_2\left(\ck, \delta\right)$ for quadratic interpolation, 
-where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
+
+Let $\Delta > 1$, and suppose that \cref{model_improving_algorithm} is called on a sample set $Y$.
+Then the resulting sample set $\hat Y$ is $\Lambda$-poised over $B_2\left(0;\Delta\right)$ for quadratic interpolation, 
+where $\Lambda > 0$ is a constant that depends only on $\Delta$, $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
+Furthermore, $y^{(0)} \in \hat Y$.
 \end{theorem}
 
 \begin{proof}
-This result is shown through a sequence of results in \cite{introduction_book}.
-By, \cite[Theorem 6.5]{introduction_book}, \cref{model_improving_algorithm} terminates.
-This implies the pivots in the LU-factorization are bounded below by $\ximin$:
-$
-\left|u_i\left(y^{(i)}\right)\right| \ge \ximin \; \forall 0 \le i \le p.
-$
-\cite[Section 6.7, Exercise 3]{introduction_book}
-bounds the condition number of the Vandermonde matrix in terms of these pivots:
+
+Note that \cref{model_improving_algorithm} never swaps or replaces $y^{(0)}$.
+By \cref{terminates},  $\hat Y \subset B(0;\Delta)$ 
+and the pivots in the LU-factorization of $M(\bar{\phi},Y)$ are bounded below by $\ximin$; that is,
+$\left|u_i\left(y^{(i)}\right)\right| \ge \ximin, \; \forall 0 \le i \le p.$
+Thus, by 
+\cite[Section 6.7, Exercise 3]{introduction_book}, 
+ we have that 
 \begin{align*}
 \left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}
 \end{align*}
-where $\epsilon_{growth}$ is a large, but finite estimate of the growth factor in LU factorizations.
-Our \cref{Lambda_poised_error_bounds} is then a restatement of \cite[Theorem 3.14]{introduction_book} which 
-uses the bound on $\left\|M\left(\bar \phi, Y\right)^{-1}\right\|$ to show the set $Y$ is $\Lambda$-poised.
-Note that, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
+where $\epsilon_{growth}$ is a potentially large, but finite estimate of the growth factor in the LU factorizations.   By  \cref{Lambda_poised_error_bounds_delta},  using the fact that $\Delta \ge 1$, we have that $Y$ is $\Lambda$-poised in $B_2(0;\Delta)$,  where 
+\[\Lambda = \left(\frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}\right) \sqrt{p+1}  \frac{\Delta^2}{2} = \frac{(p+1) \epsilon_{growth}}{2\ximin}\Delta^2.\]
+%
+%
+%
+%
+%Our \cref{Lambda_poised_error_bounds} is then a restatement of \cite[Theorem 3.14]{introduction_book} which 
+%relates the $\Lambda$-poisedness of $Y$ to $\left\|M\left(\bar \phi, Y\right)^{-1}\right\|$ over the unit ball.
+%However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
 \end{proof}
 
-Note that \cite[Theorem 6.5]{introduction_book} explicitly states an upper bound $\xi_{\textrm{alg}} > 0$ on $\ximin$, so that $\ximin \in \left(0 , \xi_{\textrm{alg}}\right)$.
-This bound depends on the choice of basis $\Phi$: $\xi_{\textrm{alg}} = 1$ for the linear case and $\xi_{\textrm{alg}} = \frac 1 4$ for the quadratic case.
-As a practical matter, these bounds are not restrictive because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
+%
+%\begin{theorem}
+%\label{set_is_poised}
+%The sample set $Y$ obtained from \cref{model_improving_algorithm} is $\Lambda$-poised over $B_2\left(\ck, \delta\right)$ for quadratic interpolation, 
+%where $\Lambda > 0$ is a constant that depends only on $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
+%\end{theorem}
+%
+%\begin{proof}
+%This result is shown through a sequence of results in \cite{introduction_book}.
+%Namely,  \cite[Theorem 6.5]{introduction_book} shows the pivots in the LU-factorization are bounded below by $\ximin$:
+%$
+%\left|u_i\left(y^{(i)}\right)\right| \ge \ximin \; \forall 0 \le i \le p.
+%$
+%\cite[Section 6.7, Exercise 3]{introduction_book}
+% bounds the condition number of the Vandermonde matrix in terms of these pivots:
+%\begin{align*}
+%\left\|M\left(\bar \phi, Y\right)^{-1}\right\| \le \frac{\sqrt{p+1}\epsilon_{growth}}{\ximin}
+%\end{align*}
+%where $\epsilon_{growth}$ is a large, but finite estimate of the growth factor in LU factorizations.
+%Our \cref{Lambda_poised_error_bounds} is then a restatement of \cite[Theorem 3.14]{introduction_book} which 
+%relates the $\Lambda$-poisedness of $Y$ to $\left\|M\left(\bar \phi, Y\right)^{-1}\right\|$ over the unit ball.
+%However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
+%\end{proof}
 
-\sbnote{The following is a nice discussion!}
+%Note that \cite[Theorem 6.5]{introduction_book} explicitly states an upper bound $\xi_{\textrm{alg}} > 0$ on $\ximin$, so that $\ximin \in \left(0 , \xi_{\textrm{alg}}\right)$.
+%This bound depends on the choice of basis $\Phi$: $\xi_{\textrm{alg}} = 1$ for the linear case and $\xi_{\textrm{alg}} = \frac 1 4$ for the quadratic case.
+%As a practical matter, these bounds are not restrictive because $\ximin$ is usually chosen small: on the order of $0.001$ for example.
 
-This bound on $\ximin$ is complicated by our construction of the sample set:
-we choose points {\em near} the current iterate, although the current sample region does not necessarily include the current iterate.
-This is developed later in the thesis, and our requirements for the sample set are formalized in \cref{define_suitable_ellipsoid} for the linear case and \cref{ellipsoids_notation_definitions} for the non-linear case.
-The takeaway from these requirements is that after an affine transformation to the unit ball, \cref{model_improving_algorithm} 
-will be called to construct sample points within the unit ball $B_2(0, 1)$, with an additional requirement that one of the sample points (the transformed $\xk$)
- lies within $B_2\left(0, \sqrt{2}\right)$.
-Although most practical implementations of \cref{model_improving_algorithm} choose a small $\ximin$, 
-this additional requirement further limits $\ximin$ in theory.
-This raises a question:
-for what values of $\Lambda$ (and therefore $\ximin$) can a sample set be $\Lambda$-poised if one point is chosen outside the unit ball?
-Namely, given $y^{(0)} \in B_2\left(0, \sqrt{2}\right)$:
-\begin{align*}
-\begin{array}{ccc}
-\min\limits_{\Lambda\ge 0, y^{(i)}\in\Rn, l_i\in\polydn} & \Lambda & \\
-\textrm{s.t.} & |l_i(x)| \le \Lambda & \forall \; x \in B_2(0, 1), 0 \le i \le p \\
-& l_i\left(y^{(j)}\right) = \delta^i_j & \forall \; 0 \le i,j \le p \\
-& y^{(i)} \in B_2(0, 1) & \forall \; 1 \le i \le p.
-\end{array}
-\end{align*}
-We have not encountered an issue choosing $\ximin$ too large,
-but we are interested in bounding this program's solution.
-
-% \begin{comment}
-% I think it is straightforward to come up with a simple bound to this problem:
-% construct a perfectly poised set with a point at the center, shifted it.
-% What is the maximum value at $\sqrt 2$ of a quadratic that is strictly between $(-1, 1)$ in $B_2(0, 1)$?
-% Seems like it would be $2$.
-% \end{comment}
+%\sbnote{The following is a nice discussion!}
+%
+%This bound on $\ximin$ is complicated by our construction of the sample set:
+%we choose points {\em near} the current iterate, although the current sample region does not necessarily include the current iterate.
+%This is developed later in the thesis, and our requirements for the sample set are formalized in \cref{define_suitable_ellipsoid} for the linear case and \cref{ellipsoids_notation_definitions} for the non-linear case.
+%The takeaway from these requirements is that after an affine transformation to the unit ball, \cref{model_improving_algorithm} 
+%will be called to construct sample points within the unit ball $B_2(0, 1)$, with an additional requirement that one of the sample points (the transformed $\xk$)
+% lies within $B_2\left(0, \sqrt{2}\right)$.
+%Although most practical implementations of \cref{model_improving_algorithm} choose a small $\ximin$, 
+%this additional requirement further limits $\ximin$ in theory.
+%This raises a question:
+%for what values of $\Lambda$ (and therefore $\ximin$) can a sample set be $\Lambda$-poised if one point is chosen outside the unit ball?
+%Namely, given $y^{(0)} \in B_2\left(0, \sqrt{2}\right)$:
+%\begin{align*}
+%\begin{array}{ccc}
+%\min\limits_{\Lambda>0, y^{(i)}\in\Rn, l_i\in\polydn} & \Lambda & \\
+%\textrm{s.t.} & |l_i(x)| \le \Lambda & \forall \; x \in B_2(0, 1), 0 \le i \le p \\
+%& l_i\left(y^{(j)}\right) = \delta^i_j & \forall \; 0 \le i,j \le p \\
+%& y^{(i)} \in B_2(0, 1) & \forall \; 1 \le i \le p.
+%\end{array}
+%\end{align*}
+%We have not encountered an issue choosing $\ximin$ too large,
+%but we are interested in bounding this program's solution.
+%
+%% \begin{comment}
+%% I think it is straightforward to come up with a simple bound to this problem:
+%% construct a perfectly poised set with a point at the center, shifted it.
+%% What is the maximum value at $\sqrt 2$ of a quadratic that is strictly between $(-1, 1)$ in $B_2(0, 1)$?
+%% Seems like it would be $2$.
+%% \end{comment}
 
 \section{Trust Regions}
 
