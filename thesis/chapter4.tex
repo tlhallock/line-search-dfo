@@ -177,7 +177,7 @@ Specifically, define
 \end{cases}
 \end{align}
 
-\paragraph*{Note:}
+\paragraph*{Note.}
 We have $m^{(k)}_{c_i}\left(\xk\right) = c_i\left(\xk\right)$.
 
 %
@@ -1987,7 +1987,7 @@ Note that \cref{ellipse_fits} also ensures adjacency, and $\beta^{\star} > 0$ en
 Let $i \in [m]$ be arbitrary.
 We wish to show $c_i\left(x\right) \le 0 \; \forall x \in C \cap B$.
 
-\paragraph*{Case 1}
+\paragraph*{Case 1.}
 Suppose that $i$ is such that $\left|c_i(x_0)\right| > \minangledelta \left\|\nabla c_i(x_0)\right\|$, and let $y \in \Rn$ with $c_i(y) = 0$ be arbitrary.
 By \cref{bounded_gradients_lemma}, there exists $\maxgrad > 0$ such that
 \begin{align}
@@ -2005,7 +2005,7 @@ Because one of these cases must be true, we see
 \|y - x_0\| \ge \frac 1 {\maxgrad}\min\left\{\mingradepsilon, \minangledelta \mingrad\right\} \Longrightarrow y \not \in B.
 \end{align*}
 
-\paragraph*{Case 2}
+\paragraph*{Case 2.}
 Now, suppose that $i$ is such that 
 $\left|c_i(x_0)\right| \le \minangledelta \left\|\nabla c_i(x_0)\right\|$.
 Then by \cref{true_constraints_minangle_assumption}, there exists $\minangledirx$ with
@@ -2595,7 +2595,7 @@ The functions $c_i$ for all $i \in [m]$ and $f$ are twice differentiable and the
 \end{assumption}
 
 
-\paragraph*{Regularity Assumptions}
+\paragraph*{Regularity assumptions.}
 
 % We use the following assumptions as our regularity assumptions.
 
@@ -2657,7 +2657,7 @@ There exist $\mingradepsilon > 0$ and $\mingrad > 0$ such that for each $x \in \
 \end{assumption}
 
 
-\paragraph*{Restoration}
+\paragraph*{Restoration.}
 
 The following assumption is motivated in \cref{recovering_feasiblity_section}.
 It is not needed when the feasible region is convex: \cref{convex_restoration} discusses such an algorithm.
@@ -3694,7 +3694,7 @@ v(t) = \slin  + t \minangledirk.
 For small enough values of $t$, $v(t)$ will still provide sufficient reduction,
 while large values of $t$ ensure $v(t)$ lies within $\capcones$.
 
-\paragraph*{Sufficient Reduction}
+\paragraph*{Sufficient reduction.}
 First, we show that for small enough values of $t$, $v(t)$ provides sufficient reduction.
 % To do this, we bound the affect of moving along $\huk$.
 By \cref{i_thought_i_proved_this_already} and \cref{bounded_model_hessian_lemma}, we see that there exists some $\dacc$ such that if
@@ -3745,7 +3745,7 @@ t \le \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\right)} \dk^{1 +
 % t \maxmodelgrad + 2t^2\maxmodelhessian \le \frac 1 2 \delta_2 \dk^{1 + p_{\Delta}} \\
 % \Longleftrightarrow t \maxmodelgrad + 2t\maxmodelhessian \le \frac 1 2 \delta_2 \dk^{1 + p_{\Delta}} \\
 
-\paragraph*{Buffered Feasibility}
+\paragraph*{Buffered feasibility.}
 Next, we will show that for large enough values of $t$, $v(t)$ will lie within $\capcones \cap \trk$.
 Notice that because $\slin  \in B_2\left(\xk, \dk\right)$, as long as $t \le \frac 1 2 \dk$, we will have $v(t) \in \trk$.
 By \cref{large_zik_means_means_no_intersection} and \cref{sr_delta_small_enough}, if $i \not \in \activeconstraintsk$, then $v \in \trk \Longrightarrow v \in \fik$.
@@ -3808,7 +3808,7 @@ These, along with $\dk \le 1$, and $\alpha, \beta, p_{\alpha}, p_{\beta} \le (0,
 \le 6 \sqrt{n} \dk^{1 + \min\left\{p_{\alpha}, p_{\beta}\right\}} \le t \minanglealpha.
 \end{align*}
 
-\paragraph*{Choosing t}
+\paragraph*{Choosing t.}
 
 We have shown that $v(t) = \slin  + t \minangledirk \in \capcones \cap \trk$ satisfies sufficient reduction 
 if $\dk \le \min\left\{1, \dacc\right\}$, $t \le \min\left\{1, \frac 1 2 \dk\right\} \le \sqrt{n} \dk$, and
@@ -5274,10 +5274,10 @@ then
 \end{align}
 We choose $k_0 = \max\left\{k_1, k_2, k_3, k_4\right\}$, and assume $k, l \ge k_0$.
 
-\paragraph*{Case 1}
+\paragraph*{Case 1.}
 If $-c_i\left(\xl\right) \le \mingradepsilon$, then \cref{mingradassumption} implies $\left\| \nabla c_i\left(\xl\right) \right\| \ge \mingrad \ge 3 \deltalb$.
 
-\paragraph*{Case 2}
+\paragraph*{Case 2.}
 Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Ack$.
 Then
 \begin{align*}
@@ -5289,7 +5289,7 @@ and $\left\|\nabla c_i\left(\xk\right)  \right\| \ge 6 \deltalb$.
 
 % (1 - x) = 4x
 
-\paragraph*{Case 3}
+\paragraph*{Case 3.}
 Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Amk$.
 Then
 \begin{align*}
@@ -5299,7 +5299,7 @@ Then
 \end{align*}
 so that $\left\|\gmcik\right\| \ge 6 \deltalb$, and \cref{hmoydihtp_eqn1} implies $\| \nabla c_i\left(\xl\right) \| \ge 5 \deltalb$.
 
-\paragraph*{Case 4}
+\paragraph*{Case 4.}
 Suppose that $-c_i\left(\xk\right) > \mingradepsilon$ and $i \in \Alk$.
 Then \cref{hmoydihtp_eqn3} implies that $-c_i\left(\xl\right) > \mingradepsilon - \deltalb \ge (6\maxmodelgrad - 1) \deltalb \ge 5 \deltalb$, so that
 \begin{align*}
@@ -5415,7 +5415,7 @@ We wish to apply \cref{the_lemma_to_end_all_lemmas} by assigning values to
 $A$, $A'$, $b$, $b'$, $C$, $C'$, $d$, $d'$, $u$, $\delta_l$, $\delta_u$, $\delta_{\alpha}$, and $\delta_r$.
 We can let $\activeindicesk$ be defined by \cref{define_activeindicesk}, and partition either
 
-\paragraph*{Case 1}
+\paragraph*{Case 1.}
 \begin{align*}
 \begin{array}{cclccl}
 C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Ack\right)}, &
@@ -5429,7 +5429,7 @@ b' &\gets& \left[-c\left(\xk\right)\right]_{\left([m] \setminus \activeindicesk\
 \end{array}
 \end{align*}
 or
-\paragraph*{Case 2}
+\paragraph*{Case 2.}
 \begin{align*}
 \begin{array}{cclccl}
 C  &\gets& \left[\nabla m^{(k)}_c\left(\xk\right)\right]_{\activeindicesk \cap \left(\Amk \cup \Alk \right)}, &

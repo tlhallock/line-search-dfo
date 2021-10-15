@@ -28,7 +28,7 @@ If the trial point is accepted, then the trust region radius may be increased or
 depending on how well the sample point improved upon the previous iterate.
 This will be discussed in \cref{rhosection}.
 
-\paragraph*{Reviews}
+\paragraph*{Reviews.}
 There are a number of books and survey articles that provide good introductions to the field of derivative-free optimization.
 Within \cite{introduction_book} derivative-free methods are developed in detail.
 This is the first textbook devoted to derivative-free optimization.
@@ -41,7 +41,7 @@ This compares several software libraries and reviews the development of derivati
 Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
 
-\paragraph*{Constrained derivative-free algorithms}
+\paragraph*{Constrained derivative-free algorithms.}
 The development of DFO algorithms for constrained optimization has been relatively recent,
 with much of the early work in this area focused on direct-search methods.
 
@@ -55,7 +55,7 @@ We compare our results to the Mesh Adaptive Search algorithm implemented within 
 
 \sbnote{This should be expanded upon}
 
-\paragraph*{Model-Based Trust-Region Methods for DFO}
+\paragraph*{Model-based trust-region methods for DFO.}
 The literature on model-based DFO methods for constrained optimization is smaller. 
 
 COBYLA \cite{pub.1046127469} was one of the first model-based approaches for solving constrained black-box problems.
@@ -397,7 +397,7 @@ The following theorem does not make this assumption.
 
 Let $\Delta >0$, $Y$ be a sample set with $Y \subset B_2(0,\Delta)$ and let $M=M(\bar{\Phi},Y)$ where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
 If $M$ is nonsingular, and $\norm{M^{-1}} \le \Lambda$, then $Y$ is $\hat{\Lambda}$-poised in $B_2(0,\Delta)$,
-where $\hat{\Lambda} = \Lambda \sqrt{p+1}\max\{1, \Delta^2\}$.
+where $\hat{\Lambda} = \Lambda \sqrt{p+1}\max\{1, \frac 1 2 \Delta^2\}$.
 \end{theorem}
 
 \begin{proof}
@@ -409,8 +409,8 @@ Thus,
 \begin{align*}
 \norm{\ell(x)}_{\infty} & \le \norm{M^{-T}}_{\infty} \norm{\bar{\phi(x)}}_{\infty} \\
 & \le \sqrt{p+1} \norm{M^{-1}}_2 \norm{\bar{\phi}(x)}_{\infty} \\
-& \le \Lambda \sqrt{p+1} \max\left\{1, |x_1|, \ldots,|x_n|, \frac 1 2 x_1^2/2, \ldots, \frac 1 2 x_n^2, x_1x_2, \ldots, x_{n-1}x_n\right\}\\
-& \le \Lambda \sqrt{p+1}  \max\{1, \Delta^2\} = \hat{\Lambda}.
+& \le \Lambda \sqrt{p+1} \max\left\{1, |x_1|, \ldots,|x_n|, \frac 1 2 x_1^2, \ldots, \frac 1 2 x_n^2, x_1x_2, \ldots, x_{n-1}x_n\right\}\\
+& \le \Lambda \sqrt{p+1}  \max\{1, \frac 1 2 \Delta^2\} = \hat{\Lambda}.
 \end{align*}
 
 \end{proof}
@@ -442,7 +442,7 @@ At the successful completion of the algorithm, the final set of points $Y$ is $\
 where $\Lambda$ depends on $\Delta$,  $n$ and $\xi_{\min}$,  and is inversely proportional to $\xi_{\min}$
 (see \cref{set_is_poised} below).
 
-\paragraph*{Note:}
+\paragraph*{Note.}
 Typically,  we have fewer than $p+1$ previously evaluated sample points within the trust region at the beginning of each iteration.
 Since the Model Improvement Algorithm requires a starting set of $p+1$ points, 
 we add copies of $y^{(0)}$ to create a set with $p+1$ points.

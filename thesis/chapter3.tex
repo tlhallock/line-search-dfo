@@ -361,7 +361,7 @@ to a transformed problem in which the ellipsoid $\ellipsek$ is mapped onto a uni
 This process is summarized here.
 
 Given some symmetric matrix $\qk \succ 0$, we can give $\qk$ an eigen-decomposition $\qk = L D^2 L^T$,
-where $L^TL = I$ and $D$ is a diagonal matrix with positive entries.
+where $V^TV = I$ and $D$ is a diagonal matrix with positive entries.
 % In fact, because we require $\qk$ to be positive definite, the diagonal entries of $D$ are strictly positive.
 For any
 % $\delta = \max_{x\in \ellipsek}\left\|x-\ck\right\|$
@@ -369,9 +369,9 @@ $\delta > 0$ define $T:\Rn \times \Rn_+ \rightarrow \Rn$ by $T(x; \delta) = \fra
 Note that $T$ is invertible and can map $\sampletrk$ onto the $\delta$-ball
 $B_2(0,\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$:
 \begin{align*}
-\delta^2 \ge \|T(x; \sqrt{2}\delta)\|^2 = \left\|\frac {\sqrt{2}\delta} {\sdk} DL^T(x - \ck)\right \|^2
-= \frac {2\delta^2} {\sdk^2} (x - \ck)^TQ(x - \ck) \\
-\Longleftrightarrow (x - \ck)^TQ(x - \ck) \le \frac 1 2 \sdk^2.
+\delta^2 \ge \|T\left(x; \sqrt{2}\delta\right)\|^2 = \left\|\frac {\sqrt{2}\delta} {\sdk} DL^T(x - \ck)\right \|^2
+= \frac {2\delta^2} {\sdk^2} \left(x - \ck\right)^TQ\left(x - \ck\right) \\
+\Longleftrightarrow \left(x - \ck\right)^TQ\left(x - \ck\right) \le \frac 1 2 \sdk^2.
 \end{align*}
 Likewise, with $\scaledellipsek$ defined in \cref{define_suitable_ellipsoid}, we have that
 $T\left(\scaledellipsek; \delta\right) = B_2(0, \delta)$.
@@ -593,14 +593,24 @@ Finally, by the mean value theorem, there is a $\xi^{(3)} \in [y^{(0)}, x]$ with
 
 The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the ellipsoid $\ellipsek$.
 
+
+\begin{comment}
+Change this to $V$.
+\end{comment}
+
 %Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$-ball to the ellipsoidal region $ \ellipsek $.
 % \cref{fully_quadratic}
 \begin{lemma}
 
 \label[lemma]{shifted_ellipsoid}
 Let $\sdk>0$, $\ck \in \Rn$ and a symmetric matrix $\qk \succ 0$ be given, and
-let the eigen decomposition of $\qk$ be $\qk = LD^2L^T$, $L^TL = I$, where $D$ is diagonal with positive entries.
-For some $\delta > 0$, define $T(x; \delta) = \frac{\delta}{\sdk^2} D L^T\left(x - \ck\right)$.
+let the eigen decomposition of $\qk$ be $\qk = VD^2V^T$, $V^TV = I$, where $D$ is diagonal with positive entries.
+Also, let $\scaledellipsek$ be defined as in \cref{define_suitable_ellipsoid}:
+\begin{align*}
+\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \sdk^2 \right\}.
+\end{align*}
+
+For some $\delta > 0$, define $T(x; \delta) = \frac{\delta}{\sdk} D V^T\left(x - \ck\right)$.
 Also, let $\hat m_f(u)$ be a model of the shifted objective $\hat f(u) = f(T^{-1}(u))$ such that,
 for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error bounds hold for all $u \in B_2(0,\delta)$:
 
@@ -612,13 +622,13 @@ for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error b
 
 Then, with
 \begin{align*}
+r_{\scaledellipsek} = \max_{x \in \scaledellipsek}\|x - \ck\|, \\
 \kappa_{ef}' = \kappa_{ef}, \\
 \kappa_{eg}' = \kappa_{eg}\sqrt{\kappa(\qk)}, \\
 \kappa_{eh}' = \kappa_{eh}\condition(\qk),
 \end{align*}
 the model function $m_f(x) = \hat m_f(T(x))$ satisfies the following error bounds for all 
-$x \in T^{-1}\left(B_2(0, \delta)\right)$:
-% = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \sdk^2 \right\}$
+$x \in T^{-1}\left(B_2(0, \delta)\right) = \scaledellipsek$:
 \begin{align*}
 | m(x) - f(x)| \le \kappa_{ef}'\delta^3, \\
 \|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta^2, \\
@@ -674,20 +684,29 @@ $x \in T^{-1}\left(B_2(0, \delta)\right)$:
 % \delta^2 \ge \|T(x)\|^2 = \frac 2 {\sdk^2}\left\|\left(x - \ck\right)^TLD^2L\left(x - \ck\right)\right\| \ge
 % \min_{i \in [n]} D_{i, i}^2 \left\|x - \ck\right\|^2
 % \end{align*}
-Observe that because $D_{i, i} > 0$, we have
+We see that because $D_{i, i} > 0$, we have
 \begin{align*}
-\frac{\delta}{\sdk} 
-= \frac {1} {\sqrt{\lambda_{\text{min}}\left(\qk\right)}} 
-= \frac 1 {\min_{i \in [n]} D_{i, i}} 
+r^2 = \frac {\sdk^2} {\lambda_{\text{min}}\left(\qk\right)} = \frac {\sdk^2} {\min_{i \in [n]} D^2_{i, i}}\\
+%\delta = \max_{v \in E} \|T(v; \delta)\| 
+%= \max_{v \in E} \|\frac {\delta}{\sdk} DL^T\left(v - \ck\right)\|
+%\ge \frac {\delta\min_{i \in[n]} D_{i,i}}{\sdk}\max_{v \in E}\|\left(v - \ck\right)\|
+%= \frac {\delta\min_{i \in[n]} D_{i,i}}{\sdk}r
 \end{align*}
+% \|v - \ck\| = \sdk \Longrightarrow 
+%And for any $x = T(v; \delta)$:
+%\begin{align*}
+%\frac{1}{\sdk} 
+%= \frac {1} {\sqrt{\lambda_{\text{min}}\left(\qk\right)}} 
+%= \frac 1 {\min_{i \in [n]} D_{i, i}} 
+%\end{align*}
 % = \max_{x \in T^{-1}\left(B_2\left(0, \delta\right)\right)}\left\|x - \ck\right\|^2
 and
 \begin{align*}
 \condition\left(\qk\right) 
 = \kappa\left(D^2\right) 
 = \frac{\max_{i}D_{i,i}^2}{\min_{i}D_{i,i}^2} 
-= \frac{\delta^2}{\sdk^2} \max_{i}D_{i,i}^2 = \frac{\delta^2}{\sdk^2}\|D\|^2 \\
-\Longrightarrow \frac{\delta} {\sdk} \|D\| = \sqrt{\condition\left(\qk\right)}.
+= \frac{r^2}{\sdk^2} \max_{i}D_{i,i}^2 = \frac{r^2}{\sdk^2}\|D\|^2 \\
+\Longrightarrow \frac{\delta} {\sdk} \|D\| = \frac{\delta}{r} \sqrt{\condition\left(\qk\right)}.
 \end{align*}
 %  \le \frac{\kappa_{\lambda}}{\delta}.
 
@@ -1421,7 +1440,7 @@ In order to include the original point as a constraint, we add a constraint of t
 Constraints of this nature make finding the ellipsoid much more expensive:
 the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
 
-\paragraph*{Increasing the Radius.}
+\paragraph*{Increasing the radius.}
 An alternative is to scale $\qk$ by a constant.
 We use a scaling factor $\sdk > 0$ defined by
 \begin{align*}
@@ -1753,7 +1772,7 @@ This is depicted in \cref{ellipse_adv}.
 
 % We let the volume of the ellipsoid $E$ at center $c$ be given by $V(c) = \det(Q^{-1}) $.
 
-\paragraph{Outer Trust Region Search}
+\paragraph{Outer trust region search.}
 
 One approach is to search all possible centers within $\feasible \cap \outertrk $.  
 % That is, we solve:  \sbnote{Why do you use $\sdk$ in the following?}
@@ -1783,7 +1802,7 @@ The following section addresses this problem by proposing a path search method f
 \end{figure}
 
 
-\paragraph{Path Searches}
+\paragraph{Path searches.}
 
 % \sbnote{This discussion is quite vague, and in my opinion, off target.  
 % You don't necessarily want to be moving toward a vertex.   
@@ -1925,7 +1944,7 @@ Namely, we introduce a parameter $\upsilon$ to determine how far to scale the co
 Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
 This produces the buffered segment searches within the results.
 
-\paragraph*{Circumscribed ellipse}
+\paragraph*{Circumscribed ellipse.}
 
 We also implemented a variant of the algorithm in which the sample region is a smallest volume ellipsoid to contain the feasible region.
 Notice the ellipsoid necessarily includes points that are outside the current trust region and may include infeasible points.
@@ -1955,7 +1974,7 @@ We summarize the results within \cref{linear_schittowski_results}.
 
 % 37 was left out because it proved to be difficult.
 
-\paragraph*{Performance Profile}
+\paragraph*{Performance profile.}
 \label{performance_profile}
 In order to better evaluate the algorithms on the problems across in this test set, we use a performance profile developed in \cite{More:2009:BDO:1654367.1654371}.
 Given a set of Solvers $\mathcal S$ that solved a set of problems $\mathcal P$ with the number of evaluations of solver $s$ on problem $p$ being $N(s, p)$, the performance ratio is defined to be $r(s, p) = \frac{N(s, p)}{\min_{s \in \mathcal S} N(s, p)}$.

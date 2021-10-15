@@ -99,8 +99,7 @@ with special attention to the case where the feasible set $\feasible$ is convex.
 
 \cref{chap:linear} considers the case of a black-box objective with linear 
 %partially-quantifiable
-constraints.  \sbnote{It doesn't make sense to call linear constraints partially-quantifiable.
-The issue is that the objective function can't be evaluated outside the feasible region.}
+constraints.  
 Because the constraints are known, we present an algorithm that constructs sample points from the feasible region intersected with the current trust region.
 This region is called the {\em sample region}.
 The algorithm we present is an implementation of the algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
@@ -124,7 +123,7 @@ Subscripts on vectors are used as an index into the vector, while vectors in a s
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto a convex set $X$.
 
-\paragraph*{Matrices}
+\paragraph*{Matrices.}
 Matrices are denoted with capital letters.
 The $i$-th row of the matrix $A$ is denoted $A_i$.
 For any index set $S \subseteq \{i \in \naturals | 1 \le i \le m\}$, the $|S| \times n$ matrix formed by only using
@@ -145,7 +144,7 @@ Note that some of the common norms are:
 \|x\|_1 = \sum_{i = 1}^n |x_i|.
 \end{align*}
 
-\paragraph*{Sets}
+\paragraph*{Sets.}
 The complement of a set $S$ is denoted as $\bar S$.
 Define a point $x$ subtracted from a set $S$ as $S - x = \left\{s \in \Rn | s - x \in S\right\}$.
 Set addition is $X + Y = \left\{x + y | x \in X, y \in Y\right\}$.

@@ -452,16 +452,15 @@
 \newcommand{\@subsection}[2][]{%
   \refstepcounter{subsection}
   \begin{flushleft}
-  {\textit{\thesubsection~~#2}}
+  {\hangindent=0.5in\underline{\textit{\thesubsection~~#2}}}
   \end{flushleft}
-%   \vspace{-1em}
   \addcontentsline{toc}{subsection}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssubsection}[1]{%
   \clearpage
   \begin{flushleft}
-  {\textit{#1}}
+  {\hangindent=0.5in\underline{\textit{#1}}}
   \end{flushleft}
 %   \vspace{-1em}
   \@afterheading
@@ -476,7 +475,7 @@
 \newcommand{\@subsubsection}[2][]{%
   \refstepcounter{subsubsection}
   \begin{flushleft}
-  {\textit{\thesubsubsection~~#2}}
+  {\hangindent=0.5in\textit{\thesubsubsection~~#2}}
   \end{flushleft}
   \addcontentsline{toc}{subsubsection}{\protect\numberline{}#1}
   \@afterheading
@@ -484,7 +483,7 @@
 \newcommand{\@ssubsubsection}[1]{%
   \clearpage
   \begin{flushleft}
-  {\textit{#1}}
+  {\hangindent=0.5in\textit{#1}}
   \end{flushleft}
   \@afterheading
 }
