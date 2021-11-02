@@ -380,8 +380,6 @@ $T\left(\scaledellipsek; \delta\right) = B_2(0, \delta)$.
 \begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
 \begin{flushleft}
 
-
-
 \begin{algorithm}[H]
     \caption{Model Construction Algorithm}
     \label{model_construction_algorithm}
@@ -594,9 +592,20 @@ Finally, by the mean value theorem, there is a $\xi^{(3)} \in [y^{(0)}, x]$ with
 The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the ellipsoid $\ellipsek$.
 
 
-\begin{comment}
+\begin{boxedcomment}
 Change this to $V$.
-\end{comment}
+\end{boxedcomment}
+
+
+%
+%
+% \begin{align*}
+% T(x; \delta) = \frac{\delta}{\delta_k} D V^T\left(x - \ck\right) \\
+% \hat f (u) = f\left(T^{-1}(u; \delta)\right) \\
+% \hat m_f(u) \approx \hat f(u) \\
+% m_f(x) = \hat m_f\left(T(x; \delta)\right)
+% \end{align*}
+
 
 %Conversely, $ T^{-1}(u) = \frac 1 {\delta} LD^{-1}u + c$ maps the $\delta$-ball to the ellipsoidal region $ \ellipsek $.
 % \cref{fully_quadratic}
@@ -607,32 +616,32 @@ Let $\sdk>0$, $\ck \in \Rn$ and a symmetric matrix $\qk \succ 0$ be given, and
 let the eigen decomposition of $\qk$ be $\qk = VD^2V^T$, $V^TV = I$, where $D$ is diagonal with positive entries.
 Also, let $\scaledellipsek$ be defined as in \cref{define_suitable_ellipsoid}:
 \begin{align*}
-\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \sdk^2 \right\}.
+\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \sdk^2 \right\} \subseteq B_{\infty}\left(\xk, \dk\right).
 \end{align*}
 
-For some $\delta > 0$, define $T(x; \delta) = \frac{\delta}{\sdk} D V^T\left(x - \ck\right)$.
-Also, let $\hat m_f(u)$ be a model of the shifted objective $\hat f(u) = f(T^{-1}(u))$ such that,
-for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error bounds hold for all $u \in B_2(0,\delta)$:
+Define the transformation $T(x; \delta) = \frac{\delta}{\sdk} D V^T\left(x - \ck\right)$,
+and let $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$.
+Also, let $\hat m_f(u)$ be a model of the shifted objective $\hat f(u) = f(T^{-1}(u; \delta_r))$ such that,
+for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error bounds hold for all $u \in B_2(0,\delta_r)$:
 
 \begin{align}
-|\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta^3, \label{shifted_ellipsoid_bounds}\\
-\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta^2,  \nonumber  \\
-\|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta.  \nonumber 
+|\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta_r^3, \label{shifted_ellipsoid_bounds}\\
+\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta_r^2,  \nonumber  \\
+\|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta_r.  \nonumber
 \end{align}
 
 Then, with
 \begin{align*}
-r_{\scaledellipsek} = \max_{x \in \scaledellipsek}\|x - \ck\|, \\
 \kappa_{ef}' = \kappa_{ef}, \\
 \kappa_{eg}' = \kappa_{eg}\sqrt{\kappa(\qk)}, \\
 \kappa_{eh}' = \kappa_{eh}\condition(\qk),
 \end{align*}
-the model function $m_f(x) = \hat m_f(T(x))$ satisfies the following error bounds for all 
-$x \in T^{-1}\left(B_2(0, \delta)\right) = \scaledellipsek$:
+the model function $m_f(x) = \hat m_f(T(x; \delta_r))$ satisfies the following error bounds for all
+$x \in T^{-1}\left(B_2(0, \delta_r)\right) = \scaledellipsek$:
 \begin{align*}
-| m(x) - f(x)| \le \kappa_{ef}'\delta^3, \\
-\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta^2, \\
-\|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta.
+| m(x) - f(x)| \le \kappa_{ef}'\delta_r^3, \\
+\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta_r^2, \\
+\|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta_r.
 \end{align*}
 \end{lemma}
 
@@ -684,9 +693,11 @@ $x \in T^{-1}\left(B_2(0, \delta)\right) = \scaledellipsek$:
 % \delta^2 \ge \|T(x)\|^2 = \frac 2 {\sdk^2}\left\|\left(x - \ck\right)^TLD^2L\left(x - \ck\right)\right\| \ge
 % \min_{i \in [n]} D_{i, i}^2 \left\|x - \ck\right\|^2
 % \end{align*}
-We see that because $D_{i, i} > 0$, we have
+% With $r = \max_{x \in \scaledellipsek}\|x - \ck\|$, notice that
+% $\scaledellipsek \subseteq B_{\infty}\left(\xk, \dk\right)$ implies $\dk \ge r$.
+Because $D_{i, i} > 0$, we have
 \begin{align*}
-r^2 = \frac {\sdk^2} {\lambda_{\text{min}}\left(\qk\right)} = \frac {\sdk^2} {\min_{i \in [n]} D^2_{i, i}}\\
+\delta_r^2 = \frac {\sdk^2} {\lambda_{\text{min}}\left(\qk\right)} = \frac {\sdk^2} {\min_{i \in [n]} D^2_{i, i}}
 %\delta = \max_{v \in E} \|T(v; \delta)\| 
 %= \max_{v \in E} \|\frac {\delta}{\sdk} DL^T\left(v - \ck\right)\|
 %\ge \frac {\delta\min_{i \in[n]} D_{i,i}}{\sdk}\max_{v \in E}\|\left(v - \ck\right)\|
@@ -705,30 +716,26 @@ and
 \condition\left(\qk\right) 
 = \kappa\left(D^2\right) 
 = \frac{\max_{i}D_{i,i}^2}{\min_{i}D_{i,i}^2} 
-= \frac{r^2}{\sdk^2} \max_{i}D_{i,i}^2 = \frac{r^2}{\sdk^2}\|D\|^2 \\
-\Longrightarrow \frac{\delta} {\sdk} \|D\| = \frac{\delta}{r} \sqrt{\condition\left(\qk\right)}.
+= \frac{\delta_r^2}{\sdk^2} \max_{i}D_{i,i}^2 = \frac{\delta_r^2}{\sdk^2}\|D\|^2 \\
+\Longrightarrow \frac{\delta_r} {\sdk} \|D\| = \sqrt{\condition\left(\qk\right)}.
 \end{align*}
 %  \le \frac{\kappa_{\lambda}}{\delta}.
-
-Let $x \in \ellipsek$ be arbitrary and let $u = T(x) \in B_2(0,\delta)$.  Then
-
-
+Let $x \in \ellipsek$ be arbitrary and let $u = T(x) \in B_2(0,\delta_r)$.
+Then
 \begin{align*}
- | m_f(x) - f(x)| = |\hat m(u) - \hat f(u)| \le \kappa_{ef}'\delta^3.
+ | m_f(x) - f(x)| = |\hat m(u) - \hat f(u)| \le \kappa_{ef}'\delta_r^3.
 \end{align*}
-
 Similarly, for the gradient we find:
 \begin{align*}
-\| \nabla m_f(x) - \nabla f(x)\| &= \left\|\frac{\delta} {\sdk}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)\right\| \\
-& \le \frac{\delta} {\sdk} \|DL^T\|\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
-& \le \sqrt{\condition(\qk)}\kappa_{eg} \delta^2 = \kappa_{eg}' \delta^2. 
+\| \nabla m_f(x) - \nabla f(x)\| &= \left\|\frac{\delta_r} {\sdk}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)\right\| \\
+& \le \frac{\delta_r} {\sdk} \|DL^T\|\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
+& \le \sqrt{\condition(\qk)}\kappa_{eg} \delta_r^2 = \kappa_{eg}' \delta_r^2.
 \end{align*}
-
 Finally,  for the Hessian, we have
 \begin{align*}
-\| \nabla^2 m_f(x) - \nabla^2 f(x)\| & = \left\|\frac{\delta^2} {\sdk^2}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)LD^T\right\| \\
-& \le \frac{\delta^2} {\sdk^2} \|D\|^2\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
-& \le \condition(\qk)\kappa_{eh} \delta = \kappa_{eh}' \delta.
+\| \nabla^2 m_f(x) - \nabla^2 f(x)\| & = \left\|\frac{\delta_r^2} {\sdk^2}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)LD^T\right\| \\
+& \le \frac{\delta_r^2} {\sdk^2} \|D\|^2\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
+& \le \condition(\qk)\kappa_{eh} \delta_r = \kappa_{eh}' \delta_r.
 \end{align*}
 
 \end{proof}
@@ -800,20 +807,28 @@ The assumptions provide two ellipsoids:
 \item $\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - c^{(k)}\right)^T \qk \left(x - c^{(k)}\right) \le {\delta_k}^2 \right\}$ with $\xk \in \scaledellipsek$.
 \end{itemize}
 As in \cref{shifted_ellipsoid}, we can give $Q^{(k)} = LD^2L^T$ its eigen-decomposition, 
-and define $\delta = \sqrt{2}$ so
-% $\delta = \max_{x \in \unshiftedellipsoid} \|x - \ck\|$, so 
-the transformation $T(x; \delta) = \frac{\delta}{\sdk^2} D L^T\left(x - \ck\right)$ 
-wich maps $\sampletrk = \ellipsek$ to the unit ball.
+and for any $\delta > 0$ define the transformation $T(x; \delta) = \frac{\delta}{\sdk^2} D L^T\left(x - \ck\right)$.
+Notice that with $\delta = \delta_2 = \sqrt{2}$,
+the transform $T\left(x; \delta_2\right)$ maps $\sampletrk = \ellipsek$ to the unit ball.
+After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised}
+that there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta_2)$:
+\begin{align*}
+\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta_2^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_2^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_2.
+\end{align*}
+With $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$, by \cite[Lemma 3.8]{introduction_book},
+we can scale these same points by $\frac{\delta_r}{\delta_2}$ to obtain a $\Lambda$ poised set over $B_2(0, \delta_r)$.
+Thus, there exist constants $\kappa_f', \kappa_g', \kappa_h'$ such that for all $u \in B_2(0, \delta_r)$:
+\begin{align*}
+\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f' \delta_r^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g' \delta_r^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h' \delta_r.
+\end{align*}
 As described in \cref{shifted_ellipsoid}, we create shifted functions
 $\hat {m}_f(u) = m_f(T^{-1}(u); \delta)$ and
 $\hat f (u) = f(T^{-1}(u; \delta))$.
-After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised} 
-that there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta)$:
-\begin{align*}
-\left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta^3, \\
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta^2, \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta.
-\end{align*}
+
 
 % This, along with \cref{lipschitz_hessian} and \cref{uniformly_bounded_hessians_of_f} satisfy the assumptions for \cref{change_radius}.
 % We can conclude that there is another constant $\Lambda_2$ such that for all $u \in B(0, 2\delta)$:
@@ -1968,7 +1983,7 @@ Also, the scaled ellipsoid performs comparably to the unscaled version.
 \subsection{Hock Schittkowksi test problems}
 
 
-We tested these algorithms on several problems from the Hock-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}, \cite{Hock1980}.
+We tested these algorithms on several problems from the Hock-Schittkowski problem set \cite{Schittkowski1981MoreTE} and \cite{Hock1980}.
 We selected the problems that have linear constraints: 21, 24, 25, 35, 36, 44, 45, 76, 224, 231, 232, 250, 251.
 We summarize the results within \cref{linear_schittowski_results}.
 
@@ -1993,7 +2008,7 @@ The performance profile for the Hock-Schittkowski problem set is given in figure
 \begin{figure}[ht]
     \centering
     \includegraphics[scale=0.4]{images/performance_profile_plot.png}
-    \caption[A performance profile comparing different variants of the algorithm for linear constraints.]{
+    \caption[A performance profile comparing variants of the algorithm for linear constraints.]{
     	A performance profile comparing different variants of the algorithm for linear constraints.
     	We see that the polyhedral algorithm is both efficient and robust.
     }

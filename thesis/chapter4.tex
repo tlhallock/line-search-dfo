@@ -604,7 +604,7 @@ An example plot of such a function $f$ is found within \cref{antiprojection_imag
     \centering
     \includegraphics[width=300px]{images/antiprojection.png}
     \caption[
-    		An example plot of the one-dimensional function whose zeros provide the largest ellipsoid within the buffering cones.
+    		The function whose zeros provide the largest ellipsoid.
 		]{
     		By computing the zeros of this function, we find values of $\lambda$ for each critical point of \cref{antiprojection_problem}.
     		The function $f$ is in blue, and the eigenvalues of $Q$ are red vertical lines.
@@ -5959,7 +5959,7 @@ Then \cref{idk_alt_proof_eqn5} tells us
 
 We have implemented \cref{constrained_dfo} in Python to test its efficiency.
 The code is contained in \cite{AlwaysFeasibleDFO}.
-Here we discuss the numerical results of this algorithm when run on the Hock-Schittkowski problem set \cite{Schittkowski:1987:MTE:27135}.
+Here we discuss the numerical results of this algorithm when run on the Hock-Schittkowski problem set \cite{Schittkowski1981MoreTE}.
 
 
 % \begin{comment}
@@ -6101,6 +6101,7 @@ However, we state the algorithm as implemented:
 }
 
 \subsubsection{Quadratic buffered constraints}
+
 \label{quadratic_buffered_description}
 
 To alleviate how many descent directions within $\feasiblek \cap \outertrk$ are missing from $\capcones$, 
@@ -6273,7 +6274,7 @@ Depictions of the trust region subproblem with are found in \cref{quadratic_pena
 
 \subsection{Hock Schittkowski problem set}
 
-To test our algorithm, we used the Hock-Schittkowski problem set \cite{Hock1980} and \cite{Schittkowski:1987:MTE:27135}.
+To test our algorithm, we used the Hock-Schittkowski problem set \cite{Hock1980} and \cite{Schittkowski1981MoreTE}.
 We implemented these problems in Python and ensured our implementation agrees with the Author's FORTRAN library created in 2011 
 up to discrepancies between the code and publication.
 We considered problems that had
@@ -6387,7 +6388,7 @@ For more information on what a performance profile is, please refer to \cref{per
 \begin{figure}[ht]
     \centering
     \includegraphics[width=250px]{images/nonlinear_performance_profile.png}
-    \caption[A performance profile comparing different variants of the algorithm for non-linear constraints.]{
+    \caption[A performance profile comparing variants of the algorithm for non-linear constraints.]{
     	A performance profile comparing different variants of the algorithm for non-linear constraints.
     }
     \label{nonlinear_performance_profile_image}

@@ -1,4 +1,15 @@
+
+Within this chapter, we discuss background material relavent to our algorithm.
+This begins with a brief review of the literature within \cref{literature_review}.
+We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
+The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
+Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
+
+
+
 \section{Literature Review}
+
+\label{literature_review}
 
 Recently, there has been a growth in applications of derivative-free optimization.
 Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, 
@@ -53,6 +64,39 @@ which can be generalized to pattern searches \cite{Audet2002AnalysisOG}.
 We compare our results to the Mesh Adaptive Search algorithm implemented within the NOMAD software
 \cite{Le2011a}.
 
+\cite{Galvan2021} develops an algorithm for constained optimization by moving the constraints into the objective.
+Their work only relies on a projection operator, and therefore handles non-smooth constraints.
+
+
+Applications:
+
+The authors of \cite{Padidar2021} apply derivative free optimization to rapid-cycling synchrotron lattice design.
+This includes a non-smooth objective and both linear and simulation based constraints.
+
+[model-based]
+
+
+avoiding infeasible evaluations
+\cite{BMNORW2020}
+The authors apply DFO to optimize the Fayans energy density functional.
+The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L$-1 ball.
+
+In \cite{CONORBIT15}, the authors use an envolope to avoid infeasible trial point evaluations.
+% This algorithm shares some similarities with the one presented here,
+
+
+[trust region, linear models]
+\cite{NOWPAC2014}
+Uses path augmentation to ensure trial points are feasible.
+This is done within a local convexification of the constraints that uses path augmentation to buffer the constraints.
+
+
+Derivative free optimziation with unrelaxable constraints is beginning to receive attention.
+
+\cite{Brilli2021interior} Use an interior point algorithm to solve derivative free problems with unrelaxable, black-box constraints.
+
+
+
 \sbnote{This should be expanded upon}
 
 \paragraph*{Model-based trust-region methods for DFO.}
@@ -62,7 +106,7 @@ COBYLA \cite{pub.1046127469} was one of the first model-based approaches for sol
 The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
 A two-phased, feasibility and optimization approach that handles infeasible starting points is developed within \cite{BAJAJ2018306}.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
-The algorithm presented within \cite{doi:10.1080/10556788.2015.1026968} even ensures that each iterate is feasible, 
+The algorithm presented within \cite{Conejo2015} even ensures that each iterate is feasible,
 although sample points may not be.
 
 Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
@@ -71,6 +115,10 @@ Our analysis implements abstractions made in this paper and shows the implementa
 
 
 \section{Criticality Measure}
+
+\label{criticality_measure_section}
+
+We now discuss background material for components of our algorithm.
 
 \label{criticallity_measure_section}
 A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
@@ -418,6 +466,7 @@ Thus,
 
 \section{Model Improvement Algorithms}
 
+\label{model_improvement_algorithms}
 Efficient implementations of model-based methods re-use sample points from previous iterations that fall within (or at least near) the current trust region.
 New points are then added to the sample set using a model improvement algorithm as described in 
 \cite{introduction_book}  and stated here in \cref{model_improving_algorithm}.
@@ -663,6 +712,8 @@ where $\epsilon_{growth}$ is a potentially large, but finite estimate of the gro
 %% \end{comment}
 
 \section{Trust Regions}
+
+\label{trust_regions_section}
 
 To define our algorithms, we distinguish between three types of trust regions: 
 the {\em sample region} $\sampletrk$,

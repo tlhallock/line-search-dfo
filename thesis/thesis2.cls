@@ -110,6 +110,7 @@
 
 \@addtoreset{equation}{chapter}
 \renewcommand{\theequation}{\thechapter.\arabic{equation}}
+%\renewcommand{\theequation}{\arabic{equation}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Setup Tables of Contents,
@@ -524,9 +525,9 @@
 
   \renewcommand{\@chapter}[2][]{%
     \refstepcounter{chapter}
-    \begin{flushleft}
+    \begin{center}
     {\bf APPENDIX \thechapter.~~##2}
-    \end{flushleft}
+    \end{center}
     \vspace{-1em}
     \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}##1}
     \@afterheading
@@ -534,18 +535,18 @@
 
   \renewcommand{\@schapter}[1]{%
     \clearpage
-    \begin{flushleft}
+    \begin{center}
     {\bf##1}
-    \end{flushleft}
+    \end{center}
     \vspace{-1em}
     \@afterheading
   }
 
-  \renewcommand{\thechapter}{\Roman{chapter}}
+  \renewcommand{\thechapter}{\Alph{chapter}}
 
   \setcounter{chapter}{0}}
 
-  {\renewcommand{\thechapter}{\Roman{chapter}}
+  {\renewcommand{\thechapter}{\Alph{chapter}}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
