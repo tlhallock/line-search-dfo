@@ -11,12 +11,26 @@ Finally, in \cref{trust_regions_section} we end with a discussion of trust regio
 
 \label{literature_review}
 
-Recently, there has been a growth in applications of derivative-free optimization.
-Such applications include photo-injector optimization \cite{1742-6596-874-1-012062}, 
-circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, 
-and reliability based optimization \cite{Gao2017}.
 
-As the number of applications grows, so do the number of derivative-free algorithms.
+% Recently, there has been a growth in applications of derivative-free optimization.
+% Such applicaitons include
+
+% Model based, trust region, I think no constraints, maybe multi-objective:
+% photo-injector optimization \cite{Neveu2017}.
+
+% Direct search, binary constraints, mixed integer (nomad, midaco, glcSolve, CMAES (stochastic))
+% circuitry arrangements \cite{PLOSKAS201816},
+
+% For paralellizable methods, kalman filter methods, optimizing networks
+% machine learning \cite{KS2018}
+
+% Trust region based, reliability surrogate constraints
+% and reliability based optimization \cite{Gao2017}.
+
+% parallel algorim, compares gradient based and dfo, nelder-mead
+% volume optimization \cite{Cheng2017},
+
+There has been a recent growth in the number of derivative free applications and algorithms.
 Most of these algorithms fall into two main categories: direct-search methods and model-based methods.
 Direct-search methods use comparatively simple strategies to explore the solution space often
 using only the relative ranks of function values rather than their numerical values.
@@ -30,10 +44,10 @@ Each subproblem has the form
 \st & \xk+s \in \feasiblek\\
 & \norm{s} \le \Delta_k
 \end{array} \]
-where $m_f^{(k)}$ is a model function approximating the objective $f$,   $\dk$ is the trust region radius,  
+where $m_f^{(k)}$ is a model function approximating the objective $f$, $\dk$ is the trust region radius,
 and $\mathcal{F}_k$ is an approximation of the feasible region. 
 The solution $\sk$ of the trust-region subproblem determines a {\em trial point} $\xk + \sk$.  
-The objective function and constraints are then evaluated at the trial point to determine whether to accept the trial point.   
+The objective function and constraints are then evaluated at the trial point to determine whether to accept the trial point.
 If the trial point is rejected, the trust region radius is decreased and a new trial point is computed by solving a revised trust-region subproblem.     
 If the trial point is accepted, then the trust region radius may be increased or decreased for the next iteration 
 depending on how well the sample point improved upon the previous iterate.
@@ -56,48 +70,10 @@ Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_me
 The development of DFO algorithms for constrained optimization has been relatively recent,
 with much of the early work in this area focused on direct-search methods.
 
-Direct search methods easily accommodate unrelaxable constraints, as their points do not have to satisfy geometry requirements.
-However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
-
 The coordinate descent algorithm is among the simplest direct-search methods, 
 which can be generalized to pattern searches \cite{Audet2002AnalysisOG}. 
 We compare our results to the Mesh Adaptive Search algorithm implemented within the NOMAD software
 \cite{Le2011a}.
-
-\cite{Galvan2021} develops an algorithm for constained optimization by moving the constraints into the objective.
-Their work only relies on a projection operator, and therefore handles non-smooth constraints.
-
-
-Applications:
-
-The authors of \cite{Padidar2021} apply derivative free optimization to rapid-cycling synchrotron lattice design.
-This includes a non-smooth objective and both linear and simulation based constraints.
-
-[model-based]
-
-
-avoiding infeasible evaluations
-\cite{BMNORW2020}
-The authors apply DFO to optimize the Fayans energy density functional.
-The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L$-1 ball.
-
-In \cite{CONORBIT15}, the authors use an envolope to avoid infeasible trial point evaluations.
-% This algorithm shares some similarities with the one presented here,
-
-
-[trust region, linear models]
-\cite{NOWPAC2014}
-Uses path augmentation to ensure trial points are feasible.
-This is done within a local convexification of the constraints that uses path augmentation to buffer the constraints.
-
-
-Derivative free optimziation with unrelaxable constraints is beginning to receive attention.
-
-\cite{Brilli2021interior} Use an interior point algorithm to solve derivative free problems with unrelaxable, black-box constraints.
-
-
-
-\sbnote{This should be expanded upon}
 
 \paragraph*{Model-based trust-region methods for DFO.}
 The literature on model-based DFO methods for constrained optimization is smaller. 
@@ -106,12 +82,36 @@ COBYLA \cite{pub.1046127469} was one of the first model-based approaches for sol
 The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
 A two-phased, feasibility and optimization approach that handles infeasible starting points is developed within \cite{BAJAJ2018306}.
 \cite{Gao2018} also presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
-The algorithm presented within \cite{Conejo2015} even ensures that each iterate is feasible,
-although sample points may not be.
 
 Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
 This reference provides a remarkably elegant convergence proof for a class of algorithms when the constraints are convex.
 Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
+
+\paragraph*{Avoiding infeasible evaluations}
+
+There is growing interest in derivative-free methods that handle unrelaxable constraints.
+Direct search methods easily accommodate unrelaxable constraints, as the points they evaluate have little to no geometric requirements.
+However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
+
+There are a number of algorithms that designed to avoid infeasible evalutations, although many may use infeasible function values.
+These algorithms have use a number of techniques to avoid infeasible evaluations.
+The authors of \cite{Galvan2021} use a reformulation strategy to avoid infeasible evaluations by moving the constraints into the objective.
+Their work only relies on a projection operator, and therefore handles non-smooth convex constraints.
+The authors of \cite{NOWPAC2014} uses a path-augmentation to ensure trial points are feasible.
+This is done with a local convexification of the constraints that uses path augmentation to buffer the constraints.
+The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional.
+The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L$-1 ball.
+In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that usees an envolope to avoid infeasible trial point evaluations.
+The algorithm presented within \cite{Conejo2015} is also model-based trust region method, and it ensures each iterate is feasible,
+although sample points may not be.
+More recently, \cite{Brilli2021interior} use an interior point algorithm to solve derivative free problems with unrelaxable, black-box constraints.
+
+The authors of \cite{Padidar2021} apply derivative free optimization to rapid-cycling synchrotron lattice design.
+The problem a non-smooth objective and both linear and simulation based constraints.
+These constraints are unrelxable, because simulation is not possible with overlapping synchrotron elements.
+\begin{boxedcomment}
+It is concerning that I don't understand the previous sentence.
+\end{boxedcomment}
 
 
 \section{Criticality Measure}
