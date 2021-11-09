@@ -1,6 +1,6 @@
 \label{infeasible_point_strategies}
 
-\sbnote{State the bilevel program for the maximum volume ellipsoid.}
+% \sbnote{State the bilevel program for the maximum volume ellipsoid.}
 %
 % \sbnote{Clean up the alignment of equations.}
 % \item Change $B_{\infty}(\xk,\dk)$ to $\outertrk$ throughout chapter 4.  Also make sure that $\outertrk$ and $\outertrkpo$ are being used correctly.
@@ -124,7 +124,7 @@ In the next section, we define the concept of a nearly active constraint and def
 In \cref{possible_ellipsoids}, we propose several strategies for constructing an ellipsoidal sample trust region that lies 
 within the intersection of the buffering cones and an outer trust region.
 \cref{decreasing_the_trust_region_for_infeasible_trial} describes the trust region subproblem.   
-\sbnote{come back to this}.
+% \sbnote{come back to this}.
 
 
 
@@ -260,7 +260,7 @@ Therefore, to obtain feasible sample points, we require that
 % Moreover,   the multiplier $(1+K_a)$ used in the definition of $\activeconstraintsk$ will also allow us to prove that
 % $\capcones \cap \outertrkpo \subset \feasiblek$.
 
-
+\pagebreak
 \section{The Sample Trust Region}
 \label{possible_ellipsoids}
 
@@ -287,7 +287,7 @@ for example, adjacency could be dropped by adding a requirement that the longest
 However, we have settled on the following set of criteria.
 % Note the criteria in \cref{ellipsoids_notation_definitions} only summarize one of many possible sets of criteria sufficient for convergence.
 
-\sbnote{double check the iterate superscripts in the following definitions  (i.e. $k$ or $k-1$ or $k+1$).}
+% \sbnote{double check the iterate superscripts in the following definitions  (i.e. $k$ or $k-1$ or $k+1$).}
 
 \begin{definition}
 \label[definition]{ellipsoids_notation_definitions}
@@ -329,8 +329,10 @@ where
 where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 \end{itemize}
 \end{definition}
-\sbnote{In the definition above, the statement ``if an ellipsoid defined by $\qk,\ck,\delta_k$ ...'' is confusing, since it is defined two different ways.
-In particular, in the definition of ``trusted'', this ellipsoid is $\unshiftedellipsoid$ whereas in the definition of ``adjacent'', it is $\scaledunshiftedellipsoid$.}
+
+
+% \sbnote{In the definition above, the statement ``if an ellipsoid defined by $\qk,\ck,\delta_k$ ...'' is confusing, since it is defined two different ways.
+% In particular, in the definition of ``trusted'', this ellipsoid is $\unshiftedellipsoid$ whereas in the definition of ``adjacent'', it is $\scaledunshiftedellipsoid$.}
 
 %
 %the property that 
@@ -354,6 +356,7 @@ In particular, in the definition of ``trusted'', this ellipsoid is $\unshiftedel
 %Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
+\pagebreak
 \subsection{Maximal volume sample region}
 \label{ideal_ellipsoid_in_polyhedron}
 \label{ellipsoid_in_cone}
@@ -369,7 +372,7 @@ Of course, the constraints found in \cref{ellipsoids_trust_region_constraints} n
 
 % We can then search over all possible ellipsoids using the lower level optimization problem as a constraint.
 
-\sbnote{Maybe state the multi-level optimization problem here.}
+% \sbnote{Maybe state the multi-level optimization problem here.}
 
 %  the problem of checking whether an ellipsoid is contained within any particular cone.    This is    We can then use this to search over possible ellipsoids
 %However, it is possible to formulate the problem of checking whether an ellipsoid is contained within any particular cone.
@@ -406,13 +409,14 @@ The ellipsoid $\sampletrk$ is contained in each a cone $A_i$ if and only if the 
 \begin{align*}
 H_i = \left\{x \in \Rn \bigg|\left(v^{(i)}\right)^Tx = 0\right\}
 \end{align*}
-is contained in the projection of the cone.   \sbnote{Do you have a reference to justify this statement? }
+is contained in the projection of the cone.
+% \sbnote{Do you have a reference to justify this statement? }
 The perspective projection onto $v^{(i)}$ is the shape drawn onto a hyperplane as if a viewer were positioned at $v^{(i)}$.
 That is, imagine a viewer is positioned at $v^{(j)}$, and viewing the ellipsoid as in \cref{perspective_projection_depiction}.
 They create a line from $v^{(j)}$ to the hyperplane by looking past the outer edge of the ellipsoid onto the hyperplane.
 If they were to trace all possible rays through the boundary of the ellipsoid onto the hyperplane, 
 these rays intersect the hyperplane are the ellipsoid's perspective projection.
-\sbnote{This is a nice intuitive description of the perspective projection, but do you have a formal definition?}
+% \sbnote{This is a nice intuitive description of the perspective projection, but do you have a formal definition?}
 
 
 \begin{figure}[ht]
@@ -433,7 +437,7 @@ H_i \cap A_i
 &= \left\{x \in \Rn \bigg| \left(v^{(i)}\right)^Tx = 0, \|x\|^2 \le \left(\frac 1 {\beta^2} - 1\right)\|v^{(i)}\|^2 \right\}.
 \end{align*}
 
-Then, we can compute the perspective projection of the ellipsoid,  in fashion similar to \cite{eberly_2013}.
+Then, we can compute the perspective projection of the ellipsoid,  in a fashion similar to \cite{eberly_2013}.
 Consider the point $x = v^{(i)} + td$ for some unit direction $d$ and distance $t$ from $v^{(i)}$.
 If $x$ is on the boundary of the ellipsoid, then:
 \begin{align*}
@@ -449,7 +453,7 @@ If $x$ is on the boundary of the ellipsoid, then:
 \right] t \\
 &\quad \quad \quad \quad + \left[
 \left(v^{(i)}\right)^T \qk  v^{(i)} + \left(\ck\right) ^T \qk  \ck  - 2 \left(\ck\right) ^T \qk  v^{(i)} - 1
-\right]
+\right].
 \end{align*}
 
 % &= \left(d^T\qk d\right) t^2 + \left(d^T \qk  v^{(i)} +  \left(v^{(i)}\right)^T \qk  d - \left(\ck\right) ^T \qk  d - d^T \qk  \ck 
@@ -852,6 +856,8 @@ Notice that this optimization problem is not convex.
 Although more efficient formulations may exist, this leads us to believe that it may sometimes be expensive
 to even compute the maximum volume sphere within the buffering cones.
 
+
+\pagebreak
 \subsection{Conservative ellipsoid}
 \label{the_conservative_ellipsoid}
 % \sbnote{I think it would be better to reorganize this section by defining the method for constructing the ellipsoid first, and then discuss its properties.
@@ -862,7 +868,7 @@ However, we are not able to show that these formulations satisfy the requirement
 % not been able to show that these satisfied the requirements stated in \cref{ellipsoids_notation_definitions}.
 We were able to find an ellipsoid contained within each \cref{define_fik} that may, in general, be smaller than the largest possible ellipsoid.
 This ellipsoid is constructed in \cref{conservative_ellipsoid_construction}, and we show several its initial properties in \cref{feasible_ellipsoid_analysis}.
-% Because we analyse this in more depth, we dedicate \cref{constructing_and_analysizing_conservative_ellipsoid} to this.
+% Because we analyze this in more depth, we dedicate \cref{constructing_and_analysizing_conservative_ellipsoid} to this.
 
 % \section{Conservative Ellipsoid Derivation}
 % \label{constructing_and_analysizing_conservative_ellipsoid}
@@ -1602,6 +1608,7 @@ For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\left(\xkpo - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
 \end{proof}
 
+\pagebreak
 \section{Dealing with Infeasible Sample Points}
 \label{recovering_feasiblity_section}
 
@@ -1628,7 +1635,7 @@ Note that for general constraints, we will later assume the existence of such an
 Constructing a new sample set near our current iterate is much easier for quasi-convex constraints than general constraints.
 Namely, the analysis becomes simpler under the following assumption:
 % \begin{comment}
-% Should we replace this with quasi convex?
+% Should we replace this with quasi-convex?
 % \end{comment}
 
 
@@ -1830,12 +1837,13 @@ We summarize what we have shown here:
 % A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
 % \end{align*}
 
+\pagebreak
 
 \subsection{Non-convex feasible region}
 
 \subsubsection{Problem difficulty}
 
-For general constraints, this is still straight forward when all the constraint values are strictly negative at the current iterate.
+For general constraints, this is still straightforward when all the constraint values are strictly negative at the current iterate.
 This means that the current iterate lies within the interior of the feasible region,
 and there is guaranteed to be a feasible ellipsoid centered at the current iterate with a small enough trust region.
 However, if the current iterate lies on the boundary of the feasible region, namely some constraint value is $0$ at $\xk$, finding the sample region can be much more difficult.
@@ -1847,7 +1855,7 @@ However, it may be necessary to shrink the trust region, and as the trust region
 This means we lose model information.
 It is possible that we only have a single feasible evaluation in proximity as the trust region becomes small.
 This lack of information precludes several intelligent algorithms,
-but it is still possible to exhaustively search over possible sample region attempting to construct a sample set.
+but it is still possible to exhaustively search over possible sample regions, attempting to construct a sample set.
 
 % \begin{itemize}
 % \item Set $R =\dk$, $M = 2*n$
@@ -2393,6 +2401,7 @@ k \gets 0; &
 % \item have \cref{criticality_check} not satisfied.
 % \end{itemize}
 % \end{comment}
+\pagebreak
 
 \section{Convergence Analysis}
 \label{convex_convergence_analysis}
@@ -2818,7 +2827,7 @@ If $\activeconstraintsk \ne \emptyset$, then result follows directly from \cref{
 where $\minangledelta$ is defined by \cref{minangleassumption_alt}.
 \end{proof}
 
-\sbnote{Is  the following lemma in the right place?   What does it have to do with ``bounded condition number''?  Should this be moved to the sample region feasibility section?}
+% \sbnote{Is  the following lemma in the right place?   What does it have to do with ``bounded condition number''?  Should this be moved to the sample region feasibility section?}
 
 \begin{lemma}
 \label[lemma]{sampletrk_is_nonempty}
@@ -2881,10 +2890,12 @@ Then there exist $\kappa_g>0$ and $\kappa_h>0$, independent of $k$, such that
 \|\gradf(\xk) - \nabla \mfk(\xk) \| \le \kappa_g \sqrt{\condition \left(\qk\right)} \dk^2, \\
 \|\nabla^2 f(\xk) - \hk \| \le \kappa_h \condition \left(\qk\right) \dk,  \\
 \|\nabla c_i(\xk) - \gmcik \| \le \kappa_g \sqrt{\condition \left(\qk\right)} \dk^2 \quad \forall i \in [m],\\
-\textrm{and} \quad \|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \condition \left(\qk\right) \dk \quad \forall i \in [m]. \\
+\textrm{and} \quad \|\nabla^2 c_i(\xk) - \nabla^2 m_{c_i}^{(k)}(\xk) \| \le \kappa_h \condition \left(\qk\right) \dk \quad \forall i \in [m].
 \end{align*}
 \end{lemma}
 
+
+\pagebreak
 \begin{proof}
 
 Give $\qk = LD^2L^T$ its eigen-decomposition, and define 
@@ -3382,8 +3393,9 @@ If $\dk \le \dfeas$, then $\cap_{i \in \activeconstraintsk} \fik \cap \left[\trk
 This follows directly from the definitions and \cref{each_constraints_cone_is_feasible}.
 \end{proof}
 
-\sbnote{I like your choice to call the following two results corollaries. 
-But then, the proofs should be based on the theorem rather than from the lemmas leading up to the theorem. }
+% \sbnote{I like your choice to call the following two results corollaries.
+% But then, the proofs should be based on the theorem rather than from the lemmas leading up to the theorem. }
+
 \begin{corollary}
 \label[corollary]{searchtrk_is_feasible}
 Let $\dfeas$, $\capcones$, and $\feasible$
@@ -4799,6 +4811,7 @@ $D(S, S') \le \epsilon$.
 % y - z' = \left(A'\right)^T\mu' + C^T\lambda' \\
 % t &=  \max_{\substack{i \in [m] \\ A'_i(z - p) > b'_i}} \frac{A'_i (z - p) - b'_i}{A'_i (z - p)} \\
 
+\pagebreak
 \begin{proof}
 % (1 + r)\left[1 + \delta_{\alpha}^{-1} \left(\delta_2 + 1\right)\right]
 % \begin{comment}
@@ -5619,6 +5632,8 @@ If $\gammasm > 0$, then
 \end{align*}
 \end{theorem}
 
+% Headers on same page
+\vspace{1cm}
 \begin{proof}
 
 Let 
@@ -5955,6 +5970,7 @@ Then \cref{idk_alt_proof_eqn5} tells us
 % \end{align*}
 \end{proof}
 
+\pagebreak
 \section{Numerical Results}
 
 We have implemented \cref{constrained_dfo} in Python to test its efficiency.
@@ -6038,6 +6054,7 @@ In most cases, hot starts are provided from naive searches to improve the result
 % I wrote my own code to find the extrema while computing the Lagrange multipliers.
 
 
+\pagebreak
 \subsection{Algorithm variants}
 
 We experimented with different variants of the algorithm.
@@ -6136,7 +6153,7 @@ A depiction of the trust region subproblem can be found in \cref{quadratic_buffe
 		the current iterate is in green,
 		the outer trust region is in black,
 		the buffering functions for each constraint are in magenta,
-		an the trial point is in blue.
+		and the trial point is in blue.
     }
     \label{quadratic_buffered}
 \end{figure}
@@ -6281,7 +6298,7 @@ We considered problems that had
 \begin{itemize}
 \item dimension less than or equal to 10,
 \item constraints aside from simple bound constraints,
-\item and a feasible starting point.
+\item a feasible starting point.
 \end{itemize}
 
 These were problems
@@ -6445,6 +6462,7 @@ The performance plot of {\em improving} evaluations can be found in \cref{exampl
 
 
 
+\pagebreak
 \subsection{Summary}
 
 Overall, our algorithm seems to have comparable efficiency to existing derivative-free solvers.

@@ -280,7 +280,7 @@
   \vspace{.5in}
   \vfill
   \begin{flushright}
-    Date~\rule{1.5in}{0.4pt}\\
+    Date December 18, 2021\\
   \end{flushright}
   \renewcommand{\baselinestretch}{\normalspace}
   \normalsize
@@ -401,7 +401,8 @@
   \centerheading{#1}
 }
 
-\renewcommand{\chapter}{\clearpage
+\renewcommand{\chapter}{
+  \clearpage
   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@chapter\@schapter
@@ -416,37 +417,37 @@
 \renewcommand{\@schapter}[1]{%
   \clearpage
   {\begin{center}\bf#1\end{center}}
-%   \vspace{-1em}
+  \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\section}{
-%   \vspace{-0.24in}
-%   \vspace*{0.24in}
+  \vspace{-0.24in}
+  \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@section\@ssection
 }
 \newcommand{\@section}[2][]{%
   \refstepcounter{section}
-  \begin{flushleft}
+  \begin{center}
   {\bf\thesection~~#2}
-  \end{flushleft}
-%   \vspace{-1em}
+  \end{center}
+  \vspace{-1em}
   \addcontentsline{toc}{section}{\protect\numberline{}#1}
   \@afterheading
 }
 \newcommand{\@ssection}[1]{%
   \clearpage
-  \begin{flushleft}
+  \begin{center}
   {\bf#1}
-  \end{flushleft}
-%   \vspace{-1em}
+  \end{center}
+  \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\subsection}{
-%   \vspace{-0.24in}
-%   \vspace*{0.24in}
+   \vspace{-0.24in}
+   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@subsection\@ssubsection
 }
@@ -463,13 +464,13 @@
   \begin{flushleft}
   {\hangindent=0.5in\underline{\textit{#1}}}
   \end{flushleft}
-%   \vspace{-1em}
+  \vspace{-1em}
   \@afterheading
 }
 
 \renewcommand{\subsubsection}{
-%   \vspace{-0.24in}
-%   \vspace*{0.24in}
+   \vspace{-0.24in}
+   \vspace*{0.24in}
   \@afterindenttrue
   \secdef\@subsubsection\@ssubsubsection
 }
@@ -491,8 +492,8 @@
 
 
 % \renewcommand{\paragraph}{
-% %   \vspace{-0.24in}
-% %   \vspace*{0.24in}
+%    \vspace{-0.24in}
+%    \vspace*{0.24in}
 %   \@afterindenttrue
 %   \secdef\@paragraph\@sparagraph
 % }

@@ -1,11 +1,10 @@
 
-\tiny
+\footnotesize
 \begin{center}
 \begin{longtable}{ c c c c c c c c }
-\caption{Numerical Results for Linear Test Problems} \\
-\label{linear_pathological_results}
 Shape & Search & Num. Segments & Basis & Iterations & Evaluations \\
 \hline
+\endhead
                 spherical &   anywhere &       &     linear & 159  &   202  &  470 &  630 \\
                 spherical &   anywhere &       &  quadratic & 164  &   277  &  467 &  805 \\
                 spherical &       none &       &     linear &  77* &   122* &  255 &  387 \\
@@ -65,18 +64,20 @@ Shape & Search & Num. Segments & Basis & Iterations & Evaluations \\
 %         scaled ellipsoid &    segment &     2 &  quadratic &    67 &   189 \\
 %                  simplex & max volume &       &     linear &    41 &    44 \\
 %                  simplex & max volume &       &  quadratic &    41 &    94 \\
+\caption{Results for an example problem} \\
+\label{linear_pathological_results}
 \end{longtable}
 \end{center}
 \normalsize
 
 % *The spherical trust region with no search for the center did not converge.
 
-\begin{scriptsize}
+\begin{footnotesize}
 \begin{center}
 \begin{longtable}{ c c c c c c c c }
-\label{linear_schittowski_results}
 Algorithm & Prob. & n & Message & N. It. & N. Eval. & Ret. Min. & Min. \\
 \hline
+\endhead
   circumscribed ellipse   &   21  &  2  & converged  &   24  &   71  &  -99.960   &  -99.960   \\
          ellipse          &   21  &  2  & converged  &   36  &   96  &  -99.960   &  -99.960   \\
     ellipse everywhere    &   21  &  2  & converged  &   24  &   82  &  -99.960   &  -99.960   \\
@@ -172,7 +173,9 @@ Algorithm & Prob. & n & Message & N. It. & N. Eval. & Ret. Min. & Min. \\
     ellipse segment 2     &   76  &  4  &   failed   &   24  &  105  &   -4.680   &   -4.682   \\
     ellipse segment 3     &   76  &  4  &   failed   &   25  &  106  &   -4.677   &   -4.682   \\
     ellipse segment 4     &   76  &  4  &   failed   &   23  &  107  &   -4.674   &   -4.682   \\
-        polyhedral        &   76  &  4  & converged  &   15  &  169  &   -4.682   &   -4.682
+        polyhedral        &   76  &  4  & converged  &   15  &  169  &   -4.682   &   -4.682   \\
+\caption{Results for the Hock Schittowski problem set} \\
+\label{linear_schittowski_results}
 \end{longtable}
 \end{center}
-\end{scriptsize}
+\end{footnotesize}

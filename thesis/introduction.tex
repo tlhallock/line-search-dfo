@@ -3,7 +3,7 @@
 
 Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
 Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
-Applications of DFO appear in many fields, including photo-injector optimization \cite{1742-6596-874-1-012062},
+Applications of DFO appear in many fields, including photo-injector optimization \cite{Neveu2017},
 circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability-based optimization \cite{Gao2017}.
 In such applications, function evaluations are typically expensive, 
 so it is sensible to invest significant computational resources to minimize the number of function evaluations required.
@@ -18,8 +18,7 @@ This work is aimed at developing algorithms to solve constrained optimization pr
 where 
 % $\domain$ is a subset of $\Rn$, and
 $f$ and $c_i$ for $1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
-
-We will let the feasible set be represented as 
+We let the feasible set be represented as
 \begin{align}
 \feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}.
 \end{align}
@@ -56,9 +55,17 @@ the sample points are typically chosen to lie within the trust-region.
 We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
 As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $\feasible$ 
 and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
+Constraints of this type can arise in several ways, such as when a simulation cannot be carried on particular inputs.
+For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
+but some overlapping synchrotron elements cannot be simulated.
+% This means the constraints
+% For example, the authors of  apply derivative free optimization to rapid-cycling synchrotron lattice design.
+% The problem has a non-smooth objective and both linear and simulation based unrelaxable constraints.
+% These constraints are unrelaxable, because simulation is not possible with overlapping synchrotron elements.
+
 For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
 In this case,  the constraints are called {\em unrelaxable}.    
-\sbnote{Can we find an example of a unrelaxable constraint?}   
+% \sbnote{Can we find an example of an unrelaxable constraint?}
 For problems involving unrelaxable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.
 We, therefore, require all sample points to be feasible, and we seek to avoid infeasible function evaluations.
 Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output.
@@ -67,10 +74,10 @@ Notice that this feasibility requirement means that if the algorithm is stopped 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
 This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
 When the geometry of the sample set is poor, it is sometimes necessary to evaluate the functions at new points within the trust region to improve the geometry of the sample set.
-It is well understood how to do this for unconstrained problems, but for constrained problems,
+It is well understood how to do this for unconstrained problems, but for constrained problems
 our requirement that the sample points must be feasible poses some interesting challenges to maintaining good geometry.   
 
-As a first step toward developing algorithms to solve such problems,  \cref{chap:linear}  considers a simplified problem where all of the constraints are linear; namely:
+As a first step toward developing algorithms to solve such problems, \cref{chap:linear}  considers a simplified problem where all of the constraints are linear; namely:
 \begin{align*}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & \lca x \le \lcb, & 
@@ -114,14 +121,16 @@ Using this result,  we prove that the criticality measure for the iterates gener
 Thus,  any accumulation point of the iterates satisfies the first-order optimality conditions.
 Finally, numerical results are presented comparing the performance of our algorithm to several other algorithms for constrained derivative-fee optimization.
 
+% Headers on same page
+\vspace{1cm}
 \section{Notation}
-
 Throughout the thesis, we use the following notational conventions.
 Any variables that depend on the iteration will be super-scripted by $k$.
 For example, the $k$-th iterate is given by $\xk$, and iterate $k$'s model of the objective in iteration $k$ is given by $\mfk$.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto a convex set $X$.
+For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
 \paragraph*{Matrices.}
 Matrices are denoted with capital letters.
@@ -131,7 +140,6 @@ rows of the $m\times n$ matrix $A$ from the set $S$ is $A_S$.
 Let the condition number of a matrix $Q$ be denoted $\condition(Q)$.
 % , while the $i$-th column is denoted $A_{\bullet i}$.
 We use $e_i$ to denote the $i$-th unit vector and $e$ to denote the vector of all ones.
-
 $B_k\left(c; \Delta\right)$ is the ball of radius $\Delta$ in the $k$ norm, centered at point $c$.  That is,
 \begin{align}
 \label{define_ball}
@@ -154,6 +162,5 @@ We define the positive part of a real number to be
 \begin{align*}
 a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise}. \end{cases}\\
 \end{align*}
-For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
 % For any matrix $A$, we let $A^{\dagger}$ be the Moore-Penrose inverse.

@@ -1,10 +1,10 @@
 
-\begin{scriptsize}
+\begin{footnotesize}
 \begin{center}
 \begin{longtable}{ccccccccc}
-\caption{Numerical Results for Non-linear Test Problems} \\
-\label{nonlinear_results}  
   N &       algorithm &  n & N succ & N fail & optimal &         min &    true min &  x-error\\
+\hline
+\endhead
  12 &           nomad &  2 &    208 &    185 &     yes &       -30.0 &         -30 &      0.0\\
  12 &            pdfo &  2 &     37 &     20 &      no &      -29.55 &         -30 &     0.49\\
  12 &           scipy &  2 &      3 &     26 &      no &   -1.04e-07 &         -30 &     3.61\\
@@ -196,19 +196,21 @@
 359 & always feasible &  5 &   1625 &      0 &      no &  -3073582.8 &  -5280420.0 &   179.15\\
 359 &           nomad &  5 &   3199 &   3412 &      no & -5732790.82 &  -5280420.0 &   411.64\\
 359 &            pdfo &  5 &     58 &     41 &      no & -2842012.23 &  -5280420.0 &    179.5\\
-359 &           scipy &  5 &      6 &     16 &      no & -2354161.43 &  -5280420.0 &    179.4
+359 &           scipy &  5 &      6 &     16 &      no & -2354161.43 &  -5280420.0 &    179.4\\
+\caption{Results for the Hock Schittowski problems} \\
+\label{nonlinear_results}
 \end{longtable}
 \end{center}
-\end{scriptsize}
+\end{footnotesize}
 
 
 
-\begin{scriptsize}
+\begin{footnotesize}
 \begin{center}
 \begin{longtable}{ccccccc}
-\caption{Numerical Results for Non-linear Algorithm Variants} \\
-\label{nonlinear_variants_results}
   N &       algorithm &                                    params & N succ & N fail & optimal\\
+\hline
+\endhead
  12 & always feasible &                              basis=linear &     76 &     30 &     yes\\
  12 & always feasible &                   on-empty-sample=recover &    234 &     65 &     yes\\
  12 & always feasible &                     sr-strategy=spherical &    256 &     66 &     yes\\
@@ -294,7 +296,9 @@
 323 & always feasible &        tr-heuristics=['penalty-buffered'] &     43 &     22 &     yes\\
 323 & always feasible &      tr-heuristics=['quadratic-buffered'] &     74 &     28 &     yes\\
 326 & always feasible &                                           &     44 &      5 &     yes\\
-331 & always feasible &                                           &     29 &      0 &     yes
+331 & always feasible &                                           &     29 &      0 &     yes\\
+\caption{Results for algorithm variants}
+\label{nonlinear_variants_results}
 \end{longtable}
 \end{center}
-\end{scriptsize}
+\end{footnotesize}
