@@ -1,7 +1,7 @@
 
 % \section{Derivative Free Optimization}
 
-Derivative free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
+Derivative-free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
 Such problems arise, for example, when the functions are evaluated by simulations or by laboratory experiments.
 Applications of DFO appear in many fields, including photo-injector optimization \cite{Neveu2017},
 circuitry arrangements \cite{PLOSKAS201816}, machine learning \cite{KS2018}, volume optimization \cite{Cheng2017}, and reliability-based optimization \cite{Gao2017}.
@@ -38,7 +38,7 @@ For example, the trust-region subproblem might have the form
 where $\xk$ is the current iterate, $\mfk$ is the model function approximating $f$, 
 and $\mcik$ are the model functions approximating the constraint functions $c_i, \forall 1 \le i \le m$, and $\dk$ is the radius of the trust-region.
 The key differences between the trust-region subproblem problem and the original are that all functions are replaced with their model functions, 
-and a trust region constraint $\|s\| \le \dk$ has been added.
+and a trust region constraint ($\|s\| \le \dk$) has been added.
 
 %Note that we are using models of the constraint functions to approximate the feasible region during each iteration.  In particular, we define the {\em model feasible region} by
 %\begin{align}
@@ -52,23 +52,25 @@ so the trust-region subproblem restricts the length of step $s$ to be no larger 
 To ensure that the model functions are good approximations of the true functions over the trust region, 
 the sample points are typically chosen to lie within the trust-region.
 
-We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
-As in \cite{digabel2015taxonomy}, {\em quantifiable} means the functions can be evaluated at any point in $\feasible$ 
-and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
-Constraints of this type can arise in several ways, such as when a simulation cannot be carried on particular inputs.
-For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
-but some overlapping synchrotron elements cannot be simulated.
+%
+% {\em quantifiable} means the functions can be evaluated at any point in $\feasible$
+% and that the values returned for the constraint functions provide meaningful information about how close the point is to a constraint boundary.
 % This means the constraints
-% For example, the authors of  apply derivative free optimization to rapid-cycling synchrotron lattice design.
+% For example, the authors of  apply derivative-free optimization to rapid-cycling synchrotron lattice design.
 % The problem has a non-smooth objective and both linear and simulation based unrelaxable constraints.
 % These constraints are unrelaxable, because simulation is not possible with overlapping synchrotron elements.
-
-For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
-In this case,  the constraints are called {\em unrelaxable}.    
+% In this case,  the constraints are called {\em unrelaxable}.
 % \sbnote{Can we find an example of an unrelaxable constraint?}
+We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.
+Constraints of this type can arise in several ways, such as when a simulation cannot be carried out on particular inputs.
+For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
+but some overlapping synchrotron elements cannot be simulated.
+
+As in \cite{digabel2015taxonomy}, these constraints are called {\em unrelaxable}.
 For problems involving unrelaxable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.
 We, therefore, require all sample points to be feasible, and we seek to avoid infeasible function evaluations.
 Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output.
+% For our work, we assume that the black-box functions return meaningful numerical values \emph{only} when evaluated at feasible points.
 
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
@@ -111,7 +113,7 @@ Because the constraints are known, we present an algorithm that constructs sampl
 This region is called the {\em sample region}.
 The algorithm we present is an implementation of the algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
 As such, we can prove its convergence by showing that it satisfies the required assumptions presented in \cite{Conejo:2013:GCT:2620806.2621814}.
-We then discuss several variants to improve on the base algorithm, as well as provide numerical results.
+We then discuss several variants to improve on the algorithm, as well as provide numerical results.
 
 \cref{chap:general} considers the case of nonlinear black-box constraints.
 In contrast to the case of linear constraints, we can no longer be assured that feasible points for the model sub-problems are feasible for the original problem.
@@ -126,7 +128,8 @@ Finally, numerical results are presented comparing the performance of our algori
 \section{Notation}
 Throughout the thesis, we use the following notational conventions.
 Any variables that depend on the iteration will be super-scripted by $k$.
-For example, the $k$-th iterate is given by $\xk$, and iterate $k$'s model of the objective in iteration $k$ is given by $\mfk$.
+For example, the $k$-th iterate is given by $\xk$,
+and the model of the objective function for iteration $k$ is given by $\mfk$.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto a convex set $X$.

@@ -260,7 +260,6 @@ Therefore, to obtain feasible sample points, we require that
 % Moreover,   the multiplier $(1+K_a)$ used in the definition of $\activeconstraintsk$ will also allow us to prove that
 % $\capcones \cap \outertrkpo \subset \feasiblek$.
 
-\pagebreak
 \section{The Sample Trust Region}
 \label{possible_ellipsoids}
 
@@ -356,7 +355,6 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 %Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
 
-\pagebreak
 \subsection{Maximal volume sample region}
 \label{ideal_ellipsoid_in_polyhedron}
 \label{ellipsoid_in_cone}
@@ -415,7 +413,7 @@ The perspective projection onto $v^{(i)}$ is the shape drawn onto a hyperplane a
 That is, imagine a viewer is positioned at $v^{(j)}$, and viewing the ellipsoid as in \cref{perspective_projection_depiction}.
 They create a line from $v^{(j)}$ to the hyperplane by looking past the outer edge of the ellipsoid onto the hyperplane.
 If they were to trace all possible rays through the boundary of the ellipsoid onto the hyperplane, 
-these rays intersect the hyperplane are the ellipsoid's perspective projection.
+these rays intersect the hyperplane at the ellipsoid's perspective projection.
 % \sbnote{This is a nice intuitive description of the perspective projection, but do you have a formal definition?}
 
 
@@ -857,7 +855,6 @@ Although more efficient formulations may exist, this leads us to believe that it
 to even compute the maximum volume sphere within the buffering cones.
 
 
-\pagebreak
 \subsection{Conservative ellipsoid}
 \label{the_conservative_ellipsoid}
 % \sbnote{I think it would be better to reorganize this section by defining the method for constructing the ellipsoid first, and then discuss its properties.
@@ -1233,7 +1230,7 @@ and
 \begin{lemma}
 \label[lemma]{boundbeta}
 
-Let $\beta$, $\thetamink$, and $\qkpo$ be defined by \cref{define_abpab}, \cref{define_thetamink}, and \cref{define_ellipsek} respectively.
+Let $\beta$, $\thetamink$, and $\qkpo$ be defined by \cref{define_abpab}, \cref{define_thetamink}, and \cref{define_ellipsek}, respectively.
 
 If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\condition \left(\qkpo\right) \le 12 \left(\thetamink\right)^{-2}$.
 
@@ -1243,7 +1240,7 @@ If $\dk \le \frac 1 {4 \beta} \left(\thetamink\right)^2$, then $\condition \left
 
 \begin{proof}
 
-Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma} respectively.
+Let $\rotk$, and $\gamma$ be defined as in \cref{define_rotation}, and \cref{define_the_constant_gamma}, respectively.
 Also, during iteration $k$, let $\bs$ be defined by \cref{define_bs}.
 % Definition \cref{define_ellipsek} states
 % \begin{align*}
@@ -1364,7 +1361,7 @@ Thus, any $y \in\Rn$ with $y \in S$ must also have $y \in B$.
 Let
 $\zik$ and $\fik$
 be defined by
-\cref{define_z} and \cref{define_fik} respectively.
+\cref{define_z} and \cref{define_fik}, respectively.
 For any $R > 0$ and $K > R\sqrt{n}$, there exists $\deltalargzik > 0$ such that if $\dk \le \deltalargzik$ and 
 \begin{align*}
 \zik \not \in B_{\infty}\left(\xk, (1+K) \dk\right),
@@ -1433,7 +1430,7 @@ Putting this together, we see
 \begin{lemma}
 \label[lemma]{inner_cone_inside_each_cone}
 
-Let $\fcki$ and $\capcones$ be defined by \cref{define_inner_cone} and \cref{define_capcones} respectively.
+Let $\fcki$ and $\capcones$ be defined by \cref{define_inner_cone} and \cref{define_capcones}, respectively.
 If 
 % $\dk \le 1$ and 
 $\xkpo \in \capcones$, then $\fcki \subseteq \capcones$.
@@ -1445,7 +1442,7 @@ $\xkpo \in \capcones$, then $\fcki \subseteq \capcones$.
 Let 
 $\huk$, $\bsk$, $\thetamink$, $\activeconstraintsk$, and $\fik$
 be defined by
-\cref{define_u}, \cref{define_bsk}, \cref{define_thetamink}, \cref{define_activeconstraints}, and \cref{define_fik} 
+\cref{define_u}, \cref{define_bsk}, \cref{define_thetamink}, \cref{define_activeconstraints}, and \cref{define_fik} ,
 respectively and $\alpha$, $\beta$, $p_{\alpha}$, $p_{\beta}$ be defined by \cref{define_abpab}.
 Fix some $i \in \activeconstraintsk$, and define $\gamma_i = -\left(\huk\right)^T\hgik$ as well as
 \begin{align*}
@@ -1499,7 +1496,7 @@ Thus, $\fcki \subseteq \fik$.
 \begin{lemma}
 \label[lemma]{ellsoid_is_suitable_theorem_p1}
 
-Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas} respectively.
+Let $\activeconstraintsk$ and $\omegainc$ be defined by \cref{define_activeconstraints} and \cref{define_the_omegas}, respectively.
 If $\activeconstraintsk = \emptyset$ and $\dkpo \le \omegainc\dk$, 
 then there exists $\deltalargzik>0$ such that if $\dk \le \deltalargzik$ the
 ellipsoids defined by \cref{define_trivial_ellipsek} 
@@ -1510,7 +1507,7 @@ are trusted, and adjacent according to \cref{ellipsoids_notation_definitions}.
 \begin{proof}
 
 Also, \cref{define_suitable_close_to_iterate} is satisfied because $(\xkpo - \xkpo)^T\qkpo(\xkpo - \xkpo) = 0 \le \sdkpo^2$.
-Let $\omegainc$, $\capcones$, $\fik$, and $\zikthresh$ be defined by \cref{define_the_omegas}, \cref{define_capcones}, \cref{define_fik}, and \cref{define_zikthresh} respectively.
+Let $\omegainc$, $\capcones$, $\fik$, and $\zikthresh$ be defined by \cref{define_the_omegas}, \cref{define_capcones}, \cref{define_fik}, and \cref{define_zikthresh}, respectively.
 Because $\activeconstraintsk = \emptyset$, we can use 
 \cref{large_zik_means_means_no_intersection} with $R = (2 + \omegainc)\sqrt{n}$, $K = \zikthresh$ to conclude the existence of $\deltalargzik > 0$ such that 
 if $\dk \le \deltalargzik$, then for each 
@@ -1546,7 +1543,7 @@ then the ellipsoids defined by \cref{define_ellipsek} are trusted and adjacent a
 \end{lemma}
 \begin{proof}
 
-Let $\rotk$, $\gamma$, $f_e$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{define_ellipse_function}, and \cref{define_bs} respectively.
+Let $\rotk$, $\gamma$, $f_e$, and $\bs$ be defined as in \cref{define_rotation}, \cref{define_the_constant_gamma}, \cref{define_ellipse_function}, and \cref{define_bs}, respectively.
 % Definition \cref{define_ellipsek} states
 % \begin{align*}
 % \qk = \rotk^T \begin{pmatrix}
@@ -1608,7 +1605,6 @@ For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\left(\xkpo - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
 \end{proof}
 
-\pagebreak
 \section{Dealing with Infeasible Sample Points}
 \label{recovering_feasiblity_section}
 
@@ -1837,7 +1833,6 @@ We summarize what we have shown here:
 % A_{\mathcal A^{\textrm{hull}}}^{\textrm{hull}}
 % \end{align*}
 
-\pagebreak
 
 \subsection{Non-convex feasible region}
 
@@ -1939,7 +1934,7 @@ With this assumption, we are able to show a family of feasible ellipsoids about 
 \begin{theorem}
 
 \label{nonconvex_ellipsoid_existence}
-Let $\feasible$ and $f_e$ be defined by \cref{define_feasible} and \cref{define_ellipse_function} respectively.
+Let $\feasible$ and $f_e$ be defined by \cref{define_feasible} and \cref{define_ellipse_function}, respectively.
 
 Suppose that 
 \cref{true_constraints_minangle_assumption},
@@ -2315,7 +2310,7 @@ The algorithm is as follows:
 
 
 \begin{algorithm}[H]
-    \caption{Always-feasible Constrained Derivative Free Algorithm}	
+    \caption{Always-feasible Constrained Derivative-free Algorithm}
     \label{constrained_dfo}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} Initialize
@@ -2352,7 +2347,7 @@ k \gets 0; &
 		
         \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
         	Compute $\capcones$, $\slin$, and $\sk$ by
-        	\cref{define_capcones}, \cref{half_tr_subproblem}, and \cref{capcones_tr_subproblem} respectively. \\
+        	\cref{define_capcones}, \cref{half_tr_subproblem}, and \cref{capcones_tr_subproblem}, respectively. \\
         	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
 		
         \item[\textbf{Step 4}] \textbf{(Test for improvement)}.
@@ -2401,7 +2396,6 @@ k \gets 0; &
 % \item have \cref{criticality_check} not satisfied.
 % \end{itemize}
 % \end{comment}
-\pagebreak
 
 \section{Convergence Analysis}
 \label{convex_convergence_analysis}
@@ -2895,7 +2889,6 @@ Then there exist $\kappa_g>0$ and $\kappa_h>0$, independent of $k$, such that
 \end{lemma}
 
 
-\pagebreak
 \begin{proof}
 
 Give $\qk = LD^2L^T$ its eigen-decomposition, and define 
@@ -3002,7 +2995,7 @@ whenever $\dk \le \dacc$.
 
 \begin{proof}
 
-Let $\kappa_h$ and $\maxhessian$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_hessians_assumption} respectively,
+Let $\kappa_h$ and $\maxhessian$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_hessians_assumption}, respectively,
 and let $\maxmodelhessian = \maxhessian + \kappa_h \dacc$.
 Then \cref{bounded_hessians_assumption} tells us that
 $\|\nabla^2 f(\xk)\| \le \maxhessian$, so that by \cref{accuracy_is_satisfied},
@@ -3027,7 +3020,7 @@ Without loss of generality, we may assume that $\maxmodelgrad \ge 1$.
 \end{lemma}
 \begin{proof}
 
-Let $\kappa_g$ and $\maxgrad$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_gradients_lemma} respectively,
+Let $\kappa_g$ and $\maxgrad$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_gradients_lemma}, respectively,
 and let $\maxmodelhessian = \maxgrad + \kappa_g \dacc^2$.
 Using \cref{accuracy_is_satisfied} to define $\kappa_g$, we can let $\maxmodelgrad = \maxgrad + \kappa_g \dacc^2$.
 Then \cref{bounded_gradients_lemma} tells us that
@@ -3049,7 +3042,7 @@ The same applies to each $\left\|\gmcik\right\|$.
 \begin{lemma}
 \label[lemma]{only_small_z_matters}
 
-Let $\zik$ and $\mingrad$ be defined by \cref{define_z} and \cref{mingradassumption} respectively.
+Let $\zik$ and $\mingrad$ be defined by \cref{define_z} and \cref{mingradassumption}, respectively.
 
 \input{assumptions.d/only_small_z_matters}
 
@@ -3194,7 +3187,7 @@ be defined as in
 \cref{bounded_hessians_assumption},
 \cref{lipschitz_gradients_assumption},
 \cref{define_deltalargzik},
-and \cref{mingradassumption}
+and \cref{mingradassumption},
 respectively.
 
 By \cref{accuracy_is_satisfied}, there exist $\kappa_g > 0$ and $u\in\Rn$ with $\|u\|\le 1$ such that:
@@ -3672,13 +3665,13 @@ be defined by
 \cref{define_kappa_chi},
 \cref{define_p_delta},
 \cref{define_tolsr},
-and \cref{define_capcones}
+and \cref{define_capcones},
 respectively.
 
 \input{assumptions.d/sufficient_reduction_theorem}
 
 Also, assume that $\slin$ defined by \cref{half_tr_subproblem} satisfies \cref{what_ugc_satisfies} for some fixed constant $\kappa_f'>0$ independent of $k$.
-Then, there exists and $\kappa_f>0$ and $\dsr>0$, such that if during iteration $k$,
+Then, there exists $\kappa_f>0$ and $\dsr>0$, such that if during iteration $k$,
 \begin{align}
 \chik \ge \kappa_{\chi} \dk^{p_{\Delta}}, \label{sr_chi_big_enough} \\
 \dk \le \dsr, \label{sr_delta_small_enough}
@@ -4107,7 +4100,7 @@ define
 With
 $\kappa_g$, $\kappa_f$, $\lipgrad$, $\maxmodelhessian$
 defined by
-\cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_model_hessian_lemma}
+\cref{sufficient_reduction_theorem}, \cref{sufficient_reduction_theorem}, \cref{lipschitz_gradients_assumption}, and \cref{bounded_model_hessian_lemma},
 respectively,  define
 \begin{align}
 \theircnot &= \lipgrad + \kappa_{g} + \frac 1 2 \maxmodelhessian \label{define_theircnot} \\
@@ -4145,7 +4138,7 @@ define
 \begin{lemma}
 \label[lemma]{mathcal_k_subset_bar_s}
 
-Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates} respectively.
+Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates} and \cref{define_reduceiterates}, respectively.
 
 \input{assumptions.d/mathcal_k_subset_bar_s}
 
@@ -4228,7 +4221,7 @@ The sequence $\left\{\dk\right\}$ converges to zero.
 Let
 $\suffiterates$, $\kappa_f$, $\chik$, $\maxmodelhessian$, $\kappa_{\chi}$, $p_{\Delta}$ $\gammabi$
 be defined by
-\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}, \cref{define_the_gammas}
+\cref{define_miniterates}, \cref{sufficient_reduction_theorem}, \cref{define_criticality_measure}, \cref{bounded_model_hessian_lemma}, \cref{define_kappa_chi}, \cref{define_p_delta}, \cref{define_the_gammas},
 respectively,
 and let $\omegadec$ and $\omegainc$ be defined by \cref{define_the_omegas}.
 Suppose that $\suffiterates$ is finite.
@@ -4449,7 +4442,7 @@ This result will be required within \cref{convergence_section}.
 % 	\includegraphics[width=300px]{images/first_lemma.png}
 	\includegraphics[width=200px]{images/spokes.png}
 	\caption[A depiction of the quantities within \cref{properties_of_a_circle}.]{ % 
-			The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$ respectively, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
+			The distances from $u$, $v$ to $x$, $y$ are less than $\epsilon$, and $x$ and $y$ lie within a sphere of radius $\|a\|$.
 			Also, $a^Tx \le a^Ta$ separates the sphere from $u$ and $v$.
 	}
 	\label{first_lemma}
@@ -4811,7 +4804,6 @@ $D(S, S') \le \epsilon$.
 % y - z' = \left(A'\right)^T\mu' + C^T\lambda' \\
 % t &=  \max_{\substack{i \in [m] \\ A'_i(z - p) > b'_i}} \frac{A'_i (z - p) - b'_i}{A'_i (z - p)} \\
 
-\pagebreak
 \begin{proof}
 % (1 + r)\left[1 + \delta_{\alpha}^{-1} \left(\delta_2 + 1\right)\right]
 % \begin{comment}
@@ -5063,7 +5055,7 @@ The following observation follows directly from the definition:
 \begin{lemma}
 \label[lemma]{doesntreallyneedtobesaid}
 
-Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt} respectively.
+Let $\activeindicesk$, $\zik$, $\minangledelta$ be defined by \cref{define_activeindicesk}, \cref{define_z}, and \cref{minangleassumption_alt}, respectively.
 
 If $i \in \activeindicesk$, then $\zik \in B_{\infty}\left(\xk, \minangledelta \right)$.
 \end{lemma}
@@ -5112,7 +5104,7 @@ On the other hand, if $-c_i\left(\xk\right) \ge \mingradepsilon$ and $i \in \act
 \begin{lemma}
 \label[lemma]{yet_another_bound_on_a_u}
 
-Let $\ulb$, $\slb$, and $\activeindicesk$ be defined by \cref{define_the_finite_set}, \cref{define_slb}, and \cref{define_activeindicesk} respectively.
+Let $\ulb$, $\slb$, and $\activeindicesk$ be defined by \cref{define_the_finite_set}, \cref{define_slb}, and \cref{define_activeindicesk}, respectively.
 
 \input{assumptions.d/yet_another_bound_on_a_u}
 
@@ -5218,7 +5210,7 @@ Thus, we must only set $k_0 = \max \left\{k_1, k_2, k_3\right\}$ and $\activedir
 
 % https://mirror.las.iastate.edu/tex-archive/info/symbols/comprehensive/symbols-a4.pdf#page=123
 
-Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, 
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek}, respectively,
 and for any fixed $k$, define
 
 % \Amk &= \left\{ i \in [m] \bigg | c_i\left(\xk\right) + \gmcik^T\left( \proj_{\feasiblek}\left(\xk - \gk\right) - \xk\right) = 0\right\}, \label{tbbt_a1} \\
@@ -5342,7 +5334,7 @@ and \cref{hmoydihtp_eqn2} implies $\left\|\gmcil\right\| \ge \deltalb$.
 
 We are now ready to state the main result of this section.   
 
-With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively, define
+With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek}, respectively, define
 \begin{align}
 \zlk =& \proj_{\feasiblel}\left(\xk - \gk\right), \label{define_zlk} \\
 \zck =& \proj_{\truefeasiblek}\left(\xk - \gk\right). \label{define_zck}
@@ -5367,8 +5359,8 @@ With $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \c
 \begin{theorem}
 \label{bounded_projection_theorem}
 
-Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek} respectively.
-Let $\zlk$ and $\zck$ be defined by \cref{define_zlk} and \cref{define_zck} respectively.
+Let $\feasiblek$, $\truefeasiblek$ be defined by \cref{define_feasiblek} and \cref{define_truefeasiblek}, respectively.
+Let $\zlk$ and $\zck$ be defined by \cref{define_zlk} and \cref{define_zck}, respectively.
 Let $\ulb$ and $\slb$, be defined by \cref{define_the_finite_set} and \cref{define_slb}.
 
 \input{assumptions.d/bounded_projection_theorem}
@@ -5639,7 +5631,7 @@ If $\gammasm > 0$, then
 Let 
 $\feasiblek$, $\zlk$, $\zck$
 be defined by 
-\cref{define_feasiblek}, \cref{define_zlk}, \cref{define_zck}
+\cref{define_feasiblek}, \cref{define_zlk}, \cref{define_zck},
 respectively.
 Let $\epsilon > 0$ be fixed.
 By the triangle inequality, and the contraction property of projections, we have
@@ -5899,7 +5891,7 @@ We see that by the triangle inequality, \cref{bounded_gradients_lemma}, \cref{id
 Let $\activeconstraintsk$ and $\epsactive(x; \epsilon)$
 % and $\epsactivemodels(x; \epsilon)$
 be defined by
-\cref{define_activeconstraints} and \cref{define_epsactive}
+\cref{define_activeconstraints} and \cref{define_epsactive},
 % , and \cref{define_epsactivemodels}
 respectively.
 If $\activeconstraintsk = \emptyset$, then $\sigma\left(\qk\right) = 1$.
@@ -5970,7 +5962,6 @@ Then \cref{idk_alt_proof_eqn5} tells us
 % \end{align*}
 \end{proof}
 
-\pagebreak
 \section{Numerical Results}
 
 We have implemented \cref{constrained_dfo} in Python to test its efficiency.
@@ -6054,7 +6045,6 @@ In most cases, hot starts are provided from naive searches to improve the result
 % I wrote my own code to find the extrema while computing the Lagrange multipliers.
 
 
-\pagebreak
 \subsection{Algorithm variants}
 
 We experimented with different variants of the algorithm.
@@ -6289,7 +6279,7 @@ Depictions of the trust region subproblem with are found in \cref{quadratic_pena
 % 
 % }{}
 
-\subsection{Hock Schittkowski problem set}
+\subsection{Hock-Schittkowski problem set}
 
 To test our algorithm, we used the Hock-Schittkowski problem set \cite{Hock1980} and \cite{Schittkowski1981MoreTE}.
 We implemented these problems in Python and ensured our implementation agrees with the Author's FORTRAN library created in 2011 
@@ -6462,7 +6452,6 @@ The performance plot of {\em improving} evaluations can be found in \cref{exampl
 
 
 
-\pagebreak
 \subsection{Summary}
 
 Overall, our algorithm seems to have comparable efficiency to existing derivative-free solvers.

@@ -1,9 +1,9 @@
 
-Within this chapter, we discuss background material relevant to our algorithm.
-This begins with a brief review of the literature within \cref{literature_review}.
-We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
-The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
-Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
+% Within this chapter, we discuss background material relevant to our algorithm.
+% This begins with a brief review of the literature within \cref{literature_review}.
+% We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
+% The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
+% Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
 
 
 \section{Literature Review}
@@ -29,8 +29,8 @@ Finally, in \cref{trust_regions_section} we end with a discussion of trust regio
 % parallel algorim, compares gradient based and dfo, nelder-mead
 % volume optimization \cite{Cheng2017},
 
-There has been a recent growth in the number of derivative-free applications and algorithms.
-Most of these algorithms fall into two main categories: direct-search methods and model-based methods.
+% There has been a recent growth in the number of derivative-free applications and algorithms.
+Most algorithms for derivative-free optimization fall into two main categories: direct-search methods and model-based methods.
 Direct-search methods use comparatively simple strategies to explore the solution space.
 Often, they use only the relative ranks of function values rather than their numerical values.
 A classic example is the popular Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} for unconstrained optimization.
@@ -40,11 +40,11 @@ Model-based methods guide the search with approximate derivative information fro
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
 \[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}\left(\xk + s\right) \\ 
-\st & \xk+s \in \feasiblek\\
+\st & \xk+s \in \feasiblek \\
 & \norm{s} \le \Delta_k
 \end{array} \]
 where $m_f^{(k)}$ is a model function approximating the objective $f$, $\dk$ is the trust region radius,
-and $\mathcal{F}_k$ is an approximation of the feasible region. 
+and $\feasiblek$ is an approximation of the feasible region.
 The solution $\sk$ of the trust-region subproblem determines a {\em trial point} $\xk + \sk$.  
 The objective function and constraints are then evaluated at the trial point to determine whether to accept the trial point.
 If the trial point is rejected, the trust region radius is decreased and a new trial point is computed by solving a revised trust-region subproblem.     
@@ -78,33 +78,33 @@ We compare our results to the Mesh Adaptive Search algorithm implemented within 
 \paragraph*{Model-based trust-region methods for DFO.}
 
 The literature on model-based DFO methods for constrained optimization is smaller. 
-COBYLA \cite{pub.1046127469} was one of the first model-based approaches for solving constrained black-box problems.
+COBYLA \cite{pub.1046127469} was one of the first model-based approaches for solving bound constrained black-box problems.
 The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
-A two-phased, feasibility and optimization approach that handles infeasible starting points is developed within \cite{BAJAJ2018306}.
+A two-phased, feasibility and optimization approach that handles non-linear constraints and infeasible starting points is developed within \cite{BAJAJ2018306}.
 Also, \cite{Gao2018} presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
 
 Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides a remarkably elegant convergence proof for a class of algorithms when the constraints are convex.
+This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
 Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
 
 \paragraph*{Avoiding infeasible evaluations}
 
 There is growing interest in derivative-free methods that handle unrelaxable constraints.
-Direct search methods easily accommodate these constraints, as the points they evaluate have little to no geometric requirements.
+Direct search methods easily accommodate unrelaxable constraints, as the points they evaluate have little to no geometric requirements.
 However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
 The algorithms described here take steps to avoid attempting infeasible evaluations, although many may use infeasible function values.
 
 There are several strategies for avoiding infeasible evaluations.
 The authors of \cite{Galvan2021} use a reformulation strategy to avoid infeasible evaluations by moving the constraints into the objective.
-Their work only relies on a projection operator and therefore handles non-smooth convex constraints.
-The authors of \cite{NOWPAC2014} use a path-augmentation to ensure trial points are feasible.
-This is done with a local convexification of the constraints that uses path augmentation to buffer the constraints.
+Their work relies on a projection operator and therefore handles non-smooth convex constraints.
+The authors of \cite{NOWPAC2014} use a path-augmentation strategy to ensure trial points are feasible.
+This is done with a local convexification of the constraints that parameterize a buffer of the constraints.
 The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional.
-The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L$-1 ball.
+The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L_1$ ball.
 In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that uses an envelope to avoid infeasible trial point evaluations.
-The algorithm presented within \cite{Conejo2015} is also model-based trust region method, and it ensures each iterate is feasible,
+The algorithm presented within \cite{Conejo2015} is also a model-based trust region method, and it ensures each iterate is feasible,
 although sample points may not be.
-More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative free problems with unrelaxable, black-box constraints.
+More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative-free problems with unrelaxable, black-box constraints.
 
 % \begin{boxedcomment}
 % It is concerning that I don't understand the previous sentence.
@@ -128,13 +128,13 @@ For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true 
 $\chik(x) = \norm{\nabla \mfk\left(x\right)}.$
 Note however that $\chik$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.
 For this reason, derivative-free algorithms require not only that $\chik(x)$ is small, but also that the model functions are accurate.
-To accomplish this, we require poised sample sets with a trust-region converging to zero.
+To accomplish this, we require poised sample sets as discussed in \cref{geometry} with a trust-region converging to zero.
 Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$), we can terminate the algorithm.
 
 
 
 %In the presence of convex constraints, 
-If the feasible region $\feasible$ is convex,  a classic \cite{Conejo:2013:GCT:2620806.2621814} \cite{Conn:2000:TM:357813} criticality measure is given by
+If the feasible region $\feasible$ is convex, a classic criticality measure (see, for example \cite{Conejo:2013:GCT:2620806.2621814} \cite{Conn:2000:TM:357813}) is given by
 \begin{align*}
 \chi(x) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
@@ -343,7 +343,7 @@ the model's approximation may become inaccurate.
 \label{geometry}
 The term \emph{geometry} describes how the distribution of points in the sample set $Y$ affects the model's accuracy.
 
-In the case of polynomial model functions, a rigourous analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
+In the case of polynomial model functions, a rigorous analysis of model accuracy can be performed using \emph{Lagrange polynomials}.
 Let the space of polynomials on $\Rn$ with degree less than or equal to $d$ be denoted $\polydn$ and have dimension $p+1$.
 The Lagrange polynomials $l_0, l_1, \ldots, l_p$ for the sample set $Y$ are a basis of $\polydn$ such that
 \begin{align}
@@ -401,10 +401,10 @@ The concept of $\Lambda$-poisedness yields the following error bounds, as shown 
 
 Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ 
 sample points and $\Delta = \max_{1 \le j \le p} \|y^{(j)}-y^{(0)}\|$.
-Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B(y^{(0)}; \Delta)$.
+Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B_2(y^{(0)}; \Delta)$.
 Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$ 
 such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$ 
-that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B(y^{(0)};\Delta)$:
+that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B_2(y^{(0)};\Delta)$:
 
 \begin{align}
 \|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_hessian}\\
@@ -435,7 +435,7 @@ then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is 
 constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
 \end{theorem}
 
-A limitation of \cref{Lambda_poised_error_bounds} is that it assumes $\hat{Y}$ is contained in the unit ball $B(0;1)$.
+A limitation of \cref{Lambda_poised_error_bounds} is that it assumes $\hat{Y}$ is contained in the unit ball $B_2(0;1)$.
 The following theorem does not make this assumption.
 
 \begin{theorem}
@@ -503,21 +503,20 @@ we add copies of $y^{(0)}$ to create a set with $p+1$ points.
     \label{model_improving_algorithm}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            Given a  set $Y \subset B_2(0;\Delta)$, $\Delta \ge 1$ of $p+1$ points.
-            Initialize $i=0$, $\ximin \in (0,1/4]$, and let $u_i(x)= \bar \phi_i(x)$ be the monomial basis for $\polydn$.
+            Given $\ximin \in (0,1/4]$, $\Delta > 1$, a set $Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\} \subset B_2(0;\Delta)$ of $p+1$ points,
+            initialize $i=0$, and let $u_i(x)= \bar \phi_i(x)$ be the monomial basis for $\polydn$.
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
 			If $i = 0$, go to Step 3. \\
 			Compute the next pivot index $j^{\textrm{max}}_i = \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^{(j)}\right)\right|$,
 			and swap points $y^{(i)}$ and $y^{(j^{\textrm{max}}_i)}$ within $Y$.
 			
-        \item[\textbf{Step 2}] \textbf{(Check threshold)} \begin{itemize}
-                \item[] If $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin$ then go to Step 3.
-                \item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(0; 1 \right)}\left|u_i(x)\right|$.
-				\item[] If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement,  \textbf{Stop}: $\ximin$ was chosen too small.
-            \end{itemize}
+        \item[\textbf{Step 2}] \textbf{(Check threshold)} \\
+                If $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin$ then go to Step 3. \\
+                If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$, then replace $y^{(i)} \gets \argmax_{x \in B_2\left(0; 1 \right)}\left|u_i(x)\right|$. \\
+				If $\left|u_i\left(y^{(i)}\right)\right| < \ximin$ after this replacement,  \textbf{Stop}: $\ximin$ was chosen too small.
         \item[\textbf{Step 3}] \textbf{(Gaussian elimination)} \\
-        	For $j = i+1, \ldots, p$: \\
-        	Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^{(i)}\right)}{u_i\left(y^{(i)}\right)} u_i(x)$ \\
+        	For $j = i+1, \ldots, p$ \\
+        	\hspace{2em} Set $u_j(x) \gets u_j(x) - \frac{u_j\left(y^{(i)}\right)}{u_i\left(y^{(i)}\right)} u_i(x)$ \\
 %         \begin{itemize}
 %                 \item[] Set $V_i \gets \frac{1}{V_{i,i}} V_i$
 %                 \item[] Set $V_{\bullet j} \gets V_{\bullet j} - \frac{V_{i,j}}{V_{i, i}} V_{\bullet j} \forall j=i \ldots p$
@@ -553,7 +552,7 @@ we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 Observe that \cref{model_improving_algorithm} uses a threshold parameter $\xi_{\min}$ to select the next sample point.
 If $\xi_{\min}$ is too large, it is possible that there might not exist a point $x \in B_2(0;1)$ 
 in the unit ball such that $\|u_i(x)\| \ge \ximin$.
-In this case,  the algorithm stops prematurely in Step 2.
+In this case, the algorithm stops prematurely in Step 2 with a certification that $\xi_{\min}$ is too small.
 However,  in \cref{terminates} below, we show that this cannot happen as long as $0 < \ximin \le \frac 1 4$.
 To establish the result, we first need the following Lemma from \cite{introduction_book}.
 
@@ -564,7 +563,7 @@ To establish the result, we first need the following Lemma from \cite{introducti
 %and $\bar \phi(x)$ is the monomial bases for $\polydn$.
 %Then, for any $r \ge 1$,
 %\begin{align*}
-%\max_{x \in B(0; r)} \left|v^T\bar\phi(x)\right| \ge \frac 1 4
+%\max_{x \in B_2(0; r)} \left|v^T\bar\phi(x)\right| \ge \frac 1 4
 %\end{align*}
 %\end{lemma}
 %\begin{proof}
@@ -582,7 +581,7 @@ To establish the result, we first need the following Lemma from \cite{introducti
 Let $v^T \bar{\phi}(x)$ be a quadratic polynomial, where $\norm{v}_{\infty}=1$ and $\bar{\phi}$ is the monomial basis.
 Then,
 \begin{align*}
-\max_{x \in B(0;1)} \left\|v^T \bar{\phi}(x)\right\| \ge \frac{1}{4}.
+\max_{x \in B_2(0;1)} \left\|v^T \bar{\phi}(x)\right\| \ge \frac{1}{4}.
 \end{align*}
 \end{lemma}
 
@@ -590,7 +589,7 @@ Then,
 \label[lemma]{terminates}
 
 For any given $\xi_{\min} \in (0,1/4]$, \cref{model_improving_algorithm}
-computes a set $Y$ of $p+1$ points in the ball $B(0;\Delta)$ for which the pivots of the Gaussian elimination of
+computes a set $Y$ of $p+1$ points in the ball $B_2(0;\Delta)$ for which the pivots of the Gaussian elimination of
 $M=M(\bar{\phi},Y)$ satisfy
 \begin{align*}
 \left\|u_i(y^{(i)})\right\| \ge \xi_{\min},  \quad i=0,\ldots,p.
@@ -605,14 +604,14 @@ where $v = (v_0, \ldots, v_{i-1},1,0,\ldots,0)^T$.
 Observe that $\norm{v}_{\infty} \ge 1$.
 Let $\bar{v} = v/\norm{v}_{\infty}$.
 Then by \cref{book_lemma6p7},
-\[ \max_{x \in B(0;1)} u_i(x) = \max_{x \in B(0;1)} \left| v^T \bar{\phi}(x)\right| = 
-\norm{v}_{\infty} \max_{x \in B(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right| \ge \frac{1}{4} \norm{v}_{\infty} \ge \frac{1}{4}.\]
+\[ \max_{x \in B_2(0;1)} u_i(x) = \max_{x \in B_2(0;1)} \left| v^T \bar{\phi}(x)\right| =
+\norm{v}_{\infty} \max_{x \in B_2(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right| \ge \frac{1}{4} \norm{v}_{\infty} \ge \frac{1}{4}.\]
 
-%\max_{x \in B(0;1)} \norm{v}_{\infty} \left|\bar{v}^T \bar{\phi}(x)\right|\max_{x \in B(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right|
+%\max_{x \in B_2(0;1)} \norm{v}_{\infty} \left|\bar{v}^T \bar{\phi}(x)\right|\max_{x \in B_2(0;1)}  \left|\bar{v}^T \bar{\phi}(x)\right|
 %\ge 1/4.\]
 It follows that the algorithm does not stop in Step 2 for $\ximin \le 1/4$.   Hence, at the end of the $i$th iteration, we have that  $\left| u_i(y^{(i)})\right| \ge \ximin$.  Moreover,  after the $i$ iteration has been completed,  $u_i$,  and $y^{(i)}$ are never altered.  Thus, the algorithm terminates with  $|u_i(y^{(i)}| \ge \ximin$ for $i=0, \ldots, p$. 
 
-Finally,  observe that all points in the final sample set $Y$ are selected either from the original sample set, which is contained in $B(0;\Delta)$,  or are obtained in Step 2 from within $B(0;1)$.  Since $\Delta  \ge 1$, it follows that $Y \subset B(0;\Delta)$.  
+Finally,  observe that all points in the final sample set $Y$ are selected either from the original sample set, which is contained in $B_2(0;\Delta)$,  or are obtained in Step 2 from within $B_2(0;1)$.  Since $\Delta  \ge 1$, it follows that $Y \subset B_2(0;\Delta)$.
 
 \end{proof}
 
@@ -630,7 +629,7 @@ Furthermore, $y^{(0)} \in \hat Y$.
 \begin{proof}
 
 Note that \cref{model_improving_algorithm} never swaps or replaces $y^{(0)}$.
-By \cref{terminates},  $\hat Y \subset B(0;\Delta)$ 
+By \cref{terminates},  $\hat Y \subset B_2(0;\Delta)$
 and the pivots in the LU-factorization of $M(\bar{\phi},Y)$ are bounded below by $\ximin$; that is,
 $\left|u_i\left(y^{(i)}\right)\right| \ge \ximin, \; \forall 0 \le i \le p.$
 Thus, by 
@@ -785,8 +784,8 @@ However, for constrained optimization, it is useful to distinguish between the t
 
 
 The sample region is where the algorithm chooses sample points, constraining them to ensure their feasibility.
-The search region is used as the feasible region for trust region subproblem.
-Both the $\sampletrk$ and the $\searchtrk$ lie within the {\em outer trust region}, 
+The search region defines the feasible region for the trust region subproblem.
+Both $\sampletrk$ and $\searchtrk$ lie within the {\em outer trust region},
 $\outertrk = B_{\infty}\left(\xk, \dk\right)$, which is an $L_{\infty}$-ball of radius $\dk$ centered at the current iterate $\xk$:
 \begin{align}
 \label{define_outer_trust_region}
@@ -797,7 +796,9 @@ To allow for the best possible trial point, we would like the search region to b
 Ideally, we would set $\searchtrk=\outertrk \cap \feasible$.
 However, this is only possible when the constraints are known.
 In \cref{chap:general}, we can only take $\searchtrk = \outertrk \cap \feasiblek$.
-Observe that linear constraint models with an $L_{\infty}$-ball instead of an $L_2$-ball ensure $\searchtrk$ is a polytope.
+Observe that using an $L_{\infty}$ ball instead of an $L_2$ ball results in linear constraints for the model problem,
+so that that $\searchtrk$ is a polytope.
+% Observe that linear constraint models with an $L_{\infty}$-ball instead of an $L_2$-ball ensure $\searchtrk$ is a polytope.
 
 
 

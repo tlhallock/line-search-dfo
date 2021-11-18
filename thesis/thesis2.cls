@@ -154,7 +154,7 @@
   \part[Tables]{TABLES}
   \addtocontents{lot}{Table}
   \@starttoc{lot}
-  \addtocontents{toc}{\underline{Chapter}}
+  \addtocontents{toc}{CHAPTER}
   \clearpage
 }
 \newcommand{\centerheading}[1]{\begin{center}{\textbf{#1}}\end{center}}
@@ -298,7 +298,8 @@
   \begin{center}
     This thesis for the \@fulldegree\ degree by\\
     \@fwdname\\
-    has been approved \\
+    has been approved for the \\
+    Applied Mathematics Program \\
     by\\
   \end{center}
   \null\par
@@ -327,8 +328,10 @@
   \renewcommand{\baselinestretch}{\normalspace}
   \normalsize
   \noindent
+  \begin{flushright}
   The form and content of this abstract are approved. I
   recommend its publication.
+  \end{flushright}
   \null\par
   \null\par
   \begin{flushright}
@@ -370,7 +373,7 @@
   \@linespace
   \@linespace
 
-  \centerline{ABSTRACT}
+  \centerline{\textbf{ABSTRACT}}
   #1
 
   \@linespace
@@ -516,7 +519,7 @@
 % New environment for appendix
 \renewenvironment{appendix}{%
   \clearpage
-  \addtocontents{toc}{\noindent\underline{Appendix}}
+  \addtocontents{toc}{\noindent{APPENDIX}}
 
   \renewcommand{\chapter}{\clearpage
     \vspace*{0.24in}
@@ -597,7 +600,7 @@
 
   \section*{\vspace*{.25in}~\centerheading{REFERENCES}
             \markboth{REFERENCES}{REFERENCES}}
-  \addcontentsline{toc}{part}{\underline{References}}
+  \addcontentsline{toc}{part}{REFERENCES}
   \list
   {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
   \advance\leftmargin\labelsep
