@@ -111,168 +111,11 @@ More recently, \cite{Brilli2021interior} uses an interior point algorithm to sol
 % \end{boxedcomment}
 
 
-\section{Criticality Measure}
-
-\label{criticality_measure_section}
-
-\label{criticallity_measure_section}
-
-We now discuss background material for components of our algorithm.
-A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
-The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions. 
-For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is given by $\chi(x) = \norm{\nabla f(x)}$ 
-since the first order optimality condition is $\nabla f(x)=0$.
-The algorithm then terminates when $\chi(x) < \tolcrit$, where $\tolcrit >0$ is a stopping tolerance.
-
-For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true criticality measure is replaced by the model criticality measure 
-$\chik(x) = \norm{\nabla \mfk\left(x\right)}.$
-Note however that $\chik$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.
-For this reason, derivative-free algorithms require not only that $\chik(x)$ is small, but also that the model functions are accurate.
-To accomplish this, we require poised sample sets as discussed in \cref{geometry} with a trust-region converging to zero.
-Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$), we can terminate the algorithm.
-
-
-
-%In the presence of convex constraints, 
-If the feasible region $\feasible$ is convex, a classic criticality measure (see, for example \cite{Conejo:2013:GCT:2620806.2621814} \cite{Conn:2000:TM:357813}) is given by
-\begin{align*}
-\chi(x) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
-\end{align*}
-If the feasible region is not convex, the projection operation is not well-defined, so this criticality measure is not helpful.
-Moreover,  even with a convex feasible region, we need a way to determine the projection, so we prefer a criticality measure based on the  functions defining the constraints.   In particular, for 
-a first order criticality measure at $\xk$, we define
-\begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
-\end{align}
-and use
-\begin{align}
-\chi_c^{(k)}(x) = \left\|x - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
-\end{align}
-
-Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the first order Karush-Kuhn-Tucker conditions.
-% This condition is necessary under regularity assumptions and with convex 
-% For a convex problem convex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
-Unfortunately,  without derivative information, we cannot calculate $\chi_c^{(k)}$ directly, so in our algorithms we approximate it with
-\begin{align}
-\label{define_criticality_measure}
-\chik = \left\|\xk - \proj_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|,
-\end{align}
-where $\feasiblek$ is the model feasible region defined by
-\begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}.  \label{define_feasiblek}
-\end{align} 
-
-This quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for the model function $\mfk$.
-In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches a critical point for $f$.
-
-%With general constraints, we cannot use $\proj_{\feasible}$ because the projection is not well defined.
-%However, the linearization \cref{define_truefeasiblek} is still well defined.
-%Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
-% However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
-
-
-
-% For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in  of
-% The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
-% \begin{align*}
-% x^{\star} = \proj_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
-% \end{align*}
-% % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
-
-% 
-% We still employ thresholds 
-% \begin{align}
-% 
-% \end{align}
-% for stopping conditions.
-% 
-
-
-
-
-
-% \color{red}
-% \begin{comment}
-% Citation?
-% \end{comment}
-% For general constraints the first order necessary conditions are the Karush-Kun-Tucker conditions.
-% These state, under regularity assumptions, that for any critical point $x^{\star}$ there exists of a dual variable $\lambda \in \Rm$ such that
-% \begin{align*}
-% \nabla f(x) + \nabla c(x)^T \lambda  = 0, \;
-% c(x) \le 0, \;
-% \lambda \ge 0, \;
-% c(x)^T\lambda = 0. \;
-% \end{align*}
-% \color{black}
-
-
-
-
-
-
-%  
-%%A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
-%The objective value and derivatives are approximated in a trust region around the current iterate to construct their model functions.
-%Next, this model function is minimized over the trust region and the minimum argument becomes the trial point.
-%The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
-%If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
-%Otherwise, the trust region is reduced to increase model accuracy.
-%The algorithm terminates when both a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach sufficiently small thresholds of $\tau_{\chi}$ and $\tau_{\Delta}$.
-
-% \sbnote{I don't think we need to state the trust-region algorithm for unconstrained dfo, so I have commented it out.}
-
-%For unconstrained optimization, the algorithmic framework is described in \cref{unconstrained_dfo}.
-%
-%\begin{algorithm}[H]
-%    \caption{Unconstrained Derivative Free Algorithm}
-%    \label{unconstrained_dfo}
-%    \begin{itemize}
-%        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-%            Initialize tolerance constants $\tau_{\chi} \ge 0$, $\tau_{\Delta} \ge 0$, starting point $\xinit$, initial radius $\Delta_0 > 0$, iteration counter $k=0$, and constants $\omegadec \in (0, 1)$, $ \gammasm \in (0, 1)$, $\gammabi \in (\gammasm, 1)$.
-%            
-%        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
-%            Call the model improvement ``\cref{model_improving_algorithm}" to provide a set of sample points $Y^{(k)}$.
-%            Evaluate the objective on these points and use interpolation \cref{interpolation_formula} to construct the model function $\mfk(x)$.
-%        
-%        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
-%            Compute the criticality measure $\chik$ such as $\chik = \|\nabla\mfk(\xk)\|$. \begin{itemize}
-%                \item[] If $ \chik < \tau_{\chi} $ and $\Delta_k<\tau_{\Delta}$ then return solution $\xk$.
-%                \item[] If $ \chik < \tau_{\chi} $ but $\Delta_k\ge\tau_{\Delta}$ then  
-%                set $\Delta_{k+1} \gets \omegadec\Delta_{k}$, 
-%                $x^{(k+1)} \gets \xk$,
-%                $k \gets k+1$ and go to Step 1.
-%            \end{itemize}
-%        
-%        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-%            Compute $\sk = \argmin_{s\in B_2(0; \Delta_k)} \mfk (\xk + s)$ where $B_2(0; \Delta_k)$ is the ball of radius $\Delta_k$ defined in \cref{define_ball}.
-%            
-%        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
-%            Compute $\rk$ with \cref{define_rhok} \begin{itemize}
-%                \item[] If $\rk < \gammasm$ then $\xkpo \gets \xk$ (reject) and $\Delta_{k+1} \gets \omegadec\Delta_{k}$
-%                \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo\gets\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegadec\Delta_{k}$
-%                \item[] If $\rk \ge \gammabi$ and $\|\sk\| = \Delta_{k}$ then $\xkpo=\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegainc\Delta_{k}$
-%                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
-%            \end{itemize}
-%            $k \gets k+1$ and go to Step 1.
-%    \end{itemize}
-%\end{algorithm}
-%
-%This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
-%\begin{enumerate}
-%    \item Models are constructed without derivative information.
-%    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
-%\end{enumerate}
-%
-%This is required to ensure that the gradient of the model function closely approximates the gradient of $f$.
-%Our goal is to generalize this framework to handle constraints, 
-%where we must ensure no constraint violation occurs
-%while also ensuring the accuracy of the models of the constraints.
-
-
-
 \section{Assessing Model Accuracy and Trust Region Radius Management}
 
 \label{rhosection}
+
+We now discuss background material for components of our algorithm.
 In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
 To test the accuracy, we calculate a quantity
 \begin{align}
@@ -769,6 +612,165 @@ where $\epsilon_{growth}$ is a potentially large, but finite estimate of the gro
 %% What is the maximum value at $\sqrt 2$ of a quadratic that is strictly between $(-1, 1)$ in $B_2(0, 1)$?
 %% Seems like it would be $2$.
 %% \end{comment}
+
+
+
+\section{Criticality Measure}
+
+\label{criticality_measure_section}
+\label{criticallity_measure_section}
+
+A key component of any optimization algorithm is the {\em criticality measure}, which is used to define stopping criteria for the algorithm.
+The criticality measure $\chi(x^{(k)})$ at an iterate $x^{(k)}$ is a nonnegative quantity that is zero if and only if $x^{(k)}$ satisfies necessary optimality conditions.
+For unconstrained problems,  a typical choice of criticality measure for classical (gradient-based) algorithms is given by $\chi(x) = \norm{\nabla f(x)}$
+since the first order optimality condition is $\nabla f(x)=0$.
+The algorithm then terminates when $\chi(x) < \tolcrit$, where $\tolcrit >0$ is a stopping tolerance.
+
+For derivative-free optimization,  $\nabla f(x)$ is not available,  so the true criticality measure is replaced by the model criticality measure
+$\chik(x) = \norm{\nabla \mfk\left(x\right)}.$
+Note however that $\chik$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.
+For this reason, derivative-free algorithms require not only that $\chik(x)$ is small, but also that the model functions are accurate.
+To accomplish this, we require poised sample sets as discussed in \cref{geometry} with a trust-region converging to zero.
+Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$), we can terminate the algorithm.
+
+
+
+%In the presence of convex constraints,
+If the feasible region $\feasible$ is convex, a classic criticality measure (see, for example \cite{Conejo:2013:GCT:2620806.2621814} \cite{Conn:2000:TM:357813}) is given by
+\begin{align*}
+\chi(x) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
+\end{align*}
+If the feasible region is not convex, the projection operation is not well-defined, so this criticality measure is not helpful.
+Moreover,  even with a convex feasible region, we need a way to determine the projection, so we prefer a criticality measure based on the  functions defining the constraints.   In particular, for
+a first order criticality measure at $\xk$, we define
+\begin{align}
+\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
+\end{align}
+and use
+\begin{align}
+\chi_c^{(k)}(x) = \left\|x - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
+\end{align}
+
+Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the first order Karush-Kuhn-Tucker conditions.
+% This condition is necessary under regularity assumptions and with convex
+% For a convex problem convex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
+Unfortunately,  without derivative information, we cannot calculate $\chi_c^{(k)}$ directly, so in our algorithms we approximate it with
+\begin{align}
+\label{define_criticality_measure}
+\chik = \left\|\xk - \proj_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|,
+\end{align}
+where $\feasiblek$ is the model feasible region defined by
+\begin{align}
+\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}.  \label{define_feasiblek}
+\end{align}
+
+This quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for the model function $\mfk$.
+In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches a critical point for $f$.
+
+%With general constraints, we cannot use $\proj_{\feasible}$ because the projection is not well defined.
+%However, the linearization \cref{define_truefeasiblek} is still well defined.
+%Thus, it is possible to use \cref{define_criticality_measure} with general constraints to satisfy the first order necessary conditions.
+% However, unlike for convex constraints, points with a linearized criticality measure of $0$ are not necessarily local extremum.
+
+
+
+% For now, our algorithm is designed to work with convex constraints, so we employ a classic criticality measure discussed in  of
+% The first order optimality conditions for $x^{\star} \in \Rn$ to by a local optimum of $f$ is that $x^{\star}$ satisfies
+% \begin{align*}
+% x^{\star} = \proj_{\feasiblek}\left(x^{\star} - \gradf(x^{\star})\right).
+% \end{align*}
+% % that we use as thresholds to determine when the criticallity measure and trust region radius are sufficiently small.
+
+%
+% We still employ thresholds
+% \begin{align}
+%
+% \end{align}
+% for stopping conditions.
+%
+
+
+
+
+
+% \color{red}
+% \begin{comment}
+% Citation?
+% \end{comment}
+% For general constraints the first order necessary conditions are the Karush-Kun-Tucker conditions.
+% These state, under regularity assumptions, that for any critical point $x^{\star}$ there exists of a dual variable $\lambda \in \Rm$ such that
+% \begin{align*}
+% \nabla f(x) + \nabla c(x)^T \lambda  = 0, \;
+% c(x) \le 0, \;
+% \lambda \ge 0, \;
+% c(x)^T\lambda = 0. \;
+% \end{align*}
+% \color{black}
+
+
+
+
+
+
+%
+%%A set of poised points are chosen for some radius $\Delta_k>0$ about the current iterate.
+%The objective value and derivatives are approximated in a trust region around the current iterate to construct their model functions.
+%Next, this model function is minimized over the trust region and the minimum argument becomes the trial point.
+%The objective is evaluated at the trial point and a measure of reduction $\rho$ is computed.
+%If $\rho$ implies that sufficient reduction has been made and that the model approximates the function well, the trial point is accepted as the new iterate.
+%Otherwise, the trust region is reduced to increase model accuracy.
+%The algorithm terminates when both a criticality measure $\chik$ and the trust region radius $\Delta_k$ reach sufficiently small thresholds of $\tau_{\chi}$ and $\tau_{\Delta}$.
+
+% \sbnote{I don't think we need to state the trust-region algorithm for unconstrained dfo, so I have commented it out.}
+
+%For unconstrained optimization, the algorithmic framework is described in \cref{unconstrained_dfo}.
+%
+%\begin{algorithm}[H]
+%    \caption{Unconstrained Derivative Free Algorithm}
+%    \label{unconstrained_dfo}
+%    \begin{itemize}
+%        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
+%            Initialize tolerance constants $\tau_{\chi} \ge 0$, $\tau_{\Delta} \ge 0$, starting point $\xinit$, initial radius $\Delta_0 > 0$, iteration counter $k=0$, and constants $\omegadec \in (0, 1)$, $ \gammasm \in (0, 1)$, $\gammabi \in (\gammasm, 1)$.
+%
+%        \item[\textbf{Step 1}] \textbf{(Construct the model function)} \\
+%            Call the model improvement ``\cref{model_improving_algorithm}" to provide a set of sample points $Y^{(k)}$.
+%            Evaluate the objective on these points and use interpolation \cref{interpolation_formula} to construct the model function $\mfk(x)$.
+%
+%        \item[\textbf{Step 2}] \textbf{(Check stopping criteria)} \\
+%            Compute the criticality measure $\chik$ such as $\chik = \|\nabla\mfk(\xk)\|$. \begin{itemize}
+%                \item[] If $ \chik < \tau_{\chi} $ and $\Delta_k<\tau_{\Delta}$ then return solution $\xk$.
+%                \item[] If $ \chik < \tau_{\chi} $ but $\Delta_k\ge\tau_{\Delta}$ then
+%                set $\Delta_{k+1} \gets \omegadec\Delta_{k}$,
+%                $x^{(k+1)} \gets \xk$,
+%                $k \gets k+1$ and go to Step 1.
+%            \end{itemize}
+%
+%        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+%            Compute $\sk = \argmin_{s\in B_2(0; \Delta_k)} \mfk (\xk + s)$ where $B_2(0; \Delta_k)$ is the ball of radius $\Delta_k$ defined in \cref{define_ball}.
+%
+%        \item[\textbf{Step 4}] \textbf{(Test for improvement)} \\
+%            Compute $\rk$ with \cref{define_rhok} \begin{itemize}
+%                \item[] If $\rk < \gammasm$ then $\xkpo \gets \xk$ (reject) and $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+%                \item[] If $\rk \ge \gammasm$ and $\rk < \gammabi$ then $\xkpo\gets\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegadec\Delta_{k}$
+%                \item[] If $\rk \ge \gammabi$ and $\|\sk\| = \Delta_{k}$ then $\xkpo=\xk+\sk$ (accept) $\Delta_{k+1} \gets \omegainc\Delta_{k}$
+%                % and either increase the radius or decrease if $\nabla \mfk(\xk)$ is small
+%            \end{itemize}
+%            $k \gets k+1$ and go to Step 1.
+%    \end{itemize}
+%\end{algorithm}
+%
+%This derivative-free optimization algorithm differs from the classical trust region algorithm in two important respects:
+%\begin{enumerate}
+%    \item Models are constructed without derivative information.
+%    \item The trust region radius $\Delta_k$ must go to zero as $k\to\infty$.
+%\end{enumerate}
+%
+%This is required to ensure that the gradient of the model function closely approximates the gradient of $f$.
+%Our goal is to generalize this framework to handle constraints,
+%where we must ensure no constraint violation occurs
+%while also ensuring the accuracy of the models of the constraints.
+
+
 
 \section{Trust Regions}
 

@@ -23,7 +23,7 @@ We let the feasible set be represented as
 \feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}.
 \end{align}
 
-We are interested in developing {\em model-based} {\em trust-region} algorithms for solving these problems.
+We are interested in developing {\em model-based}, {\em trust-region} algorithms for solving these problems.
 Model-based methods work by constructing model functions to approximate the black box functions at each iteration.
 The model functions are determined by fitting previously evaluated function values on a set of sample points.
 In trust-region methods, the model functions are used to define a trust-region subproblem whose solution determines the next iterate.
@@ -66,7 +66,7 @@ Constraints of this type can arise in several ways, such as when a simulation ca
 For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
 but some overlapping synchrotron elements cannot be simulated.
 
-As in \cite{digabel2015taxonomy}, these constraints are called {\em unrelaxable}.
+Following the taxonomy in \cite{digabel2015taxonomy}, these constraints are called {\em unrelaxable}.
 For problems involving unrelaxable constraints,  numerical function values at infeasible points (if obtained) are likely to be unreliable.
 We, therefore, require all sample points to be feasible, and we seek to avoid infeasible function evaluations.
 Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output.

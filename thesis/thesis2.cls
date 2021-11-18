@@ -143,16 +143,20 @@
 \renewcommand{\listoffigures}{
   \clearpage
   \vspace*{0.25in}
-  \part[Figures]{FIGURES}
-  \addtocontents{lof}{Figure}
+  \begin{center}
+  \bf FIGURES
+  \end{center}
+  \addtocontents{lof}{FIGURE}
   \@starttoc{lof}
   \clearpage
 }
 \renewcommand{\listoftables}{
   \clearpage
   \vspace*{0.25in}
-  \part[Tables]{TABLES}
-  \addtocontents{lot}{Table}
+  \begin{center}
+  \bf TABLES
+  \end{center}
+  \addtocontents{lot}{TABLE}
   \@starttoc{lot}
   \addtocontents{toc}{CHAPTER}
   \clearpage
@@ -412,7 +416,7 @@
 }
 \renewcommand{\@chapter}[2][]{%
   \refstepcounter{chapter}
-  {\begin{center}\bf\thechapter.~~#2\end{center}}
+  {\begin{center}\bf{CHAPTER \thechapter}\\~~#2\end{center}}
   \vspace{-1em}
   \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter.}#1}
   \@afterheading
