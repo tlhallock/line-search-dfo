@@ -1,9 +1,9 @@
 
-Within this chapter, we discuss background material relevant to our algorithm.
-This begins with a brief review of the literature within \cref{literature_review}.
-We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
-The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
-Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
+%Within this chapter, we discuss background material relevant to our algorithm.
+%This begins with a brief review of the literature within \cref{literature_review}.
+%We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
+%The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
+%Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
 
 
 \section{Literature Review}
@@ -29,14 +29,57 @@ Finally, in \cref{trust_regions_section} we end with a discussion of trust regio
 % parallel algorim, compares gradient based and dfo, nelder-mead
 % volume optimization \cite{Cheng2017},
 
-There has been a recent growth in the number of derivative-free applications and algorithms.
-Most of these algorithms fall into two main categories: direct-search methods and model-based methods.
-Direct-search methods use comparatively simple strategies to explore the solution space.
-Often, they use only the relative ranks of function values rather than their numerical values.
-A classic example is the popular Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} for unconstrained optimization.
+Several books and survey articles  provide good introductions to the field of derivative-free optimization.
+Within \cite{introduction_book}, derivative-free methods are developed in detail.
+This is the first textbook devoted to derivative-free optimization.
+It contains an explanation of how to ensure good sample set geometry and the concept of 
+poisedness for unconstrained problems, and it also covers other direct-search and line-search methods.   A review of derivative-free algorithms and software libraries can be found in \cite{miguel_review}.
+This compares several software libraries and reviews the development of derivative-free optimization since it started.
+Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
-Model-based methods guide the search with approximate derivative information from models of the black-box functions.
-% Our work is model-based.
+Most  algorithms for derivative-free optimization fall into two main categories: direct-search methods and model-based methods.   Direct-search methods use comparatively simple strategies to explore the solution space, using only the relative ranks of function values rather than their numerical values.     Early direct search methods for unconstrained optimization include coordinate descent \cite{fermi.metropolis:numerical},  the Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308},  
+and pattern search methods \cite {hooke.jeeves:direct, kolda.lewis.ea:optimization}.   Generalizations of pattern-search methods include the GPS method \cite{torczon:convergence, Audet2002AnalysisOG} and the mesh adaptive direct search (MADS) algorithm \cite{audet.dennis:mesh, abramson.audet:convergence}.
+
+Model-based methods guide the search using surrogate models of the black-box functions, which are constructed by fitting function values on a set of sample points.    Among the more commonly used model functions are linear and quadratic interpolation models \cite{ conn.scheinberg.ea:recent, powell:uobyqa,powell:newuoa}  and radial-basis function interpolation models \cite{oeuvray.bierlaire:boosters,wild.regis.ea:orbit,wild.shoemaker:global}.
+
+The use of model functions allows curvature information to be incorporated into the search.  As such, model-based methods tend to be more efficient than direct-search methods when the black box functions are smooth.  In contrast, direct-search methods can be better suited for handling nonsmooth or noisy functions.   They are also more straightforward to implement, and are easier to parallelize.
+
+Hybrid methods, which incorporate ideas from both direct-search and model-based methods, have also been proposed.    Some examples are described in \cite{booker.dennis.ea:rigorous}, \cite{thi.vaz.ea:optimizing}, and \cite{custodio.vicente:using}.
+
+\paragraph*{Constrained derivative-free algorithms.}
+To discuss methods for constrained derivative-free optimization,  we follow the constraint taxonomy      
+of Le Digabel and Wild \cite{digabel.wild:taxonomy} distinguish between whether constraints are {\em relaxable} or {\em unrelaxable}.    An unrelaxable constraint is one that must be satisfied in order to obtain meaningful information about the objective function and/or constraint functions.    Thus algorithms for unrelaxable constraints can only use function evaluations at feasible points.
+
+For relaxable constraints, several ideas from classical nonlinear programming algorithms have been adapted to the derivative free setting.   These include penalty methods \cite{lewis.torczon:globally, lewis.torczon:direct, bueno.friedlander.ea:inexact},   and filter methods \cite{brekelmans.driessen.ea:constrained, ferreira.karas.ea:global}.     Both penalty methods and filter methods allow iterates to violate constraints, requiring feasibility only in the limit.  As such, they are viable approaches only when the constraints are relaxable. 
+
+Most of the progress in developing of DFO methods that handle unrelaxable constraints has been relatively recent, with much of the early work in this area focused on direct-search methods.     Again following the taxonomy in \cite{digabel.wild:taxonomy},  we distinguish between {\em algebraic constraints} (for which the constraint functions can be computed algebraically) and {\em black-box constraints} (which are available only through simulations, and which may not be available at all for infeasible points).      In the case of unrelaxable algebraic constraints, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.   
+
+
+ 
+For relaxable algebraic constraints,  several ideas from classical nonlinear programming algorithms have been adapted to the derivative free setting.     
+
+For unrelaxable algebraic constraints, the penalty and filter methods cannot be applied since they make use of infeasible iterates.  However, barrier methods are still a viable approach since the barrier forces all iterates to be feasible.   One example is an extreme-barrier approach used in \cite{lewis.torczon:pattern}
+
+In the case of black box constraints, it is no longer possible to apply a
+
+We distinguish between algebraic constraints (for which 
+
+
+The earliest
+with much of the early work in this area focused on direct-search methods.    
+
+The mesh adaptive direct search (MADS) algorithm \cite{audet.dennis:mesh} handles unrelaxable constraints using an extreme barrier approach in which  the method effectively assigns an objective value of  $+\infty$ to infeasible points.    The algorithm for unconstrained problems is then applied to the transformed problem.    The MADS algorithm is implemented within the NOMAD software \cite{Le2011a}.
+
+Developing model-based algorithms for constrained optimization is complica
+
+
+One of the earliest algorithm for constrained DFO is COBLYA, \cite{powell:direct}.
+
+
+
+
+
+
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
 \[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}\left(\xk + s\right) \\ 
@@ -52,28 +95,10 @@ If the trial point is accepted, then the trust region radius may be increased or
 depending on how well the sample point improved upon the previous iterate.
 This will be discussed in \cref{rhosection}.
 
-\paragraph*{Reviews.}
-There are several books and survey articles that provide good introductions to the field of derivative-free optimization.
-Within \cite{introduction_book} derivative-free methods are developed in detail.
-This is the first textbook devoted to derivative-free optimization.
-It contains an explanation of how to ensure good sample set geometry for unconstrained problems,
-poisedness for unconstrained problems, and also covers other derivative-free 
-methods including direct-search and line-search methods.
-
-A review of derivative-free algorithms and software libraries can be found in \cite{miguel_review}.
-This compares several software libraries and reviews the development of derivative-free optimization since it started.
-Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
 
-\paragraph*{Constrained derivative-free algorithms.}
 
-The development of DFO algorithms for constrained optimization has been relatively recent,
-with much of the early work in this area focused on direct-search methods.
 
-The coordinate descent algorithm is among the simplest direct-search methods, 
-which can be generalized to pattern searches \cite{Audet2002AnalysisOG}. 
-We compare our results to the Mesh Adaptive Search algorithm implemented within the NOMAD software
-\cite{Le2011a}.
 
 \paragraph*{Model-based trust-region methods for DFO.}
 
