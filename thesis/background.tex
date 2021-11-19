@@ -50,11 +50,13 @@ Hybrid methods, which incorporate ideas from both direct-search and model-based 
 To discuss methods for constrained derivative-free optimization,  we follow the constraint taxonomy      
 of Le Digabel and Wild \cite{digabel.wild:taxonomy} distinguish between whether constraints are {\em relaxable} or {\em unrelaxable}.    An unrelaxable constraint is one that must be satisfied in order to obtain meaningful information about the objective function and/or constraint functions.    Thus algorithms for unrelaxable constraints can only use function evaluations at feasible points.
 
-For relaxable constraints, several ideas from classical nonlinear programming algorithms have been adapted to the derivative free setting.   These include penalty methods \cite{lewis.torczon:globally, lewis.torczon:direct, bueno.friedlander.ea:inexact},   and filter methods \cite{brekelmans.driessen.ea:constrained, ferreira.karas.ea:global}.     Both penalty methods and filter methods allow iterates to violate constraints, requiring feasibility only in the limit.  As such, they are viable approaches only when the constraints are relaxable. 
+For relaxable constraints, several ideas from classical nonlinear programming algorithms have been adapted to the derivative free setting.   These include penalty methods \cite{lewis.torczon:globally, lewis.torczon:direct, bueno.friedlander.ea:inexact},   and filter methods \cite{brekelmans.driessen.ea:constrained, ferreira.karas.ea:global}.     Both penalty methods and filter methods allow iterates to violate constraints, requiring feasibility only in the limit.  As such, they are viable approaches only when the constraints are relaxable.
 
-Most of the progress in developing of DFO methods that handle unrelaxable constraints has been relatively recent, with much of the early work in this area focused on direct-search methods.     Again following the taxonomy in \cite{digabel.wild:taxonomy},  we distinguish between {\em algebraic constraints} (for which the constraint functions can be computed algebraically) and {\em black-box constraints} (which are available only through simulations, and which may not be available at all for infeasible points).      In the case of unrelaxable algebraic constraints, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.   
+Most of the progress in developing  DFO methods that handle unrelaxable constraints has been relatively recent, with much of the early work in this area focused on direct-search methods for {\em algebraic} constraints.  A constraint is algebraic if the constraint functions can be computed algebraically.
 
 
+
+ and {\em black-box constraints} (which are available only through simulations, and which may not be available at all for infeasible points).      In the case of unrelaxable algebraic constraints, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.   
  
 For relaxable algebraic constraints,  several ideas from classical nonlinear programming algorithms have been adapted to the derivative free setting.     
 
