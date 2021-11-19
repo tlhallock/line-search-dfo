@@ -843,3 +843,185 @@ Function Interpolation in Trust Regions},
 {https://scholar.google.com/scholar?cluster=15092247905949487231},
    journal = {Optimization Methods and Software},
 }
+
+
+@article{torczon:convergence,
+  title={On the Convergence of Pattern Search Algorithms},
+  author={Virginia Torczon},
+  journal={SIAM J. Optim.},
+  year={1997},
+  volume={7},
+  pages={1-25}
+}
+
+@article{kolda.lewis.ea:optimization,
+  title={Optimization by Direct Search: New Perspectives on Some Classical and Modern Methods},
+  author={Tamara G. Kolda and Robert Michael Lewis and Virginia Torczon},
+  journal={SIAM Rev.},
+  year={2003},
+  volume={45},
+  pages={385-482}
+}
+
+@article{conn.scheinberg.ea:recent,
+  title={Recent progress in unconstrained nonlinear optimization without derivatives},
+  author={Andrew R. Conn and Katya Scheinberg and Philippe L. Toint},
+  journal={Mathematical Programming},
+  year={1997},
+  volume={79},
+  pages={397-414}
+}
+
+
+@article{powell:UOBYQA,
+  title={{UOBYQA}: unconstrained optimization by quadratic approximation},
+  author={M. J. D. Powell},
+  journal={Mathematical Programming},
+  year={2002},
+  volume={92},
+  pages={555-582}
+}
+
+@Incollection{powell:NEWUOA,
+author="Powell, M. J. D.",
+editor="Di Pillo, G.
+and Roma, M.",
+title="The {NEWUOA} software for unconstrained optimization without derivatives",
+bookTitle="Large-Scale Nonlinear Optimization",
+year="2006",
+publisher="Springer US",
+address="Boston, MA",
+pages="255--297",
+abstract="The NEWUOA software seeks the least value of a function F(x), x∈Rn, when F(x) can be calculated for any vector of variables x. The algorithm is iterative, a quadratic model Q≈F being required at the beginning of each iteration, which is used in a trust region procedure for adjusting the variables. When Q is revised, the new Q interpolates F at m points, the value m = 2n + 1 being recommended. The remaining freedom in the new Q is taken up by minimizing the Frobenius norm of the change to ∇2Q. Only one interpolation point is altered on each iteration. Thus, except for occasional origin shifts, the amount of work per iteration is only of order (m+n)2, which allows n to be quite large. Many questions were addressed during the development of NEWUOA, for the achievement of good accuracy and robustness. They include the choice of the initial quadratic model, the need to maintain enough linear independence in the interpolation conditions in the presence of computer rounding errors, and the stability of the updating of certain matrices that allow the fast revision of Q. Details are given of the techniques that answer all the questions that occurred. The software was tried on several test problems. Numerical results for nine of them are reported and discussed, in order to demonstrate the performance of the software for up to 160 variables.",
+isbn="978-0-387-30065-8",
+doi="10.1007/0-387-30065-1_16",
+url="https://doi.org/10.1007/0-387-30065-1_16"
+}
+
+@article{oeuvray.bierlaire:boosters,
+author = {R. Oeuvray and M. Bierlaire},
+title = {Boosters: A Derivative-Free Algorithm Based on Radial Basis Functions},
+journal = {International Journal of Modelling and Simulation},
+volume = {29},
+number = {1},
+pages = {26-36},
+year  = {2009},
+publisher = {Taylor & Francis},
+doi = {10.1080/02286203.2009.11442507},
+URL = {https://doi.org/10.1080/02286203.2009.11442507},
+eprint = {https://doi.org/10.1080/02286203.2009.11442507}
+}
+
+@article{wild.regis.ea:orbit,
+author = {Wild, Stefan and Regis, Rommel and Shoemaker, Christine},
+year = {2008},
+month = {01},
+pages = {3197-3219},
+title = {ORBIT: Optimization by Radial Basis Function Interpolation in Trust-Regions},
+volume = {30},
+journal = {SIAM J. Scientific Computing},
+doi = {10.1137/070691814}
+}
+
+@article{wild.shoemaker:global,
+author = {Wild, Stefan and Shoemaker, Christine},
+year = {2011},
+month = {07},
+pages = {761-781},
+title = {Global Convergence of Radial Basis Function Trust Region Derivative-Free Algorithms},
+volume = {21},
+journal = {SIAM Journal on Optimization},
+doi = {10.1137/09074927X}
+}
+
+@Incollection{powell:direct,
+author="Powell, M. J. D.",
+editor="Gomez, Susana
+and Hennart, Jean-Pierre",
+title="A Direct Search Optimization Method That Models the Objective and Constraint Functions by Linear Interpolation",
+bookTitle="Advances in Optimization and Numerical Analysis",
+year="1994",
+publisher="Springer Netherlands",
+address="Dordrecht",
+pages="51--67",
+abstract="An iterative algorithm is proposed for nonlinearly constrained optimization calculations when there are no derivatives. Each iteration forms linear approximations to the objective and constraint functions by interpolation at the vertices of a simplex and a trust region bound restricts each change to the variables. Thus a new vector of variables is calculated, which may replace one of the current vertices, either to improve the shape of the simplex or because it is the best vector that has been found so far, according to a merit function that gives attention to the greatest constraint violation. The trust region radius $\rho$ is never increased, and it is reduced when the approximations of a well-conditioned simplex fail to yield an improvement to the variables, until $\rho$ reaches a prescribed value that controls the final accuracy. Some convergence properties and several numerical results are given, but there are no more than 9 variables in these calculations because linear approximations can be highly inefficient. Nevertheless, the algorithm is easy to use for small numbers of variables.",
+isbn="978-94-015-8330-5",
+doi="10.1007/978-94-015-8330-5_4",
+url="https://doi.org/10.1007/978-94-015-8330-5_4"
+}
+
+@article{audet.dennis:mesh,
+  title={Mesh Adaptive Direct Search Algorithms for Constrained Optimization},
+  author={Charles Audet and John E. Dennis},
+  journal={SIAM J. Optim.},
+  year={2006},
+  volume={17},
+  pages={188-217}
+}
+
+@article{abramson.audet:convergence,
+author = {Abramson, Mark and Audet, Charles},
+year = {2006},
+month = {01},
+pages = {606-619},
+title = {Convergence of Mesh Adaptive Direct Search to Second‐Order Stationary Points},
+volume = {17},
+journal = {SIAM Journal on Optimization},
+doi = {10.1137/050638382}
+}
+
+@article{booker.dennis.ea:rigorous,
+author = {Booker, Andrew and Dennis, J. and Frank, Paul and Serafini, David and Torczon, Virginia and Trosset, Michael},
+year = {1998},
+month = {09},
+pages = {},
+title = {A Rigorous Framework for Optimization of Expensive Functions by Surrogates},
+volume = {17},
+journal = {Structural Optimization},
+doi = {10.1007/BF01197708}
+}
+
+@article{thi.vaz.ea:optimizing,
+author = {Le Thi, Hoai An and Vaz, Ismael and Vicente, L.},
+year = {2012},
+month = {04},
+pages = {190-214},
+title = {Optimizing radial basis functions by d.c. programming and its use in direct search for global derivative-free optimization},
+volume = {20},
+journal = {Top},
+doi = {10.1007/s11750-011-0193-9}
+}
+
+@article{custodio.vicente:using,
+author = {Custódio, A. and Vicente, Luís},
+year = {2007},
+month = {01},
+pages = {537-555},
+title = {Using Sampling and Simplex Derivatives in Pattern Search Methods},
+volume = {18},
+journal = {SIAM Journal on Optimization},
+doi = {10.1137/050646706}
+}
+
+@article{hooke.jeeves:direct,
+author = {Hooke, Robert and Jeeves, T. A.},
+title = {`` Direct Search'' Solution of Numerical and Statistical Problems},
+year = {1961},
+issue_date = {April 1961},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA}, volume = {8}, number = {2}, issn = {0004-5411},
+url = {https://doi.org/10.1145/321062.321069},
+doi = {10.1145/321062.321069},
+journal = {J. ACM},
+month = {apr},
+pages = {212–229},
+numpages = {18} }
+
+@techreport{fermi.metropolis:numerical,
+author = {Fermi, E. and Metropolis, N.},
+title = {Numerical solution of a minimum problem},
+institution = {Los Alamos Scientific Laboratory of the University of California},
+number = {LA-1492},
+year = {1952},
+url = {https://hdl.handle.net/2027/mdp.39015086487645}
+}
