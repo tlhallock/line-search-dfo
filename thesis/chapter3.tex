@@ -372,14 +372,14 @@ For any
 % $\delta = \max_{x\in \ellipsek}\left\|x-\ck\right\|$
 $\delta > 0$ define $T:\Rn \times \Rn_+ \rightarrow \Rn$ by $T(x; \delta) = \frac{\delta}{\sdk} DL^T\left(x - \ck\right)$.
 Note that $T$ is invertible and can map $\sampletrk$ onto the $\delta$-ball
-$B_2(0,\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$:
+$B_2(0;\delta) = \left\{u \in \Rn \; | \; \|u\| \le \delta\right\}$:
 \begin{align*}
 \delta^2 \ge \|T\left(x; \sqrt{2}\delta\right)\|^2 = \left\|\frac {\sqrt{2}\delta} {\sdk} DV^T(x - \ck)\right \|^2
 = \frac {2\delta^2} {\sdk^2} \left(x - \ck\right)^TQ\left(x - \ck\right) \\
 \Longleftrightarrow \left(x - \ck\right)^TQ\left(x - \ck\right) \le \frac 1 2 \sdk^2.
 \end{align*}
 Likewise, with $\scaledellipsek$ defined in \cref{define_suitable_ellipsoid}, we have that
-$T\left(\scaledellipsek; \delta\right) = B_2(0, \delta)$.
+$T\left(\scaledellipsek; \delta\right) = B_2(0; \delta)$.
 
 {
 \begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
@@ -392,17 +392,17 @@ $T\left(\scaledellipsek; \delta\right) = B_2(0, \delta)$.
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
 			Given a function $f : \Rn \to \reals$;
 			ellipsoid parameters $\qk \succ 0$, $\ck$, and $\sdk$;
-        	Sample set $Y$
+        	and sample set $Y$.
 %         	with $\xk \in Y$;
 %         	Iterate $\xk = y^{(0)} \in Y$
         \item[\textbf{Step 1}] \textbf{(Construct the Transformation}) \\
-        	Give $\qk \succ 0$ its eigen-decomposition $\qk = VD^2V^T$, and let
+        	Give $\qk$ its eigen-decomposition $\qk = VD^2V^T$, and define
+			$T(x; \sqrt{2}) = \frac{\sqrt{2}}{\sdk} D V^T\left(x - \ck\right)$.
 %         	Compute $\delta = \max_{x \in \sampletrk} \|x - \ck\| = \frac {1} {\sqrt{2}\min_{i} D_{i, i}}$ as in \cref{define_the_sample_region}\\
 % 			Construct the transformation
-			$T(x; \sqrt{2}) = \frac{\sqrt{2}}{\sdk} D V^T\left(x - \ck\right)$.
 % 			which maps
-% 				$T\left(\scaledellipsek; \sqrt{2}\right) = B_2(0, \sqrt{2})$, and
-% 				$T\left(\sampletrk; \sqrt{2}\right) = B_2(0, 1)$.
+% 				$T\left(\scaledellipsek; \sqrt{2}\right) = B_2(0; \sqrt{2})$, and
+% 				$T\left(\sampletrk; \sqrt{2}\right) = B_2(0; 1)$.
         \item[\textbf{Step 1}] \textbf{(Construct the Sample Set)} \\
         Construct the transformed sample set $\hat Y$ by computing $T\left(y^{(i)}; \sqrt{2}\right)$ for each $y^{(i)} \in Y$. \\
         Call \cref{model_improving_algorithm} with $\Delta = 2$ on this sample to produce an improved sample set $\hat Y '$.
@@ -600,7 +600,7 @@ Finally, by the mean value theorem, there is a $\xi^{(3)} \in [y^{(0)}, x]$ with
 % 
 % 
 
-The following theorem allows us to translate error bounds derived for the ball $B_2(0,\delta)$ to the ellipsoid $\ellipsek$.
+The following theorem allows us to translate error bounds derived for the ball $B_2(0;\delta)$ to the ellipsoid $\ellipsek$.
 
 
 % \begin{boxedcomment}
@@ -649,7 +649,7 @@ Then, with
 \kappa_{eh}' = \kappa_{eh}\condition(\qk),
 \end{align*}
 the model function $m_f(x) = \hat m_f(T(x; \delta_r))$ satisfies the following error bounds for all
-$x \in T^{-1}\left(B_2(0, \delta_r)\right) = \scaledellipsek$:
+$x \in T^{-1}\left(B_2(0; \delta_r)\right) = \scaledellipsek$:
 \begin{align*}
 | m(x) - f(x)| \le \kappa_{ef}'\delta_r^3, \\
 \|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta_r^2, \\
@@ -667,7 +667,7 @@ $x \in T^{-1}\left(B_2(0, \delta_r)\right) = \scaledellipsek$:
 % \end{align*}
 % so that $\frac{\|T(x-c)\|}{\|x-c\|} \le 
 % 
-% Observe that for any $T(x) \in B_2(0, \delta)$,
+% Observe that for any $T(x) \in B_2(0; \delta)$,
 % 
 % % \frac{\left(\xk - \ck\right)^T}{\left\|x - \ck\right\|} \frac{2}{\sdk^2}Q\frac{\left(\xk - \ck\right)}{\left\|x - \ck\right\|} 
 
@@ -700,7 +700,7 @@ $x \in T^{-1}\left(B_2(0, \delta_r)\right) = \scaledellipsek$:
 % \le 1
 % \end{align*}
 
-% If $T(x) \in B_2(0, \delta)$, then
+% If $T(x) \in B_2(0; \delta)$, then
 % \begin{align*}
 % \delta^2 \ge \|T(x)\|^2 = \frac 2 {\sdk^2}\left\|\left(x - \ck\right)^TLD^2L\left(x - \ck\right)\right\| \ge
 % \min_{i \in [n]} D_{i, i}^2 \left\|x - \ck\right\|^2
@@ -733,7 +733,7 @@ Thus,
 \Longrightarrow \frac{\delta_r} {\sdk} \|D\| = \sqrt{\condition\left(\qk\right)}.
 \end{align*}
 %  \le \frac{\kappa_{\lambda}}{\delta}.
-Let $x \in \ellipsek$ be arbitrary and let $u = T(x) \in B_2(0,\delta_r)$.
+Let $x \in \ellipsek$ be arbitrary and let $u = T(x) \in B_2(0;\delta_r)$.
 Then
 \begin{align*}
  | m_f(x) - f(x)| = |\hat m(u) - \hat f(u)| \le \kappa_{ef}'\delta_r^3.
@@ -832,7 +832,7 @@ and for any $\delta > 0$ define the transformation $T(x; \delta) = \frac{\delta}
 Notice that with $\delta = \delta_2 = \sqrt{2}$,
 the transformation $T\left(x; \delta_2\right)$ maps $\sampletrk = \ellipsek$ to the unit ball.
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised}
-that the shifted and scaled sample set $\hat Y$ is lambda poised over $B_2(0, \delta_2)$.
+that the shifted and scaled sample set $\hat Y$ is lambda poised over $B_2(0; \delta_2)$.
 % that there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta_2)$:
 % \begin{align*}
 % \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta_2^3, \\
@@ -840,8 +840,8 @@ that the shifted and scaled sample set $\hat Y$ is lambda poised over $B_2(0, \d
 % \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_2.
 % \end{align*}
 With $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$, by \cref{scale_the_set},
-we can scale these same points by $\frac{\delta_r}{\delta_2}$ to obtain a $\Lambda$ poised set over $B_2(0, \delta_r)$.
-Thus, by \cref{quadratic_errors}, there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0, \delta_r)$:
+we can scale these same points by $\frac{\delta_r}{\delta_2}$ to obtain a $\Lambda$ poised set over $B_2(0; \delta_r)$.
+Thus, by \cref{quadratic_errors}, there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0; \delta_r)$:
 \begin{align*}
 \left\| \hat {f}\left(u\right) - \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta_r^3, \\
 \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_r^2, \\
@@ -1905,7 +1905,7 @@ We can travel along this ray until we reach a point that is the same distance to
 By travelling a distance $t$, we see that the $j$-th constraint becomes active when
 $A_j (s_i + t p) = b_j \Longrightarrow t = \frac{b_j - A_j s_i}{A_jp}$
 so that we can travel by 
-$t \in \min_{j \in R} \left\{\frac{b_j - A_j s_i}{A_jp}  \right\}. $
+$t = \min_{j \in R} \left\{\frac{b_j - A_j s_i}{A_jp}  \right\}. $
 We set $s_{i+1} = s_{i} + t p$.
 This process is described in \cref{segment_construction}.
 Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order for this to be defined.
@@ -1937,7 +1937,7 @@ Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order fo
             
         \item[\textbf{Step 2}] \textbf{(Compute search segment)} \\
         	Compute the search direction $p = {A_E}^T\left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_{i-1}\right)$
-        	and distance $t \in \min_{j \in R} \left\{\frac{b_j - A_j s_{i-1}}{A_jp}  \right\}$. \\
+        	and distance $t = \min_{j \in R} \left\{\frac{b_j - A_j s_{i-1}}{A_jp}  \right\}$. \\
         	Set $s_i \gets s_{i-1} + tp$.
         	
         \item[\textbf{Step 4}] \textbf{(Repeat)} \\

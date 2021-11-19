@@ -78,7 +78,7 @@ Thus,  under reasonable assumptions, the algorithm will attempt infeasible funct
 
 
 
-%We use the same algorithmic framework as was presented in \cref{chap:linear}.    As we did there, we define three trust regions:  the outer trust region $\outertrk = B_2(\xk,\dk)$, the sample trust region $\sampletrk$ from which the sample points are selected, and the search trust region $\searchtrk$, which defines the feasible region for the trust region subproblem.    
+%We use the same algorithmic framework as was presented in \cref{chap:linear}.    As we did there, we define three trust regions:  the outer trust region $\outertrk = B_2\left(\xk;\dk\right)$, the sample trust region $\sampletrk$ from which the sample points are selected, and the search trust region $\searchtrk$, which defines the feasible region for the trust region subproblem.
 %
 %Ideally,  we would like $\sampletrk$ and $\searchtrk$ to lie within $\outertrk \cap \feasible$.    However, since we do not know $\feasible$, we can ensure only that $\sampletrk$ and $\searchtrk$ lie within $\outertrk \cap \feasiblek$.   
 
@@ -2904,7 +2904,7 @@ As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \end{array}
 \end{align*}
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised} 
-there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such that for all $u \in B_2(0, \delta)$ and all $i \in [m]$:
+there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such that for all $u \in B_2(0; \delta)$ and all $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
 \left| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right|\le \kappa_f \delta^3, &
@@ -2916,7 +2916,7 @@ there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such t
 \end{array}
 \end{align*}
 % By \cref{bounded_hessians_assumption} and \cref{lipschitz_hessians_assumption}, we know that the assumptions for \cref{change_radius} hold.
-% Thus,  by \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0, 2\delta)$ and $i \in [m]$:
+% Thus,  by \cref{change_radius}, there are constants $\Lambda_2, \Lambda_3$ such that for all $u \in B_2(0; 2\delta)$ and $i \in [m]$:
 % \begin{align*}
 % \begin{array}{cc}
 % \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le 2\Lambda_2 \delta^2 = {\kappa'}_g\delta^2, &

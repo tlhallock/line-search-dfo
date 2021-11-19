@@ -30,6 +30,7 @@
 \usepackage{geometry}
 \usepackage{times}
 \usepackage{titlesec}
+\usepackage{ragged2e}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -284,7 +285,7 @@
   \vspace{.5in}
   \vfill
   \begin{flushright}
-    Date December 18, 2021\\
+    Date: December 18, 2021\\
   \end{flushright}
   \renewcommand{\baselinestretch}{\normalspace}
   \normalsize
@@ -625,3 +626,6 @@
    \edef\@currentlabel{\csname p@footnote\endcsname\@thefnmark}\@makefntext
     {\rule{\z@}{\footnotesep}\ignorespaces
       #1\strut}\renewcommand\baselinestretch{\@spacing}}}
+
+
+\setlength{\RaggedRightParindent}{\parindent}
