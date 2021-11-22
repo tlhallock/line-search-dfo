@@ -48,17 +48,30 @@ Hybrid methods, which incorporate ideas from both direct-search and model-based 
 
 \paragraph*{Constrained derivative-free algorithms.}
 To discuss methods for constrained derivative-free optimization,  we follow the constraint taxonomy      
-of Le Digabel and Wild \cite{digabel2015taxonomy} and distinguish between whether constraints are {\em relaxable} or {\em unrelaxable}.    An unrelaxable constraint is one that {\em must} be satisfied in order to obtain meaningful information about the objective function and/or constraint functions.    Thus algorithms for unrelaxable constraints can use function evaluations only for feasible points.   We also distinguish between whether constraints are {\em algebraic} or {\em black-box}.    A constraint is algebraic if the constraint functions can be computed algebraically, whereas a {\em black-box constraint} can only be evaluated by running simulation software.    
+of Le~Digabel and Wild \cite{ledigabel2015taxonomy} and distinguish between whether constraints are {\em relaxable} or {\em unrelaxable}.    An unrelaxable constraint is one that {\em must} be satisfied in order to obtain meaningful information about the objective function and/or constraint functions.    Thus algorithms for unrelaxable constraints can use function evaluations only for feasible points.   We also distinguish between whether constraints are {\em algebraic} or {\em black-box}.    A constraint is algebraic if the constraint functions can be computed algebraically,  whereas a {\em black-box constraint} can only be evaluated by running simulation software.    
 
 \paragraph*{Relaxable constraints.}   The easiest class of constraints to deal with are the relaxable algebraic constraints.   In this case, ideas from classical nonlinear programming methods can easily be adapted to the derivative-free setting.  Some examples include 
  penalty methods \cite{lewis.torczon:globally, lewis.torczon:direct, bueno.friedlander.ea:inexact},   and filter methods \cite{brekelmans.driessen.ea:constrained, ferreira.karas.ea:global}.     
 Both penalty methods and filter methods allow iterates to violate constraints, requiring feasibility only in the limit.  As such, they are viable approaches only when the constraints are relaxable.    
+ 
+For relaxable black-box constraints,  several methods have been proposed that allow the black-box functions to be evaluated at infeasible points.  These include penalty methods
+\cite{audet.dennis:progressive, liuzzi.lucidi:derivative-free, liuzzi.lucidi.ea:sequential,fasano.liuzzi.ea:linesearch,diniz-ehrhardt.martinez.ea:derivative-free,picheny2016bayesian}, filter methods \cite{audet.dennis:pattern, pourmohamad:combining,echebest.schuverdt.ea:inexact},  and funnel methods \cite{sampaio.toint:derivative-free,sampaio.toint:numerical}.
+
+Another approach is to construct algebraic models of the constraint functions and then require iterates to be feasible with respect to these modelled constraints.
+In \cite{glass.cooper:sequential},  linear models of nearly active constraint functions are constructed and the iterates are accepted only if they are feasible with respect to these modeled constraints.     A similar strategy is employed in the COBYLA method of Powell \cite{powell:direct}, which builds linear models of the objective and constraint functions based on a common set of sample points.    
+A variant of the MADS algorithm is proposed in \cite{burmen.olensek.ea:mesh} which uses linear regression models of the constraint functions to guide the choice of search and poll steps.   In \cite{Troltzsch2016},  the classic sequential quadratic programming algorithm is implemented for equality-based constraints.
+
+
+
+
+%Also, \cite{Gao2018} presents  an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
+
 
 
 \paragraph*{Unrelaxable algebraic constraints.}  
 
  An algebraic constraint function can always be evaluated, so the only way it is considered unrelaxable is if a black-box function (either the objective or some other constraint function) cannot be evaluated when the constraint is violated.
-Thus, it is always possible to determine whether a point satisfies an algebraic constraint prior to attempting to evaluate any black-box functions.  As such, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.     
+Note that it is always possible to determine whether a point satisfies an algebraic constraint prior to attempting to evaluate any black-box functions.  As such, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.     
 Many direct-search methods have been proposed that take this approach
 \cite{box:new, spendley.hext.ea:sequential,may:linearly,may:solving,lewis.torczon:globally,lewis.torczon:direct,
 vandenberghen:condor, lewis.torczon:pattern2000,lucidi.sciandrone:derivative-free,chandramouli.narayanan:scaled,kolda.lewis.ea:stationarity,lucidi.sciandrone.ea:objective, 
@@ -71,44 +84,34 @@ Developing model-based algorithms for unrelaxable constraints is complicated by 
 
 There has also been some progress in developing model-based methods for unrelaxable linear constraints.   In  \cite{gumma.hashim.ea:derivative-free},  Gumma et al.  propose the LCOBYQA algorithm which is an extension of Powell's NEWUOA algorithm that enforces the linear constraints both when solving the trust region subproblems and when choosing sample points for constructing the model functions.    However, no convergence analysis is provided for the method.   
 
-\paragraph*{Relaxable black-box constraints.}  
-For relaxable black-box constraints,  a variety of approaches have been considered.  One approach is to reformulate the problem as a sequence of unconstrained problems using a penalty or barrier method.    [ADD REFERENCES FROM PAGE 55/56 of LarsonMenickellyWild].      Discuss FILTER METHODS (page 55).
+\paragraph*{Unrelaxable black-box constraints.}   
+We now turn our attention to the hardest case--that of unrelaxable black-box constraints.   In this case,  it is not possible to guarantee that black-box function evaluations will never be attempted at infeasible points.   However, it is desireable to minimize the occurrence of such infeasible attempts.  
 
-Another approach is to construct algebraic models of the constraint functions.     ....
-In \cite{glass.cooper:sequential},  linear models of nearly active constraint functions are constructed and the iterates are accepted only if they are feasible with respect to these modelled constraints.     A similar strategy is employed in the COBYLA method of Powell \cite{powell:direct}, which builds linear models of the objective and constraint functions based on a common set of sample points.  
+There are several strategies for avoiding infeasible evaluations.
+The authors of \cite{Galvan2021} use a reformulation strategy by moving the constraints into the objective.
+Their work relies on a projection operator to avoid infeasible evaluations and handles non-smooth convex constraints.
+The authors of \cite{NOWPAC2014} use a path-augmentation strategy to ensure trial points are feasible.
+This is done with a local convexification of the constraints that parameterize a buffer of the constraints.
+The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional, avoiding possible infeasible evaluations by altering the objective function to include a projection onto an $L_1$ ball.
+In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that uses an envelope to avoid infeasible trial point evaluations.
+The algorithm presented within \cite{Conejo2015} is also a model-based trust region method, and it ensures each iterate is feasible, although sample points may not be.
+More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative-free problems with unrelaxable, black-box constraints.
+
+Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
+This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
+Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
+
+%We are not aware of any algorithms that use only feasible points to build models of the black-box constraint functions.   However,  a number of algorithms simultaneously handle unrelaxable algebraic constraints and relaxable black-box constraints.  Thus,  \cite{regis:constrained,augustin.marzouk:nowpac,augustin.marzouk:trust-region,regis.ea:conorbit}.
 
 
-[Unrelaxable algebraic constraints + relaxable black-box constraints]
-
-A variant of the MADS algorithm is proposed in \cite{burmen.olensek.ea:mesh} which uses linear regression models of the constraint functions to guide the choice of search and poll steps.  
-[continue here]
-
-In \cite{Troltzsch2016}, Tr\''{o}ltzsch proposes a model-based trust-region DFO algorithm that handles nonlinear equality constraint 
-The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
-A two-phased, feasibility and optimization approach that handles non-linear constraints and infeasible starting points is developed within \cite{BAJAJ2018306}.
-Also, \cite{Gao2018} presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
-
-\paragraph*{Unrelaxable black-box constraints.}   We now turn our attention to the hardest case--that of unrelaxable black-box constraints.  In this case,  it is no longer possible to guarantee that black-box function evaluations will never be attempted at infeasible points.   However, it is desireable to minimize the occurrence of such infeasible attempts.  To accomplish this it is necessary to construct models of the constraint functions in order to guide the choice of iterates and/or sample points.    
-
-
-Are there any algorithms that do this yet???
 
 %While care is taken to maintain the non-degeneracy of the sample points,  Powell notes that  ``Our %knowledge of the convergence properties for the algorithm is slight.'' 
 
 
 
 
-Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
-Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
 
-
-
-
-
-
-The mesh adaptive direct search (MADS) algorithm \cite{audet.dennis:mesh} handles unrelaxable constraints using an extreme barrier approach in which  the method effectively assigns an objective value of  $+\infty$ to infeasible points.    The algorithm for unconstrained problems is then applied to the transformed problem.    The MADS algorithm is implemented within the NOMAD software \cite{Le2011a}.
-
+\section{Model-Based Trust-Region Methods for DFO}
 
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
@@ -124,39 +127,6 @@ If the trial point is rejected, the trust region radius is decreased and a new t
 If the trial point is accepted, then the trust region radius may be increased or decreased for the next iteration 
 depending on how well the sample point improved upon the previous iterate.
 This will be discussed in \cref{rhosection}.
-
-\paragraph*{Model-based trust-region methods for DFO.}
-
-The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
-A two-phased, feasibility and optimization approach that handles non-linear constraints and infeasible starting points is developed within \cite{BAJAJ2018306}.
-Also, \cite{Gao2018} presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
-
-Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
-Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
-
-\paragraph*{Avoiding infeasible evaluations}
-
-There is growing interest in derivative-free methods that handle unrelaxable constraints.
-Direct search methods easily accommodate unrelaxable constraints, as the points they evaluate have little to no geometric requirements.
-However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
-The algorithms described here take steps to avoid attempting infeasible evaluations, although many may use infeasible function values.
-
-There are several strategies for avoiding infeasible evaluations.
-The authors of \cite{Galvan2021} use a reformulation strategy by moving the constraints into the objective.
-Their work relies on a projection operator to avoid infeasible evaluations and handles non-smooth convex constraints.
-The authors of \cite{NOWPAC2014} use a path-augmentation strategy to ensure trial points are feasible.
-This is done with a local convexification of the constraints that parameterize a buffer of the constraints.
-The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional.
-The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L_1$ ball.
-In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that uses an envelope to avoid infeasible trial point evaluations.
-The algorithm presented within \cite{Conejo2015} is also a model-based trust region method, and it ensures each iterate is feasible,
-although sample points may not be.
-More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative-free problems with unrelaxable, black-box constraints.
-
-% \begin{boxedcomment}
-% It is concerning that I don't understand the previous sentence.
-% \end{boxedcomment}
 
 
 \section{Assessing Model Accuracy and Trust Region Radius Management}
