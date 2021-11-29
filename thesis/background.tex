@@ -1,9 +1,9 @@
-
 % Within this chapter, we discuss background material relevant to our algorithm.
 % This begins with a brief review of the literature within \cref{literature_review}.
 % We then discuss our criticality measure $\xi$ and model accuracy $\rho$ within \cref{criticality_measure_section} and \cref{rhosection}.
 % The next sections \cref{interpolation}, \cref{geometry}, and \cref{model_improvement_algorithms} are devoted to developing background material for interpolation based methods.
 % Finally, in \cref{trust_regions_section} we end with a discussion of trust regions, which we place in the context of our algorithm.
+
 
 
 \section{Literature Review}
@@ -29,29 +29,90 @@
 % parallel algorim, compares gradient based and dfo, nelder-mead
 % volume optimization \cite{Cheng2017},
 
-% There has been a recent growth in the number of derivative-free applications and algorithms.
-
-
-
-\paragraph*{Reviews.}
-There are several books and survey articles that provide good introductions to the field of derivative-free optimization.
-Within \cite{introduction_book} derivative-free methods are developed in detail.
+Several books and survey articles  provide good introductions to the field of derivative-free optimization.
+Within \cite{introduction_book}, derivative-free methods are developed in detail.
 This is the first textbook devoted to derivative-free optimization.
-It contains an explanation of how to ensure good sample set geometry for unconstrained problems,
-poisedness for unconstrained problems, and also covers other derivative-free
-methods including direct-search and line-search methods.
-
-A review of derivative-free algorithms and software libraries can be found in \cite{miguel_review}.
+It contains an explanation of how to ensure good sample set geometry and introduces the concept of 
+poisedness for unconstrained problems, and it also covers other direct-search and line-search methods.   A review of derivative-free algorithms and software libraries can be found in \cite{miguel_review}.
 This compares several software libraries and reviews the development of derivative-free optimization since it started.
 Other recent reviews can be found in \cite{custodio_review2} and \cite{larson_menickelly_wild_2019}.
 
-Most algorithms for derivative-free optimization fall into two main categories: direct-search methods and model-based methods.
-Direct-search methods use comparatively simple strategies to explore the solution space.
-Often, they use only the relative ranks of function values rather than their numerical values.
-A classic example is the popular Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308} for unconstrained optimization.
+Most  algorithms for derivative-free optimization fall into two main categories: direct-search methods and model-based methods.   Direct-search methods use comparatively simple strategies to explore the solution space, using only the relative ranks of function values rather than their numerical values.     Early direct search methods for unconstrained optimization include coordinate descent \cite{fermi.metropolis:numerical},  the Nelder-Mead algorithm \cite{10.1093/comjnl/7.4.308},  
+and pattern search methods \cite {hooke.jeeves:direct, kolda.lewis.ea:optimization}.   Generalizations of pattern-search methods include the GPS method \cite{torczon:convergence, Audet2002AnalysisOG} and the mesh adaptive direct search (MADS) algorithm \cite{audet.dennis:mesh, abramson.audet:convergence}.
 
-Model-based methods guide the search with approximate derivative information from models of the black-box functions.
-% Our work is model-based.
+Model-based methods guide the search using surrogate models of the black-box functions, which are constructed by fitting function values on a set of sample points.    Among the more commonly used model functions are linear and quadratic interpolation models \cite{ conn.scheinberg.ea:recent, powell:uobyqa,powell:newuoa}  and radial-basis function interpolation models \cite{oeuvray.bierlaire:boosters,wild.regis.ea:orbit,wild.shoemaker:global}.
+
+The use of model functions allows curvature information to be incorporated into the search.  As such, model-based methods tend to be more efficient than direct-search methods when the black box functions are smooth.  In contrast, direct-search methods can be better suited for handling nonsmooth or noisy functions.   They are also more straightforward to implement, and are easier to parallelize.
+
+Hybrid methods, which incorporate ideas from both direct-search and model-based methods, have also been proposed.    Some examples are described in \cite{booker.dennis.ea:rigorous}, \cite{thi.vaz.ea:optimizing}, and \cite{custodio.vicente:using}.
+
+\paragraph*{Constrained derivative-free algorithms.}
+To discuss methods for constrained derivative-free optimization,  we follow the constraint taxonomy      
+of Le~Digabel and Wild \cite{ledigabel2015taxonomy} and distinguish between whether constraints are {\em relaxable} or {\em unrelaxable}.    An unrelaxable constraint is one that {\em must} be satisfied in order to obtain meaningful information about the objective function and/or constraint functions.    Thus algorithms for unrelaxable constraints can use function evaluations only for feasible points.   We also distinguish between whether constraints are {\em algebraic} or {\em black-box}.    A constraint is algebraic if the constraint functions can be computed algebraically,  whereas a {\em black-box constraint} can only be evaluated by running simulation software.    
+
+\paragraph*{Relaxable constraints.}   The easiest class of constraints to deal with are the relaxable algebraic constraints.   In this case, ideas from classical nonlinear programming methods can easily be adapted to the derivative-free setting.  Some examples include 
+ penalty methods \cite{lewis.torczon:globally, lewis.torczon:direct, bueno.friedlander.ea:inexact},   and filter methods \cite{brekelmans.driessen.ea:constrained, ferreira.karas.ea:global}.     
+Both penalty methods and filter methods allow iterates to violate constraints, requiring feasibility only in the limit.  As such, they are viable approaches only when the constraints are relaxable.    
+ 
+For relaxable black-box constraints,  several methods have been proposed that allow the black-box functions to be evaluated at infeasible points.  These include penalty methods
+\cite{audet.dennis:progressive, liuzzi.lucidi:derivative-free, liuzzi.lucidi.ea:sequential,fasano.liuzzi.ea:linesearch,diniz-ehrhardt.martinez.ea:derivative-free,picheny2016bayesian}, filter methods \cite{audet.dennis:pattern, pourmohamad:combining,echebest.schuverdt.ea:inexact},  and funnel methods \cite{sampaio.toint:derivative-free,sampaio.toint:numerical}.
+
+Another approach is to construct algebraic models of the constraint functions and then require iterates to be feasible with respect to these modelled constraints.
+In \cite{glass.cooper:sequential},  linear models of nearly active constraint functions are constructed and the iterates are accepted only if they are feasible with respect to these modeled constraints.     A similar strategy is employed in the COBYLA method of Powell \cite{powell:direct}, which builds linear models of the objective and constraint functions based on a common set of sample points.    
+A variant of the MADS algorithm is proposed in \cite{burmen.olensek.ea:mesh} which uses linear regression models of the constraint functions to guide the choice of search and poll steps.   In \cite{Troltzsch2016},  the classic sequential quadratic programming algorithm is implemented for equality-based constraints.
+
+
+
+
+%Also, \cite{Gao2018} presents  an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
+
+
+
+\paragraph*{Unrelaxable algebraic constraints.}  
+
+ An algebraic constraint function can always be evaluated, so the only way it is considered unrelaxable is if a black-box function (either the objective or some other constraint function) cannot be evaluated when the constraint is violated.
+Note that it is always possible to determine whether a point satisfies an algebraic constraint prior to attempting to evaluate any black-box functions.  As such, it is relatively straightforward to modify direct-search methods to guarantee that only feasible points are considered.     
+Many direct-search methods have been proposed that take this approach
+\cite{box:new, spendley.hext.ea:sequential,may:linearly,may:solving,lewis.torczon:globally,lewis.torczon:direct,
+vandenberghen:condor, lewis.torczon:pattern2000,lucidi.sciandrone:derivative-free,chandramouli.narayanan:scaled,kolda.lewis.ea:stationarity,lucidi.sciandrone.ea:objective, 
+audet.ledigabel.ea:linear,gratton.royer.ea:direct2019,gratton.royer.ea:direct2015}
+%
+% \cite{box:new} \cite{spendley.hext.ea:sequential}, \cite{may:linearly}, \cite{may:solving},\cite{lewis.torczon:globally},  \cite{lewis.torczon:direct}, \cite{vandenberghen:condor}, \cite{lewis.torczon:pattern2000} \cite{lucidi.sciandrone:derivative-free}, \cite{chandramouli.narayanan:scaled},  \cite{kolda.lewis.ea:stationarity}, \cite{lucidi.sciandrone.ea:objective}, 
+%\cite{audet.ledigabel.ea:linear},\cite{gratton.royer.ea:direct2019}, \cite{gratton.royer.ea:direct2015}
+  
+Developing model-based algorithms for unrelaxable constraints is complicated by the fact that the choice of sample points impacts the accuracy of the model functions.     Thus, when restrictions on the choice of sample points are imposed,  it can be difficult to ensure that the model functions are sufficiently accurate to guarantee convergence to a stationary point.    (see \cref{sec:polyhedral} for a more detailed explanation of this difficulty).   In the case of unrelaxable bound constraints, the restrictions on the sample points are not too difficult to mitigate.     The BOBYQA algorithm \cite{powell:BOBYQA} ensures that all points at which the objective function are evaluated satisfy the bound constraints, while still maintaining sufficient model accuracy to guarantee convergence.    In \cite{arouxet.echebest.ea:active-set},  an active set method is used when solving the bound-constrained trust-region subproblems.    In \cite{wild:derivative-free}, Wild proposed a radial basis function method for bound constraints, which enforces the bounds when selecting sample points in the model improvement algorithm and when solving the trust region subproblems.   In \cite{gratton.toint.ea:active-set}, Gratton et al. present a method which restricts the construction of the model functions to subspaces defined by nearly active bound constraints.
+
+There has also been some progress in developing model-based methods for unrelaxable linear constraints.   In  \cite{gumma.hashim.ea:derivative-free},  Gumma et al.  propose the LCOBYQA algorithm which is an extension of Powell's NEWUOA algorithm that enforces the linear constraints both when solving the trust region subproblems and when choosing sample points for constructing the model functions.    However, no convergence analysis is provided for the method.   
+
+\paragraph*{Unrelaxable black-box constraints.}   
+We now turn our attention to the hardest case--that of unrelaxable black-box constraints.   In this case,  it is not possible to guarantee that black-box function evaluations will never be attempted at infeasible points.   However, it is desireable to minimize the occurrence of such infeasible attempts.  
+
+There are several strategies for avoiding infeasible evaluations.
+The authors of \cite{Galvan2021} use a reformulation strategy by moving the constraints into the objective.
+Their work relies on a projection operator to avoid infeasible evaluations and handles non-smooth convex constraints.
+The authors of \cite{NOWPAC2014} use a path-augmentation strategy to ensure trial points are feasible.
+This is done with a local convexification of the constraints that parameterize a buffer of the constraints.
+The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional, avoiding possible infeasible evaluations by altering the objective function to include a projection onto an $L_1$ ball.
+In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that uses an envelope to avoid infeasible trial point evaluations.
+The algorithm presented within \cite{Conejo2015} is also a model-based trust region method, and it ensures each iterate is feasible, although sample points may not be.
+More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative-free problems with unrelaxable, black-box constraints.
+
+Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
+This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
+Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
+
+%We are not aware of any algorithms that use only feasible points to build models of the black-box constraint functions.   However,  a number of algorithms simultaneously handle unrelaxable algebraic constraints and relaxable black-box constraints.  Thus,  \cite{regis:constrained,augustin.marzouk:nowpac,augustin.marzouk:trust-region,regis.ea:conorbit}.
+
+
+
+%While care is taken to maintain the non-degeneracy of the sample points,  Powell notes that  ``Our %knowledge of the convergence properties for the algorithm is slight.'' 
+
+
+
+
+
+\section{Model-Based Trust-Region Methods for DFO}
+
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
 \[ \begin{array}{ll} \min_{s \in \Rn} & m_f^{(k)}\left(\xk + s\right) \\ 
@@ -67,57 +128,12 @@ If the trial point is accepted, then the trust region radius may be increased or
 depending on how well the sample point improved upon the previous iterate.
 This will be discussed in \cref{rhosection}.
 
-\paragraph*{Constrained derivative-free algorithms.}
-
-The development of DFO algorithms for constrained optimization has been relatively recent,
-with much of the early work in this area focused on direct-search methods.
-
-The coordinate descent algorithm is among the simplest direct-search methods, 
-which can be generalized to pattern searches \cite{Audet2002AnalysisOG}. 
-We compare our results to the Mesh Adaptive Search algorithm implemented within the NOMAD software
-\cite{Le2011a}.
-
-\paragraph*{Model-based trust-region methods for DFO.}
-
-The literature on model-based DFO methods for constrained optimization is smaller. 
-COBYLA \cite{pub.1046127469} was one of the first model-based approaches for solving bound constrained black-box problems.
-The classic sequential quadratic programming algorithm is implemented for equality-based constraints within \cite{Troltzsch2016}.
-A two-phased, feasibility and optimization approach that handles non-linear constraints and infeasible starting points is developed within \cite{BAJAJ2018306}.
-Also, \cite{Gao2018} presents an algorithm for linearly constrained derivative-free optimization that uses a backtracking technique to minimize the number of evaluations required.
-
-Of particular importance for our work is \cite{Conejo:2013:GCT:2620806.2621814}.
-This reference provides an elegant convergence proof for a class of algorithms when the constraints are convex.
-Our analysis implements abstractions made in this paper and shows the implementation satisfies their requirements.
-
-\paragraph*{Avoiding infeasible evaluations}
-
-There is growing interest in derivative-free methods that handle unrelaxable constraints.
-Direct search methods easily accommodate unrelaxable constraints, as the points they evaluate have little to no geometric requirements.
-However, they can attempt more infeasible evaluations as they may not accurately approximate the constraint boundary.
-The algorithms described here take steps to avoid attempting infeasible evaluations, although many may use infeasible function values.
-
-There are several strategies for avoiding infeasible evaluations.
-The authors of \cite{Galvan2021} use a reformulation strategy by moving the constraints into the objective.
-Their work relies on a projection operator to avoid infeasible evaluations and handles non-smooth convex constraints.
-The authors of \cite{NOWPAC2014} use a path-augmentation strategy to ensure trial points are feasible.
-This is done with a local convexification of the constraints that parameterize a buffer of the constraints.
-The authors of \cite{BMNORW2020} apply DFO to optimize the Fayans energy density functional.
-The authors avoid possible infeasible evaluations by altering the objective function to include a projection onto an $L_1$ ball.
-In \cite{CONORBIT15}, the authors develop a model-based trust region algorithm that uses an envelope to avoid infeasible trial point evaluations.
-The algorithm presented within \cite{Conejo2015} is also a model-based trust region method, and it ensures each iterate is feasible,
-although sample points may not be.
-More recently, \cite{Brilli2021interior} uses an interior point algorithm to solve derivative-free problems with unrelaxable, black-box constraints.
-
-% \begin{boxedcomment}
-% It is concerning that I don't understand the previous sentence.
-% \end{boxedcomment}
-
 
 \section{Assessing Model Accuracy and Trust Region Radius Management}
 
 \label{rhosection}
 
-We now discuss background material for components of our algorithm.
+% We now discuss background material for components of our algorithm.
 In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
 To test the accuracy, we calculate a quantity
 \begin{align}
