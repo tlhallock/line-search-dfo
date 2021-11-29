@@ -340,7 +340,7 @@ Since the Model Improvement Algorithm requires a starting set of $p+1$ points,
 we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.25in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
 \begin{flushleft}
 
 \begin{algorithm}[H]
@@ -842,3 +842,219 @@ so that that $\searchtrk$ is a polytope.
 % $\sampletrk \subset \outertrk \cap \feasible$ and $\xk \in \sampletrk $.
 % However, we do not want to limit the search for a new iterate to the same trust region we use to construct the model.
 % This means we introduce another trust region $ \searchtrk $ that also satisfies $ \searchtrk \subset \outertrk \cap \feasible$ and $\xk \in \searchtrk $ for the trust region subproblem.
+
+
+
+
+\section{No center evaluation}
+
+Within the following theorem we make use of the terminology in \cite{introduction_book}.
+Their analysis culminates in Theorem 3.16, which corresponds to our \cref{3_16_replacement}.
+
+
+\begin{theorem}
+\label{3_16_replacement}
+Suppose that $f$ has a Lipschitz continuous hessian with constant $\liphess$.
+For some $\Delta > 0$, let $Y = \left\{y^{(0)}, y^{(1)}, \ldots y^{(p)} \right\}$ be a set of $p+1$ points in
+$B\left(0, \Delta\right)$.
+% , where $p +1 $ is the dimension of $\polydn$.
+For some $c \in \reals, g \in \Rn, H \in \reals^{n \times n}$, consider a quadratic model $m(y) = c + g^T y + \frac 1 2 y^T H y$  satisfying
+\begin{align}
+f\left(y^{(i)}\right) = m\left(y^{(i)}\right) \quad \forall i \in [0, p]. \label{nce_interpolation_condition}
+\end{align}
+Also, let $M(\Phi,Y)$ be constructed as in \cref{vandermonde}, and define the scaled matrix
+\begin{align}
+\hat M(\Phi, Y) = M(\Phi,Y) \begin{pmatrix}
+1 & 0 & 0 \\
+0 & \Delta^{-1} I_n & 0 \\
+0 & 0 & \Delta^{-2} I_{n + \frac{n(n-1)}{2}}
+\end{pmatrix}. \label{nce_scale}
+\end{align}
+Then, there exist constants $\kappa_f, \kappa_g, \kappa_h>0$ that depend only on $p$ and $\liphess$ such that
+\begin{align*}
+\left|m(y) - f(y)\right| \le \kappa_f \left\|\hat M^{-1}(\Phi, Y) \right\| \Delta^3, \\
+\left\|\nabla m(y) - \nabla f(y)\right\| \le \kappa_g \left\|\hat M^{-1}(\Phi, Y) \right\|\Delta^2, \\
+\left\|\nabla^2 m(y) - \nabla^2 f(y)\right\| \le \kappa_h \left\|\hat M^{-1}(\Phi, Y) \right\|\Delta.
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+
+
+Let $y \in B_2(0; \Delta)$.
+Let us define $e_f$, $e_g$ and $e_h$ so that
+\begin{align}
+m(y) = c + g^T y + \frac 1 2 y^T H y = f(y) + e_f(y) \label{define_e_f} \\
+\nabla m(y) = g + H y = \nabla f(y) + e_g(y) \nonumber \\
+\nabla^2 m(y) = H = \nabla^2 f(y) + e_h(y). \nonumber
+\end{align}
+
+For a fixed $i \in [0, p]$, we can subtract \cref{define_e_f} from \cref{nce_interpolation_condition} to find that
+\begin{align}
+f\left(y^{(i)}\right) - f(y) - e_f(y)
+= m\left(y^{(i)}\right) - m(y) \nonumber \\
+= \left(y^{(i)} - y\right)^Tg + \frac 1 2 \left(y^{(i)}\right)^T H \left(y^{(i)}\right) - \frac 1 2 y^T H y \nonumber \\
+= \left(y^{(i)} - y\right)^T g  + \frac 1 2 \left(y^{(i)} - y\right)^T H \left(y^{(i)} - y\right) + \left(y^{(i)} - y\right)^TH y. \label{nec_eqn2}
+\end{align}
+% With
+% \begin{align*}
+% e_T(x; y) = \sum_{
+% \substack{0 \le j,k,l \le n \\ j \le k \le l}}
+% \frac{\partial^3}{\partial_{x_j}\partial_{x_k}\partial_{x_l}}f(y)
+% \frac{(x_j - y_j)(x_k - y_k)(x_l - y_l)}{(\delta_j^k + \delta_j^l + \delta_k^l)!},
+% \end{align*}
+
+
+As discussed in \cite{introduction_book}, \cite[Lemma 4.1.14]{dennisschnabel1983},
+we can apply Taylor's theorem to show there exist functions $e^{(i)}_O$ in $O\left(\Delta^3\right)$ such that
+\begin{align*}
+f\left(y^{(i)}\right) - f(y)
+= \nabla f(y)^T \left(y^{(i)} - y\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(\Delta^3\right) \\
+= \left(y^{(i)} - y\right)^T \left(Hy + g - e_g(y)\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(\Delta^3\right)
+\end{align*}
+% where we know by \cite[Lemma 4.1.14]{dennisschnabel1983} that $e_O$ is a difference of two terms that
+% can be bounded by can be bounded by $\frac 1 6 \liphess \left\|y^{(i)} - y\right\|^3$ and $\frac 1 6 \liphess \left\|y\right\|^3$.
+% Because $\left\|y^{(i)} - y\right\| \le 2 \Delta$ and $\left\|y\right\| \le \Delta$,
+where
+\begin{align}
+\left\|e^{(i)}_O\left(\Delta^3\right) \right\| \le \frac 3 2 \liphess \Delta^3 \label{nce_bound_rhs}.
+\end{align}
+If we subtract this from \cref{nec_eqn2}, we find
+\begin{align*}
+e^{(i)}_O\left(\Delta^3\right) - e_f(y) = \left(y^{(i)} - y\right)^Te_g(y) +
+\frac 1 2 \left(y^{(i)} - y\right)^T \left[H - \nabla^2 f(y)\right]\left(y^{(i)} - y\right)
+\end{align*}
+or
+\begin{align}
+e^{(i)}_O\left(\Delta^3\right) = \left[e_f(y) - y^T e_g(y) + y^T \left[H - \nabla^2f(y)\right]y \right] \nonumber \\
++ \left[e_g(y) + \left(H - \nabla^2 f(y)\right)y\right]^T y^{(i)}
++ \frac 1 2 \left(y^{(i)}\right)^T \left[H - \nabla^2 f(y)\right]\left(y^{(i)}\right).
+\label{nec_eqn1}
+\end{align}
+To put this equation in matrix form, we introduce some notation.
+Given some $n \times n$ matrix $A$, let $e_Q : \reals^n \times \reals^n \to \reals^{n + \frac {n(n-1)} 2}$
+be defined by
+\begin{align*}
+e_Q\left(A\right) =
+\left(\frac 1 2 A_{1, 1} \;,\; \frac 1 2 A_{2, 2} \;,\; \ldots \;,\; \frac 1 2 A_{n, n} \;,\; A_{1, 2} \;,\; A_{1, 3} \;,\; \ldots \;,\; A_{n-1, n} \right)^T
+% \begin{pmatrix}
+% \frac 1 2 A_{1, 1} \\ \frac 1 2 A_{2, 2} \\ \vdots \\ \frac 1 2 A_{n, n} \\ A_{1, 2} \\ A_{1, 3} \\ \vdots \\ A_{n-1, n}
+% \end{pmatrix}
+\end{align*}
+in a similar order to that used in $\bar \Phi$.
+% \begin{pmatrix}
+% e^{(0)}_O\left(\Delta^3\right) \\
+% e^{(1)}_O\left(\Delta^3\right) \\
+% \vdots \\
+% e^{(p)}_O\left(\Delta^3\right)
+% \end{pmatrix}
+Then, with $e_O\left(\Delta\right) = \left(
+e^{(0)}_O\left(\Delta^3\right),
+e^{(1)}_O\left(\Delta^3\right),
+\ldots ,
+e^{(p)}_O\left(\Delta^3\right)
+\right)^T$,
+we have that \cref{nec_eqn1} becomes
+\begin{align*}
+M\left(\Phi, Y\right)
+\begin{pmatrix}
+e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
+e_g(y) + e_H(y) y \\
+e_Q\left(e_H(y)\right)
+\end{pmatrix}
+= e_O\left(\Delta\right)
+% \begin{pmatrix}
+% e^{(0)}_O\left(\Delta^3\right) \\
+% e^{(1)}_O\left(\Delta^3\right) \\
+% \vdots \\
+% e^{(p)}_O\left(\Delta^3\right)
+% \end{pmatrix}
+%  = O\left(\Delta^3\right)
+% = \begin{pmatrix}
+% e_T\left(\xi^{(0)}; y\right) \\
+% e_T\left(\xi^{(1)}; y\right) \\
+% \vdots \\
+% e_T\left(\xi^{(p)}; y\right)
+% \end{pmatrix}
+\end{align*}
+After taking the norm,
+\begin{align*}
+\left\|M(\Phi,Y)
+\begin{pmatrix}
+e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
+e_g(y) + e_H(y) y \\
+e_Q\left(e_H(y)\right)
+\end{pmatrix}\right\|
+\le \left\|e_O\left(\Delta\right)\right\|
+\le \sqrt{p} \left\|e_O\left(\Delta\right)\right\|_{\infty}
+% \begin{pmatrix}
+% e^{(0)}_O\left(\Delta^3\right) \\
+% e^{(1)}_O\left(\Delta^3\right) \\
+% \vdots \\
+% e^{(p)}_O\left(\Delta^3\right)
+% \end{pmatrix}
+\le
+\frac 3 2 \sqrt{p} L_{\nabla^2} \Delta^3
+\end{align*}
+To remove the dependence of $\Delta$ on $M(\Phi,Y)$, we rewrite this with a scaling matrix:
+\begin{align*}
+\left\|M\left(\Phi, Y\right)\begin{pmatrix}
+1 & 0 & 0 \\
+0 & \Delta^{-1} I_n & 0 \\
+0 & 0 & \Delta^{-2} I_{n + \frac{n(n-1)}{2}}
+\end{pmatrix}
+\begin{pmatrix}
+e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
+\Delta\left(e_g(y) + e_H(y) y\right) \\
+\Delta^2\left(e_Q\left(e_H(y)\right)\right)
+\end{pmatrix} \right\|
+\le \frac 3 2 \sqrt{p} L_{\nabla^2} \Delta^3.
+\end{align*}
+With \cref{nce_scale}, this provides
+\begin{align}
+\left\|e_f(y) + y^Te_g(y) + y^Te_H(y) y \right\|\le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3, \label{nce_first}\\
+\Delta \left\|e_g(y) + e_H(y) y \right\| \le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3, \label{nce_second} \\
+\Delta^2 \left\|e_Q\left(e_H(y)\right)\right\| \le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3. \label{nce_third}
+\end{align}
+We see that \cref{nce_third} immediately provides
+\begin{align*}
+\left\|e_H(y)\right\| \le \left\|e_H(y)\right\|_F \le \sqrt{2} \left\|e_Q\left(e_H(y)\right)\right\| \le \frac 3 {\sqrt 2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta
+\end{align*}
+where $\left\|\cdot\right\|_F$ is the frebeneous norm $\left\|A\right\|_F = \sqrt{\sum_i\sum_jA_{i, j}^2}$.
+Similarily, the triangle inequality and \cref{nce_second} imply
+\begin{align*}
+\left\|e_g\left(y\right)\right\| &\le \left\|e_g(y) + e_H(y) y \right\| + \left\|e_H\left(y\right)\right\|\left\| y\right\| \\
+&\le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^2
++ \left[\frac 3 {\sqrt 2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta\right]
+\Delta \\
+&\le\frac {3\left(1 + \sqrt 2\right)} {2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^2.
+\end{align*}
+Finally, using \cref{nce_first},
+\begin{align*}
+\left|e^f\left(y\right)\right| &\le \left\|e_g(y)\right\| \Delta + \left\|e_H(y)\right\|\Delta^2
++ \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3 \\
+&\le\left[\frac {3\left(1 + \sqrt 2\right)} {2} +\frac {3 \sqrt{2}}2 + \frac 3 2\right]\sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3.
+\end{align*}
+
+
+\begin{align*}
+\sum_{0 \le j \le p} \phi_i\left(y^{(i)}\right) = f\left(y^{(i)}\right)
+\end{align*}
+
+
+\end{proof}
+
+
+% f\left(y^{(i)}\right) - f(y) - e_f(y) = \\
+% f\left(y^{(i)}\right) - m(y) = \\
+% f\left(y^{(i)}\right) - c - g^T y - \frac 1 2 y^T H y \\
+% =   \\
+% = \left(y^{(i)} - y\right)^T g
+% where
+% \begin{align*}
+% 0 = f\left(y^{(i)}\right) - m\left(y^{(i)}\right) \\
+% =
+% \end{align*}
+
+
+
