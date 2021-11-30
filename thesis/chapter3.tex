@@ -638,8 +638,8 @@ for constants $\kappa_{ef}, \kappa_{eg}, \kappa_{eh} > 0$, the following error b
 
 \begin{align}
 |\hat m_f(u) - \hat f(u)| \le \kappa_{ef} \delta_r^3, \label{shifted_ellipsoid_bounds}\\
-\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta_r^2,  \nonumber  \\
-\|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta_r.  \nonumber
+\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \le \kappa_{eg}\delta_r^2, \label{shifted_ellipsoid_bounds2} \\
+\|\nabla^2 \hat m_f(u) - \nabla^2 \hat f(u)\| \le \kappa_{eh}\delta_r.  \label{shifted_ellipsoid_bounds3}
 \end{align}
 
 Then, with
@@ -650,11 +650,11 @@ Then, with
 \end{align*}
 the model function $m_f(x) = \hat m_f(T(x; \delta_r))$ satisfies the following error bounds for all
 $x \in T^{-1}\left(B_2(0; \delta_r)\right) = \scaledellipsek$:
-\begin{align*}
-| m(x) - f(x)| \le \kappa_{ef}'\delta_r^3, \\
-\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta_r^2, \\
-\|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta_r.
-\end{align*}
+\begin{align}
+| m(x) - f(x)| \le \kappa_{ef}'\delta_r^3, \label{transformed_error_bounds} \\
+\|\nabla  m(x) - \nabla  f(x)\| \le \kappa_{eg}'\delta_r^2, \label{transformed_error_bounds2} \\
+\|\nabla^2 m(x) - \nabla^2 f(x)\| \le \kappa_{eh}'\delta_r \label{transformed_error_bounds3}.
+\end{align}
 \end{lemma}
 
 \begin{proof}
@@ -789,13 +789,13 @@ We can now satisfy the accuracy condition \cref{accuracy}.
 %
 
 
-The following is an immediate consequence of \cite[Lemma 3.8]{introduction_book}.
-\begin{lemma}
-\label{scale_the_set}
-Let $\Delta, \Delta' > 0$.
-If a set $\hat Y$ is $\Lambda$-poised over a ball $B(0; \Delta)$,
-then the set $Y = \frac{\Delta'}{\Delta} \hat Y$ is $\Lambda$-poised over $B_2(0; \Delta')$.
-\end{lemma}
+% The following is an immediate consequence of \cite[Lemma 3.8]{introduction_book}.
+% \begin{lemma}
+% \label{scale_the_set}
+% Let $\Delta, \Delta' > 0$.
+% If a set $\hat Y$ is $\Lambda$-poised over a ball $B(0; \Delta)$,
+% then the set $Y = \frac{\Delta'}{\Delta} \hat Y$ is $\Lambda$-poised over $B_2(0; \Delta')$.
+% \end{lemma}
 
 \begin{theorem}
 \label{linear_accuracy_is_satisfied}
@@ -832,24 +832,35 @@ and for any $\delta > 0$ define the transformation $T(x; \delta) = \frac{\delta}
 Notice that with $\delta = \delta_2 = \sqrt{2}$,
 the transformation $T\left(x; \delta_2\right)$ maps $\sampletrk = \ellipsek$ to the unit ball.
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised}
-that the shifted and scaled sample set $\hat Y$ is lambda poised over $B_2(0; \delta_2)$.
+that there is a bound on $\left\| M\left(\bar \Phi, \hat Y\right)\right\|^{-1}$ depending only on $p$ and $\ximin$.
+Next, we consider the shifted sample set $\bar Y = \frac{\delta_r}{\delta_2} \hat Y$, where $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$.
+Notice that the scaled matrix in $\cref{nce_scale}$ is $M\left(\bar\Phi, \hat Y\right) = \hat M\left(\bar \Phi, \bar Y\right)$, so we can use \cref{3_16_replacement} to introduce constants $\kappa_f, \kappa_g, \kappa_h > 0$ such that
+\begin{align*}
+\left| \hat {f}\left(u\right) - \hat{m}_f\left(u\right) \right|\le \kappa_f \delta_r^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_r^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_r.
+\end{align*}
+for all $u \in B_2\left(0, \delta_r\right)$.
+This means that the shifted functions
+$\hat {m}_f(u) = m_f(T^{-1}(u); \delta)$ and
+$\hat f (u) = f(T^{-1}(u; \delta))$
+as described in \cref{shifted_ellipsoid},
+satisfy \cref{shifted_ellipsoid_bounds}---\cref{shifted_ellipsoid_bounds3},
+and therefore \cref{transformed_error_bounds}---\cref{transformed_error_bounds3}.
+
+
+
+% and scaled sample set $\hat Y$ is lambda poised over $B_2(0; \delta_2)$.
 % that there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B(0, \delta_2)$:
 % \begin{align*}
 % \left\| \hat {f}\left(u\right) -  \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta_2^3, \\
 % \left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_2^2, \\
 % \left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_2.
 % \end{align*}
-With $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$, by \cref{scale_the_set},
-we can scale these same points by $\frac{\delta_r}{\delta_2}$ to obtain a $\Lambda$ poised set over $B_2(0; \delta_r)$.
-Thus, by \cref{quadratic_errors}, there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0; \delta_r)$:
-\begin{align*}
-\left\| \hat {f}\left(u\right) - \hat{m}_f\left(u\right) \right\|\le \kappa_f \delta_r^3, \\
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_r^2, \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_r.
-\end{align*}
-As described in \cref{shifted_ellipsoid}, we create shifted functions
-$\hat {m}_f(u) = m_f(T^{-1}(u); \delta)$ and
-$\hat f (u) = f(T^{-1}(u; \delta))$.
+% With , by \cref{scale_the_set},
+% we can scale these same points by $\frac{\delta_r}{\delta_2}$ to obtain a $\Lambda$ poised set over $B_2(0; \delta_r)$.
+% Thus, by \cref{quadratic_errors}, there exist constants $\kappa_f, \kappa_g, \kappa_h$ such that for all $u \in B_2(0; \delta_r)$:
+
 
 
 % This, along with \cref{lipschitz_hessian} and \cref{uniformly_bounded_hessians_of_f} satisfy the assumptions for \cref{change_radius}.
@@ -859,8 +870,8 @@ $\hat f (u) = f(T^{-1}(u; \delta))$.
 % \end{align*}
 % where $\kappa_{g}' = 16 \Lambda_2 L \sqrt{p+1}$.
 
-Because $\condition \left(\qk\right)$ is bounded by some $\epsilon_{\alpha} > 0$ independently of $k$, 
 % After using  \cref{alphas_are_bounded} to construct an $\epsilon_{\alpha} > 0$ 
+Because $\condition \left(\qk\right)$ is bounded by some $\epsilon_{\alpha} > 0$ independently of $k$,
 and defining $\kappa'_{g} =  \kappa_g\sqrt{\epsilon_{\alpha}}\dmax$, we see that
 we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \scaledellipsek$:
 \begin{align*}
