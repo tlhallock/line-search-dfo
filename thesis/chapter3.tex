@@ -59,7 +59,7 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
 % HOW ABOUT JUST MAKE $\eta > 0$?
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 \begin{algorithm}[H]
@@ -108,6 +108,7 @@ an algorithmic template described in \cite{Conejo:2013:GCT:2620806.2621814}.
  		
  		\begin{algorithm}[H]
  		\begin{itemize}
+ 		
         \item[\textbf{Step 4}] \textbf{(Test for Improvement)} \\
             Evaluate $f(\xk + \sk)$ and $\rk$ as in \cref{define_rhok}. \\
 			If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$. \\
@@ -383,7 +384,7 @@ Likewise, with $\scaledellipsek$ defined in \cref{define_suitable_ellipsoid}, we
 $T\left(\scaledellipsek; \delta\right) = B_2(0; \delta)$.
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 \begin{algorithm}[H]
@@ -1521,7 +1522,9 @@ minimizing the condition number of the matrix $\qk$.
 However, we also desire a large ellipsoid so that our model will satisfy the error bounds over more of $\searchtrk$.
 Thus, one choice for $\sampletrk$ is to choose the maximum volume ellipsoid that is both feasible and lies within the outer trust region.
 We can accomplish this for various ellipsoid centers, by finding the maximal volume ellipsoid that is constrained to lie within the polytope
-$\polyk := \left\{x \in \Rn | \lca x\le \lcb,   \xki - \dk \le x_i \le \xki + \dk\right\}.$
+\begin{align*}
+\polyk := \left\{x \in \Rn | \lca x\le \lcb,   \xki - \dk \le x_i \le \xki + \dk\right\}.
+\end{align*}
 % Note that we have replaced the usual trust region $B_2\left(\xk, \dk\right)$ with an $L_{\infty}$ ball, called the {\em outer trust region},
 % defined in \cref{define_outer_trust_region}.
 
@@ -1570,6 +1573,8 @@ Suppose that some positive definite, symmetric matrix $Q$ solves \cref{ellipse_1
 Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maximum volume over all ellipsoids centered at $c$ and contained in $\mathcal{P}$.
 \end{theorem}
 
+
+\pagebreak
 \begin{proof}
 
 Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
@@ -1671,9 +1676,10 @@ The new modified improvement algorithm is described in \cref{modified_model_impr
 The \emph{ConstructTrustRegion} subroutine for this approach follows the prototype with $\sampletrk = \searchtrk = \feasible \cap \outertrk $.
 As usual, we may also wish to remove points larger than a certain radius from the current model center.
 
+\pagebreak
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
-% \begin{flushleft}
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
+\begin{flushleft}
 
 \begin{algorithm}[H]
     \caption{Modified Model Improvement Algorithm}
@@ -1683,6 +1689,7 @@ As usual, we may also wish to remove points larger than a certain radius from th
             Given an interpolation set $\sampletrk$, and set $Y$ of $p+1$ points,
             initialize $i=1$, $0 < \ximin < \xi_{\text{desired}}$, $0 <\delta_{\text{improv}} < 1$,
             $  \xi_{\text{cur}} = \xi_{\text{desired}}$.
+
             
 		\item[\textbf{Step 1}] \textbf{(Pivot)} \\
 			Compute the next pivot index $j^{\textrm{max}}_i \in \argmax_{i \le j \le |Y|-1} \left|u_i\left(y^j\right)\right|$,
@@ -1702,7 +1709,7 @@ As usual, we may also wish to remove points larger than a certain radius from th
     \end{itemize}
 \end{algorithm}
 
-% \end{flushleft}
+\end{flushleft}
 \end{fullwidth}
 }
 
@@ -1923,7 +1930,7 @@ Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order fo
 % \end{comment}
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 
@@ -1983,6 +1990,7 @@ Within the results, these algorithms are described as ``ellipse segment $n_{\tex
 % Update this image...
 % \end{boxedcomment}
 
+\pagebreak
 
 \subsection{Buffered segments}
 

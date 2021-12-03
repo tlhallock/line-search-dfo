@@ -1605,6 +1605,8 @@ For \cref{define_suitable_close_to_iterate}, \cref{ellipse_fits} tells us that
 $f_e\left(\frac 1 {2\gamma} \dkpo, \frac 1 {\sqrt{2}\gamma}\dkpo, \bs; \rotk\left(\xkpo - \xkpo\right)\right) = 0$, so that $\xkpo \in \scaledunshiftedellipsoidpo$.
 \end{proof}
 
+\pagebreak
+
 \section{Dealing with Infeasible Sample Points}
 \label{recovering_feasiblity_section}
 
@@ -1690,11 +1692,10 @@ This means that the interior of the convex hull of previously evaluated points w
 % \end{array}
 % \end{align}
 
-To do this, we first construct the convex hull of the points 
-Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in the previous iteration.
+To do this, we first construct the convex hull of the points.
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 
@@ -1703,8 +1704,16 @@ Let $Y = y^{(0)}, y^{(1)}, \ldots, y^{(p)}$ be the set of sample points used in 
     \label{restore_feasible_ellipsoid_convex}
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            $\hullpoly = \emptyset$
+            Let $\hullpoly = \emptyset$ and $Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\}$ be the previous sample points.
             
+ 		\end{itemize}
+ 		\end{algorithm}
+ 		
+ 		\newpage
+ 		
+ 		\begin{algorithm}[H]
+ 		\begin{itemize}
+ 		
         \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
 	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyper-plane $ax\le b$ running through the points $S \cup \xk$.
 	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $\hullpoly$.
@@ -1861,7 +1870,7 @@ but it is still possible to exhaustively search over possible sample regions, at
 % \end{itemize}
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 
@@ -1869,13 +1878,21 @@ but it is still possible to exhaustively search over possible sample regions, at
     \caption{Recover Feasible Ellipsoid for Non convex constraints}	
     \label{general_recover}
     \begin{itemize}
-        \item[\textbf{Step -}] \textbf{(Initialization)} \\
+        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
         		Set $i\gets0$, $R^{(0)} \gets \dk$, $M^{(0)} \gets 2n$.
         		
         \item[\textbf{Step 1}] \textbf{(Search for sample points)} \\
         	For each of $M^{(i)}$ relatively equally spaced directions,
         	construct an ellipsoid at distance $R^{(i)}$ from $\xk$, that satisfies \cref{ellipsoids_notation_definitions}
         	
+ 		\end{itemize}
+ 		\end{algorithm}
+ 		
+ 		\newpage
+ 		
+ 		\begin{algorithm}[H]
+ 		\begin{itemize}
+ 		
         \item[\textbf{Step 2}] \textbf{(Construct sample points)} \\
         	Attempt to evaluate points within the ellipsoid.
         	If all points required to construct a $\Lambda$-poised sample set are feasible, return this ellipsoid.
@@ -2302,10 +2319,9 @@ The algorithm is as follows:
 % d
 % \end{align}
 % \end{tabular}
-\newpage
 
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 
@@ -2349,27 +2365,26 @@ k \gets 0; &
         	Compute $\capcones$, $\slin$, and $\sk$ by
         	\cref{define_capcones}, \cref{half_tr_subproblem}, and \cref{capcones_tr_subproblem}, respectively. \\
         	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
-		
+
         \item[\textbf{Step 4}] \textbf{(Test for improvement)}.
         	Compute $\rk$ by \cref{define_rhok}. \\
 			If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$. \\
             If $\rk < \gammabi$, then $\dk \gets \min\omegadec\dk$. \\
             If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} = \dk$, then $\dk \gets \omegainc\dk$. \\
             If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} < \dk$, then $\dk \gets \dk$.
-            
-		
+
+        \end{itemize}
+ 		\end{algorithm}
+ 		
+ 		\newpage
+ 		
+ 		\begin{algorithm}[H]
+ 		\begin{itemize}
+ 		
         \item[\textbf{Step 5}] \textbf{(Construct next sample region)} \\
 %         	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
         	Compute $\sampletrkpo$ by \cref{define_ellipsek} if $\activeconstraintskpo \ne \emptyset$, otherwise \cref{define_trivial_ellipsek}. \\
             $k \gets k+1$ and go to Step 1.
-            
-% 		\end{itemize}
-% 		\end{algorithm}
-% 		
-% 		\newpage
-% 		
-% 		\begin{algorithm}[H]
-% 		\begin{itemize}
     \end{itemize}
 \end{algorithm}
 
@@ -2511,6 +2526,7 @@ We include references to their definitions when used.
 
 % \subsection{Restoration Assumption}
 
+\pagebreak
 
 \subsection{Assumptions}
 
@@ -2993,6 +3009,8 @@ Then there exists a $\maxmodelhessian > 0$ such that
 whenever $\dk \le \dacc$.
 \end{lemma}
 
+\pagebreak
+
 \begin{proof}
 
 Let $\kappa_h$ and $\maxhessian$ be defined by \cref{accuracy_is_satisfied} and \cref{bounded_hessians_assumption}, respectively,
@@ -3052,6 +3070,9 @@ There exists $\mingraddelta > 0$ such that if $\dk \le \mingraddelta$ then for a
 \item both $\zik \in \trk$ and $\left\|\gmcik\right\| > \frac 1 2 \mingrad$.
 \end{itemize}
 \end{lemma}
+
+\pagebreak
+
 \begin{proof}
 
 Fix $i \in [m]$.
@@ -4072,6 +4093,8 @@ $t = \dk^{1+p} \le  \frac {\delta_2}{2\left(\maxmodelgrad + 2\maxmodelhessian\ri
 \end{proof}
 
 
+\pagebreak
+
 
 \subsection{Initial convergence results}
 
@@ -4144,7 +4167,8 @@ Let $\miniterates$ and $\reduceiterates$ be defined by \cref{define_miniterates}
 
 We have $\reduceiterates \subseteq \miniterates$.
 \end{lemma}
- 
+
+\pagebreak
 
 \begin{proof}
 
@@ -4433,6 +4457,8 @@ This result will be required within \cref{convergence_section}.
 % bound the difference in projections based on this bound in \cref{bounding_projection_onto_two_polyhedra},
 % and finally show that the projection onto active constraints is bounded within \cref{bounding_the_difference_in_the_active_projection}.
 % \color{black}
+
+\pagebreak
 
 \subsubsection{Simple properties}
 
@@ -5087,6 +5113,9 @@ where
 \activegradmin = \min\left\{\mingrad, \frac{\mingradepsilon}{\sqrt{n} \minangledelta}\right\}.
 \end{align}
 \end{lemma}
+
+\pagebreak
+
 \begin{proof}
 
 By \cref{mingradassumption}, if $-c_i\left(\xk\right) \le \mingradepsilon$, then $\left\|\nabla c_i\left(\xk\right)\right\| \ge \mingrad \ge \activegradmin$.
@@ -5529,6 +5558,8 @@ Let $\chik$ be defined by \cref{define_criticality_measure}.
 If $\gammasm > 0$, then $\lim_{k\to\infty}\chik=0$.
 \end{lemma}
 
+
+\pagebreak
 
 \begin{proof}
 
@@ -6060,8 +6091,10 @@ We implemented a very naive algorithm to compute the largest possible ellipsoid 
 Ideally, this would use the information returned from the inner optimization program to more intelligently explore ellipsoids.
 However, we state the algorithm as implemented:
 
+\pagebreak
+
 {
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.35in]
+\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
 
 \begin{algorithm}[H]
