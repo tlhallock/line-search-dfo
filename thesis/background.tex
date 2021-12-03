@@ -193,7 +193,7 @@ V=M(\Phi,Y) :=
 \end{align}
 
 
-The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is nonsingular.
+The interpolation equation \cref{matrix_form} has a unique solution if and only if $V$ is non-singular.
 In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to $\Phi$. 
 However, even when $V$ is non-singular but ``close" to singular, as measured by its condition number, 
 the model's approximation may become inaccurate.
@@ -284,18 +284,20 @@ associated with the monomial basis for $\mathcal{P}^2_n$
 \label{define_monomial}
 \bar{\Phi} = \{ \bar{\phi}_0, \ldots, \bar{\phi}_p\} =\{1, x_1, \ldots, x_n, x_1^2/2, \ldots x_n^2/2,x_1 x_2, \ldots, x_{n-1}x_{n}\}.
 \end{align}
-In particular, let $\hat{Y}$ be the shifted and scaled sample set $\left\{\frac{y^{(i)}-y^{(0)}}{\Delta}|y^{(i)} \in Y\right\}$.
+In particular, let $\hat{Y}$ be the shifted and scaled sample set 
+$\left\{\frac{y^{(i)}-y^{(0)}}{\Delta}|y^{(i)} \in Y\right\}$.
 Then we have the following result:
 % \sbnote{I reworded the theorem to incorporate the assumptions since you never refer to the assumption anywhere else in the thesis.}
 
 \begin{theorem}
 \label{Lambda_poised_error_bounds}
 
-(\cite[Theorem 3.14]{introduction_book}) Let $\hat{M} = M(\bar{\Phi},\hat{Y})$.  
-If $\hat{M}$ is  non-singular and $\norm{\hat{M}^{-1}} \le \Lambda$,   
+(\cite[Theorem 3.14]{introduction_book})
+Let $\hat{M} = M(\bar{\Phi},\hat{Y})$, and $p = \frac{(n+1)(n+2)}{2}$.
+If $\hat{M}$ is  non-singular and $\left\|\hat{M}^{-1}\right\|_2 \le \Lambda$,   
 then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B_2(0;1)$.  
 Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
-then $\norm{\hat{M}^{-1}} \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
+then $\left\|\hat{M}^{-1}\right\|_2 \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
 constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
 \end{theorem}
 
@@ -306,8 +308,8 @@ The following theorem does not make this assumption.
 \label{Lambda_poised_error_bounds_delta}
 
 Let $\Delta >0$, $Y$ be a sample set with $Y \subset B_2(0;\Delta)$ and let $M=M(\bar{\Phi},Y)$ where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
-If $M$ is nonsingular, and $\norm{M^{-1}} \le \Lambda$, then $Y$ is $\hat{\Lambda}$-poised in $B_2(0;\Delta)$,
-where $\hat{\Lambda} = \Lambda \sqrt{p+1}\max\{1, \frac 1 2 \Delta^2\}$.
+If $M$ is non-singular, and $\left\|{M^{-1}}\right\|_2 \le \Lambda$, then $Y$ is $\hat{\Lambda}$-poised in $B_2(0;\Delta)$,
+where $\hat{\Lambda} = \Lambda \left(p+1\right)^{-\frac 1 2}\max\left\{1, \Delta, \frac 1 2 \Delta^2\right\}$.
 \end{theorem}
 
 \begin{proof}
@@ -318,9 +320,9 @@ where $\bar{\phi}(x) = (\bar{\phi}_0(x), \ldots, \bar{\phi}_p(x))$.
 Thus,
 \begin{align*}
 \norm{\ell(x)}_{\infty} & \le \norm{M^{-T}}_{\infty} \norm{\bar{\phi(x)}}_{\infty} \\
-& \le \sqrt{p+1} \norm{M^{-1}}_2 \norm{\bar{\phi}(x)}_{\infty} \\
-& \le \Lambda \sqrt{p+1} \max\left\{1, |x_1|, \ldots,|x_n|, \frac 1 2 x_1^2, \ldots, \frac 1 2 x_n^2, x_1x_2, \ldots, x_{n-1}x_n\right\}\\
-& \le \Lambda \sqrt{p+1}  \max\left\{1, \frac 1 2 \Delta^2\right\} = \hat{\Lambda}.
+& \le \left(p+1\right)^{-\frac 1 2} \norm{M^{-1}}_2 \norm{\bar{\phi}(x)}_{\infty} \\
+& \le \Lambda \left(p+1\right)^{-\frac 1 2} \max\left\{1, |x_1|, \ldots,|x_n|, \frac 1 2 x_1^2, \ldots, \frac 1 2 x_n^2, x_1x_2, \ldots, x_{n-1}x_n\right\}\\
+& \le \Lambda \left(p+1\right)^{-\frac 1 2}  \max\left\{1, \Delta, \frac 1 2 \Delta^2\right\} = \hat{\Lambda}.
 \end{align*}
 
 \end{proof}
@@ -328,29 +330,44 @@ Thus,
 
 Another limitation of \cref{Lambda_poised_error_bounds} is its requirement to have a point evaluated at the origin.
 We remove this assumption in \cref{3_16_replacement} by performing the same analysis as in \cite[Theorem 3.16]{introduction_book}.
+First, we state the following lemma, found in \cite[Lemma 4.1.14]{dennisschnabel1983}.
+
+\begin{theorem}
+\label{4_1_14}
+Left $f : \Rn \to \reals$ be twice continuously differentiable in an open convex set $D \subset \Rn$,
+and let $\nabla^2 f(x)$ be Lipschitz continuous at $x$ in the neighborhood of $D$, 
+using a vector norm and the induced matrix operator norm and the constant $\gamma$.
+Then, for any $x + p\in D$,
+\begin{align*}
+\left|f(x + p) - \left(f(x) + \nabla f(x)^T p + \frac 1 2 p^T \nabla^2 f(x)p\right) \right|
+\le \frac {\gamma} 6 \left\|p\right\|^3.
+\end{align*}
+\end{theorem}
+
 \begin{theorem}
 \label{3_16_replacement}
-Suppose that $f$ has a Lipschitz continuous hessian with constant $\liphess$.
-For some $\Delta > 0$, let $Y = \left\{y^{(0)}, y^{(1)}, \ldots y^{(p)} \right\}$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$ points in
-$B_2\left(0; \Delta\right)$.
+Suppose that $f$ is twice continuously differentiable, and has a Lipschitz continuous Hessian with constant $\liphess$.
+For some $\Delta > 0$, let $Y = \left\{y^{(0)}, y^{(1)}, \ldots y^{(p)} \right\}$ be a set of
+$p+1=\frac{(n+1)(n+2)}{2}$ points contained in $B_2\left(0; \Delta\right)$.
 % , where $p +1 $ is the dimension of $\polydn$.
 For some $c \in \reals, g \in \Rn, H \in \reals^{n \times n}$, consider a quadratic model $m(y) = c + g^T y + \frac 1 2 y^T H y$  satisfying
 \begin{align}
 f\left(y^{(i)}\right) = m\left(y^{(i)}\right) \quad \forall 0 \le i \le p. \label{nce_interpolation_condition}
 \end{align}
-Also, let $M(\Phi,Y)$ be constructed as in \cref{vandermonde} and nonsingular, and define the scaled matrix
+Also, let $M(\bar \Phi,Y)$ be constructed as in \cref{vandermonde} and non-singular, and define the scaled matrix
 \begin{align}
-\hat M(\Phi, Y) = M(\Phi,Y) \begin{pmatrix}
+\hat M(\bar \Phi, Y) = M(\bar \Phi,Y) \begin{pmatrix}
 1 & 0 & 0 \\
 0 & \Delta^{-1} I_n & 0 \\
 0 & 0 & \Delta^{-2} I_{n + \frac{n(n-1)}{2}}
 \end{pmatrix}. \label{nce_scale}
 \end{align}
 Then, there exist constants $\kappa_f, \kappa_g, \kappa_h>0$ that depend only on $p$ and $\liphess$ such that
+for any $y \in B_2\left(0; \Delta\right)$:
 \begin{align*}
-\left|m(y) - f(y)\right| \le \kappa_f \left\|\hat M^{-1}(\Phi, Y) \right\| \Delta^3, \\
-\left\|\nabla m(y) - \nabla f(y)\right\| \le \kappa_g \left\|\hat M^{-1}(\Phi, Y) \right\|\Delta^2, \\
-\left\|\nabla^2 m(y) - \nabla^2 f(y)\right\| \le \kappa_h \left\|\hat M^{-1}(\Phi, Y) \right\|\Delta.
+\left|m(y) - f(y)\right| &\le \kappa_f \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^3, \\
+\left\|\nabla m(y) - \nabla f(y)\right\| &\le \kappa_g \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta^2, \\
+\left\|\nabla^2 m(y) - \nabla^2 f(y)\right\| &\le \kappa_h \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta.
 \end{align*}
 \end{theorem}
 
@@ -360,8 +377,8 @@ Then, there exist constants $\kappa_f, \kappa_g, \kappa_h>0$ that depend only on
 Let $y \in B_2(0; \Delta)$.
 Let us define $e_f$, $e_g$ and $e_h$ so that
 \begin{align}
-m(y) = c + g^T y + \frac 1 2 y^T H y = f(y) + e_f(y) \label{define_e_f} \\
-\nabla m(y) = g + H y = \nabla f(y) + e_g(y) \nonumber \\
+m(y) = c + g^T y + \frac 1 2 y^T H y = f(y) + e_f(y) \label{define_e_f}, \\
+\nabla m(y) = g + H y = \nabla f(y) + e_g(y), \nonumber \\
 \nabla^2 m(y) = H = \nabla^2 f(y) + e_h(y). \nonumber
 \end{align}
 
@@ -380,29 +397,33 @@ f\left(y^{(i)}\right) - f(y) - e_f(y)
 % \frac{(x_j - y_j)(x_k - y_k)(x_l - y_l)}{(\delta_j^k + \delta_j^l + \delta_k^l)!},
 % \end{align*}
 
-
-As discussed in \cite{introduction_book}, \cite[Lemma 4.1.14]{dennisschnabel1983},
-we can apply Taylor's theorem to show there exist functions $e^{(i)}_O$ in $O\left(\Delta^3\right)$ such that
+By defining
+\begin{align*}
+e^{(i)}_O(y) = 
+f\left(y^{(i)}\right) - \left[f(y) + \nabla f(y)^T \left(y^{(i)} - y\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right)\right],
+\end{align*}
+we can use \cref{4_1_14} with $\gamma = \liphess$, $p = y^{(i)} - y$ to conclude
+\begin{align}
+\left|e^{(i)}_O\left(y\right) \right| \le \frac 1 6 \liphess \left\|y^{(i)} - y\right\|^3 \le \frac 4 3 \liphess \Delta^3 \label{nce_bound_rhs}.
+\end{align}
+Furthermore, we notice that
 \begin{align*}
 f\left(y^{(i)}\right) - f(y)
-= \nabla f(y)^T \left(y^{(i)} - y\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(\Delta^3\right) \\
-= \left(y^{(i)} - y\right)^T \left(Hy + g - e_g(y)\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(\Delta^3\right)
+= \nabla f(y)^T \left(y^{(i)} - y\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(y\right) \\
+= \left(y^{(i)} - y\right)^T \left(Hy + g - e_g(y)\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right) + e^{(i)}_O\left(y\right).
 \end{align*}
 % where we know by \cite[Lemma 4.1.14]{dennisschnabel1983} that $e_O$ is a difference of two terms that
 % can be bounded by can be bounded by $\frac 1 6 \liphess \left\|y^{(i)} - y\right\|^3$ and $\frac 1 6 \liphess \left\|y\right\|^3$.
 % Because $\left\|y^{(i)} - y\right\| \le 2 \Delta$ and $\left\|y\right\| \le \Delta$,
-where
-\begin{align}
-\left\|e^{(i)}_O\left(\Delta^3\right) \right\| \le \frac 3 2 \liphess \Delta^3 \label{nce_bound_rhs}.
-\end{align}
+% where
 If we subtract this from \cref{nec_eqn2}, we find
 \begin{align*}
-e^{(i)}_O\left(\Delta^3\right) - e_f(y) = \left(y^{(i)} - y\right)^Te_g(y) +
+e^{(i)}_O\left(y\right) - e_f(y) = \left(y^{(i)} - y\right)^Te_g(y) +
 \frac 1 2 \left(y^{(i)} - y\right)^T \left[H - \nabla^2 f(y)\right]\left(y^{(i)} - y\right)
 \end{align*}
 or
 \begin{align}
-e^{(i)}_O\left(\Delta^3\right) = \left[e_f(y) - y^T e_g(y) + y^T \left[H - \nabla^2f(y)\right]y \right] \nonumber \\
+e^{(i)}_O\left(y\right) = \left[e_f(y) - y^T e_g(y) + y^T \left[H - \nabla^2f(y)\right]y \right] \nonumber \\
 + \left[e_g(y) + \left(H - \nabla^2 f(y)\right)y\right]^T y^{(i)}
 + \frac 1 2 \left(y^{(i)}\right)^T \left[H - \nabla^2 f(y)\right]\left(y^{(i)}\right).
 \label{nec_eqn1}
@@ -425,10 +446,10 @@ in a similar order to that used in $\bar \Phi$.
 % e^{(p)}_O\left(\Delta^3\right)
 % \end{pmatrix}
 Then, with $e_O\left(\Delta\right) = \left(
-e^{(0)}_O\left(\Delta^3\right),
-e^{(1)}_O\left(\Delta^3\right),
+e^{(0)}_O\left(y\right),
+e^{(1)}_O\left(y\right),
 \ldots ,
-e^{(p)}_O\left(\Delta^3\right)
+e^{(p)}_O\left(y\right)
 \right)^T$,
 we have that \cref{nec_eqn1} becomes
 \begin{align*}
@@ -453,16 +474,16 @@ e_Q\left(e_H(y)\right)
 % e_T\left(\xi^{(p)}; y\right)
 % \end{pmatrix}
 \end{align*}
-After taking the norm, we have
+After taking the norm, and simplifying with $\kappa_0 = \frac 4 3 \sqrt{p+1}\liphess$, we have
 \begin{align*}
-\left\|M(\Phi,Y)
+\left\|M(\bar \Phi,Y)
 \begin{pmatrix}
 e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
 e_g(y) + e_H(y) y \\
 e_Q\left(e_H(y)\right)
-\end{pmatrix}\right\|
-&\le \left\|e_O\left(\Delta\right)\right\| \\
-&\le \sqrt{p} \left\|e_O\left(\Delta\right)\right\|_{\infty} \\
+\end{pmatrix}\right\|_2
+&\le \left\|e_O\left(\Delta\right)\right\|_2 \\
+&\le \sqrt{p+1} \left\|e_O\left(\Delta\right)\right\|_{\infty} \\
 % \begin{pmatrix}
 % e^{(0)}_O\left(\Delta^3\right) \\
 % e^{(1)}_O\left(\Delta^3\right) \\
@@ -470,11 +491,12 @@ e_Q\left(e_H(y)\right)
 % e^{(p)}_O\left(\Delta^3\right)
 % \end{pmatrix}
 &\le
-\frac 3 2 \sqrt{p} L_{\nabla^2} \Delta^3.
+\frac 4 3 \sqrt{p+1} L_{\nabla^2} \Delta^3 \\
+&= \kappa_0 \Delta^3.
 \end{align*}
-To remove the dependence of $\Delta$ on $M(\Phi,Y)$, we rewrite this with a scaling matrix:
+To remove the dependence of $\Delta$ on $M(\bar \Phi,Y)$, we rewrite this with a scaling matrix:
 \begin{align*}
-\left\|M\left(\Phi, Y\right)\begin{pmatrix}
+\left\|M\left(\bar \Phi, Y\right)\begin{pmatrix}
 1 & 0 & 0 \\
 0 & \Delta^{-1} I_n & 0 \\
 0 & 0 & \Delta^{-2} I_{n + \frac{n(n-1)}{2}}
@@ -483,33 +505,36 @@ To remove the dependence of $\Delta$ on $M(\Phi,Y)$, we rewrite this with a scal
 e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
 \Delta\left(e_g(y) + e_H(y) y\right) \\
 \Delta^2\left(e_Q\left(e_H(y)\right)\right)
-\end{pmatrix} \right\|
-\le \frac 3 2 \sqrt{p} L_{\nabla^2} \Delta^3.
+\end{pmatrix} \right\|_2
+\le \kappa_0 \Delta^3.
 \end{align*}
 With \cref{nce_scale}, this provides
 \begin{align}
-\left\|e_f(y) + y^Te_g(y) + y^Te_H(y) y \right\|\le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3, \label{nce_first}\\
-\Delta \left\|e_g(y) + e_H(y) y \right\| \le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3, \label{nce_second} \\
-\Delta^2 \left\|e_Q\left(e_H(y)\right)\right\| \le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3. \label{nce_third}
+\left\|e_f(y) + y^Te_g(y) + y^Te_H(y) y \right\|_2\le \kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^3, \label{nce_first}\\
+\Delta \left\|e_g(y) + e_H(y) y \right\|_2 \le \kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2  \Delta^3, \label{nce_second} \\
+\Delta^2 \left\|e_Q\left(e_H(y)\right)\right\|_2 \le \kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2  \Delta^3. \label{nce_third}
 \end{align}
 We see that \cref{nce_third} immediately provides
 \begin{align*}
-\left\|e_H(y)\right\| \le \left\|e_H(y)\right\|_F \le \sqrt{2} \left\|e_Q\left(e_H(y)\right)\right\| \le \frac 3 {\sqrt 2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta
+\left\|e_H(y)\right\|_2 
+\le \left\|e_H(y)\right\|_F 
+\le \sqrt{2} \left\|e_Q\left(e_H(y)\right)\right\|_2
+\le \sqrt{2}\kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta
 \end{align*}
 where $\left\|\cdot\right\|_F$ is the frebeneous norm $\left\|A\right\|_F = \sqrt{\sum_i\sum_jA_{i, j}^2}$.
 Similarily, the triangle inequality and \cref{nce_second} imply
 \begin{align*}
-\left\|e_g\left(y\right)\right\| &\le \left\|e_g(y) + e_H(y) y \right\| + \left\|e_H\left(y\right)\right\|\left\| y\right\| \\
-&\le \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^2
-+ \left[\frac 3 {\sqrt 2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta\right]
+\left\|e_g\left(y\right)\right\|_2 &\le \left\|e_g(y) + e_H(y) y \right\|_2 + \left\|e_H\left(y\right)\right\|_2\left\| y\right\|_2 \\
+&\le \kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^2
++ \left[\sqrt{2}\kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta\right]
 \Delta \\
-&\le\frac {3\left(1 + \sqrt 2\right)} {2} \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^2.
+&\le\left(1 + \sqrt 2\right)\kappa_0\left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^2.
 \end{align*}
 Finally, using \cref{nce_first},
 \begin{align*}
 \left|e^f\left(y\right)\right| &\le \left\|e_g(y)\right\| \Delta + \left\|e_H(y)\right\|\Delta^2
-+ \frac 3 2 \sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3 \\
-&\le\left[\frac {3\left(1 + \sqrt 2\right)} {2} +\frac {3 \sqrt{2}}2 + \frac 3 2\right]\sqrt{p} \left\|\hat M^{-1}(\Phi, Y) \right\| L_{\nabla^2} \Delta^3.
++ \kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^3 \\
+&\le\left[\left(1 + \sqrt 2\right) + \sqrt{2} + 1\right]\kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|\Delta^3.
 \end{align*}
 \end{proof}
 
@@ -674,14 +699,15 @@ Finally,  observe that all points in the final sample set $Y$ are selected eithe
 \begin{theorem}
 \label{set_is_poised}
 
-Let $\Delta \ge 1$, and suppose that \cref{model_improving_algorithm} is called on a sample set $\hat Y$,
+Let $\Delta \ge 1$, and suppose that \cref{model_improving_algorithm} is called on a sample set $Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\}$ 
+resulting in a new sample set $\hat Y$,
 and let $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
 Then,
 \begin{itemize}
-\item $\left\|M(\bar \Phi, \hat Y)\right\|^{-1}$ as defined by \cref{vandermonde}, is bounded by a constant depending only on $p$ and $\ximin$.
+\item $\left\|M(\bar \Phi, \hat Y)^{-1}\right\|_2$ as defined by \cref{vandermonde}, is bounded by a constant depending only on $p$ and $\ximin$.
 \item The resulting sample set $\hat Y$ is $\Lambda$-poised over $B_2\left(0;\Delta\right)$ for quadratic interpolation,
 where $\Lambda > 0$ is a constant that depends only on $\Delta$, $\xi_{\text{min}}$ and $n$ and is inversely proportional to $\xi_{\text{min}}$.
-\item The initial point $y^{(0)} \in \hat Y$.
+\item The initial point $y^{(0)}$ is retained in the resulting sample set: $y^{(0)} \in \hat Y$.
 \end{itemize}
 \end{theorem}
 
@@ -721,7 +747,7 @@ where $\epsilon_{growth}$ is a potentially large, but finite estimate of the gro
 %
 % \begin{lemma}
 % \label[lemma]{lemma_3_13}
-% Let $w$ be a normalized right-singular vector of a nonsingular $n \times n$ matrix $A$ corresponding to its largest singular value.
+% Let $w$ be a normalized right-singular vector of a non-singular $n \times n$ matrix $A$ corresponding to its largest singular value.
 % Then, for any vector $r \in \Rn$,
 % \begin{align*}
 % \|Ar\| \ge |w^T r| \|A\|.
