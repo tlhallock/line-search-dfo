@@ -318,7 +318,7 @@ First, we show that \cref{uniformly_bounded_hessians_of_f} can be used instead o
 
 
 % \sbnote{The following lemma makes the assumption that the quadratic model function satisfies an error bound on the Hessian. 
-% But this is only true if the model function defined by \cref{quadratic_errors} is built with a $\Lambda$-poised sample set.  
+% But this is only true if the model function defined by \cref{} is built with a $\Lambda$-poised sample set.  
 % So this needs to be stated explicitly in the lemma.} 
 
 % \begin{comment}
@@ -329,7 +329,8 @@ First, we show that \cref{uniformly_bounded_hessians_of_f} can be used instead o
 \label[lemma]{replacing_h3}
 
 Suppose that \cref{lipschitz_hessian} and \cref{uniformly_bounded_hessians_of_f} hold.
-Let $\mfk$ be a quadratic model interpolating $f$ on a $\Lambda$-poised sample set $Y$ over $B_{\infty}(\xk, \dk)$ as in \cref{quadratic_errors} for each $k \in \naturals$.
+Let $\mfk$ be a quadratic model interpolating $f$ on a $\Lambda$-poised sample set
+$Y$ over $B_{2}\left(\xk, \dk\right)$ for each $k \in \naturals$.
 Then \cref{uniformly_bounded_hessians_of_mf} is also satisfied.
 \end{lemma}
 
@@ -340,7 +341,7 @@ By \cref{uniformly_bounded_hessians_of_f}, we can choose $\beta_1 \ge 1$ to be s
 \left\|\nabla^2 f\left(\xk\right) \right\| \le \beta_1 - 1.
 \end{align*}
 % \cref{model_improving_algorithm},
-Because $\mfk$ is fully quadratic, $Y$ is $\Lambda$-poised, by \cref{lipschitz_hessian}, we satisfy the assumptions for \cref{quadratic_errors}.
+Because $Y$ is $\Lambda$-poised, we can use \cref{scale_the_radius} to bound $\left\|\hat M\left(\bar \Phi, Y\right)^{-1}\right\|$, and apply \cref{3_16_replacement}.
 Thus, we see that \cref{error_in_hessian} is satisfied.
 Combining this with $\dk \le \dmax$, we see that
 \begin{align*}
@@ -755,12 +756,7 @@ Finally,  for the Hessian, we have
 
 \cref{shifted_ellipsoid} shows that a uniform bound on the condition number of $\qk$ will produce accurate model functions.
 Indeed, recall from \cref{set_is_poised} that \cref{model_improving_algorithm} produces a $\Lambda$-poised sample set, for $B_2(0;\delta)$.
-Thus, by \cref{quadratic_errors},
-% by \cref{Lambda_poised_error_bounds}
-the model function $\hat{m}_f$ constructed from that sample set
-% is $\kappa$-fully quadratic,  for some fixed constants $\kappa=(\kappa_{ef},\kappa_{eg}, \kappa_{eh})$, so $\hat{m_f}$ 
-satisfies the hypotheses of \cref{shifted_ellipsoid},
-and $m_f$ will satisfy the provided error bounds over the ellipsoidal region as well.
+Then \cref{scale_the_radius} and \cref{4_1_14} ensure $m_f$ will satisfy the provided error bounds over the ellipsoidal region as well.
 We can now satisfy the accuracy condition \cref{accuracy}.
 
 
@@ -883,10 +879,10 @@ we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \scaledel
 In particular, $\xk \in \scaledellipsek$.
 \end{proof}
 
-Note that while applying \cref{quadratic_errors},
-we assumed there is a point on the boundary of the sphere after running
-\cref{model_improving_algorithm}.
-In practice, this is not always ensured, but it is likely to be the case when a point of $Y$ is replaced.
+% Note that while applying \cref{quadratic_errors},
+% we assumed there is a point on the boundary of the sphere after running
+% \cref{model_improving_algorithm}.
+% In practice, this is not always ensured, but it is likely to be the case when a point of $Y$ is replaced.
 
 
 % Notice that although \cref{linear_accuracy_is_satisfied} requires $\delta \le 1$, the authors of  show that $\dk \to 0$ within Lemma 3.1 and Lemma 3.2.

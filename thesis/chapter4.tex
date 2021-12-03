@@ -298,8 +298,8 @@ That is, there exists a $\sigmamax \ge 1$ and $\dacc > 0$ such that if $\dk \le 
 \begin{align}
 \condition \left(\qk\right) \le \sigmamax. \label{define_suitable_condition_numbers}
 \end{align}
-\item The tuple $\left(\qkpo, \ckpo, \sdkpo\right)$ is \emph{trusted} for $\xkpo, \dkpo$ if an ellipsoid defined by $\qkpo, \ckpo, \sdkpo$ 
-lies within $ \capcones \cap \trkpo $. 
+\item The tuple $\left(\qkpo, \ckpo, \sdkpo\right)$ is \emph{trusted} for $\xkpo, \dkpo$ if an ellipsoid defined by 
+$\qkpo$, $\ckpo$, $\sdkpo$ lies within $ \capcones \cap \trkpo $. 
 That is,
 \begin{align}
 \unshiftedellipsoidkpo \subseteq \capcones \cap \trkpo  \label{define_suitable_in_tr}
@@ -2864,7 +2864,7 @@ while we apply it to our particular construction in \cref{accuracy_is_satisfied}
 % \hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u)), &  \quad \textrm{and} \quad \hat c_i (u) = c(T^{-1}(u))& \forall i \in [m]
 % \end{array}
 % \end{align*}
-% After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{quadratic_errors} that
+% After using \cref{model_improving_algorithm} to choose sample points, we know by  that
 % \end{aligorithm}
 
 
@@ -2903,7 +2903,7 @@ As also described in \cref{shifted_ellipsoid}, we create transformed functions
 \hat {m}_{c_i}(u) = m_{c_i}(T^{-1}(u; \delta)), &  \quad \textrm{and} \quad \hat c_i (u) = c(T^{-1}(u; \delta))& \forall i \in [m]
 \end{array}
 \end{align*}
-Just as in \cref{linear_accuracy_is_satisfied}, after using \cref{model_improving_algorithm} and to choose sample points, we know by \cref{set_is_poised} and \cref{3_16_replacement} that there
+Just as in \cref{linear_accuracy_is_satisfied}, after using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised} and \cref{3_16_replacement} that there
 there exist constants $\kappa_f, \kappa_g, \kappa_h$, independent of $k$, such that for all $u \in B_2(0; \delta)$ and all $i \in [m]$:
 \begin{align*}
 \begin{array}{cc}
@@ -3273,7 +3273,7 @@ Cancelling terms, we see
 + \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2 \\
 + \kappa_g \dk^2 \left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|}.
 \end{align*}
-Because the last term is positive, we can only decrease the expression by multiplying by $\nu^T \frac{\gmcik}{\|\gmcik\|} \le 1$:
+Because the last term is positive, and $\nu^T \frac{\gmcik}{\|\gmcik\|} \le 1$, we can scale the last term to yield:
 \begin{align*}
 0\ge \alpha \dk^{p_{\alpha}} c_i(\xk) + \maxhessian \frac {c_i(\xk)^2}{\|\gmcik\|^2}\left(1 - \alpha \dk^{p_{\alpha}}\right)^2  \\
 + \kappa_g \dk^2 \left(1 - \alpha \dk^{p_{\alpha}}\right)\frac{-c_i(\xk)}{\|\gmcik\|^2}\nu^T\gmcik.

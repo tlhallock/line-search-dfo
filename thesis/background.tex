@@ -254,29 +254,29 @@ $B \subset\Rn$ if and only if the Lagrange polynomials $l_i$ associated with $Y$
 In the case of interpolation over the quadratic polynomials, 
 $ \mathcal{P}^2_n$, we say that $Y$ is \emph{$\Lambda$-poised for quadratic interpolation}.
 
-\color{red}
-The concept of $\Lambda$-poisedness yields the following error bounds, as shown in
- \cite[Theorem 3.16]{introduction_book}:
+% \color{red}
+% The concept of $\Lambda$-poisedness yields the following error bounds, as shown in
+%  \cite[Theorem 3.16]{introduction_book}:
 
-\begin{theorem}
-\label{quadratic_errors}
+% \begin{theorem}
+% \label{quadratic_errors}
 
-Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$
-sample points and $\Delta = \max_{1 \le j \le p} \|y^{(j)}-y^{(0)}\|$.
-Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B_2(y^{(0)}; \Delta)$.
-Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$
-such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$
-that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B_2(y^{(0)};\Delta)$:
-
-\begin{align}
-\|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_hessian}\\
-\|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_gradient} \\
-|f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta), \label{error_in_function} 
-\end{align}
-where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
-\end{theorem}
-
-\color{black}
+% Let $Y = \{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\} \subset \Rn$ be a set of $p+1=\frac{(n+1)(n+2)}{2}$
+% sample points and $\Delta = \max_{1 \le j \le p} \|y^{(j)}-y^{(0)}\|$.
+% Suppose that $Y$ is $\Lambda$-poised for quadratic interpolation on $B_2(y^{(0)}; \Delta)$.
+% Then, for any constant $L > 0$, there exist constants $\kappa_{h}, \kappa_{g}$, and $\kappa_{f}$
+% such that the following error bounds hold for any function $f:\Rn \rightarrow \reals$
+% that is $LC^2$ with Lipschitz constant $L$ on an open set containing $B_2(y^{(0)};\Delta)$:
+% 
+% \begin{align}
+% \|\nabla^2 f(y) - \nabla^2 m_f(y)\| \le \kappa_{h} \Delta \quad \forall y \in B_2(y^{(0)}; \Delta), \\
+% \|\nabla f(y) - \nabla m_f(y)\| \le \kappa_{g} \Delta^2 \quad \forall y \in B_2(y^{(0)}; \Delta),  \\
+% |f(y) - m_f(y) | \le \kappa_{f} \Delta^3 \quad \forall y \in B_2(y^{(0)}; \Delta), 
+% \end{align}
+% where $m_f$ is the quadratic model function interpolating $f$ on $Y$.
+% \end{theorem}
+% 
+% \color{black}
 
 There is a close connection between the $\Lambda$-poisedness of $Y$ and the condition number of the Vandermonde matrix 
 associated with the monomial basis for $\mathcal{P}^2_n$
@@ -328,7 +328,7 @@ Thus,
 \end{proof}
 
 
-The following two auxilary results are found in \cite[Lemma 3.10]{introduction_book} and \cite[Lemma 3.13]{introduction_book}.
+To show the converse, we use the two auxilary results are found in \cite[Lemma 3.10]{introduction_book} and \cite[Lemma 3.13]{introduction_book}.
 \begin{lemma}
 \label[lemma]{lemma_3_10}
 Let $\bar \Phi$ be the monomial basis \cref{define_monomial}.
@@ -349,24 +349,37 @@ Then, for any vector $r \in \Rn$,
 \label[lemma]{scale_the_radius}
 Let $\bar \Phi$ be the monomial basis \cref{define_monomial}.
 Suppose that a set $Y \subseteq B_2(0; \Delta)$ of $p+1 = \frac{(n+1)(n+2)}2$ points is $\Lambda$ poised over the ball $B_2(0; \Delta)$.
-Also, let $\hat Y = \frac 1 {\Delta} Y$ be the scaled sample set.
-Then there exists a constant $\kappa_{\Lambda}$ depending only on $p$ such that $\hat M\left(\bar \Phi, \hat Y\right)$ as defined in \cref{vandermonde}, satisfies
-$\left\|\hat M\left(\bar \Phi, \hat Y\right)^{-1}\right\| \le \kappa_{\Lambda} \Lambda$.
+Let $\hat Y = \frac 1 {\Delta} Y$ be the scaled sample set.
+Then there exists a constant $\kappa_{\Lambda}$ depending only on $p$ such that 
+$ M\left(\bar \Phi, \hat Y\right)$ as defined in \cref{vandermonde}, satisfies
+$\left\| M\left(\bar \Phi, \hat Y\right)^{-1}\right\| \le \kappa_{\Lambda} \Lambda$.
 \end{lemma}
 
 \begin{proof}
 % By \cref{Lambda_poised_error_bounds_delta} and $\delta \le 1$, we must only bound $\|M^{-1}\left(\bar \Phi, Y\right)\|$
 % where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
+Because $\Lambda$-poisedness is scale invariant (this is an immediate consequence of \cite[Lemma 3.8]{introduction_book}), 
+$\hat Y$ is $\Lambda$-poised on $B(0, 1)$.
 Let $\bar v$ be a normalized right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ corresponding to its largest singular value.
-Because $\left\|\bar v\right\| = 1$, we know from \cref{lemma_3_10} that there exists $y \in B_2\left(0; 1\right)$ such that
+Let $w = \frac{v}{\left\|v\right\|_{\infty}}$, so that $\left\|w\right\|_{\infty} = 1$.
+We know from \cref{lemma_3_10} that there exists $y \in B_2\left(0; 1\right)$ such that
 \begin{align*}
-\left| {\bar v}^T \bar {\phi}(y) \right| \ge \sigma_2 \ge \frac {\sigma_{\infty}}{\sqrt{p+1}}.
+\left| {\bar v}^T \bar {\Phi}(y) \right| \ge {\sigma_{\infty}}.
 \end{align*}
-By applying \cref{lemma_3_13} with $A={\bar M}^{-1}\left(\bar \Phi, \hat Y\right)$, $w = \bar v$, and $r = \bar \phi(y)$,
+Then, because $\hat Y$ is $\Lambda$-poised on $B_2(0; 1)$, we have that 
 \begin{align*}
-\Lambda \ge \left\|M^{-1}\left(\bar \Phi, \hat Y\right) \bar{\phi}(y)\right\| \ge |\bar v^T \bar \phi(y)| \left\|M^{-1}\left(\bar \Phi, Y\right)\right\|.
+\Lambda 
+\ge \left\|l(y)\right\|_{\infty} 
+= \left\|M\left(\bar \Phi, Y\right)^{-T} \bar \Phi(y)\right\|_{\infty}
+\ge \left(p+1\right)^{-\frac1 2 }\left\|M^{-T}\left(\bar \Phi, \hat Y\right) \bar{\Phi}(y)\right\|.
 \end{align*}
-Thus, we must only let $\kappa_{\Lambda} = \frac {\sqrt{p+1}}{\sigma_{\infty}}$.
+By applying \cref{lemma_3_13} with $A={\bar M}^{-T}\left(\bar \Phi, \hat Y\right)$, $w = \bar v$, and $r = \bar \Phi(y)$,
+\begin{align*}
+\Lambda 
+\ge \left(p+1\right)^{-\frac1 2 }\left\|M^{-T}\left(\bar \Phi, \hat Y\right) \bar{\Phi}(y)\right\|
+\ge \left(p+1\right)^{-\frac1 2 }|\bar v^T \bar \Phi(y)| \left\|M^{-T}\left(\bar \Phi, Y\right)\right\|.
+\end{align*}
+The conclusion follows with $\kappa_{\Lambda} = \frac {\sqrt{p+1}}{\sigma_{\infty}}$.
 
 \end{proof}
 
@@ -378,8 +391,7 @@ First, we state the following lemma, found in \cite[Lemma 4.1.14]{dennisschnabel
 \begin{theorem}
 \label{4_1_14}
 Let $f : \Rn \to \reals$ be twice continuously differentiable in an open convex set $D \subset \Rn$,
-and let $\nabla^2 f(x)$ be Lipschitz continuous at $x$ in the neighborhood of $D$, 
-using a vector norm and the induced matrix operator norm and the constant $\gamma$.
+and let $\nabla^2 f(x)$ be Lipschitz continuous in $D$ with constant $\gamma$.
 Then, for any $x + p\in D$,
 \begin{align*}
 \left|f(x + p) - \left(f(x) + \nabla f(x)^T p + \frac 1 2 p^T \nabla^2 f(x)p\right) \right|
@@ -397,9 +409,10 @@ For some $c \in \reals, g \in \Rn, H \in \reals^{n \times n}$, consider a quadra
 \begin{align}
 f\left(y^{(i)}\right) = m\left(y^{(i)}\right) \quad \forall 0 \le i \le p. \label{nce_interpolation_condition}
 \end{align}
-Also, let $M(\bar \Phi,Y)$ be constructed as in \cref{vandermonde} and non-singular, and define the scaled matrix
+Let $M(\bar \Phi,Y)$ be constructed as in \cref{vandermonde} and $\bar \Phi$ is the monomial basis \cref{define_monomial}.
+Suppose that $M(\bar \Phi,Y)$ is non-singular, and define the scaled matrix
 \begin{align}
-\hat M(\bar \Phi, Y) = M(\bar \Phi,Y) \begin{pmatrix}
+\hat M\left(\bar \Phi, Y\right) = M\left(\bar \Phi, \frac 1 {\Delta} Y\right) = M\left(\bar \Phi,Y\right) \begin{pmatrix}
 1 & 0 & 0 \\
 0 & \Delta^{-1} I_n & 0 \\
 0 & 0 & \Delta^{-2} I_{n + \frac{n(n-1)}{2}}
@@ -407,24 +420,21 @@ Also, let $M(\bar \Phi,Y)$ be constructed as in \cref{vandermonde} and non-singu
 \end{align}
 Then, there exist constants $\kappa_f, \kappa_g, \kappa_h>0$ that depend only on $p$ and $\liphess$ such that
 for any $y \in B_2\left(0; \Delta\right)$:
-\begin{align*}
-\left|m(y) - f(y)\right| &\le \kappa_f \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^3, \\
-\left\|\nabla m(y) - \nabla f(y)\right\| &\le \kappa_g \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta^2, \\
-\left\|\nabla^2 m(y) - \nabla^2 f(y)\right\| &\le \kappa_h \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta.
-\end{align*}
+\begin{align}
+\left|m(y) - f(y)\right| &\le \kappa_f \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta^3, \label{error_in_function}  \\
+\left\|\nabla m(y) - \nabla f(y)\right\| &\le \kappa_g \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta^2, \label{error_in_gradient} \\
+\left\|\nabla^2 m(y) - \nabla^2 f(y)\right\| &\le \kappa_h \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2\Delta. \label{error_in_hessian}
+\end{align}
 \end{theorem}
 
 \begin{proof}
-
-
 Let $y \in B_2(0; \Delta)$.
-Let us define $e_f$, $e_g$ and $e_h$ so that
+Let us define error functions $e_f$, $e_g$ and $e_h$ so that
 \begin{align}
 m(y) = c + g^T y + \frac 1 2 y^T H y = f(y) + e_f(y) \label{define_e_f}, \\
 \nabla m(y) = g + H y = \nabla f(y) + e_g(y), \nonumber \\
 \nabla^2 m(y) = H = \nabla^2 f(y) + e_h(y). \nonumber
 \end{align}
-
 For a fixed $0 \le i \le p$, we can subtract \cref{define_e_f} from \cref{nce_interpolation_condition} to find that
 \begin{align}
 f\left(y^{(i)}\right) - f(y) - e_f(y)
@@ -439,13 +449,12 @@ f\left(y^{(i)}\right) - f(y) - e_f(y)
 % \frac{\partial^3}{\partial_{x_j}\partial_{x_k}\partial_{x_l}}f(y)
 % \frac{(x_j - y_j)(x_k - y_k)(x_l - y_l)}{(\delta_j^k + \delta_j^l + \delta_k^l)!},
 % \end{align*}
-
 By defining
 \begin{align*}
 e^{(i)}_O(y) = 
 f\left(y^{(i)}\right) - \left[f(y) + \nabla f(y)^T \left(y^{(i)} - y\right) + \frac 1 2 \left(y^{(i)} - y\right)^T \nabla^2 f(y) \left(y^{(i)} - y\right)\right],
 \end{align*}
-we can use \cref{4_1_14} with $\gamma = \liphess$, $p = y^{(i)} - y$ to conclude
+we can use \cref{4_1_14} with $\gamma = \liphess$ and $p = y^{(i)} - y$ to conclude
 \begin{align}
 \left|e^{(i)}_O\left(y\right) \right| \le \frac 1 6 \liphess \left\|y^{(i)} - y\right\|^3 \le \frac 4 3 \liphess \Delta^3 \label{nce_bound_rhs}.
 \end{align}
@@ -466,29 +475,29 @@ e^{(i)}_O\left(y\right) - e_f(y) = \left(y^{(i)} - y\right)^Te_g(y) +
 \end{align*}
 or
 \begin{align}
-e^{(i)}_O\left(y\right) = \left[e_f(y) - y^T e_g(y) + y^T \left[H - \nabla^2f(y)\right]y \right] \nonumber \\
-+ \left[e_g(y) + \left(H - \nabla^2 f(y)\right)y\right]^T y^{(i)}
+e^{(i)}_O\left(y\right) &= \bigg[e_f(y) - y^T e_g(y) + \frac 1 2 y^T \left[H - \nabla^2f(y)\right]y \bigg] \nonumber \\
+&+ \bigg[e_g(y) + \left(H - \nabla^2 f(y)\right)y\bigg]^T y^{(i)}
 + \frac 1 2 \left(y^{(i)}\right)^T \left[H - \nabla^2 f(y)\right]\left(y^{(i)}\right).
 \label{nec_eqn1}
 \end{align}
 To put this equation in matrix form, we introduce some notation.
-Given some $n \times n$ matrix $A$, let $e_Q : \reals^n \times \reals^n \to \reals^{n + \frac {n(n-1)} 2}$
-be defined by
+Given some $n \times n$ matrix $A$, let $e_U : \reals^n \times \reals^n \to \reals^{n + \frac {n(n-1)} 2}$
+linearize the upper triangular portion of $A$:
 \begin{align*}
-e_Q\left(A\right) =
+e_U\left(A\right) =
 \left(\frac 1 2 A_{1, 1} \;,\; \frac 1 2 A_{2, 2} \;,\; \ldots \;,\; \frac 1 2 A_{n, n} \;,\; A_{1, 2} \;,\; A_{1, 3} \;,\; \ldots \;,\; A_{n-1, n} \right)^T
 % \begin{pmatrix}
 % \frac 1 2 A_{1, 1} \\ \frac 1 2 A_{2, 2} \\ \vdots \\ \frac 1 2 A_{n, n} \\ A_{1, 2} \\ A_{1, 3} \\ \vdots \\ A_{n-1, n}
 % \end{pmatrix}
 \end{align*}
-in a similar order to that used in $\bar \Phi$.
+in a similar order to that used in $\bar \Phi$ (see \cref{define_monomial}).
 % \begin{pmatrix}
 % e^{(0)}_O\left(\Delta^3\right) \\
 % e^{(1)}_O\left(\Delta^3\right) \\
 % \vdots \\
 % e^{(p)}_O\left(\Delta^3\right)
 % \end{pmatrix}
-Then, with $e_O\left(\Delta\right) = \left(
+Then, with $e_O\left(y \right) = \left(
 e^{(0)}_O\left(y\right),
 e^{(1)}_O\left(y\right),
 \ldots ,
@@ -498,11 +507,11 @@ we have that \cref{nec_eqn1} becomes
 \begin{align*}
 M\left(\Phi, Y\right)
 \begin{pmatrix}
-e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
-e_g(y) + e_H(y) y \\
-e_Q\left(e_H(y)\right)
+e_f(y) + y^Te_g(y) + y^Te_h(y) y \\
+e_g(y) + e_h(y) y \\
+e_U\left(e_h(y)\right)
 \end{pmatrix}
-= e_O\left(\Delta\right)
+= e_O\left(\Delta\right).
 % \begin{pmatrix}
 % e^{(0)}_O\left(\Delta^3\right) \\
 % e^{(1)}_O\left(\Delta^3\right) \\
@@ -517,13 +526,14 @@ e_Q\left(e_H(y)\right)
 % e_T\left(\xi^{(p)}; y\right)
 % \end{pmatrix}
 \end{align*}
-After taking the norm, and simplifying with $\kappa_0 = \frac 4 3 \sqrt{p+1}\liphess$, we have
+% After taking the norm, and simplifying with $\kappa_0 = \frac 4 3 \sqrt{p+1}\liphess$, we have
+Thus,
 \begin{align*}
 \left\|M(\bar \Phi,Y)
 \begin{pmatrix}
-e_f(y) + y^Te_g(y) + y^Te_H(y) y \\
-e_g(y) + e_H(y) y \\
-e_Q\left(e_H(y)\right)
+e_f(y) + y^Te_g(y) + y^Te_h(y) y \\
+e_g(y) + e_h(y) y \\
+e_Q\left(e_h(y)\right)
 \end{pmatrix}\right\|_2
 &\le \left\|e_O\left(\Delta\right)\right\|_2 \\
 &\le \sqrt{p+1} \left\|e_O\left(\Delta\right)\right\|_{\infty} \\
@@ -535,8 +545,9 @@ e_Q\left(e_H(y)\right)
 % \end{pmatrix}
 &\le
 \frac 4 3 \sqrt{p+1} L_{\nabla^2} \Delta^3 \\
-&= \kappa_0 \Delta^3.
+&= \kappa_0 \Delta^3,
 \end{align*}
+where $\kappa_0 = \frac 4 3 \sqrt{p+1}\liphess$.
 To remove the dependence of $\Delta$ on $M(\bar \Phi,Y)$, we rewrite this with a scaling matrix:
 \begin{align*}
 \left\|M\left(\bar \Phi, Y\right)\begin{pmatrix}
@@ -564,7 +575,7 @@ We see that \cref{nce_third} immediately provides
 \le \sqrt{2} \left\|e_Q\left(e_H(y)\right)\right\|_2
 \le \sqrt{2}\kappa_0 \left\|\hat M^{-1}(\bar \Phi, Y) \right\|_2 \Delta
 \end{align*}
-where $\left\|\cdot\right\|_F$ is the frebeneous norm $\left\|A\right\|_F = \sqrt{\sum_i\sum_jA_{i, j}^2}$.
+where $\left\|\cdot\right\|_F$ is the Frobenius norm $\left\|A\right\|_F = \sqrt{\sum_i\sum_jA_{i, j}^2}$.
 Similarily, the triangle inequality and \cref{nce_second} imply
 \begin{align*}
 \left\|e_g\left(y\right)\right\|_2 &\le \left\|e_g(y) + e_H(y) y \right\|_2 + \left\|e_H\left(y\right)\right\|_2\left\| y\right\|_2 \\
@@ -668,6 +679,9 @@ we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 %where $\Lambda$ is inversely proportional to $\xi_{\min}$, as given by \cref{set_is_poised}.
 %\sbnote{I changed the last line of Step 2 in the algorithm to include a \textbf{Stop}}
 
+
+Notice that \cref{model_improving_algorithm} constructs a set of pivot polynomials $u = \left\{u_0, u_1, \ldots, u_p\right\}$,
+and that $M(u, Y)$ is the upper triangular factor of the LU factorization of $M(\bar \Phi, Y)$.
 The first instruction of Step 1 of \cref{model_improving_algorithm} ensures that the first point is not replaced.
 The first basis polynomial is always $1$, so can be sure that the first pivot will not need to be replaced.
 
@@ -742,9 +756,10 @@ Finally,  observe that all points in the final sample set $Y$ are selected eithe
 \begin{theorem}
 \label{set_is_poised}
 
-Let $\Delta \ge 1$, and suppose that \cref{model_improving_algorithm} is called on a sample set $Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\}$ 
+Let $\Delta \ge 1$, and suppose that \cref{model_improving_algorithm} is called on a sample set 
+$Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\} \subset B_2(0; \Delta)$ 
 resulting in a new sample set $\hat Y$,
-and let $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
+and let $\bar{\Phi}$ be the monomial basis \cref{define_monomial}.
 Then,
 \begin{itemize}
 \item $\left\|M(\bar \Phi, \hat Y)^{-1}\right\|_2$ as defined by \cref{vandermonde}, is bounded by a constant depending only on $p$ and $\ximin$.
@@ -854,7 +869,8 @@ $\chik(x) = \norm{\nabla \mfk\left(x\right)}.$
 Note however that $\chik$ is only an accurate approximation of $\chi(x)$ if the gradient of the model function $\nabla \mfk(x)$ is a close approximation to $\nabla f(x)$.
 For this reason, derivative-free algorithms require not only that $\chik(x)$ is small, but also that the model functions are accurate.
 To accomplish this, we require poised sample sets as discussed in \cref{geometry} with a trust-region converging to zero.
-Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$), we can terminate the algorithm.
+Once the criticality measure has reached a small enough threshold $\tolcrit > 0$ and the trust region is small enough ($\dk < \tau_{\Delta}$),
+we can terminate the algorithm.
 
 
 

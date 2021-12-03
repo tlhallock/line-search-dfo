@@ -628,4 +628,5 @@
       #1\strut}\renewcommand\baselinestretch{\@spacing}}}
 
 
+
 \setlength{\RaggedRightParindent}{\parindent}
