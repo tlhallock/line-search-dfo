@@ -363,21 +363,20 @@ $\hat Y$ is $\Lambda$-poised on $B(0, 1)$.
 Let $\bar v$ be a normalized right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ corresponding to its largest singular value.
 Let $w = \frac{v}{\left\|v\right\|_{\infty}}$, so that $\left\|w\right\|_{\infty} = 1$.
 We know from \cref{lemma_3_10} that there exists $y \in B_2\left(0; 1\right)$ such that
-\begin{align*}
-\left| {\bar v}^T \bar {\Phi}(y) \right| \ge {\sigma_{\infty}}.
-\end{align*}
+$\left| w^T \bar {\Phi}(y) \right| \ge {\sigma_{\infty}}$.
 Then, because $\hat Y$ is $\Lambda$-poised on $B_2(0; 1)$, we have that 
 \begin{align*}
 \Lambda 
 \ge \left\|l(y)\right\|_{\infty} 
 = \left\|M\left(\bar \Phi, Y\right)^{-T} \bar \Phi(y)\right\|_{\infty}
-\ge \left(p+1\right)^{-\frac1 2 }\left\|M^{-T}\left(\bar \Phi, \hat Y\right) \bar{\Phi}(y)\right\|.
+\ge \left(p+1\right)^{-\frac1 2 }\left\|M\left(\bar \Phi, \hat Y\right)^{-T} \bar{\Phi}(y)\right\|.
 \end{align*}
-By applying \cref{lemma_3_13} with $A={\bar M}^{-T}\left(\bar \Phi, \hat Y\right)$, $w = \bar v$, and $r = \bar \Phi(y)$,
+By applying \cref{lemma_3_13} with $A\gets{\bar M}\left(\bar \Phi, \hat Y\right)^{-T}$, $w \gets w$, and $r \gets \bar \Phi(y)$,
 \begin{align*}
 \Lambda 
-\ge \left(p+1\right)^{-\frac1 2 }\left\|M^{-T}\left(\bar \Phi, \hat Y\right) \bar{\Phi}(y)\right\|
-\ge \left(p+1\right)^{-\frac1 2 }|\bar v^T \bar \Phi(y)| \left\|M^{-T}\left(\bar \Phi, Y\right)\right\|.
+\ge \left(p+1\right)^{-\frac1 2 }\left\|M\left(\bar \Phi, \hat Y\right)^{-T} \bar{\Phi}(y)\right\|
+&\ge \left(p+1\right)^{-\frac1 2 }|w^T \bar \Phi(y)| \left\|M\left(\bar \Phi, Y\right)^{-T}\right\| \\
+&\ge \left(p+1\right)^{-\frac1 2 }\sigma_{\infty} \left\|M\left(\bar \Phi, Y\right)^{-T}\right\|.
 \end{align*}
 The conclusion follows with $\kappa_{\Lambda} = \frac {\sqrt{p+1}}{\sigma_{\infty}}$.
 
