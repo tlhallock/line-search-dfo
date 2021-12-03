@@ -832,13 +832,13 @@ and for any $\delta > 0$ define the transformation $T(x; \delta) = \frac{\delta}
 Notice that with $\delta = \delta_2 = \sqrt{2}$,
 the transformation $T\left(x; \delta_2\right)$ maps $\sampletrk = \ellipsek$ to the unit ball.
 After using \cref{model_improving_algorithm} to choose sample points, we know by \cref{set_is_poised}
-that there is a bound on $\left\| M\left(\bar \Phi, \hat Y\right)\right\|^{-1}$ depending only on $p$ and $\ximin$.
-Next, we consider the shifted sample set $\bar Y = \frac{\delta_r}{\delta_2} \hat Y$, where $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$.
+that there is a bound $\Lambda>0$ with $\left\| M\left(\bar \Phi, \hat Y\right)^{-1}\right\| \le \Lambda$ depending only on $p$ and $\ximin$.
+Next, we consider the shifted sample set $\bar Y = \sqrt{2}\frac{\delta_r}{\delta_2} \hat Y$, where $\delta_r = \max_{x \in \scaledellipsek}\|x - \ck\|$.
 Notice that the scaled matrix in $\cref{nce_scale}$ is $M\left(\bar\Phi, \hat Y\right) = \hat M\left(\bar \Phi, \bar Y\right)$, so we can use \cref{3_16_replacement} to introduce constants $\kappa_f, \kappa_g, \kappa_h > 0$ such that
 \begin{align*}
-\left| \hat {f}\left(u\right) - \hat{m}_f\left(u\right) \right|\le \kappa_f \delta_r^3, \\
-\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g \delta_r^2, \\
-\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h \delta_r.
+\left| \hat {f}\left(u\right) - \hat{m}_f\left(u\right) \right|\le \kappa_f\Lambda \delta_r^3, \\
+\left\|\nabla \hat {f}\left(u\right) - \nabla \hat{m}_f\left(u\right) \right\|\le \kappa_g\Lambda \delta_r^2, \\
+\left\|\nabla^2 \hat {f}\left(u\right) - \nabla^2 \hat{m}_f\left(u\right) \right\|\le \kappa_h\Lambda \delta_r.
 \end{align*}
 for all $u \in B_2\left(0, \delta_r\right)$.
 This means that the shifted functions
@@ -872,12 +872,12 @@ and therefore \cref{transformed_error_bounds}---\cref{transformed_error_bounds3}
 
 % After using  \cref{alphas_are_bounded} to construct an $\epsilon_{\alpha} > 0$ 
 Because $\condition \left(\qk\right)$ is bounded by some $\epsilon_{\alpha} > 0$ independently of $k$,
-and defining $\kappa'_{g} =  \kappa_g\sqrt{\epsilon_{\alpha}}\dmax$, we see that
+and defining $\kappa'_{g} =  \kappa_g\sqrt{\epsilon_{\alpha}}\Lambda\dmax$, we see that
 we can use  \cref{shifted_ellipsoid} to conclude that for all $x_0 \in \scaledellipsek$:
 \begin{align*}
 \left\|\nabla f\left(x_0 \right) - \nabla m_f\left(x_0\right)\right\| \le 
-\kappa_g  \dk^2 \sqrt{\condition \left(\frac 2 {\delta_k} Q^{(k)}\right)}
-=  \kappa_g \sqrt{\epsilon_{\alpha}}\dmax\dk 
+\kappa_g  \Lambda\dk^2 \sqrt{\condition \left(\frac 2 {\delta_k} Q^{(k)}\right)}
+=  \kappa_g \sqrt{\epsilon_{\alpha}}\Lambda\dmax\dk 
 = \kappa'_g\dk.
 \end{align*}
 In particular, $\xk \in \scaledellipsek$.
