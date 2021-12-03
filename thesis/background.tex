@@ -360,10 +360,10 @@ $\left\| M\left(\bar \Phi, \hat Y\right)^{-1}\right\| \le \kappa_{\Lambda} \Lamb
 % where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
 Because $\Lambda$-poisedness is scale invariant (this is an immediate consequence of \cite[Lemma 3.8]{introduction_book}), 
 $\hat Y$ is $\Lambda$-poised on $B(0, 1)$.
-Let $\bar v$ be a normalized right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ corresponding to its largest singular value.
-Let $w = \frac{v}{\left\|v\right\|_{\infty}}$, so that $\left\|w\right\|_{\infty} = 1$.
+Let $v$ be a right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ 
+corresponding to its largest singular value normalized so that $\left\|v\right\|_{\infty} = 1$.
 We know from \cref{lemma_3_10} that there exists $y \in B_2\left(0; 1\right)$ such that
-$\left| w^T \bar {\Phi}(y) \right| \ge {\sigma_{\infty}}$.
+$\left| v^T \bar {\Phi}(y) \right| \ge {\sigma_{\infty}}$.
 Then, because $\hat Y$ is $\Lambda$-poised on $B_2(0; 1)$, we have that 
 \begin{align*}
 \Lambda 
@@ -371,11 +371,11 @@ Then, because $\hat Y$ is $\Lambda$-poised on $B_2(0; 1)$, we have that
 = \left\|M\left(\bar \Phi, Y\right)^{-T} \bar \Phi(y)\right\|_{\infty}
 \ge \left(p+1\right)^{-\frac1 2 }\left\|M\left(\bar \Phi, \hat Y\right)^{-T} \bar{\Phi}(y)\right\|.
 \end{align*}
-By applying \cref{lemma_3_13} with $A\gets{\bar M}\left(\bar \Phi, \hat Y\right)^{-T}$, $w \gets w$, and $r \gets \bar \Phi(y)$, we have
+By applying \cref{lemma_3_13} with $A\gets{\bar M}\left(\bar \Phi, \hat Y\right)^{-T}$, $w \gets v$, and $r \gets \bar \Phi(y)$, we have
 \begin{align*}
 \Lambda 
 \ge \left(p+1\right)^{-\frac1 2 }\left\|M\left(\bar \Phi, \hat Y\right)^{-T} \bar{\Phi}(y)\right\|
-&\ge \left(p+1\right)^{-\frac1 2 }|w^T \bar \Phi(y)| \left\|M\left(\bar \Phi, Y\right)^{-T}\right\| \\
+&\ge \left(p+1\right)^{-\frac1 2 }|v^T \bar \Phi(y)| \left\|M\left(\bar \Phi, Y\right)^{-T}\right\| \\
 &\ge \left(p+1\right)^{-\frac1 2 }\sigma_{\infty} \left\|M\left(\bar \Phi, Y\right)^{-T}\right\|.
 \end{align*}
 The conclusion follows with $\kappa_{\Lambda} = \frac {\sqrt{p+1}}{\sigma_{\infty}}$.
