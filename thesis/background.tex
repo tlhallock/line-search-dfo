@@ -293,9 +293,9 @@ Then we have the following result:
 \label{Lambda_poised_error_bounds}
 
 (\cite[Theorem 3.14]{introduction_book})
-Let $\hat{M} = M(\bar{\Phi},\hat{Y})$, and $p = \frac{(n+1)(n+2)}{2}$.
-If $\hat{M}$ is  non-singular and $\left\|\hat{M}^{-1}\right\|_2 \le \Lambda$,   
-then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised in the unit ball $B_2(0;1)$.  
+Let $\hat{M} = M(\bar{\Phi},\hat{Y})$, and $p + 1 = \frac{(n+1)(n+2)}{2}$.
+If $\hat{M}$ is non-singular and $\left\|\hat{M}^{-1}\right\|_2 \le \Lambda$,   
+then the set $\hat{Y}$ is $\Lambda  \sqrt{p+1}$-poised for quadratic interpolation on the unit ball $B_2(0;1)$.  
 Conversely, if the set $\hat{Y}$ is $\Lambda$-poised for quadratic interpolation on the unit ball, 
 then $\left\|\hat{M}^{-1}\right\|_2 \le \theta \Lambda \sqrt{p+1}$, where $\theta > 0$ is a 
 constant dependent on $n$ but independent of $\hat{Y}$ and $\Lambda$.
@@ -377,7 +377,7 @@ First, we state the following lemma, found in \cite[Lemma 4.1.14]{dennisschnabel
 
 \begin{theorem}
 \label{4_1_14}
-Left $f : \Rn \to \reals$ be twice continuously differentiable in an open convex set $D \subset \Rn$,
+Let $f : \Rn \to \reals$ be twice continuously differentiable in an open convex set $D \subset \Rn$,
 and let $\nabla^2 f(x)$ be Lipschitz continuous at $x$ in the neighborhood of $D$, 
 using a vector norm and the induced matrix operator norm and the constant $\gamma$.
 Then, for any $x + p\in D$,
@@ -711,7 +711,7 @@ Then,
 \label[lemma]{terminates}
 
 For any given $\xi_{\min} \in (0,1/4]$, \cref{model_improving_algorithm}
-computes a set $Y$ of $p+1$ points in the ball $B_2(0;\Delta)$ for which the pivots of the Gaussian elimination of
+computes a set $Y$ of $p+1$ points in the ball $B_2(0;\Delta)$ for which the pivots of the LU factorization of
 $M=M(\bar{\Phi},Y)$ satisfy
 \begin{align*}
 \left\|u_i(y^{(i)})\right\| \ge \xi_{\min},  \quad i=0,\ldots,p.
@@ -720,7 +720,7 @@ $M=M(\bar{\Phi},Y)$ satisfy
 
 \begin{proof}
 
-The first pivot polynomial is $u_0 = (1, 0, \ldots, 0)$, so that $\left\|u_0\left(y^{(0)}\right)\right\| = 1 \ge \ximin$.
+The first pivot polynomial is $u_0(x) = 1 = (1, 0, \ldots, 0)\cdot \bar\Phi(x)$, so that $\left\|u_0\left(y^{(0)}\right)\right\| = 1 \ge \ximin$.
 For $i > 1$, the $(i+1)$st pivot polynomial $u_i(x)$ can be expressed as $v^T \bar{\Phi}(x)$,
 where $v = (v_0, \ldots, v_{i-1},1,0,\ldots,0)^T$.
 Observe that $\norm{v}_{\infty} \ge 1$.
