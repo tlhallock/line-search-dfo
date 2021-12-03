@@ -326,6 +326,49 @@ Thus,
 \end{proof}
 
 
+The following two auxilary results are found in \cite[Lemma 3.10]{introduction_book} and \cite[Lemma 3.13]{introduction_book}.
+\begin{lemma}
+\label[lemma]{lemma_3_10}
+Let $\bar \Phi$ be the monomial basis \cref{define_monomial}.
+There exists a number $\sigma_{\infty} > 0$ such that, for any choice of $v$ satisfying $\|v\|_{\infty} = 1$,
+there exists a $y \in B_2(0; 1)$ such that $\left|v^T\bar \Phi(y)\right| \ge \sigma_{\infty}$.
+\end{lemma}
+
+\begin{lemma}
+\label[lemma]{lemma_3_13}
+Let $w$ be a normalized right-singular vector of a nonsingular $n \times n$ matrix $A$ corresponding to its largest singular value.
+Then, for any vector $r \in \Rn$,
+\begin{align*}
+\|Ar\| \ge |w^T r| \|A\|.
+\end{align*}
+\end{lemma}
+
+\begin{lemma}
+\label[lemma]{scale_the_radius}
+Let $\bar \Phi$ be the monomial basis \cref{define_monomial}.
+Suppose that a set $Y \subseteq B_2(0; \Delta)$ of $p+1 = \frac{(n+1)(n+2)}2$ points is $\Lambda$ poised over the ball $B_2(0; \Delta)$.
+Also, let $\hat Y = \frac 1 {\Delta} Y$ be the scaled sample set.
+Then there exists a constant $\kappa_{\Lambda}$ depending only on $p$ such that $\hat M\left(\bar \Phi, \hat Y\right)$ as defined in \cref{vandermonde}, satisfies
+$\left\|\hat M\left(\bar \Phi, \hat Y\right)^{-1}\right\| \le \kappa_{\Lambda} \Lambda$.
+\end{lemma}
+
+\begin{proof}
+% By \cref{Lambda_poised_error_bounds_delta} and $\delta \le 1$, we must only bound $\|M^{-1}\left(\bar \Phi, Y\right)\|$
+% where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
+Let $\bar v$ be a normalized right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ corresponding to its largest singular value.
+Because $\left\|\bar v\right\| = 1$, we know from \cref{lemma_3_10} that there exists $y \in B_2\left(0; 1\right)$ such that
+\begin{align*}
+\left| {\bar v}^T \bar {\phi}(y) \right| \ge \sigma_2 \ge \frac {\sigma_{\infty}}{\sqrt{p+1}}.
+\end{align*}
+By applying \cref{lemma_3_13} with $A={\bar M}^{-1}\left(\bar \Phi, \hat Y\right)$, $w = \bar v$, and $r = \bar \phi(y)$,
+\begin{align*}
+\Lambda \ge \left\|M^{-1}\left(\bar \Phi, \hat Y\right) \bar{\phi}(y)\right\| \ge |\bar v^T \bar \phi(y)| \left\|M^{-1}\left(\bar \Phi, Y\right)\right\|.
+\end{align*}
+Thus, we must only let $\kappa_{\Lambda} = \frac {\sqrt{p+1}}{\sigma_{\infty}}$.
+
+\end{proof}
+
+
 Another limitation of \cref{Lambda_poised_error_bounds} is its requirement to have a point evaluated at the origin.
 We remove this assumption in \cref{3_16_replacement} by performing the same analysis as in \cite[Theorem 3.16]{introduction_book}.
 \begin{theorem}
@@ -708,49 +751,6 @@ where $\epsilon_{growth}$ is a potentially large, but finite estimate of the gro
 %However, \cite[Lemma 3.8]{introduction_book} and \cite[Lemma 3.9]{introduction_book} establish that $\Lambda$-poisedness is scale and translation invariant.
 \end{proof}
 
-% \cref{model_improving_algorithm} produces a shifted and scaled $\Lambda$-poised set over $B_2\left(0, \Delta\right)$.
-% We know show how to scale this set, as we will need well poised sets of radius $\dk$ as $\dk \to 0$.
-% The first two auxilary results are found in \cite[Lemma 3.10]{introduction_book} and \cite[Lemma 3.13]{introduction_book},
-% reproduced here for convenience.
-
-% \begin{lemma}
-% \label[lemma]{lemma_3_10}
-% There exists a number $\sigma_{\infty} > 0$ such that, for any choice of $v$ satisfying $\|v\|_{\infty} = 1$,
-% there exists a $y \in B_2(0; 1)$ such that $\left|v^T\phi(y)\right| \ge \sigma_{\infty}$.
-% \end{lemma}
-%
-% \begin{lemma}
-% \label[lemma]{lemma_3_13}
-% Let $w$ be a normalized right-singular vector of a nonsingular $n \times n$ matrix $A$ corresponding to its largest singular value.
-% Then, for any vector $r \in \Rn$,
-% \begin{align*}
-% \|Ar\| \ge |w^T r| \|A\|.
-% \end{align*}
-% \end{lemma}
-
-% \begin{lemma}
-% \label{scale_the_radius}
-% Let $\Delta \ge 1$ be fixed, and supposed $\delta \in \left(0, \Delta^{-1}\right]$.
-% Suppose that a shifted and scaled set
-% $\hat Y \subset B_2\left(0;\Delta\right)$ is $\Lambda$-poised over the ball $B_2\left(0;\Delta\right)$.
-% Then, the set $Y = \delta \hat Y$ is $\hat \Lambda$ poised over $B_2\left(0, \delta \Delta\right)$,
-% where $\hat \Lambda$ depends only on $p$, $\Lambda$, and $\Delta$.
-% \end{lemma}
-%
-%
-% \begin{proof}
-% By \cref{Lambda_poised_error_bounds_delta} and $\delta \le 1$, we must only bound $\|M^{-1}\left(\bar \Phi, Y\right)\|$
-% where $\bar{\Phi}$ is the monomial basis \cref{define_monomial}.
-% Let $\bar v$ be a normalized right singular vector of $M^{-1}\left(\bar \Phi, Y\right)$ corresponding to its largest singular value.
-% % Because $\left\|\bar v\right\| = 1$, we know from \cref{lemma_3_10} that there exists a $y \in B_2\left(0; 1\right) \subseteq B_2\left(0; \Delta\right)$ such that
-% \begin{align*}
-% \left| {\bar v}^T \bar {\phi}(y) \right| \ge \sigma_2 \ge \frac {\sigma_{\infty}}{\sqrt{p_1}}.
-% \end{align*}
-% By applying \cref{lemma_3_13} with $A={\bar M}^{-1}$, $w = \bar v$, and $r = \bar \phi(y)$,
-% \begin{align*}
-% \left\|M^{-1}\left(\bar \Phi, Y\right) \bar{\phi}(y)\right\| \ge |\bar v^T \bar \phi(y)| \left\|M^{-1}\left(\bar \Phi, Y\right)\right\|,
-% \end{align*}
-% \end{proof}
 
 
 
