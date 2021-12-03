@@ -508,7 +508,7 @@ e_f(y) + y^Te_g(y) + y^Te_h(y) y \\
 e_g(y) + e_h(y) y \\
 e_U\left(e_h(y)\right)
 \end{pmatrix}
-= e_O\left(\Delta\right).
+= e_O\left(y \right).
 % \begin{pmatrix}
 % e^{(0)}_O\left(\Delta^3\right) \\
 % e^{(1)}_O\left(\Delta^3\right) \\
@@ -532,8 +532,8 @@ e_f(y) + y^Te_g(y) + y^Te_h(y) y \\
 e_g(y) + e_h(y) y \\
 e_Q\left(e_h(y)\right)
 \end{pmatrix}\right\|_2
-&\le \left\|e_O\left(\Delta\right)\right\|_2 \\
-&\le \sqrt{p+1} \left\|e_O\left(\Delta\right)\right\|_{\infty} \\
+&\le \left\|e_O\left(y\right)\right\|_2 \\
+&\le \sqrt{p+1} \left\|e_O\left(y\right)\right\|_{\infty} \\
 % \begin{pmatrix}
 % e^{(0)}_O\left(\Delta^3\right) \\
 % e^{(1)}_O\left(\Delta^3\right) \\
@@ -680,7 +680,7 @@ we add copies of $y^{(0)}$ to create a set with $p+1$ points.
 Notice that \cref{model_improving_algorithm} constructs a set of pivot polynomials $u = \left\{u_0, u_1, \ldots, u_p\right\}$,
 and that $M(u, Y)$ is the upper triangular factor of the LU factorization of $M(\bar \Phi, Y)$.
 The first instruction of Step 1 of \cref{model_improving_algorithm} ensures that the first point is not replaced.
-The first basis polynomial is always $1$, so can be sure that the first pivot will not need to be replaced.
+The first basis polynomial is always $1$, so we can be sure that the first pivot will not need to be replaced.
 
 Observe that \cref{model_improving_algorithm} uses a threshold parameter $\xi_{\min}$ to select the next sample point.
 If $\xi_{\min}$ is too large, it is possible that there might not exist a point $x \in B_2(0;1)$ 

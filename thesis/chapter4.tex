@@ -354,6 +354,7 @@ where $\unshiftedellipsoid$ is defined by \cref{define_unshifed_ellipsoid}.
 %There is a well known algorithm for constructing poised sets over spheres, and this algorithm can be easily generalized to an ellipsoid.
 %Therefore, we construct an ellipsoidal inner trust region to avoid the constraints.
 
+\pagebreak
 
 \subsection{Maximal volume sample region}
 \label{ideal_ellipsoid_in_polyhedron}
@@ -592,7 +593,7 @@ Using $\left(x^{\star}\right)^TQx^{\star} = 1$, the problem reduces to finding z
 \begin{align*}
 f(\lambda) = p^T\left(\lambda Q - I\right)^{-1}Q\left(\lambda Q - I\right)^{-1}p - 1.
 \end{align*}
-Notice 
+Notice that
 \begin{itemize}
 \item $f(0) = p^TQp - 1 > 0$
 \item $\lim_{\lambda \to \frac 1 {\lambda_i}} f(\lambda) = \infty$ for any eigenvalue $\lambda_i$
@@ -678,7 +679,7 @@ Although this may produce an ellipsoid with less volume, it may be used as a hot
 
 To compute the maximum volume sphere, we can maximize the minimum distance from the center of the sphere to any cone.
 We once again perform a change of variables, this time subtracting off $\xk$ and rotating $v^{(i)}$ onto the unit vector $e_1$.
-Thus, we we are left with projecting of an arbitrary point $(t, y) \in \Rn$ and the second order cone:
+Thus, we are left with projecting of an arbitrary point $(t, y) \in \Rn$ and the second order cone:
 $\left\{ x \in \mathbb R^n | \quad x^Te_1 = \beta \|x\| \right\}$ 
 for some $\beta \in \reals$.
 We find
@@ -855,6 +856,8 @@ Although more efficient formulations may exist, this leads us to believe that it
 to even compute the maximum volume sphere within the buffering cones.
 
 
+\pagebreak
+
 \subsection{Conservative ellipsoid}
 \label{the_conservative_ellipsoid}
 % \sbnote{I think it would be better to reorganize this section by defining the method for constructing the ellipsoid first, and then discuss its properties.
@@ -869,6 +872,7 @@ This ellipsoid is constructed in \cref{conservative_ellipsoid_construction}, and
 
 % \section{Conservative Ellipsoid Derivation}
 % \label{constructing_and_analysizing_conservative_ellipsoid}
+
 
 \subsubsection{Ellipsoid definition}
 \label{conservative_ellipsoid_construction}
