@@ -855,7 +855,6 @@ Notice that this optimization problem is not convex.
 Although more efficient formulations may exist, this leads us to believe that it may sometimes be expensive
 to even compute the maximum volume sphere within the buffering cones.
 
-
 \pagebreak
 
 \subsection{Conservative ellipsoid}
@@ -1668,6 +1667,7 @@ This allows us to replace \cref{restorability_assumption} with \cref{constraints
 
 We know that the algorithm was initialized with a set of sample points from a feasible, non-empty ellipsoid.
 This means that the interior of the convex hull of previously evaluated points will be non-empty.
+To do this, we first construct the convex hull of the points.
 
 % \frac{p_1!}{p_1!(p_1 - n)!} \\
 
@@ -1696,7 +1696,7 @@ This means that the interior of the convex hull of previously evaluated points w
 % \end{array}
 % \end{align}
 
-To do this, we first construct the convex hull of the points.
+\pagebreak
 
 {
 \begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
@@ -1709,15 +1709,7 @@ To do this, we first construct the convex hull of the points.
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
             Let $\hullpoly = \emptyset$ and $Y = \left\{y^{(0)}, y^{(1)}, \ldots, y^{(p)}\right\}$ be the previous sample points.
-            
- 		\end{itemize}
- 		\end{algorithm}
- 		
- 		\newpage
- 		
- 		\begin{algorithm}[H]
- 		\begin{itemize}
- 		
+
         \item[\textbf{Step 1}] \textbf{(Potentially add hyperplane)} \\
 	    For each subset $S \subseteq Y \cup \{x^{(k-1)}\}$ with $|S| = n - 1$, construct the hyper-plane $ax\le b$ running through the points $S \cup \xk$.
 	    If the inequality $ap \le b$ is valid for each $p \in Y \cup \{x^{(k-1)}\}$, add the pair $(a, b)$ to $\hullpoly$.
@@ -1873,6 +1865,8 @@ but it is still possible to exhaustively search over possible sample regions, at
 % \item Decrease trust region radius
 % \end{itemize}
 
+\pagebreak
+
 {
 \begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
 \begin{flushleft}
@@ -1889,14 +1883,6 @@ but it is still possible to exhaustively search over possible sample regions, at
         	For each of $M^{(i)}$ relatively equally spaced directions,
         	construct an ellipsoid at distance $R^{(i)}$ from $\xk$, that satisfies \cref{ellipsoids_notation_definitions}
         	
- 		\end{itemize}
- 		\end{algorithm}
- 		
- 		\newpage
- 		
- 		\begin{algorithm}[H]
- 		\begin{itemize}
- 		
         \item[\textbf{Step 2}] \textbf{(Construct sample points)} \\
         	Attempt to evaluate points within the ellipsoid.
         	If all points required to construct a $\Lambda$-poised sample set are feasible, return this ellipsoid.
@@ -2364,19 +2350,6 @@ k \gets 0; &
                 $x^{(k+1)} \gets \xk$,
                 $k \gets k+1$ and go to Step 1.
 		
-		
-        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
-        	Compute $\capcones$, $\slin$, and $\sk$ by
-        	\cref{define_capcones}, \cref{half_tr_subproblem}, and \cref{capcones_tr_subproblem}, respectively. \\
-        	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
-
-        \item[\textbf{Step 4}] \textbf{(Test for improvement)}.
-        	Compute $\rk$ by \cref{define_rhok}. \\
-			If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$. \\
-            If $\rk < \gammabi$, then $\dk \gets \min\omegadec\dk$. \\
-            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} = \dk$, then $\dk \gets \omegainc\dk$. \\
-            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} < \dk$, then $\dk \gets \dk$.
-
         \end{itemize}
  		\end{algorithm}
  		
@@ -2384,7 +2357,20 @@ k \gets 0; &
  		
  		\begin{algorithm}[H]
  		\begin{itemize}
+		
+        \item[\textbf{Step 3}] \textbf{(Solve the trust region subproblem)} \\
+        	Compute $\capcones$, $\slin$, and $\sk$ by
+        	\cref{define_capcones}, \cref{half_tr_subproblem}, and \cref{capcones_tr_subproblem}, respectively. \\
+        	If $\sk \not \in \feasible$ or not \cref{expected_reduction_check}, set $\Delta_{k+1} = \omegadec\dk$, $k \gets k+1$ and go to Step 1.
+
  		
+        \item[\textbf{Step 4}] \textbf{(Test for improvement)}.
+        	Compute $\rk$ by \cref{define_rhok}. \\
+			If $\rk < \gammasm$, then $\xkpo \gets \xk$, otherwise $\xkpo \gets \xk + \sk$. \\
+            If $\rk < \gammabi$, then $\dk \gets \min\omegadec\dk$. \\
+            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} = \dk$, then $\dk \gets \omegainc\dk$. \\
+            If $\rk \ge \gammabi$, and $\|\sk\|_{\infty} < \dk$, then $\dk \gets \dk$.
+
         \item[\textbf{Step 5}] \textbf{(Construct next sample region)} \\
 %         	Approximate $\activeconstraintskpo$ with $\approxactiveconstraintskpo$ defined by \cref{define_active_approximation} by checking if any $\zik \in B_{\infty}\left(\xkpo, \dkpo\right)$.
         	Compute $\sampletrkpo$ by \cref{define_ellipsek} if $\activeconstraintskpo \ne \emptyset$, otherwise \cref{define_trivial_ellipsek}. \\
@@ -2529,8 +2515,6 @@ We include references to their definitions when used.
 
 
 % \subsection{Restoration Assumption}
-
-\pagebreak
 
 \subsection{Assumptions}
 
@@ -2887,6 +2871,7 @@ while we apply it to our particular construction in \cref{accuracy_is_satisfied}
 % After using \cref{model_improving_algorithm} to choose sample points, we know by  that
 % \end{aligorithm}
 
+\pagebreak
 
 % \sbnote{Are the indices correct for the following lemma?  It looks like you are indexing the sample trust region used to construct $\mfk$ and $\mcik$ by $(k-1)$ rather than $(k)$.}
 \begin{lemma}
@@ -3013,7 +2998,6 @@ Then there exists a $\maxmodelhessian > 0$ such that
 whenever $\dk \le \dacc$.
 \end{lemma}
 
-\pagebreak
 
 \begin{proof}
 
