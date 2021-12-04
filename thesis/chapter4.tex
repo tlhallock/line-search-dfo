@@ -2038,13 +2038,13 @@ c_i(y) \le c_i(x_0) + \nabla c_i(x_0)^T (y - x_0) + \maxhessian \|y - x_0\|^2.
 
 Notice with a change of variables $v \gets y-x_0$ and $t\minangledirx + s \gets v$, and we have
 \begin{align*}
-C = \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \beta^{\star} \|v\| \right\}. \\
-= \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \left(1 + \frac {\minanglealpha^2} 4\right)^{-\frac 1 2} \|v\| \right\} \\
-= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 \le \left[1 + \frac {\minanglealpha^2} 4\right]\left(v^T\minangledirx\right)^2 \right\} \\
-= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 - 2 \left(v^T\minangledirx\right)^2 + \left(v^T\minangledirx\right)^2 \le \frac 1 4\left(v^T\minangledirx\right)^2 \minanglealpha^2 \right\} \\
-= \left\{x_0 + v \in \Rn \bigg |  t =  v^T\minangledirx, \|v\|^2 - 2 t v^T\minangledirx + t^2\left\|\minangledirx\right\|^2 \le \frac 1 4t^2 \minanglealpha^2 \right\} \\
-= \left\{x_0 + v \in \Rn \bigg | \left(v - t\minangledirx\right)^T \minangledirx = 0, \left\|v - t\minangledirx\right\| \le \frac 1 2 \minanglealpha t \right\} \\
-= \left\{x_0 + t \minangledirx + s \in \Rn \bigg | s^T \minangledirx = 0, \|s\| \le \frac 1 2 \minanglealpha t \right\}.
+C &= \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \beta^{\star} \|v\| \right\}. \\
+&= \left\{x_0 + v \in \Rn \bigg | v^T\minangledirx \ge \left(1 + \frac {\minanglealpha^2} 4\right)^{-\frac 1 2} \|v\| \right\} \\
+&= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 \le \left[1 + \frac {\minanglealpha^2} 4\right]\left(v^T\minangledirx\right)^2 \right\} \\
+&= \left\{x_0 + v \in \Rn \bigg | \|v\|^2 - 2 \left(v^T\minangledirx\right)^2 + \left(v^T\minangledirx\right)^2 \le \frac 1 4\left(v^T\minangledirx\right)^2 \minanglealpha^2 \right\} \\
+&= \left\{x_0 + v \in \Rn \bigg |  t =  v^T\minangledirx, \|v\|^2 - 2 t v^T\minangledirx + t^2\left\|\minangledirx\right\|^2 \le \frac 1 4t^2 \minanglealpha^2 \right\} \\
+&= \left\{x_0 + v \in \Rn \bigg | \left(v - t\minangledirx\right)^T \minangledirx = 0, \left\|v - t\minangledirx\right\| \le \frac 1 2 \minanglealpha t \right\} \\
+&= \left\{x_0 + t \minangledirx + s \in \Rn \bigg | s^T \minangledirx = 0, \|s\| \le \frac 1 2 \minanglealpha t \right\}.
 \end{align*}
 Now, $s^T \minangledirk = 0$ and $x_0 + v \in B$ imply that
 \begin{align*}
@@ -2059,10 +2059,10 @@ t \le \frac {2\minanglealpha  \min\{\mingrad, \frac{\mingradepsilon}{\minanglede
 \end{align*}
 by $\frac t 4$ to find
 \begin{align*}
-0 \ge \left(-1 + \frac 1 2\right) \minanglealpha \left\|\nabla c_i(x)\right\| t +  \maxhessian\left(1 + \frac 1 4 \minanglealpha\right) t^2 \\
-\ge 0 -  t\minanglealpha \left\| \nabla c_i(x) \right\| + \left\| \nabla c(x)\right\| \left\|s\right\| + \maxhessian\left(t^2 + \|s\|^2\right) \\
-\ge c_i(x) + \nabla c_i(x)^T (t \minangledirx + s) + \maxhessian \|t \minangledirx + s\|^2 \\
-\ge c_i(x + t \minangledirx + s) = c_i(y).
+0 &\ge \left(-1 + \frac 1 2\right) \minanglealpha \left\|\nabla c_i(x)\right\| t +  \maxhessian\left(1 + \frac 1 4 \minanglealpha\right) t^2 \\
+&\ge 0 -  t\minanglealpha \left\| \nabla c_i(x) \right\| + \left\| \nabla c(x)\right\| \left\|s\right\| + \maxhessian\left(t^2 + \|s\|^2\right) \\
+&\ge c_i(x) + \nabla c_i(x)^T (t \minangledirx + s) + \maxhessian \|t \minangledirx + s\|^2 \\
+&\ge c_i(x + t \minangledirx + s) = c_i(y).
 \end{align*}
 
 
