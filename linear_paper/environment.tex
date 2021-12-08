@@ -1,0 +1,124 @@
+%
+% File thesis_environment.tex
+%
+% Description:
+% This file contains environments for theorems, lemmas, definitions,
+% proofs, corollaries, algorithms, examples, remarks, and assumptions.
+% The numbering is set up so that the same counter is used for ALL
+% these environments.  This seems to make it easier for readers to
+% find referenced material.  The counter is reset for each chapter.
+%
+% EXAMPLE
+%    Definition 3.1
+%    Lemma 3.2
+%    Example 3.3
+%    Theorem 3.4
+%    Theorem 3.5
+%    Lemma 3.6 ....
+%
+%    Lemma 4.1
+%    Corollary 4.2 ....
+%
+% The Definition environment is indented on both sides.  This
+% is not required, but seemed to be a nice way to separate definitions
+% from proven results.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%============================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% \numberwithin{thoerem}{chapter}
+
+
+
+\crefname{equation}{}{equations}
+
+\newcounter{assumptioncounter}
+\newenvironment{assumption}[1][]{\refstepcounter{assumptioncounter}\par\medskip
+\textbf{Assumption \theassumptioncounter} \rmfamily \itshape}{\medskip}
+
+\numberwithin{assumptioncounter}{section}
+\crefname{assumptioncounter}{Assumption}{assumption}
+
+
+% \newenvironment{myalgorithm}
+% 	{
+% 		\begin{flushleft}
+% 			\makebox[\linewidth]{%
+%   			\begin{minipage}{\dimexpr\linewidth-5em}
+% 		
+% 	{
+% 	}
+
+
+\newenvironment{boxedcomment}
+	{
+		\ifbool{showcomments}{
+			\par\medskip
+			\color{red}%
+			\begin{framed}
+			\textbf{Comment: }
+			\ignorespaces
+		}{}
+	}
+	{
+		\ifbool{showcomments}{
+			\end{framed}
+			\medskip
+		}{}
+	}
+
+
+\def\proof{\begin{flushleft}\par{\it Proof:}\end{flushleft} \ignorespaces}
+
+\def\endproof{\vbox{\hrule height0.6pt\hbox{%
+   \vrule height1.3ex width0.6pt\hskip0.8ex
+   \vrule width0.6pt}\hrule height0.6pt
+  }}
+
+  
+  
+% \newcommand{\new}[1]{{\color{blue}#1}}
+% \newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}\rlap{\raisebox{.45\ht0}{\textcolor{#1} {\rule{\wd0}{1pt}}}}#2} 
+% \newcommand{\replace}[2]{{\color{red}\sout{#1}\color{black}{\color{red}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replaceb}[2]{{\color{blue}\sout{#1}\color{black}{\color{blue}#2\color{black}}}} %TeX source markup.
+% \newcommand{\replacemath}[2]{{\hcancel[red]{#1}{}{\color{red}#2\color{black}}}} %TeX source markup.
+% % \newcommand{\replacemath}[2]{{\color{red}#2\color{black}}} %TeX source markup.
+% \newcommand{\replacemathb}[2]{{\hcancel[blue]{#1}{}{\color{blue}#2\color{black}}}} %TeX source markup.
+
+\newcommand{\sbnote}[1]{
+	\ifbool{showcomments}{
+		\textsf{
+			{
+				\color{cyan}{ SCB note:}   #1
+			}
+		}
+% 		\marginpar{
+% 			{
+% 				\textbf{Comment}
+% 			}
+% 		}
+	}{}
+}
+
+% \newcommand{\sbnote}[1]{
+% 		\textsf{
+% 			{
+% 				\color{cyan}{ SCB note:}   #1
+% 			}
+% 		}
+% 		\marginpar{
+% 			{
+% 				\textbf{Comment}
+% 			}
+% 		}
+% }
+
+\allowdisplaybreaks
