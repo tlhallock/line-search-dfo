@@ -152,8 +152,15 @@ We are specifically interested in applications where some of the black box funct
 For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
 but some overlapping synchrotron elements cannot be simulated.  Following the taxonomy in \cite{ledigabel2015taxonomy},  such constraints are called {\em unrelaxable}.    
 
-For problems involving unrelaxable constraints,  we require all iterates and sample points to be feasible.
-Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output.
+For problems involving unrelaxable constraints,  we require all iterates and sample points to be feasible.  \replace{Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output. }{}  As a first step toward developing algorithms to solve such problems,  this paper considers a simplified problem where all of the constraints are linear and unrelaxable; namely:
+\begin{align}
+\begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
+& \lca x \le \lcb, & 
+\end{array}
+\label{LD_dfo_problem}
+\end{align}
+where $\lca$ is an $m \times n$ matrix and $\lcb \in \Rm$.
+
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
 This will be discussed in more detail in \cref{geometry}, but the key point is that the relative positions of the sample points within the trust region have a significant effect on the accuracy of the model functions over the trust region.
@@ -161,13 +168,7 @@ When the geometry of the sample set is poor, it is sometimes necessary to evalua
 It is well understood how to do this for unconstrained problems, but for constrained problems
 our requirement that the sample points must be feasible poses some interesting challenges to maintaining good geometry.   
 
-As a first step toward developing algorithms to solve such problems,  this paper considers a simplified problem where all of the constraints are linear; namely:
-\begin{align*}
-\begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
-& \lca x \le \lcb, & 
-\end{array}
-\end{align*}
-where $\lca$ is an $m \times n$ matrix and $\lcb \in \Rm$.
+
 
 We propose an algorithm for solving this problem whose main idea is to construct a feasible ellipsoid at each iteration that lies within the intersection of the feasible region and the current trust region.   We call this ellipsoid the {\em sample trust region}.
 To choose well-poised sample points for this ellipsoidal region,  we adapt a model improvement algorithm presented in \cite{introduction_book} for spherical trust regions and establish error bounds on the accuracy of the model functions over this region.    
