@@ -171,7 +171,7 @@ our requirement that the sample points must be feasible poses some interesting c
 
 \sbnote{The following new paragraph discusses geometry}
 
-In unconstrained optimization, it is typical and natural that the sample trust region be centered set at the current iterate.   Thus, much of the standard theory (see for example,   
+In unconstrained optimization, it is typical and natural that the sample trust region be centered at the current iterate.   Thus, much of the standard theory (see for example,   
  Chapter 3 of \cite{introduction_book}) about the geometry of the sample set assumes that the sample points are chosen within a ball centered at the current iterate.  However, for constrained problems,  this is no longer a useful assumption.   In particular, when iterates are close to the boundary of the feasible region, it is advantageous to shift the center of the sample trust region away from the current iterate.     Because of this, we rework some of the standard results so that they don't require that one of the sample points be at the center of the sample trust region.
 
 
@@ -353,7 +353,7 @@ a^+ = \begin{cases} a & \textrm{if} \quad a \ge 0 \\ 0 & \textrm{otherwise} \end
 %
 %
 %\pagebreak
-\section{Model-Based Trust-Region Methods for DFO}
+%\section{Model-Based Trust-Region Methods for DFO}
 
 The main idea of model-based, trust-region methods is that trial points are selected at each iteration by solving a trust-region subproblem.  
 Each subproblem has the form 
@@ -371,35 +371,7 @@ depending on how well the sample point improved upon the previous iterate.
 This will be discussed in \cref{rhosection}.
 
 
-\subsection{Assessing Model Accuracy and Trust Region Radius Management}
 
-\label{rhosection}
-
-% We now discuss background material for components of our algorithm.
-In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
-To test the accuracy, we calculate a quantity
-\begin{align}
-\label{define_rhok}
-\rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)},
-\end{align}
-which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.  If $\rk$ is negative, the trial point is rejected and the trust region radius is decreased.   On the other hand, if the trial point is accepted, the trust region radius for the next iteration may still be decreased since 
-a small value of $\rk$ implies that the model functions are not sufficiently accurate.   For larger values of $\rk$ the trial point is accepted and the trust region radius may be increased.
-This strategy has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative-free context \cite{introduction_book}.
-
-To implement the above strategy,  we define parameters
-% \label{define_the_gammas}
-% \label{define_the_omegas}
-$
-0 < \gammasm < \gammabi \le 1
-$
-as thresholds on $\rk$ and
-$
-0 < \omegadec < 1 \le \omegainc
-$
-% $\omegadec, \omegainc$
-as decrement and increment factors to determine the trust region update policy.
-That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and the trust region is increased by a factor of $\omegainc$
-during some iterations in which $\rk > \gammabi$.
 
 
 \subsection{Interpolation-Based Models}
@@ -1111,6 +1083,35 @@ where $\epsilon_{growth}$ is a potentially large, but finite estimate of the gro
 %% Seems like it would be $2$.
 %% \end{comment}
 
+\subsection{Assessing Model Accuracy and Trust Region Radius Management}
+
+\label{rhosection}
+
+% We now discuss background material for components of our algorithm.
+In trust region methods, each iteration that evaluates a trial point must also test the accuracy of the model functions.
+To test the accuracy, we calculate a quantity
+\begin{align}
+\label{define_rhok}
+\rk = \frac{f(\xk) - f(\xk+\sk)}{\mfk(\xk) - \mfk(\xk+\sk)},
+\end{align}
+which measures the actual improvement of the trial point $\xk+\sk$ divided by the predicted improvement.  If $\rk$ is negative, the trial point is rejected and the trust region radius is decreased.   On the other hand, if the trial point is accepted, the trust region radius for the next iteration may still be decreased since 
+a small value of $\rk$ implies that the model functions are not sufficiently accurate.   For larger values of $\rk$ the trial point is accepted and the trust region radius may be increased.
+This strategy has been widely used within trust region frameworks such as \cite{Conn:2000:TM:357813} and within a derivative-free context \cite{introduction_book}.
+
+To implement the above strategy,  we define parameters
+% \label{define_the_gammas}
+% \label{define_the_omegas}
+$
+0 < \gammasm < \gammabi \le 1
+$
+as thresholds on $\rk$ and
+$
+0 < \omegadec < 1 \le \omegainc
+$
+% $\omegadec, \omegainc$
+as decrement and increment factors to determine the trust region update policy.
+That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and the trust region is increased by a factor of $\omegainc$
+during some iterations in which $\rk > \gammabi$.
 
 \subsection{Criticality Measure}
 
