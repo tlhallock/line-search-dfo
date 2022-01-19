@@ -14,7 +14,7 @@
 \usepackage{titlesec}
 \usepackage{ragged2e}
 \usepackage{graphicx}
-\usepackage{color}
+\usepackage{xcolor}
 \usepackage{comment}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -78,15 +78,15 @@ Computational results are presented on a suite of test problems.
 
 \newpage
 
-% \tableofcontents
+\tableofcontents
 
 \newpage
 \section{TO DO}
 \begin{enumerate}
 \item Shorten literature review
-\item Consider removing material on finding the maximum volume ellipsoid
-\item Remove ellipsoid searches.  Instead, just use the one center defined in the analysis.  
-\item Remove polyhedral trust region method.
+% \item Consider removing material on finding the maximum volume ellipsoid
+% \item Remove ellipsoid searches.  Instead, just use the one center defined in the analysis.
+% \item Remove polyhedral trust region method.
 \end{enumerate}
 \section{Introduction}
 Derivative-free optimization (DFO) refers to mathematical programs involving functions for which derivative information is not explicitly available.
@@ -108,7 +108,7 @@ where
 $f$ and $c_i$ for $1 \le i \le m$ are real-valued functions on $\Rn$ with at least one of these functions being a {\em black-box} function, meaning that derivatives cannot be evaluated directly.
 We let the feasible set be represented as
 \begin{align}
-\feasible = \{x \in \Rn | c_i(x) \le 0, \; \forall 1 \le i \le m \}.
+\feasible = \{x \in \Rn \; | \; c_i(x) \le 0, \; \forall 1 \le i \le m \}.
 \end{align}
 
 We are interested in developing {\em model-based}, {\em trust-region} algorithms for solving these problems.
@@ -151,9 +151,11 @@ the sample points are typically chosen to lie within the trust-region.
 % \sbnote{Can we find an example of an unrelaxable constraint?}
 We are specifically interested in applications where some of the black box functions cannot be evaluated outside the feasible region.  Constraints of this type can arise in several ways, such as when a simulation cannot be carried out on particular inputs.
 For example, the authors of \cite{Padidar2021} optimize rapid-cycling synchroton lattice design,
-but some overlapping synchrotron elements cannot be simulated.  Following the taxonomy in \cite{ledigabel2015taxonomy},  such constraints are called {\em unrelaxable}.    
+but some overlapping synchrotron elements cannot be simulated.
+Following the taxonomy in \cite{ledigabel2015taxonomy},  such constraints are called {\em unrelaxable}.
 
-For problems involving unrelaxable constraints,  we require all iterates and sample points to be feasible.  \replace{Notice that this feasibility requirement means that if the algorithm is stopped at any time, it will still produce a feasible output. }{}  As a first step toward developing algorithms to solve such problems,  this paper considers a simplified problem where all of the constraints are linear and unrelaxable; namely:
+For problems involving unrelaxable constraints,  we require all iterates and sample points to be feasible.
+As a first step toward developing algorithms to solve such problems, this paper considers a simplified problem where all of the constraints are linear and unrelaxable; namely:
 \begin{align}
 \begin{array}{ccl} \min_{x \in \Rn} & f(x) \\
 & \lca x \le \lcb, & 
@@ -161,6 +163,9 @@ For problems involving unrelaxable constraints,  we require all iterates and sam
 \label{linear_dfo_problem}
 \end{align}
 where $\lca$ is an $m \times n$ matrix and $\lcb \in \Rm$.
+\color{magenta}
+We assume that the rows of $A$ have been normalized so that $\|A_i\| = 1$.
+\color{black}
 
 
 An important consideration in fitting the model functions is the ``geometry'' of the sample set.
@@ -171,8 +176,12 @@ our requirement that the sample points must be feasible poses some interesting c
 
 \sbnote{The following new paragraph discusses geometry}
 
-In unconstrained optimization, it is typical and natural that the sample trust region be centered at the current iterate.   Thus, much of the standard theory (see for example,   
- Chapter 3 of \cite{introduction_book}) about the geometry of the sample set assumes that the sample points are chosen within a ball centered at the current iterate.  However, for constrained problems,  this is no longer a useful assumption.   In particular, when iterates are close to the boundary of the feasible region, it is advantageous to shift the center of the sample trust region away from the current iterate.     Because of this, we rework some of the standard results so that they don't require that one of the sample points be at the center of the sample trust region.
+In unconstrained optimization, it is typical and natural for the sample trust region to be centered at the current iterate.
+Thus, much of the standard theory (see for example,
+ Chapter 3 of \cite{introduction_book}) of sample set geometry assumes the sample points are chosen within a ball centered at the current iterate.
+ However, for constrained problems,  this is no longer a useful assumption.
+ In particular, when iterates are close to the boundary of the feasible region, it is advantageous to shift the center of the sample trust region away from the current iterate.
+ Because of this, we rework some of the standard results to not require a sample point at the center of the sample trust region.
 
 
 We propose an algorithm for solving \cref{linear_dfo_problem} whose main idea is to construct a feasible ellipsoid at each iteration that lies within the intersection of the feasible region and the current trust region.   We call this ellipsoid the {\em sample trust region}.
@@ -182,20 +191,7 @@ Our convergence analysis is based on an algorithmic framework presented \cite{Co
 the criticality measure for the iterates generated by our algorithm converges to zero.  As a consequence, any accumulation point of the iterates satisfies the Karush-Kuhn-Tucker first order optimality conditions.  
 
 
-
-
- \sbnote{Consider deleting the following paragraph}
-
-We then discuss several variants to improve on the algorithm, as well as provide numerical results.
- We present several variants of how to construct the feasible ellipsoid.
- We first show how to find the maximum volume ellipsoid contained within a polytope given a fixed center.
- We then explore several strategies for shifting the center of the ellipsoid.    
- 
-
-
-
-
-\section{Notation}
+\subsection{Notation}
 \sbnote{Make sure we actually use all of these conventions in the paper.  That is, delete anything used in the thesis that isn't used in the linear constraint paper}
 We use the following notational conventions throughout the paper.
 Any variables that depend on the iteration will be super-scripted by $k$.
@@ -204,6 +200,9 @@ and the model of the objective function for iteration $k$ is given by $\mfk$.
 Subscripts on vectors are used as an index into the vector, while vectors in a sequence of vectors use superscripts:
 that is, $\xki$ is the $i$-th component of the $k$-th vector in the sequence $\{\xk\}_k$.
 We use $\proj_X(x) = \argmin_{x' \in X}\left\|x' - x\right\|$ to denote the projection of $x$ onto a convex set $X$.
+\color{magenta}
+It seems like you didn't like this notation. Should I remove it?
+\color{black}
 For any $m \in \naturals$, we define $[m] = \left\{i \in \naturals | 1 \le i \le m\right\}$.
 
 \paragraph*{Matrices.}
@@ -384,7 +383,7 @@ We use interpolation to choose the coefficients $\alpha = [\alpha_0, \ldots, \al
 Thus, the coefficients $\alpha$ must satisfy the \emph{interpolation condition}
 \begin{align}
 \label{interpolation_condition}
-\mf(y^{(i)}) = \sum^p_{j=0}\alpha_j\phi_j(y^{(i)}) = f(y^{(i)}) \quad \forall \quad 0 \le i \le p.
+\mf(y^{(i)}) = \sum^p_{j=0}\alpha_j\phi_j\left(y^{(i)}\right) = f\left(y^{(i)}\right) \quad \forall \quad 0 \le i \le p.
 \end{align}
 
 % We can also write this equation in matrix form.
@@ -393,20 +392,26 @@ This equation can be written more compactly in the form
 \label{matrix_form}
 M \alpha = \bar{f},
 \end{align}
-where $\bar{f} = [f(y^{(0)}), f(y^{(1)}), \ldots, f(y^{(p)})]^T$ and the Vandermonde matrix $M$ is defined by 
+where $\bar{f} = [f\left(y^{(0)}\right), f\left(y^{(1)}\right), \ldots, f\left(y^{(p)}\right)]^T$ and the Vandermonde matrix $M$ is defined by
 
 \begin{align}
 \label{vandermonde}
 M=M(\Phi,Y) :=
 \begin{bmatrix}
-    \phi_0(y^{(0)})      & \phi_1(y^{(0)})       & \ldots & \phi_{p}(y^{(0)})      \\
-    \phi_0(y^{(1)})      & \phi_1(y^{(1)})       & \dots  & \phi_{p}(y^{(1)})      \\
+    \phi_0\left(y^{(0)}\right)      & \phi_1\left(y^{(0)}\right)       & \ldots & \phi_{p}\left(y^{(0)}\right)      \\
+    \phi_0\left(y^{(1)}\right)      & \phi_1\left(y^{(1)}\right)       & \dots  & \phi_{p}\left(y^{(1)}\right)      \\
                      &                   & \vdots &                    \\
-    \phi_0(y^{(p)})    & \phi_1(y^{(p)})     & \ldots & \phi_{p}(y^{{(p)}})
+    \phi_0\left(y^{(p)}\right)    & \phi_1\left(y^{(p)}\right)     & \ldots & \phi_{p}\left(y^{{(p)}}\right)
 \end{bmatrix}.
 \end{align}
 
-\sbnote{Changed notation for the Vandermonde matrix from $V$ to $M$ for consistency.   $V$ is used elsewhere to denote the volume of the ellipsoid and also in the eigendecomposition of  matrix.}
+\sbnote{Changed notation for the Vandermonde matrix from $V$ to $M$ for consistency.
+$V$ is used elsewhere to denote the volume of the ellipsoid and also in the eigendecomposition of  matrix.}
+
+\color{magenta}
+This is good. Ideally, I think, we would use $M\left(\Phi, Y\right)$ everywhere.
+\color{black}
+
 The interpolation equation \cref{matrix_form} has a unique solution if and only if $M$ is non-singular. 
 In this case, we say that the sample set $Y$ is \emph{poised} for interpolation with respect to $\Phi$.   Note also that if $Y$ is poised with respect to one basis for a family of functions, then it is poised with respect to any basis for that family.     
 However, even when $M$ is non-singular,  the interpolation model may be inaccurate if the Vandermonde matrix is poorly conditioned.   Informally,  we say that a sample set is {\em well-poised} if it produces accurate model functions.  The following section formalizes this idea.
@@ -426,7 +431,7 @@ Thus, as shown in \cite{introduction_book},  the interpolating model function $\
 satisfies
 \begin{align}
 \label{reg} 
-\mf(x) = \sum^p_{j=0}f(y^{(i)})\ell_i(x).
+\mf(x) = \sum^p_{j=0}f\left(y^{(i)}\right)\ell_i(x).
 \end{align}
 
 The following definition allows us to quantify how well-poised a sample set is with respect to interpolation on a polynomial subspace.
@@ -460,6 +465,11 @@ Let $\hat{\ell}_i(x)$, $i=0,\ldots,p$ be the Lagrange polynomials satisfying \cr
 We now state two technical lemmas that will be used in the proof of our next theorem.
 
 \sbnote{Maybe we don't need to restate these lemmas, and can instead just reference the lemmas from the book in our proofs}.
+
+\color{magenta}
+I understand this, and don't mind removing them.
+However, I don't mind having them restated here for convenience.
+\color{black}
 
 \begin{lemma}(\cite[Lemma 3.10]{introduction_book})
 \label[lemma]{lemma_3_10}
@@ -1113,6 +1123,11 @@ as decrement and increment factors to determine the trust region update policy.
 That is, when $\rk < \gammasm$, the trust region is decreased by a factor of $\omegadec$, and the trust region is increased by a factor of $\omegainc$
 during some iterations in which $\rk > \gammabi$.
 
+\color{magenta}
+This ``some iterations" seems a little vague. Should we explicitly state the rules?
+\color{black}
+
+
 \subsection{Criticality Measure}
 
 \label{criticality_measure_section}
@@ -1141,32 +1156,17 @@ If the feasible region $\feasible$ is convex, a classic criticality measure (see
 \begin{align*}
 \chi(x) = \left\|x - \proj_{\feasible}\left(x- \nabla f\left(x\right)\right)\right\|.
 \end{align*}
-If the feasible region is not convex, the projection operation is not well-defined, so this criticality measure is not helpful.
-Moreover,  even with a convex feasible region, we need a way to determine the projection, so we prefer a criticality measure based on the  functions defining the constraints.   In particular, for
-a first order criticality measure at $\xk$, we define
-\begin{align}
-\truefeasiblek &= \left\{ x \in \Rn \bigg| c_i\left(\xk\right) + \nabla c_i\left(\xk\right)^T \left(x - \xk\right) \le 0 \; \forall i \in [m] \right\} \label{define_truefeasiblek}
-\end{align}
-and use
-\begin{align}
-\chi_c^{(k)}(x) = \left\|x - \proj_{\truefeasiblek}\left(x- \nabla f\left(x\right)\right)\right\|. \label{define_true_criticality}
-\end{align}
 
-Note that $\chi_c^{(k)}(\xk) = 0$ if and only if $\xk$ satisfies the first order Karush-Kuhn-Tucker conditions.
-% This condition is necessary under regularity assumptions and with convex
-% For a convex problem convex constraints with a convex objective, this condition would be necessary and sufficient for local optimality under regularity assumptions.
-Unfortunately,  without derivative information, we cannot calculate $\chi_c^{(k)}$ directly, so in our algorithms we approximate it with
+Note that $\chi\left(\xk\right) = 0$ if and only if $\xk$ satisfies the first order Karush-Kuhn-Tucker conditions.
+Unfortunately,  without derivative information, we cannot calculate $\chi_c^{(k)}$ directly,
+so in our algorithms we approximate it with
 \begin{align}
 \label{define_criticality_measure}
-\chik = \left\|\xk - \proj_{\feasiblek}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|,
-\end{align}
-where $\feasiblek$ is the model feasible region defined by
-\begin{align}
-\feasiblek = \left\{x \in \Rn \big| \mcik(x) \le 0 \quad \forall 1 \le i \le m \right\}.  \label{define_feasiblek}
+\chik = \left\|\xk - \proj_{\feasible}\left(\xk- \nabla \mfk\left(\xk\right)\right)\right\|.
 \end{align}
 
 This quantity measures how far the current iterate $\xk$ is from satisfying the first order optimality conditions for the model function $\mfk$.
-In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$, $\feasiblek$ better approximates $\feasible$ and $\xk$ approaches a critical point for $f$.
+In turn, as $\dk \to 0$, the model $\mfk$ better approximates $f$,  and $\xk$ approaches a critical point for $f$.
 
 %With general constraints, we cannot use $\proj_{\feasible}$ because the projection is not well defined.
 %However, the linearization \cref{define_truefeasiblek} is still well defined.
@@ -1292,12 +1292,18 @@ For convenience, we assume that each row of the constraint matrix has been norma
 
 \sbnote{It would sure be nice to get rid of $\frac{1}{2} \delta_k^2$ in the definition of $\sampletrk$).}
 
+\color{magenta}
+This definition might mean I have to change the $\sqrt{2}$ radius as well.
+\color{black}
+
+
+
 A key idea of our method is to define an ellipsoidal sample trust region $\sampletrk$ at each iteration from which new sample points will be chosen.   The sample trust region has the form
 \begin{equation}
 \label{define_the_sample_region}
-\sampletrk = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\},
+\sampletrk = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk \left(x - \ck\right) \le 1 \right\},
 \end{equation}
-where we choose the symmetric positive definite matrix $\qk$, vector $\ck \in \Rn$, and constant $\sdk > 0$ so that
+where we choose the symmetric, positive definite matrix $\qk$ and vector $\ck \in \Rn$ so that
 the sample region lies within the intersection of the feasible region and an outer trust region defined by
 \begin{equation}
 \label{define_outer_trust_region}
@@ -1309,14 +1315,24 @@ to a transformed problem in which the ellipsoid $\sampletrk$ is mapped onto the 
 
 To make this concrete, let $\qk = V D^2 V^T$ be the eigendecomposition  of $\qk$, 
 where $V^TV = I$ and $D$ is a diagonal matrix with positive entries.  Define
-$T:\Rn \times \Rn_+ \rightarrow \Rn$ by $T(x; \delta) = \frac{\delta}{\sdk} DL^T\left(x - \ck\right)$.
-Note that  $T(\cdot,\sqrt{2})$ is invertible and maps $\sampletrk$ onto the unit ball
-$B_2(0;1)$:  \sbnote{maybe we can delete the following}
+$T:\Rn \times \Rn_+ \rightarrow \Rn$ by $T(x; \delta) = \delta DL^T\left(x - \ck\right)$.
+Note that  $T(\cdot,\delta)$ is invertible and maps $\sampletrk$ onto the $\delta$-ball
+$B_2(0;1)$.
+
+\sbnote{maybe we can delete the following}
+
+\color{magenta}
+I am all for deleting it, but maybe we can wait until I am done removing $\sdk$.
+If think I originally added this equation for myself to stare at.
+
 \begin{align*}
-\delta^2 \ge \|T\left(x; \sqrt{2}\delta\right)\|^2 = \left\|\frac {\sqrt{2}\delta} {\sdk} DV^T(x - \ck)\right \|^2
-= \frac {2\delta^2} {\sdk^2} \left(x - \ck\right)^TQ\left(x - \ck\right) \\
-\Longleftrightarrow \left(x - \ck\right)^TQ\left(x - \ck\right) \le \frac 1 2 \sdk^2.
+\delta^2 \ge \left\|T\left(x; \delta\right)\right\|^2 = \left\|\delta DV^T(x - \ck)\right \|^2
+= \delta^2 \left(x - \ck\right)^TQ\left(x - \ck\right) \\
+\Longleftrightarrow \left(x - \ck\right)^TQ\left(x - \ck\right) \le 1.
 \end{align*}
+
+
+\color{black}
 
 To apply \cref{model_improving_algorithm}, we calculate a transformed sample set $\hat{Y}$ by computing $T(y^{(i)};\sqrt{2})$ for each $y^{(i)} \in Y$, where $Y$ is a starting set of $p+1$ previously evaluated sample points.    
 
@@ -1338,22 +1354,22 @@ The complete process is formalized in \cref{model_construction_algorithm}.
     \begin{itemize}
         \item[\textbf{Step 0}] \textbf{(Initialization)} \\
 			Given a function $f : \Rn \to \reals$;
-			ellipsoid parameters $\qk \succ 0$, $\ck$, and $\sdk$;
+			ellipsoid parameters $\qk \succ 0$ and $\ck$;
         	and sample set $Y$.
 %         	with $\xk \in Y$;
 %         	Iterate $\xk = y^{(0)} \in Y$
         \item[\textbf{Step 1}] \textbf{(Construct the Transformation}) \\
         	Give $\qk$ its eigen-decomposition $\qk = VD^2V^T$, and define
-			$T(x; \sqrt{2}) = \frac{\sqrt{2}}{\sdk} D V^T\left(x - \ck\right)$.
+			$T(x; 2) = 2 D V^T\left(x - \ck\right)$.
 %         	Compute $\delta = \max_{x \in \sampletrk} \|x - \ck\| = \frac {1} {\sqrt{2}\min_{i} D_{i, i}}$ as in \cref{define_the_sample_region}\\
 % 			Construct the transformation
 % 			which maps
 % 				$T\left(\scaledellipsek; \sqrt{2}\right) = B_2(0; \sqrt{2})$, and
 % 				$T\left(\sampletrk; \sqrt{2}\right) = B_2(0; 1)$.
         \item[\textbf{Step 2}] \textbf{(Construct the Sample Set)} \\
-        Construct the transformed sample set $\hat Y$ by computing $T\left(y^{(i)}; \sqrt{2}\right)$ for each $y^{(i)} \in Y$. \\
+        Construct the transformed sample set $\hat Y$ by computing $T\left(y^{(i)}; 2\right)$ for each $y^{(i)} \in Y$. \\
         Call \cref{model_improving_algorithm} with $\Delta = 2$ \sbnote{why $\Delta=2$?  Should this be $\Delta=\sqrt{2}$?} to produce an improved sample set $\hat Y '$.
-        Construct the unshifted sample set $Y'$ by computing $T^{-1}\left(\hat y^{(i)}; \sqrt{2}\right)$ for each $\hat y^{(i)} \in \hat Y'$.
+        Construct the unshifted sample set $Y'$ by computing $T^{-1}\left(\hat y^{(i)}; 2\right)$ for each $\hat y^{(i)} \in \hat Y'$.
         \item[\textbf{Step 3}] \textbf{(Construct Model Functions)} \\
         Evaluate $f$ at each $y^{(i)} \in Y'$, and construct $m_f$ with \cref{reg}
     \end{itemize}
@@ -1512,12 +1528,12 @@ Note that we will still have $\|\lctra_i\| = 1$ for each $i \in [m]$.
 
 \begin{definition}
 \label[definition]{define_suitable_ellipsoid}
-Let $\left\{\qk\right\}$ be a sequence of positive definite symmetric matrices,
-$\left\{\ck\right\} \subset \Rn$ be a sequence of points, and $\left\{\sdk\right\}$ be a sequence of positive scalars.
+Let $\left\{\qk\right\}$ be a sequence of positive definite symmetric matrices and
+$\left\{\ck\right\} \subset \Rn$ be a sequence of points.
 For each $k \in \naturals$, define the ellipsoids
 \begin{align*}
-\ellipsek &= \left\{x \in \Rn \bigg| \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}, \textrm{and} \\
-\scaledellipsek &= \left\{x \in \Rn \bigg | \left(x - \ck\right)^T\qk\left(x - \ck\right) \le  \sdk^2 \right\}.
+\ellipsek &= \left\{x \in \Rn \bigg| \left(x - \ck\right)^T\qk\left(x - \ck\right) \le 1 \right\}, \textrm{and} \\
+\scaledellipsek &= \left\{x \in \Rn \bigg | \left(x - \ck\right)^T\qk\left(x - \ck\right) \le  2 \right\}.
 \end{align*}
 The sequence $\left\{\ellipsek\right\}$ is said to be \emph{suitable} if all of the following are satisfied:
 \begin{itemize}
@@ -1528,7 +1544,9 @@ The sequence $\left\{\ellipsek\right\}$ is said to be \emph{suitable} if all of 
 \end{definition}
 
 
-We begin our analysis by examining how the shapes of the ellipsoidal sample trust regions $\sampletrk$ affect the accuracy of the interpolating model functions.    Recall that the standard model improvement algorithm (\cref{model_improvement} produces a well-poised sample set over a ball $B_2(0;\Delta)$ resulting in accurate model functions.     The following Lemma shows that applying that algorithm to the transformed sample set, as done in \cref{model_construction_algorithm},  also produces accurate model functions for the ellipsoidal sample trust regions $\sampletrk$,  provided that we have a uniform bound on the condition numbers of the matrices $\qk$ in \cref{define_the_sample_region}.  
+We begin our analysis by examining how the shapes of the ellipsoidal sample trust regions $\sampletrk$ affect the accuracy of the interpolating model functions.
+Recall that the standard model improvement algorithm (\cref{model_improving_algorithm} produces a well-poised sample set over a ball $B_2(0;\Delta)$ resulting in accurate model functions.
+The following Lemma shows that applying that algorithm to the transformed sample set, as done in \cref{model_construction_algorithm},  also produces accurate model functions for the ellipsoidal sample trust regions $\sampletrk$,  provided that we have a uniform bound on the condition numbers of the matrices $\qk$ in \cref{define_the_sample_region}.
 
 \sbnote{I think $\kappa$ is too overloaded.  Perhaps we should use a different symbol for the condition number?}
 \begin{lemma}
@@ -1538,7 +1556,7 @@ Let $\sdk>0$, $\ck \in \Rn$ and a symmetric matrix $\qk \succ 0$ be given.
 Let the eigen decomposition of $\qk$ be $\qk = VD^2V^T$, $V^TV = I$, where $D$ is diagonal with positive entries.
 Let $\scaledellipsek$ be defined by
 \begin{align*}
-\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le \sdk^2 \right\}
+\scaledellipsek = \left\{x \in \Rn \bigg | \left(x - \ck\right)^T \qk\left(x - \ck\right) \le 1 \right\}
 % \subseteq B_{\infty}\left(\xk, \dk\right).
 \end{align*}
 
@@ -1572,17 +1590,17 @@ $x \in  \scaledellipsek$:
 
 Noting that $D_{i, i} > 0$, observe that
 \begin{align*}
-\delta_r^2 = \frac {\sdk^2} {\lambda_{\text{min}}\left(\qk\right)} = \frac {\sdk^2} {\min_{i \in [n]} D^2_{i, i}},
+\delta_r^2 = \frac {1} {\lambda_{\text{min}}\left(\qk\right)} = \frac {1} {\min_{i \in [n]} D^2_{i, i}},
 \end{align*}
-so $\min_{i} D_{i, i} = \frac{\sdk^2}{\delta_r^2}$.
+so $\min_{i} D_{i, i} = \frac{1}{\delta_r^2}$.
 
 Thus,
 \begin{align*}
 \condition\left(\qk\right) 
 = \kappa\left(D^2\right) 
 = \frac{\max_{i}D_{i,i}^2}{\min_{i}D_{i,i}^2} 
-= \frac{\delta_r^2}{\sdk^2} \max_{i}D_{i,i}^2 = \frac{\delta_r^2}{\sdk^2}\|D\|^2 \\
-\Longrightarrow \frac{\delta_r} {\sdk} \|D\| = \sqrt{\condition\left(\qk\right)}.
+= \delta_r^2 \max_{i}D_{i,i}^2 = \delta_r^2\|D\|^2 \\
+\Longrightarrow \delta_r \|D\| = \sqrt{\condition\left(\qk\right)}.
 \end{align*}
 %  \le \frac{\kappa_{\lambda}}{\delta}.
 Let $x \in \ellipsek$ be arbitrary and let $u = T(x) \in B_2(0;\delta_r)$.
@@ -1592,14 +1610,14 @@ Then
 \end{align*}
 Similarly, for the gradient we find:
 \begin{align*}
-\| \nabla m_f(x) - \nabla f(x)\| &= \left\|\frac{\delta_r} {\sdk}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)\right\| \\
-& \le \frac{\delta_r} {\sdk} \|DL^T\|\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
+\| \nabla m_f(x) - \nabla f(x)\| &= \left\|\delta_rDL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)\right\| \\
+& \le \delta_r \|DL^T\|\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
 & \le \sqrt{\condition(\qk)}\kappa_{eg} \delta_r^2 = \kappa_{eg}' \delta_r^2.
 \end{align*}
 Finally,  for the Hessian, we have
 \begin{align*}
-\| \nabla^2 m_f(x) - \nabla^2 f(x)\| & = \left\|\frac{\delta_r^2} {\sdk^2}DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)LD^T\right\| \\
-& \le \frac{\delta_r^2} {\sdk^2} \|D\|^2\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
+\| \nabla^2 m_f(x) - \nabla^2 f(x)\| & = \left\|\delta_r^2DL^T\left(\nabla\hat m_f(u) - \nabla \hat f(u)\right)LD^T\right\| \\
+& \le \delta_r^2 \|D\|^2\|\nabla \hat m_f(u) - \nabla \hat f(u)\| \\
 & \le \condition(\qk)\kappa_{eh} \delta_r = \kappa_{eh}' \delta_r.
 \end{align*}
 
@@ -2420,22 +2438,22 @@ We can now state our main convergence result:
 Suppose that Assumptions \cref{??}--\cref{??} are satisfied.   Blah blah blah. 
 \end{theorem}
 
-\section{Ellipsoidal Trust Region Approach}\label{sec:ellipsoidal}
-
-The main idea of the ellipsoidal method is to define the sample trust region to be a feasible ellipsoid as in \cref{define_the_sample_region}:
-\begin{align*}
-\sampletrk = \ellipsek = \left\{x \in \Rn \bigg | (x - \ck)^T \qk (x - \ck) \le \frac 1 2 \sdk^2 \right\}
-\end{align*}
-where $\qk$ is a positive definite matrix, $\ck$ is the center of the ellipsoid, and $\sdk$ is a constant determining the ellipsoid's radius.   
-$\qk$ and $\ck$ are chosen so that the ellipsoid conforms roughly to the shape of the feasible region near the current iterate, 
-while ensuring that it lies entirely within the intersection of the feasible region and the outer trust region.
+\section{A conservative ellipsoid}
+\label{sec:ellipsoidal}
+%
+%
+% The main idea of the ellipsoidal method is to define the sample trust region to be a feasible ellipsoid as in \cref{define_the_sample_region}:
+% \begin{align*}
+% \sampletrk = \ellipsek = \left\{x \in \Rn \bigg | (x - \ck)^T \qk (x - \ck) \le \frac 1 2 \sdk^2 \right\}
+% \end{align*}
+% where $\qk$ is a positive definite matrix, $\ck$ is the center of the ellipsoid, and $\sdk$ is a constant determining the ellipsoid's radius.
+% $\qk$ and $\ck$ are chosen so that the ellipsoid conforms roughly to the shape of the feasible region near the current iterate,
+% while ensuring that it lies entirely within the intersection of the feasible region and the outer trust region.
 
 % \cref{linear_convergence_discussion} analyzes the convergence of one version of the algorithm.
 
 
-\subsection{A safe ellipsoid}
-
-\subsubsection{Construction}
+\subsection{Construction}
 \label{the_safe_ellipsoid}
 
 This section shows how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
@@ -2448,7 +2466,7 @@ Recall that $\lca$ and $\lcb$ are defined by \cref{eq:DFO-linear}.
 For any iterate $k$, if there are no active constraints, $\activei\left(\xk\right) = \emptyset$, then we are free to choose
 \begin{align}
 \label{define_linear_trivial_ellipse}
-\qk = I, \quad \ck = \xk, \quad \textrm{and} \quad \sdk = \min\left\{\dk, \min_{i \in [m]}{b_i - A_i x}\right\}.
+\qk = \left(\min\left\{\dk, \min_{i \in [m]}{b_i - A_i x}\right\} \right)^{-2}I\quad \textrm{and} \quad \ck = \xk.
 \end{align}
 We show within \cref{trivial_ellipsoid_exists} that this is a suitable ellipsoid.
 Otherwise, we begin by constructing a direction $\uk$ that is maximally feasible with respect to the active constraints.
@@ -2485,21 +2503,24 @@ T_k(x) = \rotk\left(x - \xk\right). \label{define_affine_mapping}
 Recall that $e_1 = (1, 0, \ldots, 0)^T$, and observe that $\rotk e_1 = \uk$, $\rotk \uk = e_1$, $\det(\rotk) = 1$, and 
 $\rotk \rotk ^T = \rotk ^T\rotk = I$.
 
+\color{magenta}
+Give me a little bit more time to remove the $\sdk$.
+\color{black}
+
 We can then define the ellipsoid as
 \begin{align}
 \label{define_linear_nontrival_ellipsoid}
-\qk = \rotk^T \begin{pmatrix}
+\qk = \frac 1 {\delta_f^2} \rotk^T \begin{pmatrix}
 1 & \boldsymbol0^T \\
 \boldsymbol 0 & \left({\alphak}\right)^{-2} \boldsymbol I \\
-\end{pmatrix} \rotk,
-\quad
-\ck = \xk+\deltaf \uk,
+\end{pmatrix} \rotk
 \quad
 \textrm{and}
 \quad
-\sdk=\deltaf
+\ck = \xk+\deltaf \uk
 \end{align}
 whenever $\activei\left(\xk\right) \ne \emptyset$.
+
 
 
 
@@ -2513,7 +2534,7 @@ whenever $\activei\left(\xk\right) \ne \emptyset$.
 
 % Otherwise, we can use \cref{alphas_are_bounded} to satisify the conditions of \cref{nontrivial_ellipsoid_exists}.
 
-\subsubsection{Suitability}
+\subsection{Suitability}
 
 We show that this construction provides a suitable ellipsoid according to \cref{define_suitable_ellipsoid}.
 
@@ -2937,517 +2958,16 @@ This is because $\det\left(\rotk\right) = 1$ means the condition number of $\qk$
 \end{proof}
 
 
-% Let
-% \begin{align*}
-% \qk = \rotk^T\begin{pmatrix}
-% 1 & \boldsymbol0^T \\
-% \boldsymbol 0 & {\alphak}^{-2} \boldsymbol I \\
-% \end{pmatrix}\rotk \\
-% c_k = \xk - \deltaf \uk \\
-% \epsilon = \delta^2 
-% \end{align*}
-
-
-%
-%\begin{comment}
-%I think we no longer use this result...
-%\end{comment}
-%
-%\color{red}
-%We use the following result shown \cite{BillupsLarson2013}, Corollary 4.7.
-%We restate the theorem here, with the simplification that $f$ is deterministic function:
-%
-%\begin{assumption}
-%\label{fully_quadratic_assumption}
-%Suppose that a set $S$ and a radius $\dmax$ are given.
-%Assume that $f$ is twice continuously differentiable with Lipshcitz continuous Hessian in an open domain containing the $\dmax$ neighborhood
-%$\cup_{x \in S} B(x; \dmax)$ of the set $S$.
-%\end{assumption}
-%
-%\begin{lemma}
-%\label[lemma]{larson_change_radius} 
-%Let $Y$ be a poised set of $p$ points, and let $R = \max_{i}\|y^i - y^{(0)}\|$.
-%Let $f$ satisfy \cref{fully_quadratic_assumption} over some convex set $\Omega$, and let $m(x)$ denote the quadratic model of $f$ using \cref{reg}.
-%If $f$ is a Lipschitz continuous function with Lipschitz constant $L_g$, and $m_f(x)$ is a quadratic model of $f$.
-%Then, there exist constrants $\Lambda_1, \Lambda_2, \Lambda_3$ independent of $R$ such that for all $x \in B(y^{(0)}, R)$,
-%\begin{align*}
-%\|f(x) - m_f(x)\| \le 4\Lambda_1 R^3L \sqrt{p+1} \\
-%\|\nabla f(x) - \nabla m(x)\| \le 4\Lambda_2R^2  L \sqrt{p+1} \\
-%\|\nabla^2 f(x) - \nabla^2 m(x)\| \le 4\Lambda_3  RL \sqrt{p+1}
-%\end{align*}
-%\end{lemma}
-%
-%\color{black}
-
-% 
-% \sbnote{There needs to be some discussion about how the method defined above to construct the suitable ellipsoid relates to the other methods 
-% you described}.
-
-\subsection{Ellipsoid searches}
-
-Within \cref{the_safe_ellipsoid}, we showed how to construct one possible ellipsoid that satisfies \cref{define_suitable_ellipsoid}.
-In practice, this ellipsoid could be less than desirable.
-Within this section, we discuss the requirements of other variants of the \emph{ConstructTrustRegion} subroutine that we explored for practicality.
-The key requirement is these ellipsoids must still satisfy \cref{define_suitable_ellipsoid} to share the same convergence results.
-
-\subsubsection{Ensuring suitability}
-
-To retain the convergence results, these algorithms maintain $\ellipsek \subseteq \polyk$,
-$\xk \in \scaledellipsek $, and a bound on $\condition\left(\qk\right)$.
-
-To ensure the condition number is bounded, the algorithm can compute the condition number of the safe ellipsoid, and only consider ellipsoids better conditioned.
-Alternatively, it could introduce its own bound.
-We found it simplest to parameterize ellipsoids by their Cholesky factorization $\qk = LL^T$.
-Namely, we parameterized the search space in terms of a lower triangular matrix $L$, and required the diagonal entries to be positive.
-To ensure a bounded condition number, we chose a $\epsilon_{\alpha} > 0$, and constrain  $\max_{i\in[n]} \le \epsilon_{\alpha} \min_{i \in [n]}$.
-% Then requiring a 
-
-One potential difficulty created by moving the ellipsoid center $\ck$ is that the current iterate $\xk$ may not lie within near the resulting ellipsoid.   
-The pitfall is that the model function may lose accuracy near the current iterate.
-Thus, we have implemented a few ways of ensuring the current iterate is within the search trust region.
-This can be done by either of the following two options:
-\begin{itemize}
-\item Adding a constraint to the ellipsoid problem to include the original point.
-\item Expanding the size of the ellipsoid.
-\end{itemize}
-
-\paragraph*{Adding a constraint.}
-In order to include the original point as a constraint, we add a constraint of the following form to the definition of the ellipsoid.
-\begin{align*}
-\frac 1 2 \left(\xk - \ck\right)^T\qk\left(\xk - \ck\right) \le \frac 1 2 \sdk^2.
-\end{align*}
-Constraints of this nature make finding the ellipsoid much more expensive:
-the optimization problem we construct uses ${\qk}^{-1}$ as decision variables, so that constraints in terms of $\qk$ must model matrix inversion.
-
-\paragraph*{Increasing the radius.}
-An alternative is to scale $\qk$ by a constant.
-We use a scaling factor $\sdk > 0$ defined by
-\begin{align*}
-\sdk = \max \left\{1, \sqrt{\left(\xk - \ck \right)^T \qk \left(\xk - \ck \right)} \right\}
-\end{align*}
-and let the ellipsoid be:
-\begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg| \frac 1 2 \left(x - \ck\right)^T \qk \left(x - \ck\right) \le \frac 1 2 \sdk^2\right\}.
-\end{align*}
-However, this means that in general $\ellipsek \not \subset \feasible$.
-so that the sample points must be contained to also lie within the feasible region: $\ellipsek \cap \feasiblek$.
-For details on how to choose sample points with additional constraints, see \cref{model_improving_algorithm}.
-
-
-%  \sbnote{This raises a number of questions.
-%  First is whether the current iterate will be a sample point.
-%  If it isn't, then the model function may disagree with the true function at the current iterate, 
-%  so descent of the model function may not correspond to descent of the true function, even for very small steps.
-%  Also, if the search region is chosen to be equal to the ellipsoidal region, then we may not be able to get descent at all.
-%  At the end of the day,  we don't necessarily need the current iterate to be in the ellipsoid as long as
-%  1) it is within the search trust region, and 2) the model function is sufficiently accurate over the search trust region.
-%  Actually, we don't even need 2), do we?  We just need the accuracy condition to be satisfied at the current iterate, right?}
-
-
-\subsubsection{Maximal volume ellipsoids}
-\label{ellipse_optimization}
-
-The error bounds given in \cref{shifted_ellipsoid} suggest that we can obtain more accurate model functions by 
-minimizing the condition number of the matrix $\qk$.
-However, we also desire a large ellipsoid so that our model will satisfy the error bounds over more of $\searchtrk$.
-Thus, one choice for $\sampletrk$ is to choose the maximum volume ellipsoid that is both feasible and lies within the outer trust region.
-We can accomplish this for various ellipsoid centers, by finding the maximal volume ellipsoid that is constrained to lie within the polytope
-\begin{align*}
-\polyk := \left\{x \in \Rn | \lca x\le \lcb,   \xki - \dk \le x_i \le \xki + \dk\right\}.
-\end{align*}
-% Note that we have replaced the usual trust region $B_2\left(\xk, \dk\right)$ with an $L_{\infty}$ ball, called the {\em outer trust region},
-% defined in \cref{define_outer_trust_region}.
-
-This is not the only reasonable approach: maximizing ensures a larger region for which the models will be accurate, 
-but we are most interested in descent directions.
-Namely, we may wish to use previously evaluated points to provide a hint of where the next ellipsoid should be.
-Another consideration is where points have been evaluated: it may be more economical to choose a smaller ellipsoid that can reuse existing points.
-However, in this section,  we consider the problem of choosing $\qk$ and $\sdk$ to maximize the volume of $\ellipsek \subseteq \polyk$ given a fixed center $\ck$.
-Later, in \cref{center_searches}, we will explore strategies for moving the center of the ellipsoid to improve the performance of our trust region algorithm.
-
-We adopt a method similar to that described in \cite{Khachiyan1993},
-which presents an algorithm for finding the maximum volume ellipsoid inscribed in a given polytope.
-% For the remainder of this section, we drop the superscript $(k)$ and write
-% \begin{align*}
-% P = \polyk =  \{ x \in \Rn\; | \;  Ax \le b \}.
-% \end{align*}
-% We wish to find the maximum-volume ellipsoid $E \subseteq P$ centered at a point $c \in P$.
-
-% \bar{\lctrb}
-Let $\bar g = \lctrb - \lctra \ck$ and $d = x - \ck$ so that the polytope becomes
-\begin{align*}
-\polyk = \left\{ \ck + d \in \Rn \; | \;  \lctra d \le \bar{g} \right\}.
-\end{align*}
-Using this transformation, the ellipsoid can then be centered at zero, and defined by a symmetric positive definite matrix $Q \succ 0$:
-\begin{align*}
-E = \left\{ d \in \Rn \; \bigg | \; \frac 1 2 d^T Q d \le 1 \right\}.
-\end{align*}
-Our goal is to determine the matrix $Q$ that maximizes the volume of $E$ such that $\mu + E \subset \mathcal{P}$.
-This is accomplished by defining $\bar b = b - Ac$ and solving the following problem for $Q$ for a given center:
- \begin{align}
-\begin{array}{cc}
- \sup_{Q \succeq 0} & \det(Q^{-1})  \\
- \textrm{s.t.} & A_i^T Q^{-1} A_i \le \frac 1 2 \bar{b_i}^2.
-\end{array}
- \label{ellipse_1}
-\end{align}
-
-
-\begin{theorem} 
-
-Let $\mathcal{P} = \{x \in \Rn | Ax \le b\}$, 
-where $A$ is an $m \times n$ matrix, 
-and $b \in \Rm$.  Let $c \in \intr{\mathcal{P}}$.
-
-Suppose that some positive definite, symmetric matrix $Q$ solves \cref{ellipse_1}, where $\bar{b} = b - Ac$.
-Then the ellipsoid $E = \{ x \in \reals^n | (x-c)^T Q(x-c) \le 1\}$ has the maximum volume over all ellipsoids centered at $c$ and contained in $\mathcal{P}$.
-\end{theorem}
-
-
-\pagebreak
-\begin{proof}
-
-Define the auxiliary function $f(d) = \frac 1 2 d^T Q d$ so that $E = \{ d \in \Rn\; | \; f(d) \le 1 \}$.
-Because $Q$ is positive definite, $f$ has a unique minimum on each hyperplane $\left\{d \in \Rn | \; A_i d = b_i\right\}$.
-Let this minimum be $d^{(i)} = \argmin_{A_id =\bar{b}_i} f(d)$ for $i\in[m]$.
-By the first-order optimality conditions, there exists a $\lambda \in \Rm$ such that for each $i\in[m]$,
-\begin{align*}
-\nabla f(d^{(i)}) = Q d^{(i)} = \lambda_i A_i.
-\end{align*}
-Since $Q$ is invertible, we have $d^{(i)} = \lambda_i Q^{-1}A_i$. 
-We also know that $A_i^T d^{(i)} = \bar{b_i}$, so 
-\begin{align*}
-A_i^T \lambda_i Q^{-1}A_i = \bar{b_i} \Longrightarrow
-\lambda_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i},
-\end{align*}
-so that
-\begin{align*}
-d^{(i)} = \lambda_i Q^{-1}A_i = \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \quad \forall 1\le i\le m.
-\end{align*}
-Because $E \subset \mathcal{P}$, we also know that $f(d^{(i)}) \ge 1$ for each $i$. Thus,
-\begin{align*}
-\frac 1 2 (d^{(i)})^{T} Q d^{(i)} \ge 1 \\
-\Longrightarrow & \frac 1 2 \bigg(\frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i\bigg)^{T} Q \frac {\bar{b}_i}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
-\Longrightarrow & \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \bar{b_i} A_i^T Q^{-1} Q \frac {\bar{b_i}}{A_i^T  Q^{-1}A_i}  Q^{-1}A_i \ge 1 \\
-\Longrightarrow & \frac 1 2 \frac {1}{A_i^T  Q^{-1}A_i}  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i}  A_i^T Q^{-1}A_i \ge 1 \\
-\Longrightarrow & \frac 1 2  \frac {\bar{b_i}^2}{A_i^T  Q^{-1}A_i} \ge 1 \\
-\Longrightarrow & \frac 1 2 \bar{b_i}^2\ge A_i^T  Q^{-1}A_i \\
-\Longrightarrow & A_i^T  Q^{-1}A_i \le \frac 1 2 \bar{b_i}^2.
-\end{align*}
-
-Because the volume of the ellipsoid is proportional to the determinant of $Q^{-1}$, the maximal ellipsoid is defined by \cref{ellipse_1}.
-\end{proof}
-
-
-Notice that the constraints for \cref{ellipse_1} can be simplified for the outer trust region's constraints.
-These take the form:
-\begin{align*}
-e_i^T\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)^{-1} e_i \le \left[e_i^T\left(\xk - \ck\right) \pm \dk \right]^2 \quad \forall i \in [n]
-\end{align*}
-or
-\begin{align}
-\label{ellipsoids_trust_region_constraints}
-\left(\frac{\qk}{\frac 1 2 \sdk^2}\right)_{i,i}^{-1} \le \left[\xki - \ck_i \pm \dk \right]^2 \quad \forall i \in [n].
-\end{align}
-
-
-
 \section{Results}
 
-\subsection{Algorithm variants}
-
-Here, we present numerical results for our implementations of \cref{linearly_constrained_dfo_simple}.
-We begin by describing the different ways we implemented \emph{ConstructTrustRegion}.
-
-\subsubsection{Circular trust region}
-
-The simplest approach to maintaining a feasible trust region is to set the inner trust region radius sufficiently small.
-Within the \emph{ConstructTrustRegion} subroutine, this method sets the trust region radius to the distance to the closest constraint:
-$\outertrk = B_2\left(\xk, \min\left\{\dk, \min_{i}\frac{\left|A_i\xk - b_i\right|}{\left\|A_i\right\|} \right\}\right)$.
-In practice, this does not work well as the radius can become too small to allow adequate progress.
-
-Two general strategies were considered for addressing this issue as illustrated in \cref{options_basis}.
-One option is to shift the center of the inner trust region as long as it remains within the outer trust region.
-The second option is to elongate the trust region along the nearest constraint as discussed in the next section.
-Of course, both of these can be done at the same time.
-
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=200px]{images/small_circle.png}
-    \includegraphics[width=200px]{images/shifted_center.png}
-    \caption[The advantage of not requiring the sample region center to be the trust region center.]{
-    	When the current iterate is too close to a constraint, the circular trust region becomes too small.
-    	Shifting the trust region center can help remedy this.
-    	The star is the current iterate, the outer trust region is in green, and the inner trust region is in blue.
-    }
-    \label{options_basis}
-\end{figure}
-
-
-In order to address this issue, we considered using ellipsoidal trust regions.
-Whereas the circle does not allow improvement when the current iterate lies along a constraint, an ellipsoid elongates along this constraint.
-In figure \cref{ellipse_adv}, we have this type of iterate, but by using an ellipsoid we are still able to search towards the vertex of the feasible region.
-\begin{figure}[ht]
-    \centering
-    \includegraphics[scale=0.4]{images/long_ellipsoid.png}
-    \caption[An ellipsoidal trust region allows for more progress than a circular trust region.] {
-    	Although the center of the ellipsoid in green is close to the boundary of the blue constraints, it can elongate to allow progress.
-    }
-    \label{ellipse_adv}
-\end{figure}
-
-% \begin{boxedcomment}
-% Update this image...
-% \end{boxedcomment}
-
-
-More specifically, at iteration $k$, we choose a scaling factor $\sdk$ and solve for an ellipsoid center $\ck \in \Rn$ and positive definite matrix $\qk$ to define an ellipsoid
-\begin{align*}
-\ellipsek = \left\{x \in \Rn \bigg| \; \frac 1 2 \left(x - \ck\right)^T\qk\left(x - \ck\right) \le \frac 1 2 \sdk^2 \right\}.
-\end{align*}
-The simplest approach is to simply let the center of the ellipsoid be the current iterate: $\ck = \xk$.
-
-
-
-
-
-% \item How do we choose $\ellipsek$ to make the  ellipsoid as large as possible while ensuring that $ \ellipsek \subset \outertrk \cap \feasible $?
-
-
-
-
-% ====================
-% \sbnote{Move the following to somewhere else.}
-% The advantage of the ellipsoidal trust region approach \cref{bluepill} is that we can reuse classical methods for ensuring good geometry.
-% We can construct $\sampletrk$ to be ellipsoidal and use efficient algorithms within \cite{introduction_book} to satisfy \cref{accuracy}.
-% However, we must be careful while choosing $ \searchtrk$ to allow sufficient reduction when we solve the trust region subproblem using the inner trust region.
-% The search trust region is used while selecting the next iterate:
-% \begin{align*}
-% \sk = \argmin_{s \in \searchtrk} \mfk(\xk + s).
-% \end{align*}
-% =====================
-
-
-
-
-
-
-\subsubsection{Choosing the ellipsoid center}
-\label{center_searches}
-
-The most obvious choice for the center of the ellipsoid is to choose $\ck = \xk$ (i.e., the current iterate).  
-However, if $\xk$ is too close to a boundary of the feasible region, this can result in a badly shaped or very small ellipsoid.
-We, therefore, explore strategies where the \emph{ConstructTrustRegion} subroutine moves the center of the ellipsoid away from the boundary. 
-This is depicted in \cref{ellipse_adv}.
-
-
-% We let the volume of the ellipsoid $E$ at center $c$ be given by $V(c) = \det(Q^{-1}) $.
-
-\paragraph{Outer trust region search.}
-
-One approach is to search all possible centers within $\feasible \cap \outertrk $.  
-% That is, we solve:  \sbnote{Why do you use $\sdk$ in the following?}
-% \begin{align*}
-% \ck = \sup_{c \in \feasible \cap \outertrk} V(c)
-% \end{align*}
-% where $V(c)$ is the volume of the ellipsoid defined in \cref{ellipse_1}.
-
-This has the advantage that it allows for the largest volume.
-However, one problem with this search is that it can force the trust region away from the descent direction.
-Notice that in \cref{ellipse_runs_away}, although the ellipsoid found has larger volume than before being shifted, 
-this ellipsoid contains points farther from the corner that happens to contain the trust region's minimizer.
-Within the numerical results, these algorithms are described as ``ellipse everywhere''.
-
-The following section addresses this problem by proposing a path search method for choosing the ellipsoid center.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=200px]{images/worse_larger_ellipsoid_1.png}
-    \includegraphics[width=200px]{images/worse_larger_ellipsoid_2.png}
-    \caption[An example of how the search for the sample region center can go wrong.]{
-    	An example of how the search for the feasible region center can go wrong.  
-     	On the left, a very small sample region is selected; however its proximity to the minimizer makes the model more accurate at the minimizer.
-    	On the right, a sample region with larger volume is chosen, but it is further from the trust region minimizer.
-	}
-    \label{ellipse_runs_away}
-\end{figure}
-
-
-\paragraph{Path searches.}
-
-% \sbnote{This discussion is quite vague, and in my opinion, off target.  
-% You don't necessarily want to be moving toward a vertex.   
-% You just don't want your ellipsoid to move in the opposite direction as  the descent direction.}
-% 
-% 
-% 
-% Although $\mfk$'s minimizer over $\outertrk$  can appear anywhere, there are some reasons for expecting it to be at a ``vertex."
-% If it lies in the interior, there is little need for using constrained approaches once near the solution.
-% 
-% 
-% %The ellipsoid with maximum volume, however, tends to lead $ \sampletrk $ away from vertices.
-% One way of trying to ensure a feasible direction towards a vertex, while still allowing a larger volume ellipsoid, 
-% is by limiting the search for the new center to lie on a piecewise linear path starting at the current iterate $\xk$.
-
-Rather than searching over all possible centers, it may be more efficient to only move away from the boundary.
-This can be done using one-dimensional search along an appropriate direction.
-For example, our first attempt was to simply search a line directed orthogonally away from the closest constraint.
-This has obvious problems as shown in \cref{first_line_search}: we should avoid letting the new center get closer to another constraint.    
-
-% \sbnote{This could be clearer.
-% A key point is that with this method, you can determine the ellipsoid center simply by moving along this line until you are equidistant from the 2 closest constraints.
-% Thus,  there is little gain if the current iterate is close to two or more constraints.}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=200px]{images/narrow_ellipsoid_1.png}
-    \includegraphics[width=200px]{images/narrow_ellipsoid_2.png}
-    \caption[Why only considering the nearest constraint is not sufficient. ]
-        {Why only considering the nearest constraint is not sufficient.   On the left is the starting ellipsoid.
-    	By choosing centers further away from only the nearest constraint, the ellipsoid becomes narrow as another constraint is limiting the length of the second axis.
-	}
-    \label{first_line_search}
-\end{figure}
-
-To fix this, we search along a piecewise linear path leading away from the closest constraints.   
-The algorithm works by choosing a set of breakpoints $s_0, s_1, s_2, \ldots, s_{n_{\text{points}}}$
-that are each equidistant to a subset of the constraint's faces.
-Intuitively, the search moves away from the nearest constraint until it reaches a point equidistant to the second nearest constraint, and so on.
-The center search then considers points along the line segments between these points.
-% Namely, it starts at the current iterate and travels along a ray away from all the closest constraints until it reaches a point equidistant to yet another constraint.
-
-More precisely, the first point is chosen to be the current iterate: $s_0 = \xk$.
-The algorithm then repeats the following process for $i$ from $0$ to $n_{\text{points}}-1$.
-First, compute the set of nearest constraints, where the distance from the current point $s_i$ to each constraint $A_j$ for $j \in [m]$: 
-is given by $d_j = b - A_j x$.
-Recall that the rows of $A$ are normalized: $\left\|A_j\right\| = 1 \quad \forall j \in [m]$.
-While finding the next point $s_{i+1}$, let  $E$ be the indices of $A$ whose constraints are equidistant and nearest to $s_i$:
-$\{j \in [m] | d_j = \min_{l \in [m]} d_l\}$.
-Let the remaining indices be $R = [m] \setminus E$.
-The algorithm chooses a search direction $p = {A_E}^Tr$ as a linear combination of the normal vectors of the nearest constraints.
-%When the constraint violation of $s_i$ is non-zero, this search ray can be found by finding the point that doubles the current slack ${A_E}s_i-{b_E}$.
-%This is given by $r{A_E}^T$ where $r$ solves the linear system ${A_E}(s_i + r{A_E}^T) - b_E = 2 ({A_E}n_i - b_E)$.
-%If the current violation is zero, then the right hand side can be set to a vector of all ones to ensure that all slacks violations are the same: $A_E(s_i + r{A_E}^T) - b_E = 1$.
-This search ray $r$ can be found by computing a point $s_i$ whose distance to each equidistant constraint is twice its current value:
-\begin{align*}
-b_E - A_E(s_i + {A_E}^Tr) = 2 \left[b_E - A_Es_i\right] \Longrightarrow r = \left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_i\right).
-\end{align*}
-% $A_E(s_i + r{A_E}^T) - b_E = 1$.
-We can travel along this ray until we reach a point that is the same distance to a remaining constraint.
-By travelling a distance $t$, we see that the $j$-th constraint becomes active when
-$A_j (s_i + t p) = b_j \Longrightarrow t = \frac{b_j - A_j s_i}{A_jp}$
-so that we can travel by 
-$t = \min_{j \in R} \left\{\frac{b_j - A_j s_i}{A_jp}  \right\}. $
-We set $s_{i+1} = s_{i} + t p$.
-This process is described in \cref{segment_construction}.
-Of course, $n_{\text{points}}$ must be less than or equal to $n + 1$ in order for this to be defined.
-
-% \begin{comment}
-% Also, the algorithm must stop early if $A_E$ contains $n$ parallel normal vectors: 
-% as there will no longer be a direction that leads away from all constraints.
-% \end{comment}
-
-{
-\begin{fullwidth}[leftmargin=0in, rightmargin=0in, width=\linewidth-0.5in]
-\begin{flushleft}
-
-
-\begin{algorithm}[H]
-    \caption{Path segment construction}
-    \label{segment_construction}
-    \begin{itemize}
-        \item[\textbf{Step 0}] \textbf{(Initialization)} \\
-            Choose a number of segments $n_{\text{points}} \le n$, and set $s_0 = \xk$, $i=1$.
-            
-        \item[\textbf{Step 1}] \textbf{(Compute nearest constraints)} \\
-			Compute $d_j = b - A_j s_{i-1}$ for each $j \in [m]$, and partition 
-			\begin{align*}
-			E = \left\{j \in [m] \bigg| d_j = \min_{l \in [m]} d_l\right\}, \; \textrm{and} \; R = [m] \setminus E.
-			\end{align*}
-			If $|E| \ge n$, then \textbf{Stop}.
-			
-            
-        \item[\textbf{Step 2}] \textbf{(Compute search segment)} \\
-        	Compute the search direction $p = {A_E}^T\left[A_E{A_E}^T\right]^{-1}\left(b_E + A_E s_{i-1}\right)$
-        	and distance $t = \min_{j \in R} \left\{\frac{b_j - A_j s_{i-1}}{A_jp}  \right\}$. \\
-        	Set $s_i \gets s_{i-1} + tp$.
-        	
-        \item[\textbf{Step 4}] \textbf{(Repeat)} \\
-        if $i = n_{\text{points}}$ \textbf{stop}, otherwise set $i \gets i+1$ and go to Step 1.
-    \end{itemize}
-\end{algorithm}
-
-\end{flushleft}
-\end{fullwidth}
-}
-
-
-% if we let $\nabla \modelconstrainti\left(\xk\right) = A_i$ be the $i$th row of $A$, then we define the distance from a search point $s$ so the $i$th constraint to be
-
-Once each end point $s_i$ is computed, the algorithm searches along each line segment $[s_{i-1}, s_i]$ for $i \in [n_{\text{points}}]$.
-This means that we can define a class of searches that each limit the number of line segments to search $n_{\text{points}}$.
-Within the results, these algorithms are described as ``ellipse segment $n_{\text{points}}$''.
-
-% In \cref{line_can_run}, the red line shows the line segments equidistant from their closest constraints.
-% Notice that with two line segments, the algorithm can already choose new centers further from the vertex.
-%
-% % TODO: REPLACE PICTURES
-% \begin{figure}[ht]
-%     \centering
-%     \includegraphics[scale=0.4]{images/run_away_1.png}
-%     \includegraphics[scale=0.4]{images/run_away_2.png}
-%     \caption{
-% %     	\emph{Short:} Why only considering the nearest constraint is not sufficient.
-% %     	\emph{Long:} On the left is the starting ellipsoid.
-% %     	By choosing centers further away from only the nearest constraint, the ellipsoid becomes narrow as another constraint is limiting the length of the second axis.
-%     Ellipse runs away from the trust region minimizer}
-%     \label{line_can_run}
-% \end{figure}
-
-% \begin{boxedcomment}
-% Update this image...
-% \end{boxedcomment}
-
-\pagebreak
-
-\subsection{Buffered segments}
-
-Even with these modifications, the iterates may approach the boundary of the feasible region.
-Another way of dealing with this is to shift the constraints closer to the current iterate.
-Namely, we introduce a parameter $\upsilon$ to determine how far to scale the constraints.
-Then, within the trust region subproblem, we add constraints of $Ax \le b\upsilon + (1-\upsilon) A \xk $.
-This produces the buffered segment searches within the results.
-
-\paragraph*{Circumscribed ellipse.}
-
-We also implemented a variant of the algorithm in which the sample region is a smallest volume ellipsoid to contain the feasible region.
-Notice the ellipsoid necessarily includes points that are outside the current trust region and may include infeasible points.
-Thus, both the trust region and linear constraints have to be added to the optimization problem defining the replacement point while computing the Lagrange polynomials.
-For more details about this modified model improvement algorithm, see \cref{sec:polyhedral}.
-
-\subsection{Sample problem}
-
-The first test was on a problem with simple constraints and a pathological objective.
-We let $f(x) = \epsilon x + (1-\epsilon)(y - \alpha x \sin(\gamma x))^2$ for a fixed constant $\epsilon$, and set the constraints to be
-$x_2 \le ax_1$, $x_2 \ge -ax_1$ for a fixed constant $a$.
-We summarize the number of function evaluations and iterations taken within \cref{linear_pathological_results}.
-
-In general, we notice the linear models use fewer evaluations than quadratic models.
-We see that the method with the fewest iterations and function evaluations is the linear polyhedral shape.
-This is likely because the polyhedral shape is allowed to search the entire outer trust region.
-This also explains why the circumscribed ellipse and maximum volume simplex also perform well.
-%We also notices that with a simple heuristic we were able to improve the ellipse slightly from 170 to 157.
-Also, the scaled ellipsoid performs comparably to the unscaled version.
-
-\pagebreak
+% Here, we present numerical results for our implementations of \cref{linearly_constrained_dfo_simple}.
 
 \subsection{Hock-Schittkowksi test problems}
 
 
 We tested these algorithms on several problems from the Hock-Schittkowski problem set \cite{Schittkowski1981MoreTE} and \cite{Hock1980}.
 We selected the problems that have linear constraints: 21, 24, 25, 35, 36, 44, 45, 76, 224, 231, 232, 250, 251.
-We summarize the results within \cref{linear_schittowski_results}.
+We summarize the results within \color{magenta} a section to come \color{black}.
 
 % 37 was left out because it proved to be difficult.
 
@@ -3479,9 +2999,9 @@ The performance profile for the Hock-Schittkowski problem set is given in figure
 
 
 
-The line segment search with 5 segments does not solve many problems, this is because several of the problems have dimension less than $5$, so that it was not even run on these.
-Notice that the polyhedral search does very well.
-We conjecture that this may not hold with modeled, nonlinear constraints.
+% The line segment search with 5 segments does not solve many problems, this is because several of the problems have dimension less than $5$, so that it was not even run on these.
+% Notice that the polyhedral search does very well.
+% We conjecture that this may not hold with modeled, nonlinear constraints.
 
 
 
